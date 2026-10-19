@@ -1544,7 +1544,7 @@ function lookSprite(look, dir, frame){
 
 /* ---------- profiles (3 save slots) ---------- */
 const SLOTS=3;
-const slotKey=i=>'shanhai-wendao.slot'+i;
+const slotKey=i=>'shanhai-wendao-beta.slot'+i;
 function readSlot(i){ try{ const s=JSON.parse(localStorage.getItem(slotKey(i))||'null'); return s&&s.map?s:null; }catch(e){ return null; } }
 (function migrate(){ try{ const old=localStorage.getItem('shanhai-wendao.v1'); if(old&&!localStorage.getItem(slotKey(0))){ const s=JSON.parse(old); s.look=s.look||defaultLook('m'); s.name=s.name||'无名'; localStorage.setItem(slotKey(0),JSON.stringify(s)); } localStorage.removeItem('shanhai-wendao.v1'); }catch(e){} })();
 
@@ -4016,8 +4016,8 @@ const Replay = {
    Turn on: add #dev to the link, tap the title 5 times, or press ` in game.
    ============================================================ */
 const Dev = {
-  on(){ try{ return location.hash.includes('dev') || localStorage.getItem('shanhai-dev')==='1'; }catch(e){ return location.hash.includes('dev'); } },
-  enable(){ try{ localStorage.setItem('shanhai-dev','1'); }catch(e){} Dev.button(); UI.toast('开发者模式已开启'); },
+  on(){ try{ return location.hash.includes('dev') || localStorage.getItem('shanhai-beta-dev')==='1'; }catch(e){ return location.hash.includes('dev'); } },
+  enable(){ try{ localStorage.setItem('shanhai-beta-dev','1'); }catch(e){} Dev.button(); UI.toast('开发者模式已开启'); },
   button(){ if(!Dev.on()||$('#devB')) return; const b=document.createElement('button'); b.id='devB'; b.className='wood'; b.textContent='调试'; b.setAttribute('aria-label','开发者面板');
     b.onclick=()=>{ Sound.tick(); Dev.panel(); }; $('#hud').appendChild(b); },
   // a ready-made game state for each chapter point

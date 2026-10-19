@@ -14,7 +14,7 @@ HEAD = ('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
 # Releases: `python build.py` writes the beta (beta/index.html) for review; `python build.py release` also updates the live game.
 import sys
 os.makedirs(os.path.join(here, 'beta'), exist_ok=True)
-open(os.path.join(here, 'beta', 'index.html'), 'w', encoding='utf-8').write(HEAD.replace('href="icon.png"', 'href="../icon.png"').replace('<title>', '<title>') + page.replace('<title>山海问道</title>', '<title>山海问道 · 测试版</title>', 1) + '</body></html>')
+open(os.path.join(here, 'beta', 'index.html'), 'w', encoding='utf-8').write(HEAD.replace('href="icon.png"', 'href="../icon.png"').replace('<title>', '<title>') + page.replace('<title>山海问道</title>', '<title>山海问道 · 测试版</title>', 1).replace("'shanhai-wendao.slot'+i", "'shanhai-wendao-beta.slot'+i").replace("'shanhai-dev'","'shanhai-beta-dev'") + '</body></html>')
 if 'release' in sys.argv:
     open(os.path.join(here, 'index.html'), 'w', encoding='utf-8').write(HEAD + page + '</body></html>')
     print('released to index.html')
