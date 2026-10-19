@@ -32,6 +32,12 @@ const Review = {
       run(){ Review.base({quest:'q4', L:2, inv:{rod:1}}); S.sel='rod'; S.min=22*60; S.glow=[{map:'town',x:5,y:15}]; Review.at('town',5,14,'down'); }},
     {id:'meditate', group:'修炼', title:'闭关打坐', check:'站在洞府的蒲团旁，按 E 打坐：拖动滑条选时长（2 小时到 30 天），看预计境界和「一直闭关的话」多久到哪一层，再看进度条。也可以等到半夜 12 点，确认不会再昏倒。',
       run(){ Review.base({quest:'q4', L:2}); S.min=22*60; Review.at('home',4,9,'up'); setTimeout(()=>meditate(),400); }},
+    {id:'art-town', group:'美术', title:'桃源镇（白天）', check:'新画的房子、石板广场、土路边缘、池塘、飘落的花瓣和云影。',
+      run(){ Review.base({quest:'q4', L:2}); S.min=11*60; Review.at('town',11,5,'down'); }},
+    {id:'art-forest', group:'美术', title:'青丘山林（傍晚）', check:'树的光影、池塘深浅和沙岸、高草、落叶，以及傍晚的暖色。',
+      run(){ Review.base({quest:'q4', L:2}); S.min=17*60; Review.at('forest',8,11,'down'); }},
+    {id:'art-night', group:'美术', title:'洞府（夜里）', check:'萤火虫、灯笼的光、夜里的路和崖壁。',
+      run(){ Review.base({quest:'q4', L:2}); S.min=21*60; Review.at('home',11,6,'down'); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},
