@@ -100,14 +100,13 @@ const Mini = {
     return {id:'fish_yin', speed:1.2, jumpy:.9};
   },
   fish(){
-    if(!useEnergy(3)) return;
     const el=Mini.open(`<div class="mg wood fishg"><h3>垂钓</h3><p class="mg-tip" id="fsTip">静静等待鱼儿咬钩……</p>
       <div class="pond"><div class="bobber" id="fsBob"></div></div><button class="btn main big" id="fsBtn">收竿</button></div>`);
     Music.play('calm');
     let t=0, bite=1+Math.random()*2.5, phase='wait', biteT=0; const fish=Mini.fishPick();
     $('#fsBtn').onclick=()=>{ if(phase==='wait'){ $('#fsTip').textContent='太早了，鱼被吓跑了……'; phase='end'; setTimeout(()=>{ Mini.close(); Music.play(areaTheme()); },900); }
       else if(phase==='bite'){ phase='reel'; Mini.reel(fish); } };
-    Mini.run(dt=>{ t+=dt; if(phase==='wait'&&t>=bite){ phase='bite'; biteT=t; $('#fsTip').textContent='咬钩了！快收竿！'; $('#fsBob').classList.add('bite'); Sound.pick(); }
+    Mini.run(dt=>{ t+=dt; if(phase==='wait'&&t>=bite){ phase='bite'; biteT=t; if(RT.fishing) RT.fishing.bite=true; $('#fsTip').textContent='咬钩了！快收竿！'; $('#fsBob').classList.add('bite'); Sound.pick(); }
       if(phase==='bite'&&t-biteT>.9){ phase='end'; $('#fsTip').textContent='鱼儿溜走了……'; $('#fsBob').classList.remove('bite'); setTimeout(()=>{ Mini.close(); Music.play(areaTheme()); },900); } });
   },
   reel(fish){

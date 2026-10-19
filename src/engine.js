@@ -16,13 +16,13 @@ let RT = {                     // runtime-only state
 function newState(){
   return { map:'home', x:11, y:6, L:0, exp:0, hp:50, mp:16, energy:100, stones:20, day:1, min:DAY_START,
     inv:{}, sel:'hoe', farm:{}, gathered:{}, killed:{}, quest:0, questStarted:-1, flags:{},
-    st:{planted:0, watered:0, kills:0, harvested:0, meditated:0}, seen:{}, mute:false, side:{}, track:'main', name:'无名', look:defaultLook('m'), qv:2, karma:0 };
+    st:{planted:0, watered:0, kills:0, harvested:0, meditated:0, gathered:0}, seen:{}, mute:false, side:{}, track:'main', name:'无名', look:defaultLook('m'), qv:4, karma:0 };
 }
 function maxEnergy(){ return 100 + 10*S.L + (S.bonusEnergy||0); }
 function stats(){ return Sect.apply(statsFor(S.L)); }
-function save(){ try{ localStorage.setItem(slotKey(RT.slot), JSON.stringify(S)); return true; }catch(e){ return false; } }
+function save(){ if(typeof Replay!=='undefined'&&Replay.active) return true; try{ localStorage.setItem(slotKey(RT.slot), JSON.stringify(S)); return true; }catch(e){ return false; } }
 function loadSave(i){ const s=readSlot(i); if(s){ s.side=s.side||{}; s.track=s.track||'main'; s.look=s.look||defaultLook('m'); s.name=s.name||'无名'; s.st.meditated=s.st.meditated||0; if(s.quest>0) s.flags.intro_done=true; } return s; }
-function addItem(id,n=1){ S.inv[id]=(S.inv[id]||0)+n; if(S.inv[id]<=0) delete S.inv[id]; UI.hud(); }
+function addItem(id,n=1){ S.inv[id]=(S.inv[id]||0)+n; if(S.inv[id]<=0) delete S.inv[id]; UI.hud(); if(typeof Story!=='undefined') Story._pending=true; }
 
 /* ---------- sprite & tile caches ---------- */
 const SPRC = {};
@@ -188,6 +188,7 @@ function goAndDo(reach, fn){
 function face(tx,ty){ const dx=tx-S.x, dy=ty-S.y; if(Math.abs(dx)>Math.abs(dy)) RT.dir=dx>0?'right':'left'; else if(dy) RT.dir=dy>0?'down':'up'; }
 function facedTile(){ const d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[RT.dir]; return [S.x+d[0], S.y+d[1]]; }
 function interactFacing(){
+  if(RT.prompt){ const p=RT.prompt; if(p.o){ face(p.x,p.y); return interact(p.o); } if(p.fish){ face(p.x,p.y); return Mini.fish(p.x,p.y); } }
   const [x,y]=facedTile(); const o=entAt(x,y);
   if(o){ interact(o); return; }
   if(S.sel==='rod' && tileAt(x,y)==='~'){ Mini.fish(x,y); return; }
@@ -211,7 +212,7 @@ function interact(o){
   }
   if(o.type==='building' && o.label) UI.toast(o.label);
 }
-function useEnergy(n){ if(S.energy<n){ UI.toast('体力不够了，回洞府休息吧'); return false; } S.energy-=n; UI.hud(); return true; }
+function useEnergy(n){ return true; } // energy was retired; kept so older calls still work
 
 function farmAct(x,y){
   const k=farmKey(x,y), p=S.farm[k], sel=S.sel, item=ITEMS[sel];
@@ -228,6 +229,8 @@ function gather(o){
   if(!o.free && !useEnergy(1)) return;
   S.gathered[RT.mapId+':'+o.x+','+o.y]=S.day; RT.ents=RT.ents.filter(e=>e!==o); RT.solid[o.y][o.x]=false;
   const n=o.free?1:1+(Math.random()<.35?1:0); addItem(o.item,n); Sound.pick(); UI.float(o.x,o.y,`+${n} ${ITEMS[o.item].name}`);
+  if(!ITEMS[o.item].quest){ S.st.gathered=(S.st.gathered||0)+1; const C=Life.col(), r=C.crops[o.item]=C.crops[o.item]||{n:0}; r.n++; Life.checkSets(); }
+  Story.check();
 }
 
 /* ---------- cultivation ---------- */
@@ -277,11 +280,11 @@ function update(dt){
   { const st=stats(); if(S.hp<st.hp) S.hp=Math.min(st.hp, S.hp+dt/MIN_SEC*st.hp/240); } // wounds heal over ~4 game hours
   if(S.min>=PASS_OUT){ RT.paused=true; UI.say([['旁白','夜深了，你累得昏倒在地……']], ()=>sleep(true)); return; }
   // movement: keys walk freely (diagonals, slide around corners); taps follow a path without stopping per tile
-  const kv=keyVector(), want=(RT.runHeld||RT.runToggle)&&(kv||RT.path.length);
+  const kv=keyVector(), want=false;
   RT.running = want && !RT.winded && RT.stamina>0;
   if(RT.running){ RT.stamina=Math.max(0,RT.stamina-26*dt); if(RT.stamina<=0){ RT.winded=true; UI.toast('跑不动了，歇一歇……'); } }
   else { RT.stamina=Math.min(100,RT.stamina+(kv||RT.path.length?16:30)*dt); if(RT.winded&&RT.stamina>=35) RT.winded=false; }
-  const SPEED=5.2*(RT.running?1.75:1);
+  const SPEED=6;
   if(kv){ RT.path=[]; RT.pending=null; RT.autoNav=false; moveFree(kv[0]*SPEED*dt, kv[1]*SPEED*dt); RT.moving=true; }
   else if(RT.path.length){ followPath(SPEED*dt); RT.moving=true; }
   else RT.moving=false;
@@ -398,6 +401,7 @@ function render(){
     list.push({y:p[1]+0.98, draw:()=>{ drawShadow(ox+p[0]*T, oy+p[1]*T, Z); drawSprite(BEASTS[S.pet.kind].spr, ox+p[0]*T, oy+p[1]*T, Z, RT.moving?-Math.abs(Math.sin(RT.t*9))*1.5:0, p[0]>RT.fx); }}); }
   list.sort((a,b)=>a.y-b.y).forEach(d=>d.draw());
   Nav.drawWorld(g, ox, oy, T, Z);
+  drawPrompt(g, ox, oy, T, Z);
   // path marker
   if(RT.path.length){ const [tx,ty]=RT.path[RT.path.length-1]; g.strokeStyle='rgba(255,255,255,.7)'; g.lineWidth=Z; g.strokeRect(ox+tx*T+2*Z, oy+ty*T+2*Z, T-4*Z, T-4*Z); }
   drawNight(g, ox, oy, T, Z);
@@ -420,6 +424,45 @@ function drawPlayer(x,y,Z){
   const c=lookSprite(S.look,d,f), w=c.width*Z, h=c.height*Z, bob=(f===1||f===3)?-Z:0;
   const dx=Math.round(x+(TILE*Z-w)/2), dy=Math.round(y+TILE*Z-c.bottom*Z+bob);
   if(RT.dir==='left'){ ctx.save(); ctx.translate(dx+w,dy); ctx.scale(-1,1); ctx.drawImage(c,0,0,w,h); ctx.restore(); } else ctx.drawImage(c,dx,dy,w,h);
+  if(S.sel==='rod' && S.inv.rod) drawRod(dx, dy, w, Z);
+}
+// the fishing rod in hand; while fishing it reaches out over the water with a line and a bobber
+function drawRod(dx, dy, w, Z){
+  const g=ctx, F=RT.fishing, T=TILE*Z;
+  let hx, hy, tx, ty;
+  if(RT.dir==='left'){ hx=dx+3*Z; hy=dy+14*Z; tx=hx-9*Z; ty=hy-12*Z; }
+  else if(RT.dir==='right'){ hx=dx+w-3*Z; hy=dy+14*Z; tx=hx+9*Z; ty=hy-12*Z; }
+  else if(RT.dir==='up'){ hx=dx+w-4*Z; hy=dy+13*Z; tx=hx+3*Z; ty=hy-15*Z; }
+  else { hx=dx+w-3*Z; hy=dy+15*Z; tx=hx+5*Z; ty=hy-13*Z; }
+  if(F){ const bx=Math.round(-RT.cam.x*RT.scale*RT.dpr+(F.x+.5)*T), by=Math.round(-RT.cam.y*RT.scale*RT.dpr+(F.y+.5)*T)+(F.bite?Math.sin(RT.t*30)*2*Z:Math.sin(RT.t*3)*Z);
+    tx=hx+(bx-hx)*.45; ty=Math.min(hy,by)-10*Z;
+    g.strokeStyle='rgba(240,240,240,.85)'; g.lineWidth=Math.max(1,Z*.5); g.beginPath(); g.moveTo(tx,ty); g.quadraticCurveTo((tx+bx)/2,(ty+by)/2+8*Z,bx,by); g.stroke();
+    g.fillStyle='#d84a4a'; g.fillRect(bx-1.5*Z,by-3*Z,3*Z,2*Z); g.fillStyle='#fff'; g.fillRect(bx-1.5*Z,by-Z,3*Z,1.5*Z);
+    if(F.bite){ g.strokeStyle='rgba(255,255,255,.6)'; g.lineWidth=Z*.6; g.beginPath(); g.ellipse(bx,by,5*Z+Math.sin(RT.t*20)*Z,2*Z,0,0,7); g.stroke(); } }
+  g.strokeStyle='#6a4022'; g.lineWidth=Math.max(1.5,Z*.9); g.lineCap='round'; g.beginPath(); g.moveTo(hx,hy); g.lineTo(tx,ty); g.stroke();
+  g.strokeStyle='#a8743f'; g.lineWidth=Math.max(1,Z*.45); g.beginPath(); g.moveTo(hx,hy); g.lineTo(hx+(tx-hx)*.4,hy+(ty-hy)*.4); g.stroke();
+}
+// "E" (or "点") above whatever you can interact with right now
+const FINE_POINTER=matchMedia('(pointer:fine)').matches;
+function findPrompt(){
+  if(RT.paused||RT.moving) return null; const near=[];
+  for(const o of RT.ents){
+    if(o.type==='building'){ if(o.act&&o.door&&Math.abs(o.door[0]-S.x)+Math.abs(o.door[1]-S.y)===0) near.push({o,x:o.door[0],y:o.door[1]-1,d:0}); continue; }
+    if(!(o.type==='npc'||o.type==='gather'||o.act||o.type==='sign')) continue;
+    const d=Math.max(Math.abs(o.x-S.x),Math.abs(o.y-S.y)); if(d<=1) near.push({o,x:o.x,y:o.y,d:Math.abs(o.x-S.x)+Math.abs(o.y-S.y)});
+  }
+  const [fx,fy]=facedTile(); near.sort((a,b)=>((a.x===fx&&a.y===fy)?-1:0)-((b.x===fx&&b.y===fy)?-1:0)||a.d-b.d);
+  if(near.length) return near[0];
+  if(S.sel==='rod'&&S.inv.rod){ for(const [dx,dy] of [[fx-S.x,fy-S.y],[0,1],[1,0],[0,-1],[-1,0]]){ const x=S.x+dx,y=S.y+dy; if(tileAt(x,y)==='~') return {fish:true,x,y}; } }
+  return null;
+}
+function drawPrompt(g, ox, oy, T, Z){
+  RT.prompt=findPrompt(); const p=RT.prompt; if(!p) return;
+  const cx=ox+(p.x+.5)*T, cy=oy+p.y*T-(p.o&&p.o.type==='npc'?18:10)*Z+Math.sin(RT.t*4)*Z, r=6*Z;
+  g.fillStyle='rgba(42,30,26,.85)'; g.beginPath(); g.roundRect?g.roundRect(cx-r,cy-r,r*2,r*2,2*Z):g.rect(cx-r,cy-r,r*2,r*2); g.fill();
+  g.strokeStyle='#f2c14e'; g.lineWidth=Z*.8; g.stroke();
+  g.fillStyle='#fff3dc'; g.font=`bold ${Math.round(8*Z)}px system-ui,-apple-system,"PingFang SC",Arial,sans-serif`; g.textAlign='center'; g.textBaseline='middle';
+  g.fillText(FINE_POINTER?'E':(p.fish?'钓':p.o&&p.o.type==='npc'?'聊':p.o&&p.o.type==='gather'?'采':'点'), cx, cy+Z*.5);
 }
 const NIGHT=document.createElement('canvas');
 function drawNight(g, ox, oy, T, Z){
@@ -452,7 +495,6 @@ addEventListener('keydown', e=>{
   Sound.unlock();
   if(UI.onKey(e)) return;
   if(RT.paused) return;
-  if(e.key==='Shift'){ RT.runHeld=true; }
   if(KEYDIR[e.code]){ const d=KEYDIR[e.code]; RT.keys=RT.keys.filter(k=>k!==d); RT.keys.push(d); e.preventDefault(); }
   else if(e.code==='KeyM'){ e.preventDefault(); UI.worldMap(); }
   else if(e.code==='KeyQ'||e.code==='KeyJ'){ e.preventDefault(); UI.tasks(); }

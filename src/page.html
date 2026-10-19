@@ -34,20 +34,30 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 /* ---------- HUD ---------- */
 #hud{position:fixed;inset:0;pointer-events:none;padding:max(8px,env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
 #hud > *{pointer-events:auto}
-.hud-tl{position:absolute;top:max(8px,env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px;max-width:46vw}
-.realm{padding:6px 10px 8px;min-width:120px}
-.realm b{font-family:var(--f-head);font-size:17px;font-weight:400;display:block;margin-bottom:4px}
+.hud-tl{position:absolute;top:max(8px,env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px;max-width:min(320px,58vw)}
+.realm{padding:8px 12px 10px;min-width:150px}
+.realm b{font-family:var(--f-head);font-size:20px;font-weight:400;display:block;margin-bottom:4px}
 .xbar,.realm .bar{height:8px;border-radius:4px;background:#d9b47a;box-shadow:inset 0 0 0 1px var(--wood-d);overflow:hidden}
 .xbar i,.realm .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--jade),#8de6cf);transition:width .4s}
-.quest{padding:6px 10px;font-size:13px;line-height:1.35;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.quest{padding:6px 8px;font-size:14px;line-height:1.35;display:flex;flex-direction:column;gap:4px;min-width:200px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.qhead b{font-family:var(--f-head);font-weight:400;font-size:16px;color:var(--ink)}
+.qall{font-size:12px;color:var(--ink-soft);padding:2px 6px;border-radius:4px;background:var(--parch-d)}
+.qrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center;padding:5px 6px;border-radius:6px;background:#f6dca8;cursor:pointer;box-shadow:inset 0 0 0 2px transparent}
+.qrow.on{background:#fff2c8;box-shadow:inset 0 0 0 2px var(--cinnabar)}
+.qrow .qt{min-width:0;display:flex;flex-direction:column}
+.qrow .qt b{font-family:var(--f-head);font-weight:400;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrow .qt span{font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qk.side{background:var(--wood)!important} .qk.avail{background:#7a8a5a!important}
 .quest .qk{font-size:11px;background:var(--cinnabar);color:#fff3dc;padding:0 6px;border-radius:3px}
-.quest .qgo{margin-top:4px;height:28px;padding:0 10px;border-radius:6px;background:var(--cinnabar);color:#fff3dc;font-family:var(--f-head);font-size:14px;box-shadow:0 2px 0 #6e1f1b}
+.quest .qgo{height:30px;padding:0 10px;border-radius:6px;background:var(--cinnabar);color:#fff3dc;font-family:var(--f-head);font-size:14px;box-shadow:0 2px 0 #6e1f1b}
 .quest b{display:block;font-family:var(--f-head);font-weight:400;font-size:14px;color:var(--cinnabar)}
 .quest span{color:var(--ink-soft);font-size:12px}
 .quest:empty{display:none}
 .hud-tr{position:absolute;top:max(8px,env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .clock{position:relative;padding:6px 10px 8px;min-width:112px;text-align:right;box-sizing:border-box}
-.minibox{padding:4px;display:flex;flex-direction:column;align-items:center;gap:2px;width:112px;box-sizing:border-box}
+.minibox{padding:4px;display:flex;flex-direction:column;align-items:center;gap:2px;width:140px;box-sizing:border-box}
+@media (max-width:420px){ .minibox{width:112px} .quest{min-width:0} }
 .minibox canvas{width:100%;height:auto;max-height:90px;object-fit:contain;border-radius:3px;background:#3a5a2a}
 .minibox span{font-family:var(--f-head);font-size:12px;color:var(--ink-soft);line-height:1}
 .clock #hDay{font-family:var(--f-head);font-size:16px}
@@ -57,14 +67,22 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .gem{width:12px;height:14px;background:linear-gradient(135deg,#bfe9ff,#5b8fd6 60%,#2f4a75);clip-path:polygon(50% 0,100% 35%,80% 100%,20% 100%,0 35%)}
 .sun{position:absolute;left:10px;top:10px;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff3a0,#f2a73a);box-shadow:0 0 0 2px var(--wood-d)}
 .sun.moon{background:radial-gradient(circle at 60% 40%,#f4f1d8,#c9c39a);box-shadow:0 0 0 2px var(--wood-d), inset -5px -2px 0 #a39e7a}
-.bars{position:absolute;right:max(10px,env(safe-area-inset-right,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));display:flex;gap:6px;align-items:flex-end}
+.vitals{position:absolute;right:max(10px,env(safe-area-inset-right,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));padding:8px 10px;display:flex;flex-direction:column;gap:6px;width:min(220px,40vw);box-sizing:border-box}
+.vrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center}
+.vrow span{font-family:var(--f-head);font-size:15px}
+.vrow em{font-style:normal;font-family:var(--f-num);font-size:13px;min-width:46px;text-align:right}
+.hbar{height:14px;border-radius:7px;background:#3a2a1a;box-shadow:inset 0 0 0 2px var(--wood-d);overflow:hidden}
+.hbar i{display:block;height:100%;width:0;transition:width .3s}
+.hbar.hp i{background:linear-gradient(#ff8a7a,#c8413b)} .hbar.mp i{background:linear-gradient(#9fd8ff,#4a7fd0)}
+@media (max-width:420px){ .vitals{bottom:calc(max(10px,env(safe-area-inset-bottom,0px)) + 74px)} }
+.bars-old{position:absolute;right:max(10px,env(safe-area-inset-right,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));display:flex;gap:6px;align-items:flex-end}
 .vbar{width:16px;height:110px;padding:3px;display:flex;align-items:flex-end;position:relative}
 .vbar i{display:block;width:100%;border-radius:3px;transition:height .3s}
 .vbar.en i{background:linear-gradient(#9be86a,#4caa3a)} .vbar.hp i{background:linear-gradient(#ff8a7a,#c8413b)}
 .vbar::after{content:attr(data-l);position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-family:var(--f-head);font-size:13px;color:#fff3dc;text-shadow:0 1px 0 #000,0 0 3px #000}
 .hotbar{position:absolute;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom,0px));display:flex;gap:4px;padding:5px;max-width:calc(100vw - 110px);overflow-x:auto}
-.slot{width:46px;height:46px;flex:none;border-radius:6px;background:#f3d49a;box-shadow:inset 0 0 0 2px var(--parch-d);position:relative;display:grid;place-items:center}
-.slot img{width:36px;height:36px}
+.slot{width:58px;height:58px;flex:none;border-radius:6px;background:#f3d49a;box-shadow:inset 0 0 0 2px var(--parch-d);position:relative;display:grid;place-items:center}
+.slot img{width:44px;height:44px}
 .slot.on{background:#fff2c8;box-shadow:inset 0 0 0 3px var(--cinnabar)}
 .slot b{position:absolute;right:3px;bottom:1px;font-family:var(--f-num);font-size:13px;color:var(--ink);text-shadow:0 1px 0 #fff}
 .slot kbd{position:absolute;left:3px;top:1px;font-family:var(--f-num);font-size:10px;color:var(--ink-soft)}
@@ -278,6 +296,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #bEnemy.self{filter:invert(.85) hue-rotate(180deg) drop-shadow(0 0 12px #a050ff)}
 .b-acts button.sectb{background:#ffe2b0;box-shadow:inset 0 0 0 2px var(--cinnabar),0 3px 0 var(--wood-d)}
 /* mini-games */
+#minigame.sheet{background:rgba(10,10,20,.12);align-items:end;place-items:end center}
+#minigame.sheet .pond{display:none}
+#minigame.sheet .mg{max-height:62vh}
 #minigame{position:fixed;inset:0;z-index:30;background:rgba(10,10,20,.55);display:grid;place-items:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 .mg{width:min(440px,100%);max-height:100%;overflow:auto;box-sizing:border-box;padding:14px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;color:var(--ink)}
 .mg h3{margin:0;font-family:var(--f-head);font-weight:400;font-size:24px}
@@ -362,6 +383,15 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .cgb{height:26px!important;font-size:12px!important;padding:0 8px!important;margin:2px 2px 0 0}
 .lock{font-size:11px;color:#a89070;margin-right:4px}
 .copyright{margin:6px 0 0;font-size:11px;color:rgba(255,243,220,.7);text-shadow:0 1px 0 rgba(0,0,0,.5)}
+#selftest{position:fixed;inset:0;z-index:60;background:rgba(10,10,20,.7);display:grid;place-items:center;padding:16px}
+.st-box{width:min(560px,100%);max-height:90vh;overflow:auto;padding:14px;color:var(--ink);box-sizing:border-box}
+.st-box h3{margin:0 0 8px;font-family:var(--f-head);font-weight:400;font-size:22px}
+.st-box.ok h3{color:#2f7a3a} .st-box.bad h3{color:var(--cinnabar)}
+.st-box ol{margin:0;padding-left:20px;font-size:14px;line-height:1.7}
+.st-box li.ok{color:#2f5a1f} .st-box li.bad{color:var(--cinnabar);font-weight:600}
+.rp-ico{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-brush);font-size:30px;background:#e9c487;color:var(--wood-dd)}
+.bk.unk .rp-ico{background:#d9cbb0;color:#a89070}
+.bk .btn.mini{margin-top:6px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -370,10 +400,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
   <div class="hud-tl"><div class="realm wood"><b id="hRealm"></b><div class="bar"><i id="hExp"></i></div></div><div class="quest wood" id="hQuest"></div></div>
   <div class="hud-tr"><div class="clock wood"><span class="sun" id="hSun"></span><div id="hDay"></div><div id="hTime"></div><div class="stones"><span class="gem"></span><b id="hStones">0</b></div></div>
     <button class="minibox wood" aria-label="打开地图"><canvas id="mini" class="px"></canvas><span>地图</span></button></div>
-  <div class="bars"><div class="vbar en wood" data-l="体"><i id="hEn"></i></div><div class="vbar hp wood" data-l="命"><i id="hHp"></i></div></div>
+  <div class="vitals wood"><div class="vrow"><span>命</span><div class="hbar hp"><i id="hHp"></i></div><em id="hHpT"></em></div><div class="vrow"><span>灵</span><div class="hbar mp"><i id="hMp"></i></div><em id="hMpT"></em></div></div>
   <div class="hotbar wood" id="hotbar"></div>
   <button class="wood" id="menuB" aria-label="打开行囊">囊</button>
-  <button class="wood" id="runB" aria-label="切换奔跑">疾行</button>
 </div>
 <div id="toast" class="wood"></div>
 <div id="banner"></div>

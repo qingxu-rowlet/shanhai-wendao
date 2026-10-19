@@ -58,11 +58,19 @@ SCRIPTS.ceremony=[
 ];
 const Sect = {
   migrate(){ // older saves: keep the player on the same quest after the chapter was reordered
-    if(S.qv>=3) return;
+    if(S.qv>=3) return Sect.migrate4();
     const v1=['q1','q2','q3','q4','q5','q6','q7','q8','end'], v2=['q1','q2','sect','q3','q4','q5','q6','q7','q8','end'];
     let id=(S.qv===2?v2:v1)[S.questBack!=null?S.questBack:S.quest]||'end'; if(id==='sect') id='q3';
     S.quest=Math.max(0,QUESTS.findIndex(q=>q.id===id)); S.questStarted=S.quest; delete S.questBack; S.qv=3;
     if(!S.root && S.L>=1) S.root=Sect.rollRoots();
+    Sect.migrate4();
+  },
+  migrate4(){ // v4: farming and energy were removed — refund what was spent on them
+    if(S.qv>=4) return; S.qv=4; let refund=0;
+    for(const k of Object.keys(S.inv)){ const it=ITEMS[k]; if(k==='hoe'||k==='can'){ delete S.inv[k]; continue; } if(it&&(it.seed||k==='sprinkler'||k==='puppet')){ refund+=(it.price||0)*S.inv[k]; delete S.inv[k]; } }
+    for(const k in S.farm||{}){ if(S.farm[k].sprinkler) refund+=300; }
+    if(S.puppet) refund+=500; S.farm={}; S.puppet=false; S.sel='';
+    if(refund){ S.stones+=refund; S._refund=refund; }
   },
   syncLooks(){ LOOK_TANG.cloth = S&&S.flags.tang_sect ? 7 : 3; },
   info(){ return S.sect?SECTS[S.sect]:null; },

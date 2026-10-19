@@ -41,7 +41,7 @@ Object.assign(CROPS, {
   tanhua:{name:'月光昙', days:4, stages:['crop_seed','crop_sprout','tanhua_2','tanhua_3'], yield:['tanhua',2]},
   jiao:{name:'赤焰椒', days:2, stages:['crop_seed','crop_sprout','jiao_2','jiao_3'], yield:['jiao',3]},
 });
-SHOP.sell.splice(2,0,'seed_jj','seed_th','seed_xl'); SHOP.sell.push('sprinkler','puppet');
+SHOP.sell.push('zhuguo');
 NPCS.yunyou.loves.push('xuelian'); NPCS.tang.likes.push('tanhua','xuelian'); NPCS.ahe.loves.push('tanhua'); NPCS.ge.likes.push('jiao'); NPCS.qian.likes.push('fish_wenyao');
 MAPS.home.objects.push({type:'npc_obj', x:9, y:9, spr:'puppet', act:'puppet', cond:s=>!!s.puppet});
 
@@ -50,7 +50,7 @@ const FISH = {
   fish_wenyao:{min:30,max:80, rare:3}, fish_lu:{min:40,max:110, rare:3}, fish_heluo:{min:120,max:260, rare:4, king:true}, fish_chiru:{min:90,max:200, rare:4, king:true},
 };
 const FISH_ORDER=['fish_li','fish_yin','fish_mo','fish_jin','fish_wenyao','fish_lu','fish_heluo','fish_chiru'];
-const CROP_ORDER=['lingcao','zhuguo','jiao','tanhua','xuelian'];
+const CROP_ORDER=['lingcao','lingmo','zhuguo','flower'];
 
 const Life = {
   col(){ S.col=S.col||{crops:{},fish:{}}; return S.col; },
@@ -64,7 +64,7 @@ const Life = {
   },
   checkSets(){
     const C=Life.col();
-    if(!S.flags.crop_set && CROP_ORDER.every(id=>C.crops[id])){ S.flags.crop_set=true; addItem('sprinkler',2); UI.banner('灵植图鉴集齐！'); UI.toast('奖励：灵泉阵 ×2'); }
+    if(!S.flags.crop_set && CROP_ORDER.every(id=>C.crops[id])){ S.flags.crop_set=true; addItem('huichun',3); UI.banner('灵材图鉴集齐！'); UI.toast('奖励：回春丹 ×3'); }
     if(!S.flags.fish_set && FISH_ORDER.every(id=>C.fish[id])){ S.flags.fish_set=true; S.flags.goldrod=true; UI.banner('鱼类图鉴集齐！'); UI.toast('奖励：钓竿升级为金钓竿（收线框更大）'); }
   },
   /* ---------- each morning ---------- */
@@ -108,18 +108,18 @@ const Life = {
     const F=(id,speed,jumpy)=>({id,speed,jumpy});
     if(spot){
       const king=r<(night?.15:.06);
-      if(forest){ if(king) return F('fish_chiru',2.6,2.4); if(r<.4) return F('fish_jin',1.9,1.6); if(r<.7) return F('fish_wenyao',2.1,1.8); return F('fish_mo',1.5,1.2); }
-      if(king) return F('fish_heluo',2.4,2.6); if(r<.45) return F('fish_wenyao',2.1,1.8); if(r<.8) return F('fish_lu',1.8,1.5); return F('fish_yin',1.2,.9);
+      if(forest){ if(king) return F('fish_chiru',2.1,1.9); if(r<.4) return F('fish_jin',1.9,1.6); if(r<.7) return F('fish_wenyao',2.1,1.8); return F('fish_mo',1.5,1.2); }
+      if(king) return F('fish_heluo',2.0,2.0); if(r<.45) return F('fish_wenyao',2.1,1.8); if(r<.8) return F('fish_lu',1.8,1.5); return F('fish_yin',1.2,.9);
     }
     if(forest && r<(night?.1:.05)) return F('fish_jin',1.9,1.6);
     if(night && r<.35) return F('fish_mo',1.5,1.2);
     if(r<.6) return F('fish_li',.8,.6); return F('fish_yin',1.2,.9);
   },
   bookHTML(tab){
-    const C=Life.col(), sub=`<div class="tabs sub">${[['beast','妖兽'],['crop','灵植'],['fish','鱼类']].map(([k,n])=>`<button data-bk="${k}" class="${k===tab?'on':''}">${n}</button>`).join('')}</div>`;
+    const C=Life.col(), sub=`<div class="tabs sub">${[['beast','妖兽'],['crop','灵材'],['fish','鱼类']].map(([k,n])=>`<button data-bk="${k}" class="${k===tab?'on':''}">${n}</button>`).join('')}</div>`;
     if(tab==='crop'){ const got=CROP_ORDER.filter(id=>C.crops[id]).length;
-      return sub+`<p class="muted">已收集 ${got}/${CROP_ORDER.length}　${S.flags.crop_set?'✓ 已领取集齐奖励（灵泉阵 ×2）':'集齐奖励：灵泉阵 ×2'}</p><div class="book">${CROP_ORDER.map(id=>{ const r=C.crops[id], it=ITEMS[id];
-        return `<div class="bk ${r?'':'unk'}"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""><div><b>${r?it.name:'？？？'}${r&&r.gold?' <span class="goldstar">★金品</span>':''}</b><p>${r?`${esc(it.desc)}<br>收获 ${r.n} 次`:'种出来就会记录在这里。'}</p></div></div>`; }).join('')}</div>`; }
+      return sub+`<p class="muted">已收集 ${got}/${CROP_ORDER.length}　${S.flags.crop_set?'✓ 已领取集齐奖励（回春丹 ×3）':'集齐奖励：回春丹 ×3'}</p><div class="book">${CROP_ORDER.map(id=>{ const r=C.crops[id], it=ITEMS[id];
+        return `<div class="bk ${r?'':'unk'}"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""><div><b>${r?it.name:'？？？'}${r&&r.gold?' <span class="goldstar">★金品</span>':''}</b><p>${r?`${esc(it.desc)}<br>采集 ${r.n} 次`:'采集到就会记录在这里。'}</p></div></div>`; }).join('')}</div>`; }
     if(tab==='fish'){ const got=FISH_ORDER.filter(id=>C.fish[id]).length;
       return sub+`<p class="muted">已收集 ${got}/${FISH_ORDER.length}　${S.flags.fish_set?'✓ 已获得金钓竿':'集齐奖励：金钓竿'}　·　水面泛起金光的地方，能钓到稀有鱼和鱼王。</p><div class="book">${FISH_ORDER.map(id=>{ const r=C.fish[id], it=ITEMS[id], f=FISH[id];
         return `<div class="bk ${r?'':'unk'}${f.king?' king':''}"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""><div><b>${r?it.name:'？？？'} <span class="rare">${'◆'.repeat(f.rare)}</span></b><p>${r?`${esc(it.desc)}<br>钓到 ${r.n} 条 · 最大 ${r.max} 厘米`:f.king?'传说中的鱼王……只在金光水面出没。':'还没有钓到过。'}</p></div></div>`; }).join('')}</div>`; }
@@ -138,18 +138,19 @@ const Life = {
     return _farm(x,y);
   };
 }
-{ const _fish=Mini.fish; Mini.fish=function(tx,ty){ Mini._spot=(tx!=null)?Life.glowAt(RT.mapId,tx,ty):null; return _fish.call(Mini); }; }
+{ const _fish=Mini.fish; Mini.fish=function(tx,ty){ if(!S.inv.rod) return UI.toast('需要钓竿（钱掌柜那里有卖）'); if(tx==null){ const p=findPrompt(); if(p&&p.fish){ tx=p.x; ty=p.y; } } Mini._spot=(tx!=null)?Life.glowAt(RT.mapId,tx,ty):null; S.sel='rod'; RT.fishing=tx!=null?{x:tx,y:ty,bite:false}:null; _fish.call(Mini); $('#minigame').classList.add('sheet'); }; }
+{ const _close=Mini.close; Mini.close=function(){ RT.fishing=null; $('#minigame').classList.remove('sheet'); return _close.apply(Mini,arguments); }; }
 Mini.fishPick=()=>Life.pick(Mini._spot);
 Mini.reel=function(fish){
   const el=$('#minigame'), it=ITEMS[fish.id], king=FISH[fish.id].king;
   el.innerHTML=`<div class="mg wood fishg ${king?'kingfish':''}"><h3>${king?'鱼王上钩了！！':'收线！'}</h3><div class="reel-wrap"><div class="reel"><div class="catch" id="rcBox"></div><div class="fishi" id="rcFish"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""></div></div>
     <div class="rprog"><i id="rcProg"></i></div></div><p class="mg-tip">${king?'它的力气大得惊人——稳住！':'按住「提竿」让绿框上升，把鱼框住！'}</p><button class="btn main big" id="rcBtn">提竿（按住）</button></div>`;
   if(king){ Music.stinger('boss'); }
-  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const box=(S.flags.goldrod?.34:.26)*(king?.8:1); const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
+  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const box=(S.flags.goldrod?.34:.26)*(king?.9:1); const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
   Mini.run(dt=>{
     t+=dt; bv+=(holding?1.8:-1.6)*dt; bv*=.93; b=Math.max(0,Math.min(1-box,b+bv*dt*2)); if(b===0||b===1-box) bv=0;
     if(Math.random()<dt*fish.jumpy) fTarget=Math.random(); f+=(fTarget-f)*Math.min(1,dt*fish.speed*2);
-    const inside=f>=b&&f<=b+box; p=Math.max(0,Math.min(1,p+(inside?(king?.24:.32):-.22)*dt));
+    const inside=f>=b&&f<=b+box; p=Math.max(0,Math.min(1,p+(inside?(king?.28:.32):(king?-.2:-.22))*dt));
     $('#rcBox').style.bottom=(b*100)+'%'; $('#rcBox').style.height=(box*100)+'%'; $('#rcFish').style.bottom=`calc(${f*100}% - 12px)`; $('#rcProg').style.height=(p*100)+'%';
     $('#rcBox').classList.toggle('on',inside);
     if(p>=1||p<=0){ Mini.stop(); unbind(); const ok=p>=1; let size=0, first=false, record=false;

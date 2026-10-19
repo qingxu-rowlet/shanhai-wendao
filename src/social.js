@@ -90,7 +90,7 @@ const SIDES = [
     unlock:s=>s.quest>=3, reward:{stones:90, heart:{qian:40}},
     start:[['钱掌柜','{名}啊，城里药铺跟我订了一批灵草，5 株，价钱好说！'],['钱掌柜','你那片灵田种出来的灵草，成色可比野生的强。']],
     done:[['钱掌柜','好好好，这成色！说好的，90 灵石，童叟无欺。']],
-    target:s=>count(s,'lingcao')>=5?npcAt('qian'):['home',5,8,'灵田（种灵草）']},
+    target:s=>count(s,'lingcao')>=5?npcAt('qian'):['forest',4,2,'灵草（山林采集）']},
   {id:'hides', giver:'qian', title:'兽皮生意', desc:'钱掌柜想收 4 张兽皮，做成冬天的皮袄。', need:{hide:4},
     unlock:s=>s.quest>=4, reward:{stones:120, heart:{qian:40}},
     start:[['钱掌柜','山里的野兽多了，兽皮也多了——这可是好生意！'],['钱掌柜','帮我弄 4 张兽皮来，打败当康、蛊雕都可能掉。']],
@@ -117,10 +117,10 @@ const SIDES = [
     done:[['顾长歌','……干净利落。'],['顾长歌','以后若要去危险的地方，叫上我。']],
     target:s=>sideReady(s,SIDES.find(q=>q.id==='sword'))?npcAt('ge'):['forest',6,19,'蛊雕出没处']},
   {id:'offering', giver:'tang', title:'狐祠供奉', desc:'按小棠说的，把 2 株灵草供在山林南边的青丘狐祠前。', need:{lingcao:2}, deliverAt:'shrine',
-    unlock:s=>s.flags.qiongqi_done, reward:{energy:10, heart:{tang:40}},
+    unlock:s=>s.flags.qiongqi_done, reward:{exp:80, give:{huichun:2}, heart:{tang:40}},
     start:[['苏小棠','我娘说，青丘狐祠里住着守护这片山的狐仙。'],['苏小棠','穷奇被赶走了，我们该去谢谢她。你帮我供两株灵草，好不好？']],
-    done:[['旁白','你把灵草轻轻放在香炉前。一缕温暖的狐火在祠中亮起，又悄悄熄灭。'],['旁白','你觉得身体轻快了许多。（体力上限永久 +10）']],
-    target:s=>count(s,'lingcao')>=2?['forest',15,21,'青丘狐祠']:['home',5,8,'灵田（种灵草）']},
+    done:[['旁白','你把灵草轻轻放在香炉前。一缕温暖的狐火在祠中亮起，又悄悄熄灭。'],['旁白','你只觉灵台一片清明，修为又精进了一些。']],
+    target:s=>count(s,'lingcao')>=2?['forest',15,21,'青丘狐祠']:['forest',4,2,'灵草（山林采集）']},
 ];
 function sideCountNow(s,c){ s.st.kb=s.st.kb||{}; s.st.crafted=s.st.crafted||{};
   return c.type==='meditated'?s.st.meditated:c.type==='kill'?(s.st.kb[c.key]||0):c.type==='killall'?s.st.kills:c.type==='grade'?(s.st.topGrade||0):c.type==='pet'?(s.pet?1:0):(s.st.crafted[c.key]||0); }

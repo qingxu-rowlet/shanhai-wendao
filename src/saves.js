@@ -5,7 +5,7 @@
 const SaveSys = {
   SNAPS:['m1','m2','m3'],
   key(slot, snap){ return slotKey(slot)+'.'+snap; },
-  canSave(){ return !!S && !Battle.s && !UI.fx; },
+  canSave(){ return !!S && !Battle.s && !UI.fx && !(typeof Replay!=='undefined'&&Replay.active); },
   meta(s){ const q=QUESTS[s.quest]; return {name:s.name, realm:realmName(s.L), day:s.day, time:fmtTime(s.min), map:MAPS[s.map]?MAPS[s.map].name:'', quest:q?q.title:'', root:s.root?ROOT_KINDS[s.root.n].name+'（'+s.root.els.join('')+'）':'未测', at:Date.now()}; },
   read(slot, snap){ try{ return JSON.parse(localStorage.getItem(SaveSys.key(slot,snap))||'null'); }catch(e){ return null; } },
   write(snap){
@@ -24,6 +24,7 @@ const SaveSys = {
   },
   // a save made during the prologue replays it (so the root test can be taken again)
   resume(){
+    if(S._refund){ UI.toast(`种田系统已移除，退还 ${S._refund} 灵石`); delete S._refund; }
     if(!S.flags.intro_done && S.quest===0){ UI.say(S.root?SCRIPTS.intro_post:SCRIPTS.intro, ()=>{ S.questStarted=0; Story.check(); }); return; }
     Story.check();
   },

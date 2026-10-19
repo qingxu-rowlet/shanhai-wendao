@@ -497,6 +497,8 @@ const SPR = {
 '................',
 '................',
 '................'],
+  fruitspot:[
+'................','................','................','.....GGGG.......','...GGggggGG.....','..GgrggggrgG....','..GggrgggggG....','.GgrggggrggrG...','..GggrgggggG....','...GgggrgrG.....','....GGgggGG.....','......nn........','......nn........','................','................','................'],
   mushspot:[
 '................',
 '................',
@@ -569,7 +571,7 @@ const ITEMS = {
   seed_zg:  {name:'朱果种', icon:'i_seedred',seed:'zhuguo',  price:30, desc:'五日成熟。朱果是炼制筑基丹的主药。'},
   lingcao:  {name:'灵草',   icon:'i_lingcao', sell:15, desc:'带着微微灵气的药草。'},
   lingmo:   {name:'灵菇',   icon:'i_lingmo',  sell:12, desc:'山林阴处生长的菌子。'},
-  zhuguo:   {name:'朱果',   icon:'i_zhuguo',  sell:40, desc:'赤红如火，蕴含精纯灵气。'},
+  zhuguo:   {name:'朱果',   icon:'i_zhuguo',  sell:40, price:55, desc:'赤红如火，蕴含精纯灵气。'},
   juqi:     {name:'聚气丹', icon:'i_pill', color:'#e8b84a', sell:45, use:'exp', amount:45, desc:'服下增加 45 修为。'},
   huichun:  {name:'回春丹', icon:'i_pill', color:'#5fcf7a', sell:40, price:60, use:'heal', amount:60, desc:'恢复 60 生命；平时服用恢复 30 体力。'},
   zhuji:    {name:'筑基丹', icon:'i_pill', color:'#b07ae8', sell:300, desc:'炼气九层圆满时服下，方可冲击筑基。'},
@@ -587,7 +589,7 @@ const RECIPES = [
   {out:'huichun', n:1, need:{lingcao:1, lingmo:1}},
   {out:'zhuji',   n:1, need:{zhuguo:3, lingmo:2, qq_yu:1}},
 ];
-const SHOP = { sell:['seed_lc','seed_zg','huichun'] };
+const SHOP = { sell:['huichun'] };
 
 /* ---------- cultivation ---------- */
 const NUM = ['','一','二','三','四','五','六','七','八','九'];
@@ -626,12 +628,12 @@ const MAPS = {
 'W....................W',
 'W.,........=.......,.W',
 'W..........=.........W',
-'W..ffffff..=.........W',
-'W..fFFFFf..=====.....W',
-'W..fFFFFf..=...=.....W',
-'W..fFFFFf..=...=..,..W',
-'W..fFFFFf..=...=.....W',
-'W..ff=fff..=...=======',
+'W..,...,...=.........W',
+'W.....,....=====.....W',
+'W..........=...=.....W',
+'W...,......=...=..,..W',
+'W..........=...=.....W',
+'W....=.....=...=======',
 'W,...=.....=.........=',
 'W....=======..,......W',
 'W..........=.........W',
@@ -645,6 +647,7 @@ const MAPS = {
       {type:'tree', x:1, y:13},{type:'pine', x:19, y:13},{type:'bush', x:6, y:2},{type:'bush', x:17, y:9},
       {type:'rock', x:15, y:13},{type:'lantern', x:10, y:4},{type:'lantern', x:13, y:4},
       {type:'chest', x:14, y:3, act:'chest'},
+      {type:'gather', x:4, y:8, item:'lingcao', spr:'herbspot'},{type:'gather', x:7, y:10, item:'lingcao', spr:'herbspot'},
     ],
     exits:[{x:11,y:15,to:'forest',tx:14,ty:1},{x:21,y:11,to:'town',tx:1,ty:9},{x:21,y:12,to:'town',tx:1,ty:10}]},
 
@@ -717,7 +720,7 @@ const MAPS = {
       {type:'gather', x:4, y:2, item:'lingcao', spr:'herbspot'},{type:'gather', x:22, y:2, item:'lingcao', spr:'herbspot'},
       {type:'gather', x:3, y:11, item:'lingmo', spr:'mushspot'},{type:'gather', x:21, y:6, item:'lingcao', spr:'herbspot'},
       {type:'gather', x:23, y:14, item:'lingmo', spr:'mushspot'},{type:'gather', x:6, y:17, item:'lingcao', spr:'herbspot'},
-      {type:'gather', x:8, y:17, item:'lingmo', spr:'mushspot'},{type:'gather', x:24, y:2, item:'lingmo', spr:'mushspot'},
+      {type:'gather', x:8, y:17, item:'lingmo', spr:'mushspot'},{type:'gather', x:26, y:5, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:9, y:21, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:24, y:2, item:'lingmo', spr:'mushspot'},
     ],
     spawns:[ // wandering beasts: area [x0,y0,x1,y1]
       {kind:'dangkang', n:2, area:[2,1,12,10]},
@@ -757,14 +760,13 @@ const SCRIPTS = {
   ],
   intro_yes:[
     ['云游子','好。这枚玉简是《引气诀》，修行的第一步，便是引天地灵气入体。'],
-    {give:{slip:1, hoe:1, can:1, seed_lc:6}},
-    ['云游子','这洞府前有一片荒废的灵田。先学会照料灵草吧——灵草是炼丹的根本。'],
-    ['云游子','用锄头翻土，撒下灵草种，再用水壶浇水。每天浇水，灵草才会长大。'],
-    ['旁白','（点选下方的工具，再点灵田的格子即可。）'],
+    {give:{slip:1}},
+    ['云游子','洞府前的草地上长着几株野生灵草。灵草是炼丹的根本——先去采一株来。'],
+    ['旁白','（走到发光的灵草旁边，点一下就能采集。靠近可以互动的东西时，头顶会出现提示。）'],
     {flag:'intro_done'},
   ],
   q1_done:[
-    ['云游子','不错，种田如修心，急不得。'],
+    ['云游子','不错。山林里的灵草、灵菇、朱果更多，以后炼丹都用得上。'],
     ['云游子','接下来，坐到蒲团上打坐，试着引气入体。'],
   ],
   q2_done:[
@@ -863,7 +865,7 @@ const SCRIPTS = {
 };
 
 const QUESTS = [
-  {id:'q1', title:'种下第一株灵草', desc:'在洞府前的灵田里：锄头翻土 → 种下灵草种 → 水壶浇水。', check:s=>s.st.planted>=1&&s.st.watered>=1, done:'q1_done'},
+  {id:'q1', title:'采一株灵草', desc:'洞府前的草地上长着几株野生灵草，走过去点一下就能采集。', check:s=>(s.st.gathered||0)>=1||s.st.planted>=1, done:'q1_done'},
   {id:'q2', title:'打坐引气', desc:'坐到洞府旁的蒲团上打坐，踏入炼气期。', check:s=>s.L>=1, done:'q2_done'},
   {id:'q3', title:'初到桃源镇', desc:'往东走到桃源镇，和阿禾说说话。', start:'q3_start', check:s=>s.flags.met_ahe},
   {id:'q4', title:'山林怪声', desc:'去南边的青丘山林，打败 3 只野兽。', start:'q4_start', check:s=>s.st.kills>=3, done:'q4_done', progress:s=>`${Math.min(3,s.st.kills)}/3`},
@@ -881,13 +883,13 @@ function count(s,id){ return s.inv[id]||0; }
    ============================================================ */
 function npcAt(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id) return [m,o.x,o.y,o.name]; return null; }
 const TARGETS = {
-  q1:s=>['home',5,8,'灵田'],
+  q1:s=>['home',4,8,'灵草'],
   q2:s=>['home',16,4,'蒲团'],
   q3:s=>npcAt('ahe'),
   q4:s=>['forest',8,8,'青丘山林'],
   q5:s=>s.L<5?['home',16,4,'蒲团（打坐）']:(count(s,'huichun')<2?npcAt('qian'):['home',16,4,'蒲团']),
   q6:s=>['forest',15,21,'青丘狐祠'],
-  q7:s=>count(s,'zhuji')?['home',16,4,'蒲团（突破）']:count(s,'zhuguo')<3?['home',5,8,'灵田（种朱果）']:count(s,'lingmo')<2?['forest',3,11,'灵菇']:['home',18,4,'丹炉'],
+  q7:s=>count(s,'zhuji')?['home',16,4,'蒲团（突破）']:count(s,'zhuguo')<3?['forest',26,5,'朱果（山林采集，或向钱掌柜购买）']:count(s,'lingmo')<2?['forest',3,11,'灵菇']:['home',18,4,'丹炉'],
   q8:s=>['forest',15,21,'青丘狐祠'],
 };
 QUESTS.forEach(q=>q.target=TARGETS[q.id]);

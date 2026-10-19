@@ -4,6 +4,14 @@
 const WORLD = { home:[0,0], town:[24,1], forest:[-3,17] };   // where each area sits on the world map (in tiles)
 
 const Nav = {
+  // the tasks shown on screen: the main quest plus active / available side quests (tracked one first), at most 3
+  list(){
+    const out=[]; const q=QUESTS[S.quest]; if(q) out.push({key:'main', kind:'main', title:q.title, progress:q.progress?q.progress(S):'', target:q.target?q.target(S):null});
+    for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)) continue;
+      out.push(st?{key:s.id, kind:'side', title:s.title, progress:sideReady(S,s)?'可以交付了':sideProgress(S,s), target:s.target(S)}:{key:s.id, kind:'avail', title:s.title, progress:'去找'+npcAt(s.giver)[3], target:npcAt(s.giver)}); }
+    const tk=S.track||'main'; out.sort((a,b)=>(b.key===tk)-(a.key===tk)||(a.kind==='avail')-(b.kind==='avail'));
+    return out.slice(0,3);
+  },
   tracked(){
     if(S.track && S.track!=='main'){
       const q=SIDES.find(x=>x.id===S.track), st=q&&S.side[q.id];
@@ -155,6 +163,7 @@ Story.finishSide=(q, after)=>{
   S.side[q.id]='done'; const r=q.reward||{}; if(r.stones){ S.stones+=r.stones; } if(r.give) for(const k in r.give) addItem(k,r.give[k]);
   if(r.energy){ S.bonusEnergy=(S.bonusEnergy||0)+r.energy; S.energy+=r.energy; }
   if(r.atk) S.bonusAtk=(S.bonusAtk||0)+r.atk;
+  if(r.exp) gainExp(r.exp);
   if(r.petlv&&S.pet) S.pet.lv+=r.petlv;
   if(r.tianji){ S.flags.tianji_up=true; if(S.fortune===3) S.fortune=2; }
   if(r.heart) for(const k in r.heart) Social.add(k,r.heart[k]);
@@ -176,14 +185,14 @@ Story.side=(id, after)=>{
 
 /* ---------- title screen with three profiles ---------- */
 UI.title=()=>{
-  const t=$('#title'); t.hidden=false; clearInterval(Creator.timer); Music.play('calm');
+  const t=$('#title'); t.hidden=false; clearInterval(Creator.timer); Music.play('village');
   const slots=[...Array(SLOTS)].map((_,i)=>readSlot(i));
   t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">种田 · 修仙 · 降妖　——　青丘篇</p>
     <div class="slots">${slots.map((s,i)=>s?`<div class="slot-card wood"><canvas class="px" data-pv="${i}" width="18" height="22"></canvas>
         <div class="sc-info"><b>${esc(s.name||'无名')}</b><span>${realmName(s.L)} · 第 ${s.day} 天</span><span class="muted">${esc(MAPS[s.map].name)}</span></div>
         <div class="sc-btns"><button class="btn main mini" data-play="${i}">继续</button><button class="btn mini" data-saves="${i}">读档</button><button class="btn mini" data-del="${i}">删除</button></div></div>`
       :`<button class="slot-card empty wood" data-new="${i}"><span class="plus">＋</span><span>新的修行</span><span class="muted">存档 ${i+1}</span></button>`).join('')}</div>
-    <div class="title-saves" id="tSaves"></div><p class="tnote">每个存档是一位独立的修士。</p><p class="copyright">© 2026 qingxu-rowlet · 山海问道 · CC BY-NC-SA 4.0 · 禁止商用</p></div>`;
+    <div class="title-saves" id="tSaves"></div><p class="tnote">每个存档是一位独立的修士。点任意处开启音乐（iPhone 请关闭静音开关）。</p><p class="copyright">© 2026 qingxu-rowlet · 山海问道 · CC BY-NC-SA 4.0 · 禁止商用</p></div>`;
   t.querySelectorAll('[data-pv]').forEach(c=>{ const s=slots[+c.dataset.pv]; c.getContext('2d').drawImage(lookSprite(s.look||defaultLook('m'),'down',0),0,0); });
   t.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{ Sound.unlock(); const i=+b.dataset.play; RT.slot=i; S=loadSave(i); Sect.migrate(); Hooks.placeQiyu(); t.hidden=true; enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); SaveSys.resume(); });
   t.querySelectorAll('[data-saves]').forEach(b=>b.onclick=()=>{ Sound.tick(); SaveSys.titleList(+b.dataset.saves, $('#tSaves')); });
@@ -194,8 +203,9 @@ UI.title=()=>{
 };
 
 /* ---------- boot ---------- */
-addEventListener('pointerdown', ()=>{ if(Music._want) Music.play(Music._want,true); }, {once:true});
-addEventListener('keydown', ()=>{ if(Music._want) Music.play(Music._want,true); }, {once:true});
+// iPhone/Safari only start audio inside a tap: unlock on every early gesture until it is running
+{ let started=false; const go=()=>{ Music.unlock(); Sound.unlock(); if(!started&&Music._want){ started=true; Music.play(Music._want,true); } };
+  for(const ev of ['pointerdown','touchend','keydown']) addEventListener(ev, go, {passive:true}); }
 resize();
 requestAnimationFrame(frame);
 UI.title();

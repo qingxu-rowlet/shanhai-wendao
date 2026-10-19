@@ -14,14 +14,14 @@ const Dev = {
   setup(point){
     Dev.ensure(); const idx=id=>QUESTS.findIndex(q=>q.id===id);
     S.root=S.root||{els:['火','木','水'],n:3}; S.flags.met_ahe=true; S.flags.sect_open=true; S.flags.chest=true;
-    const base=()=>{ S.inv={...S.inv, hoe:1, can:1, slip:1}; };
+    const base=()=>{ S.inv={...S.inv, slip:1}; S.flags.intro_done=true; };
     if(point==='sect'){ S.L=10; S.exp=0; S.sect=null; S.flags.qiongqi_done=true; S.flags.tang_sect=false; S.quest=idx('sect'); S.questStarted=-1; base(); }
     if(point==='forest'){ S.L=2; S.sect=null; S.quest=idx('q4'); S.questStarted=S.quest; base(); S.inv.huichun=2; }
     if(point==='qiongqi'){ S.L=5; S.sect=null; S.quest=idx('q6'); S.questStarted=S.quest; base(); S.inv.huichun=3; S.st.kills=Math.max(S.st.kills,3); }
     if(point==='zhuji'){ S.L=9; S.exp=expNeed(9); S.sect=null; S.flags.qiongqi_done=true; S.quest=idx('q7'); S.questStarted=S.quest; base(); S.inv.zhuji=1; S.inv.huichun=3; S.inv.qq_yu=0; }
     if(point==='huli'){ S.L=10; S.exp=0; S.sect=S.sect||'jian'; S.flags.tang_sect=true; S.flags.qiongqi_done=true; S.quest=idx('q8'); S.questStarted=S.quest; base(); S.inv.huichun=4; }
     if(point==='end'){ S.L=10; S.sect=S.sect||'jian'; S.flags.tang_sect=true; S.flags.qiongqi_done=true; S.flags.chapter1_done=true; S.quest=idx('end'); S.questStarted=S.quest; base(); }
-    const st=stats(); S.hp=st.hp; S.mp=st.mp; S.energy=maxEnergy(); S.min=9*60;
+    const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min=9*60;
     const at={sect:['town',12,10],forest:['forest',14,3],qiongqi:['forest',15,19],zhuji:['home',16,5],huli:['forest',15,19],end:['home',11,6]}[point];
     UI.closePanel(); $('#dlg').hidden=true; UI.dlgQ=null; enterMap(...at); UI.hud(); UI.sync(); save(); UI.toast('已跳到：'+Dev.POINTS[point]);
   },
@@ -42,7 +42,7 @@ const Dev = {
         <button class="btn mini" data-x="heart_tang">小棠心动事件</button><button class="btn mini" data-x="heart_ge">长歌心动事件</button>
         ${QIYU.map(q=>`<button class="btn mini" data-qy="${q.id}">奇遇：${q.title}</button>`).join('')}
         ${['tang','ge'].map(id=>[2,4,6,8].map(lv=>`<button class="btn mini" data-x="cg:${id}:${lv}">${NPCS[id].name}${lv}♥ ${HEART_CG[id][lv].title}</button>`).join('')).join('')}
-        <button class="btn mini" data-x="glow">刷新金光水面</button><button class="btn mini" data-x="puppet">送一个播种傀儡</button></div>
+        <button class="btn mini" data-x="glow">刷新金光水面</button></div>
       <h4>修改状态</h4><div class="devrow"><label>境界 ${sel('dvL',realms,S.L)}</label><label>门派 ${sel('dvSect',sects,S.sect||'')}</label>
         <label>灵根 ${sel('dvRoot',[[1,'天灵根'],[2,'双灵根'],[3,'三灵根'],[4,'伪灵根']],S.root?S.root.n:3)}</label></div>
       <div class="devg"><button class="btn mini" data-c="items">所有物品 ×10</button><button class="btn mini" data-c="stones">灵石 +1000</button><button class="btn mini" data-c="heal">回满状态</button>
@@ -62,9 +62,9 @@ const Dev = {
     });
   },
   cheat(c){
-    if(c==='items'){ for(const k in ITEMS){ if(!ITEMS[k].quest) addItem(k, ITEMS[k].tool||k==='slip'?1-(S.inv[k]||0):10); } }
+    if(c==='items'){ for(const k of ['rod','huichun','juqi','zhuji','lingcao','lingmo','zhuguo','flower','wine','hide','qq_yu','hu_wei','fish_li','fish_yin']) addItem(k, k==='rod'?1-(S.inv.rod||0):10); }
     if(c==='stones'){ S.stones+=1000; }
-    if(c==='heal'){ const st=stats(); S.hp=st.hp; S.mp=st.mp; S.energy=maxEnergy(); }
+    if(c==='heal'){ const st=stats(); S.hp=st.hp; S.mp=st.mp; }
     if(c==='hearts'){ for(const k in NPCS) Social.rel(k).pts=1000; }
     if(c==='god'){ Dev.god=!Dev.god; }
     if(c==='seen'){ for(const k in BEASTS) S.seen[k]=2; }
@@ -82,7 +82,7 @@ const Dev = {
     if(x==='xinmo'){ S.inv.zhuji=(S.inv.zhuji||0)+1; if(S.L<9){ S.L=9; } S.exp=expNeed(9); return Mini.breakthrough(); }
     if(x==='tianjie') return Mini.tribulation(ok=>UI.toast(ok?'渡劫成功（测试）':'渡劫失败（测试）'));
     if(x==='alchemy') return Mini.alchemy(RECIPES[0], g=>UI.toast('结果：'+{top:'上品',mid:'中品',low:'下品',fail:'炸炉'}[g]));
-    if(x==='fish'){ S.energy=Math.max(S.energy,10); return Mini.fish(); }
+    if(x==='fish'){ if(!S.inv.rod) addItem('rod'); return Mini.fish(); }
     if(x==='root'){ S.root=null; return Sect.rootTest(()=>UI.toast('灵根：'+Sect.rootName())); }
     if(x==='ceremony'){ S.sect=null; S.flags.sect_open=true; return Sect.altar(); }
     if(x==='tame'){ const was=S.sect; S.sect='shou'; Sect.tame(['dangkang','xingxing','guidiao'][Math.floor(Math.random()*3)], ()=>{ S.sect=was; UI.hud(); }); return; }

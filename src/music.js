@@ -17,7 +17,7 @@ const Music = (()=>{
     calm:  {mode:'gong', root:60, bpm:70,  feel:'bell',  drum:0,   drone:.05, flute:.6,  density:.4,  motif:[0,2,4,7,4,2,0,-1, 0,2,4,2,0,-1,-2,0]},
   };
   const midi=n=>440*Math.pow(2,(n-69)/12);
-  function ensure(){ if(ac) return ac; try{ ac=new (window.AudioContext||window.webkitAudioContext)(); master=ac.createGain(); master.gain.value=.32; master.connect(ac.destination); }catch(e){ ac=null; } return ac; }
+  function ensure(){ if(ac) return ac; try{ ac=new (window.AudioContext||window.webkitAudioContext)(); master=ac.createGain(); master.gain.value=.5; master.connect(ac.destination); }catch(e){ ac=null; } return ac; }
   function note(th, deg, oct=0){ const sc=MODES[th.mode], n=sc.length; const o=Math.floor(deg/n), i=((deg%n)+n)%n; return th.root+sc[i]+12*(o+oct); }
   function pluck(t, f, vol, dur=1.2){ const o=ac.createOscillator(), o2=ac.createOscillator(), g=ac.createGain(), lp=ac.createBiquadFilter();
     o.type='triangle'; o2.type='sawtooth'; o.frequency.value=f; o2.frequency.value=f*1.003; lp.type='lowpass'; lp.frequency.setValueAtTime(f*6,t); lp.frequency.exponentialRampToValueAtTime(f*1.5,t+dur*.6);
@@ -62,13 +62,71 @@ const Music = (()=>{
       nextT+=beat; step++;
     }
   }
+  /* ---------- composed pieces (古风): written melodies with guzheng / xiao / pipa, arpeggios, bass and percussion ----------
+     deg: steps in the pentatonic mode (0 = 宫; 5 = an octave up; -1 = 羽 below). mel: [deg, beats]; null = rest.
+     arp: 8 eighth-notes per bar, each an index into the bar's chord. perc: 8 steps — K big drum, s small drum, w woodblock, g gong. */
+  const SCORES = {
+    village:{ mode:'gong', root:62, bpm:96, lead:'zheng', lead2:'xiao', arp:[0,1,2,1,0,1,2,1], arpVol:.06, bass:[0,2], perc:'..w...w.', bars:[
+      {chord:[0,2,3], mel:[[3,1],[4,.5],[3,.5],[2,1],[1,1]]},
+      {chord:[-1,1,3], mel:[[2,.5],[3,.5],[2,.5],[1,.5],[0,2]]},
+      {chord:[1,3,5], mel:[[1,1],[2,1],[3,1],[5,1]]},
+      {chord:[3,5,7], mel:[[6,1.5],[5,.5],[4,2]]},
+      {chord:[3,5,7], mel:[[5,1],[6,.5],[5,.5],[3,1],[2,1]]},
+      {chord:[-1,1,3], mel:[[3,.5],[2,.5],[1,1],[0,2]]},
+      {chord:[-2,0,2], mel:[[-1,1],[0,1],[1,1],[2,1]]},
+      {chord:[0,2,3], mel:[[1,1.5],[2,.5],[0,2]]}]},
+    battle:{ mode:'shang', root:52, bpm:150, lead:'pipa', arp:[0,0,1,0,0,1,2,1], arpVol:.07, arpLen:.3, bass:[0,1,2,3], perc:'K.sKK.ss', gongEvery:8, bars:[
+      {chord:[0,2,3], mel:[[5,.5],[6,.5],[7,1],[8,1],[7,.5],[6,.5]]},
+      {chord:[0,2,4], mel:[[7,.5],[8,.5],[9,1],[10,1.5],[9,.5]]},
+      {chord:[-1,1,3], mel:[[8,1],[7,.5],[6,.5],[7,1],[5,1]]},
+      {chord:[0,2,3], mel:[[6,.5],[5,.5],[4,1],[5,2]]},
+      {chord:[2,4,5], mel:[[10,1],[10,.5],[9,.5],[8,1],[9,1]]},
+      {chord:[3,5,7], mel:[[10,.5],[11,.5],[12,1],[11,1],[10,1]]},
+      {chord:[1,3,5], mel:[[9,.5],[8,.5],[7,.5],[8,.5],[9,1],[7,1]]},
+      {chord:[0,2,3], mel:[[6,1],[7,.5],[6,.5],[5,2]]}]},
+    romance:{ mode:'gong', root:60, bpm:68, lead:'xiao', arp:[0,1,2,3,2,1,0,1], arpVol:.05, arpLen:1.6, bass:[0], pad:true, bells:true, bars:[
+      {chord:[0,2,3,5], mel:[[7,2],[6,1],[7,1]]},
+      {chord:[-1,1,3,4], mel:[[8,1.5],[7,.5],[6,2]]},
+      {chord:[0,2,4,5], mel:[[5,1],[6,1],[7,1],[8,1]]},
+      {chord:[1,3,5,6], mel:[[7,4]]},
+      {chord:[3,5,7,8], mel:[[10,2],[9,1],[10,1]]},
+      {chord:[1,3,6,8], mel:[[11,1.5],[10,.5],[8,2]]},
+      {chord:[-1,1,4,6], mel:[[7,1],[8,1],[7,1],[6,1]]},
+      {chord:[0,2,3,5], mel:[[5,4]]}]},
+  };
+  let bar=0, barT=0;
+  function wood(t){ const o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.setValueAtTime(1500,t); o.frequency.exponentialRampToValueAtTime(900,t+.05);
+    g.gain.setValueAtTime(.09,t); g.gain.exponentialRampToValueAtTime(.0001,t+.07); o.connect(g).connect(master); o.start(t); o.stop(t+.08); }
+  function pad(t,freqs,dur){ freqs.forEach(f=>{ const o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.value=f/2;
+    g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.028,t+dur*.3); g.gain.linearRampToValueAtTime(.0001,t+dur); o.connect(g).connect(master); o.start(t); o.stop(t+dur+.05); }); }
+  function lead(sc,loop,t,f,dur){
+    const inst=sc.lead2&&loop%2===1?sc.lead2:sc.lead;
+    if(inst==='zheng'){ pluck(t,f,.22,Math.max(.7,dur*1.5)); if(dur>=1) pluck(t+dur*.5,f*1.002,.06,.5); }
+    if(inst==='xiao') flute(t,f,.13,Math.max(.25,dur*.97));
+    if(inst==='pipa'){ const k=Math.max(1,Math.round(dur/.085)); for(let i=0;i<k;i++) pluck(t+i*dur/k,f,i?.09:.16,.22); }
+  }
+  function scheduleBar(sc,b,t0,spb,loop,index){
+    const n=d=>midi(note(sc,d));
+    let t=t0; for(const [d,len] of b.mel){ if(d!=null) lead(sc,loop,t,n(d),len*spb); t+=len*spb; }
+    if(sc.arp) sc.arp.forEach((ci,i)=>{ const d=b.chord[ci%b.chord.length]; pluck(t0+i*spb/2, n(d-5), sc.arpVol||.06, sc.arpLen||1.1); });
+    (sc.bass||[0]).forEach(bt=>pluck(t0+bt*spb, n(b.chord[0]-10), .15, sc.bpm>120?.5:1.8));
+    if(sc.perc) [...sc.perc].forEach((c,i)=>{ const tt=t0+i*spb/2; if(c==='K') drum(tt,.4,true); if(c==='s') drum(tt,.16,false); if(c==='w') wood(tt); });
+    if(sc.gongEvery && index%sc.gongEvery===0) gongHit(t0,.14);
+    if(sc.pad) pad(t0, b.chord.slice(0,3).map(n), 4*spb);
+    if(sc.bells && index%4===3) bell(t0+3*spb, n(b.chord[b.chord.length-1]+5), .05);
+  }
+  function scoreTick(){
+    const sc=SCORES[cur], spb=60/sc.bpm;
+    while(barT < ac.currentTime+.35){ const i=bar%sc.bars.length; scheduleBar(sc, sc.bars[i], barT, spb, Math.floor(bar/sc.bars.length), bar); barT+=4*spb; bar++; }
+  }
   return {
-    THEMES,
+    THEMES, SCORES,
+    unlock(){ if(!ensure()) return; try{ if(ac.state!=='running') ac.resume(); const b=ac.createBuffer(1,1,22050), s=ac.createBufferSource(); s.buffer=b; s.connect(ac.destination); s.start(0); }catch(e){} },
     get enabled(){ return enabled; },
     setEnabled(v){ enabled=v; if(!v) this.stop(); else if(this._want) this.play(this._want,true); },
     play(name, force){
       this._want=name; if(!enabled||(S&&S.music===false)) return; if(cur===name&&!force) return; if(!ensure()) return; if(ac.state==='suspended') ac.resume();
-      cur=name; step=0; nextT=ac.currentTime+.08; setDrone(THEMES[name]); clearInterval(timer); timer=setInterval(tick,90); tick();
+      cur=name; step=0; nextT=ac.currentTime+.08; bar=0; barT=ac.currentTime+.1; setDrone(SCORES[name]?null:THEMES[name]); clearInterval(timer); timer=setInterval(()=>SCORES[cur]?scoreTick():tick(),90); SCORES[cur]?scoreTick():tick();
     },
     stop(){ cur=null; clearInterval(timer); if(ac) setDrone(null); },
     stinger(kind){ if(!ensure()||(S&&S.music===false)) return; const t=ac.currentTime+.02;
@@ -78,4 +136,4 @@ const Music = (()=>{
     },
   };
 })();
-function areaTheme(){ if(!RT.mapId) return 'calm'; const h=S.min/60; if(h>=19||h<6) return 'night'; return RT.mapId==='forest'?'forest':RT.mapId==='town'?'town':'day'; }
+function areaTheme(){ if(!RT.mapId) return 'village'; const h=S.min/60; if(h>=19||h<6) return 'night'; return RT.mapId==='forest'?'forest':'village'; }

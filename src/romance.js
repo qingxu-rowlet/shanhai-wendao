@@ -68,7 +68,7 @@ const CG = {
     const loop=now=>{ if(!CG.on||CG.token!==token) return; const dt=Math.min(.05,(now-last)/1000); last=now; CG.paint(bg,sc,(now-t0)/1000,dt); requestAnimationFrame(loop); };
     CG.paint(bg,sc,0,0); requestAnimationFrame(loop);
     el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
-    Music.play(scene==='campfire'||scene==='moon'||scene==='rain'?'night':'calm', true);
+    Music.play('romance', true);
   },
   close(){ CG.on=false; const el=$('#cg'); el.hidden=true; el.innerHTML=''; Music.play(areaTheme(),true); },
 };

@@ -26,6 +26,7 @@ const Sound = (()=>{
 const Story = {
   quest(){ return QUESTS[S.quest]; },
   check(){
+    if(typeof Replay!=='undefined'&&Replay.active) return;
     if(UI.busy()) { Story._pending=true; return; }
     Story._pending=false;
     const q=Story.quest(); if(!q) return;
@@ -124,7 +125,7 @@ const Battle = {
     dmg=Math.max(1,Math.round(dmg)); s.hp-=dmg; Battle.float((crit?'暴击 ':'')+'-'+dmg, crit?'crit':''); Battle.hitFx();
     if(S.pet && s.hp>0){ const pd=Sect.petAtk(); s.hp-=pd; msg+=` ${BEASTS[S.pet.kind].name}追加攻击 ${pd}。`; setTimeout(()=>Battle.float('-'+pd,'pet'),260); }
     Battle.log(msg); Battle.phaseCheck(); Battle.ui();
-    if(s.hp<=0) return setTimeout(()=>Battle.end('win'),500);
+    if(s.hp<=0){ s.busy=true; s.dead=true; return setTimeout(()=>Battle.end('win'),500); }
     Battle.enemyTurn();
   },
   phaseCheck(){ const s=Battle.s, p=s.B.phase2; if(p && !s.phase2 && s.hp>0 && s.hp<=s.max*p.at){ s.phase2=true; s.moves=p.moves; s.i=0;
@@ -162,7 +163,7 @@ const Battle = {
       let tail='';
       if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.6)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
       Battle.log(msg+(dmg?`（-${dmg}）`:'')+tail); s.busy=false; Battle.phaseCheck(); Battle.ui();
-      if(s.hp<=0) return setTimeout(()=>Battle.end('win'),500);
+      if(s.hp<=0){ s.busy=true; s.dead=true; return setTimeout(()=>Battle.end('win'),500); }
       if(S.hp<=0){ S.hp=0; setTimeout(()=>Battle.end('lose'),600); }
     },650);
   },
@@ -195,30 +196,32 @@ const UI = {
     $('#hRealm').textContent=realmName(S.L);
     $('#hExp').style.width=Math.min(100,S.exp/expNeed(S.L)*100)+'%';
     $('#hStones').textContent=S.stones;
-    $('#hEn').style.height=Math.max(0,S.energy/maxEnergy()*100)+'%';
-    $('#hHp').style.height=Math.max(0,S.hp/st.hp*100)+'%';
-    const tr=Nav.tracked();
-    $('#hQuest').innerHTML=tr?`<span class="qk">${tr.kind==='main'?'主线':'支线'}</span><b>${esc(tr.title)}</b>${tr.progress?`<span>${esc(tr.progress)}</span>`:''}${tr.target?'<button class="qgo" id="qGo">寻路</button>':''}`:'';
-    const qg=$('#qGo'); if(qg) qg.onclick=e=>{ e.stopPropagation(); Sound.tick(); Nav.go(); };
+    const list=Nav.list();
+    $('#hQuest').innerHTML=`<div class="qhead"><b>任务</b><button class="qall" id="qAll">全部（J）</button></div>`+list.map(t=>`<div class="qrow${(S.track||'main')===t.key?' on':''}" data-trk="${t.key}" role="button" tabindex="0">
+      <span class="qk ${t.kind}">${t.kind==='main'?'主线':t.kind==='avail'?'可接':'支线'}</span><div class="qt"><b>${esc(t.title)}</b>${t.progress?`<span>${esc(t.progress)}</span>`:''}</div>
+      ${t.target?`<button class="qgo" data-qgo="${t.key}" aria-label="寻路：${esc(t.title)}">寻路</button>`:''}</div>`).join('');
+    $('#qAll').onclick=e=>{ e.stopPropagation(); Sound.tick(); UI.tasks(); };
+    $('#hQuest').querySelectorAll('[data-trk]').forEach(r=>r.onclick=e=>{ if(e.target.closest('.qgo')) return; Sound.tick(); S.track=r.dataset.trk; RT.navT=0; UI.hud(); });
+    $('#hQuest').querySelectorAll('[data-qgo]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); Sound.tick(); S.track=b.dataset.qgo; RT.navT=0; UI.hud(); Nav.go(); });
     UI.clock(); UI.hotbar();
   },
-  clock(){ if(!S) return; const st=stats(); $('#hHp').style.height=Math.max(0,S.hp/st.hp*100)+'%'; $('#hEn').style.height=Math.max(0,S.energy/maxEnergy()*100)+'%'; $('#hDay').textContent=`第 ${S.day} 天`; $('#hTime').textContent=fmtTime(S.min);
+  clock(){ if(!S) return; const st=stats(); $('#hHp').style.width=Math.max(0,S.hp/st.hp*100)+'%'; $('#hMp').style.width=Math.max(0,S.mp/st.mp*100)+'%'; $('#hHpT').textContent=`${Math.ceil(S.hp)}/${st.hp}`; $('#hMpT').textContent=`${S.mp}/${st.mp}`; $('#hDay').textContent=`第 ${S.day} 天`; $('#hTime').textContent=fmtTime(S.min);
     const h=S.min/60; $('#hSun').className='sun '+(h>=18||h<6?'moon':''); },
-  hotbarItems(){ const ids=['hoe','can']; if(S.inv.rod) ids.push('rod'); if(S.inv.sprinkler) ids.push('sprinkler');
-    for(const id of Object.keys(ITEMS).filter(k=>ITEMS[k].seed)) if(S.inv[id]) ids.push(id);
+  hotbarItems(){ const ids=[]; if(S.inv.rod) ids.push('rod');
     for(const id of ['huichun','juqi']) if(S.inv[id]) ids.push(id); return ids; },
   hotbar(){
-    const ids=UI.hotbarItems(); if(!ids.includes(S.sel)) S.sel='hoe';
+    const ids=UI.hotbarItems(); if(!ids.includes(S.sel)) S.sel=ids[0]||'';
+    $('#hotbar').hidden=!ids.length;
     $('#hotbar').innerHTML=ids.map((id,i)=>`<button class="slot${S.sel===id?' on':''}" data-id="${id}" aria-label="${ITEMS[id].name}">${itemIcon(id)}${ITEMS[id].tool?'':`<b>${S.inv[id]}</b>`}<kbd>${i+1}</kbd></button>`).join('');
     $('#hotbar').querySelectorAll('.slot').forEach(b=>b.onclick=()=>UI.selectItem(b.dataset.id));
   },
   pickSlot(i){ const id=UI.hotbarItems()[i]; if(id) UI.selectItem(id); },
   selectItem(id){ Sound.tick(); const it=ITEMS[id];
     if(it.use){ if(S.sel===id){ UI.useItem(id); return; } S.sel=id; UI.hotbar(); UI.toast(it.name+'：再点一次服用'); return; }
-    S.sel=id; UI.hotbar(); UI.toast(it.name); },
+    S.sel=S.sel===id&&id==='rod'?'':id; UI.hotbar(); UI.toast(S.sel?it.name+(id==='rod'?'：靠近水边，点水面或按 E 钓鱼':''):'收起了'+it.name); },
   useItem(id){ const it=ITEMS[id]; if(!S.inv[id]) return; addItem(id,-1); Sound.magic();
     if(it.use==='exp'){ gainExp(it.amount); UI.toast(`服下${it.name}，修为 +${it.amount}`); }
-    if(it.use==='heal'){ const st=stats(); S.hp=Math.min(st.hp,S.hp+it.amount*(S.sect==='dan'?1.5:1)); S.energy=Math.min(maxEnergy(),S.energy+30); UI.toast(`服下${it.name}，体力 +30`); }
+    if(it.use==='heal'){ const st=stats(); S.hp=Math.min(st.hp,S.hp+it.amount*(S.sect==='dan'?1.5:1)); UI.toast(`服下${it.name}，生命恢复`); }
     UI.hud(); },
   toast(t){ const el=$('#toast'); el.textContent=t; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); clearTimeout(UI._tt); UI._tt=setTimeout(()=>el.classList.remove('on'),1800); },
   float(x,y,t){ const Z=RT.scale; const el=document.createElement('div'); el.className='wfloat'; el.textContent=t;
@@ -288,7 +291,7 @@ const UI = {
   menu(tab){
     if(!$('#panel').hidden){ UI.closePanel(); return; }
     tab=tab||UI._tab||'bag'; UI._tab=tab;
-    const tabs=[['bag','行囊'],['cult','修炼'],['people','人物'],['book','图鉴'],['quest','任务'],['save','存档'],['set','设置']];
+    const tabs=[['bag','行囊'],['cult','修炼'],['people','人物'],['book','图鉴'],['quest','任务'],['replay','往事'],['save','存档'],['set','设置']];
     const head=`<div class="tabs">${tabs.map(([k,n])=>`<button data-t="${k}" class="${k===tab?'on':''}">${n}</button>`).join('')}</div>`;
     let body='';
     if(tab==='bag'){
@@ -307,13 +310,15 @@ const UI = {
       body=`<div class="qcur"><b>${esc(q.title)}</b><p>${esc(q.desc)}</p>${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}</div>
         <ul class="qdone">${QUESTS.slice(0,S.quest).map(x=>`<li>✓ ${esc(x.title)}</li>`).join('')}</ul>`; }
     if(tab==='people'){ body=`<div class="people">${UI.people()}</div><p class="muted">每天和大家聊聊天、送一份礼物，好感就会慢慢上升。</p>`; }
+    if(tab==='replay'){ body=Replay.html(); }
     if(tab==='set'){ body=`<div class="set"><button class="btn" id="sMute">声音：${S.mute?'关':'开'}</button><button class="btn" id="sMusic">音乐：${S.music===false?'关':'开'}</button><button class="btn" id="sSave">保存游戏</button><button class="btn" id="sSlots">存档 / 读档</button>
-      <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），按住 Shift 奔跑，鼠标滚轮或 1–6 选道具，E/空格 互动，Esc 行囊，M 地图，Q 任务。<br>手机：点哪里就走到哪里，点物体即可互动；左下角「疾行」切换奔跑；点任务的「寻路」自动前往。</p></div>`; }
+      <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），E/空格 互动（靠近时头顶会出现 E），鼠标滚轮或 1–6 选道具，Esc 行囊，M 地图，J 任务。<br>手机：点哪里就走到哪里，点人物或物体即可互动；点左上角任务的「寻路」自动前往。<br>iPhone 若听不到音乐，请关闭侧边的静音开关。</p></div>`; }
     UI.panel('行囊', head+body, b=>{
       b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); if(t.dataset.t==='quest'){ $('#panel').hidden=true; UI._panelKind=''; return UI.tasks(); } if(t.dataset.t==='save'){ $('#panel').hidden=true; return SaveSys.panel(); } UI._tab=t.dataset.t; $('#panel').hidden=true; UI.menu(t.dataset.t); });
       b.querySelectorAll('.cell').forEach(c=>c.onclick=()=>{ const id=c.dataset.id, it=ITEMS[id];
         $('#idesc').innerHTML=`<b>${it.name}</b> ${esc(it.desc||'')} ${it.use?`<button class="btn mini" id="iUse">服用</button>`:''}`;
         const u=$('#iUse'); if(u) u.onclick=()=>{ UI.useItem(id); $('#panel').hidden=true; UI.menu('bag'); }; });
+      b.querySelectorAll('[data-replay]').forEach(x=>x.onclick=()=>{ Sound.tick(); Replay.start(x.dataset.replay); });
       b.querySelectorAll('[data-bk]').forEach(x=>x.onclick=()=>{ Sound.tick(); UI._bookTab=x.dataset.bk; $('#panel').hidden=true; UI.menu('book'); });
       b.querySelectorAll('[data-cg]').forEach(x=>x.onclick=()=>{ const [id,lv]=x.dataset.cg.split(':'); CG.replaying=true; CG.replay(id,+lv); });
       b.querySelectorAll('[data-npc]').forEach(c=>{ const sp=npcSprite(c.dataset.npc); if(sp) c.getContext('2d').drawImage(sp,0,0); });
@@ -381,7 +386,6 @@ const UI = {
   },
 };
 $('#menuB').onclick=()=>{ Sound.tick(); UI.menu(); };
-$('#hQuest').onclick=()=>{ Sound.tick(); UI.tasks(); };
 $('#mini').onclick=()=>{ Sound.tick(); UI.worldMap(); };
-$('#runB').onclick=()=>{ Sound.tick(); RT.runToggle=!RT.runToggle; $('#runB').classList.toggle('on',RT.runToggle); UI.toast(RT.runToggle?'疾行：开':'疾行：关'); };
+
 
