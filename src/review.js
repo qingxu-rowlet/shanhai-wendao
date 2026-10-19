@@ -79,7 +79,7 @@ const Review = {
     enterMap(map,x,y); RT.dir=dir||'down'; UI.hud(); UI.sync(); save(); Music.play(areaTheme());
   },
   go(id){
-    const n=Review.NODES.find(x=>x.id===id); if(!n) return UI.toast('没有这个审查节点：'+id);
+    const n=Review.NODES.find(x=>x.id===id); if(!n){ clearTimeout(Review._miss); Review._miss=setTimeout(()=>UI.toast('没有这个审查节点：'+id),3000); return; }  // wait: a stale cached page reloads itself first
     $('#reviewHub')&&$('#reviewHub').remove(); n.run(); Review.note(n);
   },
   note(n){

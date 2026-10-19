@@ -13,6 +13,9 @@
 - **氛围**：白天有云影飘过，镇上飘花瓣、山林飘落叶，夜里有萤火虫；傍晚整个画面变暖；画面四角稍微压暗。
 - 镜头拉远一点，一屏能看到更多地图。
 
+### 修复
+- 刚更新后点审查链接，可能提示「没有这个审查节点」：GitHub 会让浏览器缓存旧页面 10 分钟。现在页面打开时会检查有没有新版本，有的话自动刷新一次。
+
 ### 请重点审查
 1. 桃源镇：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-art-town
 2. 青丘山林（傍晚）：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-art-forest
