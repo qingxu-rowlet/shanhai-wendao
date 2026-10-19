@@ -24,6 +24,7 @@ iPhone：用 Safari 打开链接，点「分享 → 添加到主屏幕」，就�
 - `python build.py` 生成测试版 `beta/index.html`（测试版链接：https://qingxu-rowlet.github.io/shanhai-wendao/beta/ ）
 - `python build.py release` 同时更新正式版 `index.html`
 - 链接后加 `#selftest`：自动玩完第一章并给出 ✓/✗ 自检报告
+- 链接后加 `#review`：所有审查节点一页列出；`#t-节点名`（如 `#t-qiongqi`）直接进入那个场景
 - 每个版本的改动和审查清单见 [CHANGELOG.md](CHANGELOG.md)
 在链接后加 `#dev`（或在标题画面连点「山海问道」5 次）可以打开开发者面板。
 

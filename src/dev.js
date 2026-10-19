@@ -32,7 +32,7 @@ const Dev = {
     const realms=[...Array(13)].map((_,L)=>[L,realmName(L)]);
     const sects=[['','（无）'],...Object.entries(SECTS).map(([k,s])=>[k,s.name])];
     UI.panel('开发者面板', `
-      <div class="dev"><h4>跳到剧情节点</h4><div class="devg">${Object.entries(Dev.POINTS).map(([k,t])=>`<button class="btn mini" data-pt="${k}">${t}</button>`).join('')}</div>
+      <div class="dev"><button class="btn main" id="dvReview">审查节点（每个节点都有直达链接）</button><h4>跳到剧情节点</h4><div class="devg">${Object.entries(Dev.POINTS).map(([k,t])=>`<button class="btn mini" data-pt="${k}">${t}</button>`).join('')}</div>
       <h4>直接体验</h4><div class="devg">
         <button class="btn mini" data-x="cine_qiongqi">穷奇登场动画</button><button class="btn mini" data-x="cine_huli">九尾狐登场动画</button><button class="btn mini" data-x="cine_taotie">饕餮登场动画</button>
         <button class="btn mini" data-x="fight_qiongqi">打穷奇</button><button class="btn mini" data-x="fight_huli">打九尾狐</button><button class="btn mini" data-x="fight_wild">打一只野兽</button>
@@ -50,6 +50,7 @@ const Dev = {
       <h4>时间与地点</h4><div class="devg"><button class="btn mini" data-t="6">清晨</button><button class="btn mini" data-t="12">中午</button><button class="btn mini" data-t="18">傍晚</button><button class="btn mini" data-t="22">深夜</button>
         <button class="btn mini" data-c="day">下一天</button>${Object.keys(MAPS).map(m=>`<button class="btn mini" data-map="${m}">去${MAPS[m].name.replace(/.*· /,'')}</button>`).join('')}</div>
       <p class="muted">提示：在链接后面加 #dev，或在标题画面连点「山海问道」5 次即可打开开发者模式。测试会自动用第 ${SLOTS} 个存档位。</p></div>`, b=>{
+      $('#dvReview').onclick=()=>{ UI.closePanel(); Review.hub(); };
       b.querySelectorAll('[data-pt]').forEach(x=>x.onclick=()=>Dev.setup(x.dataset.pt));
       b.querySelectorAll('[data-x]').forEach(x=>x.onclick=()=>{ UI.closePanel(); Dev.run(x.dataset.x); });
       b.querySelectorAll('[data-qy]').forEach(x=>x.onclick=()=>{ UI.closePanel(); const ev=QIYU.find(q=>q.id===x.dataset.qy); UI.say(ev.run()); });

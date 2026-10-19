@@ -1,7 +1,7 @@
 # 更新记录 · Changelog
 
 每个版本先发布到**测试版** https://qingxu-rowlet.github.io/shanhai-wendao/beta/ ，审查通过后再更新到正式版 https://qingxu-rowlet.github.io/shanhai-wendao/ 。
-发布前都会跑一遍自检：在链接后加 `#selftest`，游戏会自动玩完第一章并给出 ✓/✗ 报告（使用第 3 个存档位，结束后恢复）。
+每个审查点都有直达链接（见下方清单，或打开 `#review`）。发布前都会跑一遍自检：在链接后加 `#selftest`，游戏会自动玩完第一章并给出 ✓/✗ 报告（使用第 3 个存档位，结束后恢复）。
 
 ## v0.9（测试版）
 
@@ -21,13 +21,20 @@
 - 在杂货铺买齐回春丹后，「备战穷奇」任务不会立刻完成（要换地图才触发）。
 - 任务列表的「寻路」：补上了 J 键；新 HUD 上每个任务都能直接寻路。
 
-### 请重点审查
-1. 新开一个存档：序章 → 采灵草 → 打坐，节奏是否顺畅？
-2. 左上角任务列表在手机上是否挡视线、字是否够大？
-3. 三首新曲子听感如何（村庄白天、进战斗、心动事件）？
-4. 钓鱼时角色拿鱼竿的样子、浮漂位置是否自然？
-5. 往事回廊重温「拜师大典」，选别的门派，结束后确认存档里还是原来的门派。
-6. 用老存档进入：是否收到退还灵石的提示，背包里没有种田道具。
+### 请重点审查（点链接直接进入那个场景）
+**审查总入口（所有节点一页列出）：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#review**
+
+1. 序章节奏：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-prologue
+2. 采灵草 → 打坐：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-gather
+3. 左上任务列表（手机上是否挡视线、字够不够大）：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-hud
+4. 互动提示 E：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-prompt
+5. 三首新曲子：村庄 https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-music-village · 战斗 https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-music-battle · 浪漫 https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-music-romance
+6. 手持鱼竿钓鱼：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-fish · 鱼王：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-fishking
+7. 往事回廊（重温拜师大典选别的门派，结束后确认没变）：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-replay
+8. 老存档退还灵石：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-oldsave
+9. 自检（自动玩完一章，约 2 分钟）：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#selftest
+
+每个节点都用第 3 个存档位的测试角色，不会动你自己的存档；顶部的蓝色提示条写着「请检查什么」，还有「下一个」按钮可以按顺序走完。
 
 ## v0.8
 - 图鉴三页、金光水面与山海经鱼王、心动事件 CG（每人 4 段）、随时存档与「测灵根前」重测、第一章流程重排（测灵根在序章，拜师在筑基后）、药王谷、顾长歌散修设定、开发者面板。
