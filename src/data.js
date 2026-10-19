@@ -1,3 +1,4 @@
+/* 山海问道 © 2026 qingxu-rowlet — licensed CC BY-NC-SA 4.0 (attribution, non-commercial, share-alike). See LICENSE. */
 /* ============================================================
    山海问道 · data
    Sprites are letter grids: each letter is a palette colour, '.' is transparent.

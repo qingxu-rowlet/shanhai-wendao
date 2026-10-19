@@ -183,7 +183,7 @@ UI.title=()=>{
         <div class="sc-info"><b>${esc(s.name||'无名')}</b><span>${realmName(s.L)} · 第 ${s.day} 天</span><span class="muted">${esc(MAPS[s.map].name)}</span></div>
         <div class="sc-btns"><button class="btn main mini" data-play="${i}">继续</button><button class="btn mini" data-saves="${i}">读档</button><button class="btn mini" data-del="${i}">删除</button></div></div>`
       :`<button class="slot-card empty wood" data-new="${i}"><span class="plus">＋</span><span>新的修行</span><span class="muted">存档 ${i+1}</span></button>`).join('')}</div>
-    <div class="title-saves" id="tSaves"></div><p class="tnote">每个存档是一位独立的修士。</p></div>`;
+    <div class="title-saves" id="tSaves"></div><p class="tnote">每个存档是一位独立的修士。</p><p class="copyright">© 2026 qingxu-rowlet · 山海问道 · CC BY-NC-SA 4.0 · 禁止商用</p></div>`;
   t.querySelectorAll('[data-pv]').forEach(c=>{ const s=slots[+c.dataset.pv]; c.getContext('2d').drawImage(lookSprite(s.look||defaultLook('m'),'down',0),0,0); });
   t.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{ Sound.unlock(); const i=+b.dataset.play; RT.slot=i; S=loadSave(i); Sect.migrate(); Hooks.placeQiyu(); t.hidden=true; enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); SaveSys.resume(); });
   t.querySelectorAll('[data-saves]').forEach(b=>b.onclick=()=>{ Sound.tick(); SaveSys.titleList(+b.dataset.saves, $('#tSaves')); });
