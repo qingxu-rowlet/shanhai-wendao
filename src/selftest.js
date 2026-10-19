@@ -26,7 +26,7 @@ const SelfTest = {
         return {fail:!(pre&&!before&&got), info:Sect.rootName()}; });
       await step('序章完成：拿到玉简，主线「采一株灵草」', async()=>({fail:!(S.inv.slip&&QUESTS[S.quest].id==='q1'&&S.flags.intro_done)}));
       await step('采集灵草 → 主线推进', async()=>{ const o=RT.ents.find(e=>e.type==='gather'&&e.item==='lingcao'); gather(o); await W(30); await adv(); return {fail:QUESTS[S.quest].id!=='q2', info:'灵草 '+(S.inv.lingcao||0)}; });
-      await step('打坐 → 炼气一层', async()=>{ meditate(); await W(30); $('#dlg [data-i]').click(); await W(2000); await adv(); await W(30); await adv(); return {fail:!(S.L>=1&&QUESTS[S.quest].id==='q3'), info:realmName(S.L)}; });
+      await step('打坐 → 炼气一层', async()=>{ meditate(); await W(60); $('#medGo').click(); await W(2600); await adv(); await W(30); await adv(); return {fail:!(S.L>=1&&QUESTS[S.quest].id==='q3'), info:realmName(S.L)}; });
       await step('初到桃源镇：认识阿禾', async()=>{ enterMap('town',12,11); Story.check(); await adv(); Story.talk('ahe'); await adv(); await W(30); await adv(); return {fail:QUESTS[S.quest].id!=='q4'}; });
       await step('山林怪声：击败 3 只野兽', async()=>{ enterMap('forest',14,3); for(let i=0;i<3;i++){ const st=stats(); S.hp=st.hp; S.mp=st.mp; Battle.start('dangkang',r=>{ if(r==='win'){ S.st.kills++; Story.check(); } }); await fight(); await adv(); }
         await W(50); await adv(); return {fail:QUESTS[S.quest].id!=='q5'}; });

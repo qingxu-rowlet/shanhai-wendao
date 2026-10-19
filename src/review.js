@@ -30,6 +30,8 @@ const Review = {
       run(){ Review.base({quest:'q4', L:2, inv:{rod:1}}); S.sel='rod'; Review.at('town',5,14,'down'); }},
     {id:'fishking', group:'钓鱼', title:'金光水面 · 鱼王', check:'脚下就是金光水面，夜里钓鱼王的概率最高。鱼王上钩时的特效和难度是否合适？',
       run(){ Review.base({quest:'q4', L:2, inv:{rod:1}}); S.sel='rod'; S.min=22*60; S.glow=[{map:'town',x:5,y:15}]; Review.at('town',5,14,'down'); }},
+    {id:'meditate', group:'修炼', title:'闭关打坐', check:'站在洞府的蒲团旁，按 E 打坐：拖动滑条选时长（2 小时到 30 天），看预计境界和「一直闭关的话」多久到哪一层，再看进度条。也可以等到半夜 12 点，确认不会再昏倒。',
+      run(){ Review.base({quest:'q4', L:2}); S.min=22*60; Review.at('home',4,9,'up'); setTimeout(()=>meditate(),400); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},

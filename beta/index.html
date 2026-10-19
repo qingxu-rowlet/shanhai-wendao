@@ -197,6 +197,20 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* ---------- fx / title ---------- */
 #medfx{position:fixed;inset:0;z-index:28;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,236,170,.0) 0,rgba(20,30,40,.6) 70%);pointer-events:none;opacity:0}
+#medbar{position:fixed;inset:0;z-index:28;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,236,170,.12) 0,rgba(20,30,40,.7) 70%)}
+#medbar .medbox{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(360px,84vw);color:#fff3c4;text-align:center}
+#medbar b{font-family:var(--f-brush);font-weight:400;font-size:clamp(30px,8vw,44px);text-shadow:0 0 14px #f2c14e}
+#medbar .xbar{width:100%;height:14px}
+#medbar .mtxt{font-size:15px}
+#medbar .mrealm{font-family:var(--f-head);font-size:22px;color:#ffe08a}
+#medbar .mrealm.pop{animation:cgPop .5s ease-out}
+.med input[type=range]{width:100%;accent-color:#c8413b;margin:4px 0 10px}
+.med-len{font-size:16px}
+.med-out{background:#fbf3e4;border:2px solid #c8a870;border-radius:6px;padding:10px 12px;line-height:1.8}
+.med-out .up{margin-left:8px;color:#c8413b;font-weight:bold}
+.med-ahead{margin-top:10px}.med-ahead small{color:#7a5a2a}
+.med-ahead ul{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.med-ahead li{display:flex;justify-content:space-between;border-bottom:1px dashed #c8a870;padding:2px 0}
 #medfx.on{animation:med 1.8s ease-in-out}
 #medfx span{font-family:var(--f-brush);font-size:clamp(30px,8vw,46px);color:#fff3c4;text-shadow:0 0 14px #f2c14e}
 @keyframes med{0%,100%{opacity:0}25%,75%{opacity:1}}
@@ -1626,7 +1640,7 @@ const Creator = {
 const TILE = 16;
 const SAVE_KEY = 'shanhai-wendao.v1';
 const MIN_SEC = 0.6;           // real seconds per game minute
-const DAY_START = 6*60, PASS_OUT = 26*60;
+const DAY_START = 6*60;
 
 let S = null;                  // saved game state
 let RT = {                     // runtime-only state
@@ -1869,24 +1883,18 @@ function gainExp(n){
   if(up){ const st=stats(); S.hp=st.hp; S.mp=st.mp; Sound.levelup(); UI.banner('突破！'+realmName(S.L)); }
   UI.hud(); Story.check();
 }
-function meditate(){
-  if(S.L===9 && S.exp>=expNeed(9)){
-    if(S.inv.zhuji) return UI.confirm('炼气九层圆满。服下筑基丹，冲击筑基？（将面对心魔与天劫）', ()=>Mini.breakthrough());
-    return UI.say([['旁白','炼气九层已经圆满，再打坐也无法精进。需要一颗筑基丹才能冲击筑基。']]);
-  }
-  if(S.min>=24*60) return UI.toast('太晚了，回洞府休息吧');
-  UI.confirm('在蒲团上打坐一个时辰（2 小时）？', ()=>{
-    const gain=Math.round((14+4*S.L)*(S.L>=10?1.6:1)*2*Sect.medMul());
-    UI.meditateFx(()=>{ S.min+=120; S.st.meditated++; const st=stats(); S.mp=st.mp; gainExp(gain); UI.float(S.x,S.y,`+${gain} 修为`); UI.hud(); });
-  });
-}
-function sleep(passedOut){
-  S.day++; S.min=DAY_START; S.energy=maxEnergy(); const st=stats(); S.hp=st.hp; S.mp=st.mp;
-  if(passedOut){ const lost=Math.floor(S.stones*0.1); S.stones-=lost; S.energy=Math.round(maxEnergy()*0.6); }
-  for(const k in S.farm){ const p=S.farm[k]; if(p.crop&&p.water){ p.days++; const c=CROPS[p.crop]; p.stage=p.days>=c.days?3:Math.max(1,Math.min(2,Math.floor(p.days/c.days*3))); } p.water=0; }
-  // keep save small: drop old day bookkeeping
+function meditate(){ Med.open(); }  // the 闭关 panel lives in med.js
+// the calendar turns over (bed, midnight or a long 闭关); the player stays where they are
+function passDay(){
+  S.day++;
   for(const k in S.killed) if(!k.startsWith(S.day+':')) delete S.killed[k];
   Hooks.newDay();
+}
+function sleep(passedOut){
+  // going to bed before midnight sleeps through to the next morning; after midnight the day has already turned
+  if(S.min>=DAY_START) passDay(); S.min=DAY_START; S.energy=maxEnergy(); const st=stats(); S.hp=st.hp; S.mp=st.mp;
+  if(passedOut){ const lost=Math.floor(S.stones*0.1); S.stones-=lost; S.energy=Math.round(maxEnergy()*0.6); }
+  for(const k in S.farm){ const p=S.farm[k]; if(p.crop&&p.water){ p.days++; const c=CROPS[p.crop]; p.stage=p.days>=c.days?3:Math.max(1,Math.min(2,Math.floor(p.days/c.days*3))); } p.water=0; }
   enterMap('home', 11, 5); RT.dir='down';
   save();
   UI.dayCard(passedOut);
@@ -1901,7 +1909,7 @@ function update(dt){
   // clock
   S.min+=dt/MIN_SEC; if(Math.floor(S.min)%10===0){ UI.clock(); Music.play(areaTheme()); }
   { const st=stats(); if(S.hp<st.hp) S.hp=Math.min(st.hp, S.hp+dt/MIN_SEC*st.hp/240); } // wounds heal over ~4 game hours
-  if(S.min>=PASS_OUT){ RT.paused=true; UI.say([['旁白','夜深了，你累得昏倒在地……']], ()=>sleep(true)); return; }
+  if(S.min>=24*60){ S.min-=24*60; passDay(); UI.toast(`子时已过，第 ${S.day} 天了`); }
   // movement: keys walk freely (diagonals, slide around corners); taps follow a path without stopping per tile
   const kv=keyVector(), want=false;
   RT.running = want && !RT.winded && RT.stamina>0;
@@ -2090,7 +2098,7 @@ function drawPrompt(g, ox, oy, T, Z){
 const NIGHT=document.createElement('canvas');
 function drawNight(g, ox, oy, T, Z){
   const h=S.min/60; let a=0;
-  if(h>=17.5) a=Math.min(0.55,(h-17.5)/3.5*0.55); if(h<6) a=0.4; else if(h<7) a=(7-h)*0.25;
+  if(h>=17.5) a=Math.min(0.55,(h-17.5)/3.5*0.55); if(h<5) a=0.55; else if(h<7) a=(7-h)/2*0.55;
   if(a<=0.01) return;
   NIGHT.width=cv.width; NIGHT.height=cv.height; const n=NIGHT.getContext('2d');
   n.fillStyle=`rgba(18,24,60,${a})`; n.fillRect(0,0,NIGHT.width,NIGHT.height);
@@ -3953,6 +3961,76 @@ const Mail = {
 { const _nd=Hooks.newDay; Hooks.newDay=function(){ _nd.apply(this,arguments); Mail.newDay(); }; }
 
 /* ============================================================
+   山海问道 · 闭关 — choose how long to meditate (two hours up to a month), see which realm you will reach,
+   then watch a progress bar. Long sessions pass whole days (letters, 奇遇 and fortunes still roll each morning).
+   Midnight no longer knocks you out: the day simply turns over.
+   ============================================================ */
+const MED_STEPS = [[2,'2 小时'],[4,'4 小时'],[6,'半天'],[24,'1 天'],[48,'2 天'],[72,'3 天'],[120,'5 天'],[168,'7 天'],[240,'10 天'],[360,'15 天'],[720,'30 天']];
+const Med = {
+  // cultivation from one 2-hour block at level L; a full day counts as six blocks (the rest is eating and sleeping)
+  block(L){ return Math.round((14+4*L)*(L>=10?1.6:1)*2*Sect.medMul()); },
+  blocks(h){ return h<24 ? h/2 : Math.round(h/24*6); },
+  // run the numbers without touching the save
+  sim(h){ let L=S.L, exp=S.exp, total=0;
+    for(let i=0;i<Med.blocks(h);i++){ const g=Med.block(L); total+=g; exp+=g;
+      while(true){ const need=expNeed(L); if(L===9||L>=12){ exp=Math.min(exp,need); break; } if(exp<need) break; exp-=need; L++; } }
+    return {L, exp, total, capped:(L===9||L>=12)&&exp>=expNeed(L)}; },
+  // how many days of 闭关 until each of the next few realms
+  ahead(){ const out=[]; let L=S.L, exp=S.exp, blocks=0;
+    while(out.length<4 && blocks<6*400){ if((L===9||L>=12)&&exp>=expNeed(L)) break; exp+=Med.block(L); blocks++;
+      const need=expNeed(L); if(L!==9&&L<12&&exp>=need){ exp-=need; L++; out.push([L, blocks]); } else if(L===9&&exp>=need){ out.push([9.5, blocks]); exp=need; } }
+    return out; },
+  when(blocks){ const h=blocks*2; return h<24?`${h} 小时`:`${Math.ceil(blocks/6)} 天`; },
+  open(){
+    if(S.L===9 && S.exp>=expNeed(9)){
+      if(S.inv.zhuji) return UI.confirm('炼气九层圆满。服下筑基丹，冲击筑基？（将面对心魔与天劫）', ()=>Mini.breakthrough());
+      return UI.say([['旁白','炼气九层已经圆满，再打坐也无法精进。需要一颗筑基丹才能冲击筑基。']]);
+    }
+    if(S.L>=12 && S.exp>=expNeed(12)) return UI.say([['旁白','你的修为已经到了这一章的顶点。下一章的修行敬请期待。']]);
+    let k=Med._k||0;
+    const ahead=Med.ahead().map(([L,b])=>`<li><b>${L===9.5?'炼气九层圆满':realmName(L)}</b><span>约 ${Med.when(b)}</span></li>`).join('');
+    UI.panel('闭关打坐', `<div class="med">
+      <p class="muted">现在：<b>${realmName(S.L)}</b>　修为 ${Math.floor(S.exp)} / ${expNeed(S.L)}　（${Sect.rootName()}${Sect.medMul()!==1?'，打坐 ×'+Sect.medMul():''}）</p>
+      <label class="med-len">打坐多久：<b id="medLen"></b></label>
+      <input type="range" id="medR" min="0" max="${MED_STEPS.length-1}" step="1" value="${k}">
+      <div class="med-out" id="medOut"></div>
+      ${ahead?`<div class="med-ahead"><small>一直闭关的话：</small><ul>${ahead}</ul></div>`:''}
+      <p class="muted">闭关一天按六个时辰算（其余时间吃饭睡觉）。闭关期间日子照常过：会收到信件，也会错过当天的奇遇。</p>
+      <div class="mg-btns"><button class="btn main" id="medGo">开始打坐</button><button class="btn" id="medNo">算了</button></div></div>`, b=>{
+      const r=$('#medR'), show=()=>{ k=+r.value; Med._k=k; const [h,name]=MED_STEPS[k], s=Med.sim(h);
+        $('#medLen').textContent=name;
+        $('#medOut').innerHTML=`修为 <b>+${s.total}</b>　→　<b>${realmName(s.L)}</b>${s.capped&&s.L===9?'（圆满，需筑基丹）':''}${s.L>S.L?`<span class="up">突破 ${s.L-S.L} 层！</span>`:''}<br><span class="muted">结束时：第 ${S.day+Math.floor((S.min+h*60)/(24*60))} 天 ${fmtTime((S.min+h*60)%(24*60))}</span>`; };
+      r.oninput=show; show();
+      $('#medGo').onclick=()=>{ UI.closePanel(); Med.run(MED_STEPS[k][0]); };
+      $('#medNo').onclick=()=>UI.closePanel(); });
+  },
+  run(h){
+    const blocks=Med.blocks(h), dur=Math.min(4.5, 1.4+Math.log2(1+h/2)*.45)*1000, L0=S.L;
+    UI.fx=true; UI.sync(); Sound.magic();
+    const el=document.createElement('div'); el.id='medbar'; el.innerHTML=`<div class="medbox"><b>闭关中……</b><div class="xbar"><i></i></div><span class="mtxt"></span><span class="mrealm">${realmName(S.L)}</span></div>`;
+    document.body.appendChild(el);
+    let done=0, gained=0; const t0=performance.now(), bar=el.querySelector('i'), txt=el.querySelector('.mtxt'), rl=el.querySelector('.mrealm');
+    const step=now=>{
+      const f=Math.min(1,(now-t0)/dur), want=Math.round(blocks*f);
+      while(done<want){ done++; const g=Med.block(S.L), before=S.L; gained+=g; gainExpQuiet(g);
+        // time passes with each block: a day-long block is four game hours
+        Med.advance(h<24?120:24*60/6);
+        if(S.L>before){ rl.textContent=realmName(S.L); rl.classList.remove('pop'); void rl.offsetWidth; rl.classList.add('pop'); Sound.levelup(); } }
+      bar.style.width=(f*100)+'%'; txt.textContent=`第 ${S.day} 天 ${fmtTime(S.min)}　修为 +${gained}`;
+      if(f<1) return requestAnimationFrame(step);
+      setTimeout(()=>{ el.remove(); UI.fx=false; S.st.meditated++; const st=stats(); S.hp=st.hp; S.mp=st.mp;
+        if(S.L>L0) UI.banner('突破！'+realmName(S.L)); UI.float(S.x,S.y,`+${gained} 修为`); UI.clock(); UI.hud(); save(); UI.sync(); Story.check(); },500);
+    };
+    requestAnimationFrame(step);
+  },
+  // move the clock forward, turning the day over at midnight
+  advance(min){ S.min+=min; while(S.min>=24*60){ S.min-=24*60; passDay(); } },
+};
+// like gainExp but without the banner/sound per level (the bar shows those)
+function gainExpQuiet(n){ S.exp+=n;
+  while(true){ const need=expNeed(S.L); if(S.L===9||S.L>=12){ S.exp=Math.min(S.exp,need); break; } if(S.exp<need) break; S.exp-=need; S.L++; } }
+
+/* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
    ============================================================ */
 const WORLD = { home:[0,0], town:[24,1], forest:[-3,17] };   // where each area sits on the world map (in tiles)
@@ -4405,7 +4483,7 @@ const SelfTest = {
         return {fail:!(pre&&!before&&got), info:Sect.rootName()}; });
       await step('序章完成：拿到玉简，主线「采一株灵草」', async()=>({fail:!(S.inv.slip&&QUESTS[S.quest].id==='q1'&&S.flags.intro_done)}));
       await step('采集灵草 → 主线推进', async()=>{ const o=RT.ents.find(e=>e.type==='gather'&&e.item==='lingcao'); gather(o); await W(30); await adv(); return {fail:QUESTS[S.quest].id!=='q2', info:'灵草 '+(S.inv.lingcao||0)}; });
-      await step('打坐 → 炼气一层', async()=>{ meditate(); await W(30); $('#dlg [data-i]').click(); await W(2000); await adv(); await W(30); await adv(); return {fail:!(S.L>=1&&QUESTS[S.quest].id==='q3'), info:realmName(S.L)}; });
+      await step('打坐 → 炼气一层', async()=>{ meditate(); await W(60); $('#medGo').click(); await W(2600); await adv(); await W(30); await adv(); return {fail:!(S.L>=1&&QUESTS[S.quest].id==='q3'), info:realmName(S.L)}; });
       await step('初到桃源镇：认识阿禾', async()=>{ enterMap('town',12,11); Story.check(); await adv(); Story.talk('ahe'); await adv(); await W(30); await adv(); return {fail:QUESTS[S.quest].id!=='q4'}; });
       await step('山林怪声：击败 3 只野兽', async()=>{ enterMap('forest',14,3); for(let i=0;i<3;i++){ const st=stats(); S.hp=st.hp; S.mp=st.mp; Battle.start('dangkang',r=>{ if(r==='win'){ S.st.kills++; Story.check(); } }); await fight(); await adv(); }
         await W(50); await adv(); return {fail:QUESTS[S.quest].id!=='q5'}; });
@@ -4488,6 +4566,8 @@ const Review = {
       run(){ Review.base({quest:'q4', L:2, inv:{rod:1}}); S.sel='rod'; Review.at('town',5,14,'down'); }},
     {id:'fishking', group:'钓鱼', title:'金光水面 · 鱼王', check:'脚下就是金光水面，夜里钓鱼王的概率最高。鱼王上钩时的特效和难度是否合适？',
       run(){ Review.base({quest:'q4', L:2, inv:{rod:1}}); S.sel='rod'; S.min=22*60; S.glow=[{map:'town',x:5,y:15}]; Review.at('town',5,14,'down'); }},
+    {id:'meditate', group:'修炼', title:'闭关打坐', check:'站在洞府的蒲团旁，按 E 打坐：拖动滑条选时长（2 小时到 30 天），看预计境界和「一直闭关的话」多久到哪一层，再看进度条。也可以等到半夜 12 点，确认不会再昏倒。',
+      run(){ Review.base({quest:'q4', L:2}); S.min=22*60; Review.at('home',4,9,'up'); setTimeout(()=>meditate(),400); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},

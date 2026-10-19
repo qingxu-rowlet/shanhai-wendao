@@ -4,7 +4,7 @@
 const TILE = 16;
 const SAVE_KEY = 'shanhai-wendao.v1';
 const MIN_SEC = 0.6;           // real seconds per game minute
-const DAY_START = 6*60, PASS_OUT = 26*60;
+const DAY_START = 6*60;
 
 let S = null;                  // saved game state
 let RT = {                     // runtime-only state
@@ -247,24 +247,18 @@ function gainExp(n){
   if(up){ const st=stats(); S.hp=st.hp; S.mp=st.mp; Sound.levelup(); UI.banner('突破！'+realmName(S.L)); }
   UI.hud(); Story.check();
 }
-function meditate(){
-  if(S.L===9 && S.exp>=expNeed(9)){
-    if(S.inv.zhuji) return UI.confirm('炼气九层圆满。服下筑基丹，冲击筑基？（将面对心魔与天劫）', ()=>Mini.breakthrough());
-    return UI.say([['旁白','炼气九层已经圆满，再打坐也无法精进。需要一颗筑基丹才能冲击筑基。']]);
-  }
-  if(S.min>=24*60) return UI.toast('太晚了，回洞府休息吧');
-  UI.confirm('在蒲团上打坐一个时辰（2 小时）？', ()=>{
-    const gain=Math.round((14+4*S.L)*(S.L>=10?1.6:1)*2*Sect.medMul());
-    UI.meditateFx(()=>{ S.min+=120; S.st.meditated++; const st=stats(); S.mp=st.mp; gainExp(gain); UI.float(S.x,S.y,`+${gain} 修为`); UI.hud(); });
-  });
-}
-function sleep(passedOut){
-  S.day++; S.min=DAY_START; S.energy=maxEnergy(); const st=stats(); S.hp=st.hp; S.mp=st.mp;
-  if(passedOut){ const lost=Math.floor(S.stones*0.1); S.stones-=lost; S.energy=Math.round(maxEnergy()*0.6); }
-  for(const k in S.farm){ const p=S.farm[k]; if(p.crop&&p.water){ p.days++; const c=CROPS[p.crop]; p.stage=p.days>=c.days?3:Math.max(1,Math.min(2,Math.floor(p.days/c.days*3))); } p.water=0; }
-  // keep save small: drop old day bookkeeping
+function meditate(){ Med.open(); }  // the 闭关 panel lives in med.js
+// the calendar turns over (bed, midnight or a long 闭关); the player stays where they are
+function passDay(){
+  S.day++;
   for(const k in S.killed) if(!k.startsWith(S.day+':')) delete S.killed[k];
   Hooks.newDay();
+}
+function sleep(passedOut){
+  // going to bed before midnight sleeps through to the next morning; after midnight the day has already turned
+  if(S.min>=DAY_START) passDay(); S.min=DAY_START; S.energy=maxEnergy(); const st=stats(); S.hp=st.hp; S.mp=st.mp;
+  if(passedOut){ const lost=Math.floor(S.stones*0.1); S.stones-=lost; S.energy=Math.round(maxEnergy()*0.6); }
+  for(const k in S.farm){ const p=S.farm[k]; if(p.crop&&p.water){ p.days++; const c=CROPS[p.crop]; p.stage=p.days>=c.days?3:Math.max(1,Math.min(2,Math.floor(p.days/c.days*3))); } p.water=0; }
   enterMap('home', 11, 5); RT.dir='down';
   save();
   UI.dayCard(passedOut);
@@ -279,7 +273,7 @@ function update(dt){
   // clock
   S.min+=dt/MIN_SEC; if(Math.floor(S.min)%10===0){ UI.clock(); Music.play(areaTheme()); }
   { const st=stats(); if(S.hp<st.hp) S.hp=Math.min(st.hp, S.hp+dt/MIN_SEC*st.hp/240); } // wounds heal over ~4 game hours
-  if(S.min>=PASS_OUT){ RT.paused=true; UI.say([['旁白','夜深了，你累得昏倒在地……']], ()=>sleep(true)); return; }
+  if(S.min>=24*60){ S.min-=24*60; passDay(); UI.toast(`子时已过，第 ${S.day} 天了`); }
   // movement: keys walk freely (diagonals, slide around corners); taps follow a path without stopping per tile
   const kv=keyVector(), want=false;
   RT.running = want && !RT.winded && RT.stamina>0;
@@ -468,7 +462,7 @@ function drawPrompt(g, ox, oy, T, Z){
 const NIGHT=document.createElement('canvas');
 function drawNight(g, ox, oy, T, Z){
   const h=S.min/60; let a=0;
-  if(h>=17.5) a=Math.min(0.55,(h-17.5)/3.5*0.55); if(h<6) a=0.4; else if(h<7) a=(7-h)*0.25;
+  if(h>=17.5) a=Math.min(0.55,(h-17.5)/3.5*0.55); if(h<5) a=0.55; else if(h<7) a=(7-h)/2*0.55;
   if(a<=0.01) return;
   NIGHT.width=cv.width; NIGHT.height=cv.height; const n=NIGHT.getContext('2d');
   n.fillStyle=`rgba(18,24,60,${a})`; n.fillRect(0,0,NIGHT.width,NIGHT.height);

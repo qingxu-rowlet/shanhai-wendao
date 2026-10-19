@@ -197,6 +197,20 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* ---------- fx / title ---------- */
 #medfx{position:fixed;inset:0;z-index:28;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,236,170,.0) 0,rgba(20,30,40,.6) 70%);pointer-events:none;opacity:0}
+#medbar{position:fixed;inset:0;z-index:28;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,236,170,.12) 0,rgba(20,30,40,.7) 70%)}
+#medbar .medbox{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(360px,84vw);color:#fff3c4;text-align:center}
+#medbar b{font-family:var(--f-brush);font-weight:400;font-size:clamp(30px,8vw,44px);text-shadow:0 0 14px #f2c14e}
+#medbar .xbar{width:100%;height:14px}
+#medbar .mtxt{font-size:15px}
+#medbar .mrealm{font-family:var(--f-head);font-size:22px;color:#ffe08a}
+#medbar .mrealm.pop{animation:cgPop .5s ease-out}
+.med input[type=range]{width:100%;accent-color:#c8413b;margin:4px 0 10px}
+.med-len{font-size:16px}
+.med-out{background:#fbf3e4;border:2px solid #c8a870;border-radius:6px;padding:10px 12px;line-height:1.8}
+.med-out .up{margin-left:8px;color:#c8413b;font-weight:bold}
+.med-ahead{margin-top:10px}.med-ahead small{color:#7a5a2a}
+.med-ahead ul{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.med-ahead li{display:flex;justify-content:space-between;border-bottom:1px dashed #c8a870;padding:2px 0}
 #medfx.on{animation:med 1.8s ease-in-out}
 #medfx span{font-family:var(--f-brush);font-size:clamp(30px,8vw,46px);color:#fff3c4;text-shadow:0 0 14px #f2c14e}
 @keyframes med{0%,100%{opacity:0}25%,75%{opacity:1}}
