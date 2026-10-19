@@ -94,6 +94,18 @@ const Music = (()=>{
       {chord:[-1,1,4,6], mel:[[7,1],[8,1],[7,1],[6,1]]},
       {chord:[0,2,3,5], mel:[[5,4]]}]},
   };
+  // iPhone's ring/silent switch mutes Web Audio. Playing a looping silent <audio> element inside a tap moves the page
+  // to the "media playback" audio session, so the music is heard even with the switch on silent.
+  let unmuted=null;
+  function iosUnmute(){
+    if(unmuted) return; try{
+      const rate=8000, n=rate/4, buf=new ArrayBuffer(44+n*2), v=new DataView(buf), w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+      w(0,'RIFF'); v.setUint32(4,36+n*2,true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+      v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,'data'); v.setUint32(40,n*2,true);
+      unmuted=new Audio(URL.createObjectURL(new Blob([buf],{type:'audio/wav'}))); unmuted.loop=true; unmuted.setAttribute('playsinline',''); unmuted.volume=0.01;
+      const p=unmuted.play(); if(p&&p.catch) p.catch(()=>{ unmuted=null; });
+    }catch(e){ unmuted=null; }
+  }
   let bar=0, barT=0;
   function wood(t){ const o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.setValueAtTime(1500,t); o.frequency.exponentialRampToValueAtTime(900,t+.05);
     g.gain.setValueAtTime(.09,t); g.gain.exponentialRampToValueAtTime(.0001,t+.07); o.connect(g).connect(master); o.start(t); o.stop(t+.08); }
@@ -121,7 +133,8 @@ const Music = (()=>{
   }
   return {
     THEMES, SCORES,
-    unlock(){ if(!ensure()) return; try{ if(ac.state!=='running') ac.resume(); const b=ac.createBuffer(1,1,22050), s=ac.createBufferSource(); s.buffer=b; s.connect(ac.destination); s.start(0); }catch(e){} },
+    debug(){ return {state:ac?ac.state:'none', cur, want:this._want, enabled, time:ac?ac.currentTime:0, gain:master?master.gain.value:0}; },
+    unlock(){ if(!ensure()) return; try{ if(ac.state!=='running') ac.resume(); const b=ac.createBuffer(1,1,22050), s=ac.createBufferSource(); s.buffer=b; s.connect(ac.destination); s.start(0); }catch(e){} iosUnmute(); },
     get enabled(){ return enabled; },
     setEnabled(v){ enabled=v; if(!v) this.stop(); else if(this._want) this.play(this._want,true); },
     play(name, force){

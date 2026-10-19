@@ -75,7 +75,8 @@ const Review = {
     let el=$('#reviewNote'); if(!el){ el=document.createElement('div'); el.id='reviewNote'; el.className='wood'; document.body.appendChild(el); }
     const i=Review.NODES.indexOf(n), next=Review.NODES[i+1];
     el.innerHTML=`<b>审查 · ${esc(n.title)}</b><p>${esc(n.check)}</p><div class="rn-btns"><button class="btn mini" id="rnHub">全部节点</button>${next?`<button class="btn mini" id="rnNext">下一个：${esc(next.title)}</button>`:''}<button class="btn mini" id="rnX">收起</button></div>`;
-    $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>el.remove(); if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id; };
+    $('#reviewPill')&&$('#reviewPill').remove();
+    $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>{ el.remove(); const p=document.createElement('button'); p.id='reviewPill'; p.className='wood'; p.textContent='审查：'+n.title+' ▾'; p.onclick=()=>{ p.remove(); Review.note(n); }; document.body.appendChild(p); }; if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id; };
   },
   hub(){
     $('#reviewHub')&&$('#reviewHub').remove();
@@ -89,6 +90,7 @@ const Review = {
   route(){
     const h=location.hash.replace('#','');
     if(h==='review') return Review.hub();
+    if(h==='selftest') return;
     if(h.startsWith('t-')) return Review.go(h.slice(2));
   },
 };

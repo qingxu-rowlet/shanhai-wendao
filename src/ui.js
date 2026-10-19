@@ -203,7 +203,7 @@ const UI = {
     $('#qAll').onclick=e=>{ e.stopPropagation(); Sound.tick(); UI.tasks(); };
     $('#hQuest').querySelectorAll('[data-trk]').forEach(r=>r.onclick=e=>{ if(e.target.closest('.qgo')) return; Sound.tick(); S.track=r.dataset.trk; RT.navT=0; UI.hud(); });
     $('#hQuest').querySelectorAll('[data-qgo]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); Sound.tick(); S.track=b.dataset.qgo; RT.navT=0; UI.hud(); Nav.go(); });
-    UI.clock(); UI.hotbar();
+    UI.clock(); UI.hotbar(); UI.musicBtn&&UI.musicBtn();
   },
   clock(){ if(!S) return; const st=stats(); $('#hHp').style.width=Math.max(0,S.hp/st.hp*100)+'%'; $('#hMp').style.width=Math.max(0,S.mp/st.mp*100)+'%'; $('#hHpT').textContent=`${Math.ceil(S.hp)}/${st.hp}`; $('#hMpT').textContent=`${S.mp}/${st.mp}`; $('#hDay').textContent=`第 ${S.day} 天`; $('#hTime').textContent=fmtTime(S.min);
     const h=S.min/60; $('#hSun').className='sun '+(h>=18||h<6?'moon':''); },
@@ -387,5 +387,7 @@ const UI = {
 };
 $('#menuB').onclick=()=>{ Sound.tick(); UI.menu(); };
 $('#mini').onclick=()=>{ Sound.tick(); UI.worldMap(); };
+UI.musicBtn=()=>{ const b=$('#musicB'); if(b) b.classList.toggle('off', !!(S&&S.music===false)); };
+$('#musicB').onclick=()=>{ Music.unlock(); Sound.unlock(); if(!S) return; S.music=S.music===false; if(S.music===false){ Music.stop(); UI.toast('音乐：关'); } else { Music.play(Battle.s?'battle':areaTheme(),true); UI.toast('音乐：开（iPhone 静音开关打开时也能听到）'); } UI.musicBtn(); };
 
 

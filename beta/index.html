@@ -407,6 +407,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .rh-item span{grid-column:1;font-size:12px;color:var(--ink-soft);line-height:1.4}
 .rh-item code{grid-column:2;grid-row:1/3;align-self:center;font-size:12px;color:#2f4a75}
 .rh-box .rn-btns{margin-top:12px}
+.musicb{padding:4px 10px;font-family:var(--f-head);font-size:14px;color:var(--ink)}
+.musicb.off{color:#a89070;text-decoration:line-through}
+#reviewPill{position:fixed;left:50%;transform:translateX(-50%);top:max(6px,env(safe-area-inset-top,0px));z-index:45;padding:4px 12px;font-family:var(--f-head);font-size:14px;color:#2f4a75;background:#e9f2ff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -414,7 +417,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 <div id="hud">
   <div class="hud-tl"><div class="realm wood"><b id="hRealm"></b><div class="bar"><i id="hExp"></i></div></div><div class="quest wood" id="hQuest"></div></div>
   <div class="hud-tr"><div class="clock wood"><span class="sun" id="hSun"></span><div id="hDay"></div><div id="hTime"></div><div class="stones"><span class="gem"></span><b id="hStones">0</b></div></div>
-    <button class="minibox wood" aria-label="打开地图"><canvas id="mini" class="px"></canvas><span>地图</span></button></div>
+    <button class="minibox wood" aria-label="打开地图"><canvas id="mini" class="px"></canvas><span>地图</span></button>
+    <button class="musicb wood" id="musicB" aria-label="音乐开关">♪ 音乐</button></div>
   <div class="vitals wood"><div class="vrow"><span>命</span><div class="hbar hp"><i id="hHp"></i></div><em id="hHpT"></em></div><div class="vrow"><span>灵</span><div class="hbar mp"><i id="hMp"></i></div><em id="hMpT"></em></div></div>
   <div class="hotbar wood" id="hotbar"></div>
   <button class="wood" id="menuB" aria-label="打开行囊">囊</button>
@@ -2326,7 +2330,7 @@ const UI = {
     $('#qAll').onclick=e=>{ e.stopPropagation(); Sound.tick(); UI.tasks(); };
     $('#hQuest').querySelectorAll('[data-trk]').forEach(r=>r.onclick=e=>{ if(e.target.closest('.qgo')) return; Sound.tick(); S.track=r.dataset.trk; RT.navT=0; UI.hud(); });
     $('#hQuest').querySelectorAll('[data-qgo]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); Sound.tick(); S.track=b.dataset.qgo; RT.navT=0; UI.hud(); Nav.go(); });
-    UI.clock(); UI.hotbar();
+    UI.clock(); UI.hotbar(); UI.musicBtn&&UI.musicBtn();
   },
   clock(){ if(!S) return; const st=stats(); $('#hHp').style.width=Math.max(0,S.hp/st.hp*100)+'%'; $('#hMp').style.width=Math.max(0,S.mp/st.mp*100)+'%'; $('#hHpT').textContent=`${Math.ceil(S.hp)}/${st.hp}`; $('#hMpT').textContent=`${S.mp}/${st.mp}`; $('#hDay').textContent=`第 ${S.day} 天`; $('#hTime').textContent=fmtTime(S.min);
     const h=S.min/60; $('#hSun').className='sun '+(h>=18||h<6?'moon':''); },
@@ -2510,6 +2514,8 @@ const UI = {
 };
 $('#menuB').onclick=()=>{ Sound.tick(); UI.menu(); };
 $('#mini').onclick=()=>{ Sound.tick(); UI.worldMap(); };
+UI.musicBtn=()=>{ const b=$('#musicB'); if(b) b.classList.toggle('off', !!(S&&S.music===false)); };
+$('#musicB').onclick=()=>{ Music.unlock(); Sound.unlock(); if(!S) return; S.music=S.music===false; if(S.music===false){ Music.stop(); UI.toast('音乐：关'); } else { Music.play(Battle.s?'battle':areaTheme(),true); UI.toast('音乐：开（iPhone 静音开关打开时也能听到）'); } UI.musicBtn(); };
 
 
 
@@ -2804,6 +2810,18 @@ const Music = (()=>{
       {chord:[-1,1,4,6], mel:[[7,1],[8,1],[7,1],[6,1]]},
       {chord:[0,2,3,5], mel:[[5,4]]}]},
   };
+  // iPhone's ring/silent switch mutes Web Audio. Playing a looping silent <audio> element inside a tap moves the page
+  // to the "media playback" audio session, so the music is heard even with the switch on silent.
+  let unmuted=null;
+  function iosUnmute(){
+    if(unmuted) return; try{
+      const rate=8000, n=rate/4, buf=new ArrayBuffer(44+n*2), v=new DataView(buf), w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+      w(0,'RIFF'); v.setUint32(4,36+n*2,true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+      v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,'data'); v.setUint32(40,n*2,true);
+      unmuted=new Audio(URL.createObjectURL(new Blob([buf],{type:'audio/wav'}))); unmuted.loop=true; unmuted.setAttribute('playsinline',''); unmuted.volume=0.01;
+      const p=unmuted.play(); if(p&&p.catch) p.catch(()=>{ unmuted=null; });
+    }catch(e){ unmuted=null; }
+  }
   let bar=0, barT=0;
   function wood(t){ const o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.setValueAtTime(1500,t); o.frequency.exponentialRampToValueAtTime(900,t+.05);
     g.gain.setValueAtTime(.09,t); g.gain.exponentialRampToValueAtTime(.0001,t+.07); o.connect(g).connect(master); o.start(t); o.stop(t+.08); }
@@ -2831,7 +2849,8 @@ const Music = (()=>{
   }
   return {
     THEMES, SCORES,
-    unlock(){ if(!ensure()) return; try{ if(ac.state!=='running') ac.resume(); const b=ac.createBuffer(1,1,22050), s=ac.createBufferSource(); s.buffer=b; s.connect(ac.destination); s.start(0); }catch(e){} },
+    debug(){ return {state:ac?ac.state:'none', cur, want:this._want, enabled, time:ac?ac.currentTime:0, gain:master?master.gain.value:0}; },
+    unlock(){ if(!ensure()) return; try{ if(ac.state!=='running') ac.resume(); const b=ac.createBuffer(1,1,22050), s=ac.createBufferSource(); s.buffer=b; s.connect(ac.destination); s.start(0); }catch(e){} iosUnmute(); },
     get enabled(){ return enabled; },
     setEnabled(v){ enabled=v; if(!v) this.stop(); else if(this._want) this.play(this._want,true); },
     play(name, force){
@@ -4283,7 +4302,8 @@ const Review = {
     let el=$('#reviewNote'); if(!el){ el=document.createElement('div'); el.id='reviewNote'; el.className='wood'; document.body.appendChild(el); }
     const i=Review.NODES.indexOf(n), next=Review.NODES[i+1];
     el.innerHTML=`<b>审查 · ${esc(n.title)}</b><p>${esc(n.check)}</p><div class="rn-btns"><button class="btn mini" id="rnHub">全部节点</button>${next?`<button class="btn mini" id="rnNext">下一个：${esc(next.title)}</button>`:''}<button class="btn mini" id="rnX">收起</button></div>`;
-    $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>el.remove(); if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id; };
+    $('#reviewPill')&&$('#reviewPill').remove();
+    $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>{ el.remove(); const p=document.createElement('button'); p.id='reviewPill'; p.className='wood'; p.textContent='审查：'+n.title+' ▾'; p.onclick=()=>{ p.remove(); Review.note(n); }; document.body.appendChild(p); }; if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id; };
   },
   hub(){
     $('#reviewHub')&&$('#reviewHub').remove();
@@ -4297,6 +4317,7 @@ const Review = {
   route(){
     const h=location.hash.replace('#','');
     if(h==='review') return Review.hub();
+    if(h==='selftest') return;
     if(h.startsWith('t-')) return Review.go(h.slice(2));
   },
 };

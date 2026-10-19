@@ -407,6 +407,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .rh-item span{grid-column:1;font-size:12px;color:var(--ink-soft);line-height:1.4}
 .rh-item code{grid-column:2;grid-row:1/3;align-self:center;font-size:12px;color:#2f4a75}
 .rh-box .rn-btns{margin-top:12px}
+.musicb{padding:4px 10px;font-family:var(--f-head);font-size:14px;color:var(--ink)}
+.musicb.off{color:#a89070;text-decoration:line-through}
+#reviewPill{position:fixed;left:50%;transform:translateX(-50%);top:max(6px,env(safe-area-inset-top,0px));z-index:45;padding:4px 12px;font-family:var(--f-head);font-size:14px;color:#2f4a75;background:#e9f2ff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -414,7 +417,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 <div id="hud">
   <div class="hud-tl"><div class="realm wood"><b id="hRealm"></b><div class="bar"><i id="hExp"></i></div></div><div class="quest wood" id="hQuest"></div></div>
   <div class="hud-tr"><div class="clock wood"><span class="sun" id="hSun"></span><div id="hDay"></div><div id="hTime"></div><div class="stones"><span class="gem"></span><b id="hStones">0</b></div></div>
-    <button class="minibox wood" aria-label="打开地图"><canvas id="mini" class="px"></canvas><span>地图</span></button></div>
+    <button class="minibox wood" aria-label="打开地图"><canvas id="mini" class="px"></canvas><span>地图</span></button>
+    <button class="musicb wood" id="musicB" aria-label="音乐开关">♪ 音乐</button></div>
   <div class="vitals wood"><div class="vrow"><span>命</span><div class="hbar hp"><i id="hHp"></i></div><em id="hHpT"></em></div><div class="vrow"><span>灵</span><div class="hbar mp"><i id="hMp"></i></div><em id="hMpT"></em></div></div>
   <div class="hotbar wood" id="hotbar"></div>
   <button class="wood" id="menuB" aria-label="打开行囊">囊</button>
