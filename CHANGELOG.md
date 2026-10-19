@@ -3,7 +3,25 @@
 每个版本先发布到**测试版** https://qingxu-rowlet.github.io/shanhai-wendao/beta/ ，审查通过后再更新到正式版 https://qingxu-rowlet.github.io/shanhai-wendao/ 。
 每个审查点都有直达链接（见下方清单，或打开 `#review`）。发布前都会跑一遍自检：在链接后加 `#selftest`，游戏会自动玩完第一章并给出 ✓/✗ 报告（使用第 3 个存档位，结束后恢复）。
 
-## v0.9（测试版）
+## v0.9.1（测试版）
+
+### 改动
+- **心动事件重做**：小棠、长歌换成大幅半身立绘，有 平常 / 微笑 / 脸红 / 难过 四种表情，会随台词变化。每个场景都加了道具和前景（药篓、荷叶、药庐、石桥河灯、竹林木桩、崖边松树、帐篷篝火……），「雨中药庐」中途会从山路切到药庐里。8 段对话都扩写到原来的两倍左右。
+- **不会吃醋**：好感各自独立，可以和每个人都到 8 心。
+- **信箱**：洞府门口新增信箱。好感 4 心以上的朋友偶尔会在清晨寄信和小礼物来，好感越高越常寄；有新信时信箱上出现红色「!」，早上的日卡也会提示。行囊 → 信件 也能打开。
+
+### 修复
+- 切换场景时两首曲子会重叠一阵：现在是淡出 / 淡入。
+- 测完灵根后音乐乱、快几秒（在补播落下的音符）：现在直接从当前接着播。
+- 修炼页去掉了残留的「体力上限」。
+
+### 请重点审查
+1. 心动事件（立绘、表情、场景）：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-cg-tang-2 · https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-cg-tang-6 （中途换景）· https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-cg-ge-4 · 其余 5 段在 https://qingxu-rowlet.github.io/shanhai-wendao/beta/#review
+2. 信箱：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-mail
+3. 换场景的音乐：随便走几张地图、打一场战斗、测一次灵根 https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-prologue
+4. 自检：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#selftest
+
+## v0.9
 
 ### 改动
 - **移除种田**：灵田、锄头、水壶、种子、灵泉阵、播种傀儡全部移除；灵草、灵菇、朱果、野山茶改为采集（洞府前和山林里）。第一个主线改为「采一株灵草」。钱掌柜出售朱果。

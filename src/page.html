@@ -375,6 +375,17 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .cg-title small{font-family:var(--f-head);font-size:14px;letter-spacing:.2em;color:#ffd0dc}
 .cg-title b{font-family:var(--f-brush);font-weight:400;font-size:clamp(40px,11vw,64px);line-height:1.1}
 #cg.go .cg-title{animation:inkIn 1.4s ease-out both}
+#cgHer.bust{height:min(62vh,520px)!important}
+#cgHer.pop{animation:cgPop .35s ease-out}
+@keyframes cgPop{40%{transform:translateY(-6px)}}
+#cg.swap #cgBg{animation:cgSwap .8s ease-out}
+@keyframes cgSwap{from{opacity:0}}
+.mails{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto}
+.mailrow{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border:2px solid #b89a6a;border-radius:6px;background:#fbf3e4;font:inherit;cursor:pointer}
+.mailrow.new{border-color:#c8413b;background:#fff0e0}
+.mailrow.new b::before{content:'● ';color:#c8413b}
+.letter{background:#f8ecd0;border:2px solid #c8a870;padding:16px 18px;border-radius:4px;line-height:1.9;font-size:16px;box-shadow:inset 0 0 30px rgba(160,120,60,.25)}
+.lgift{margin:10px 0;color:#7a5a2a}
 .tabs.sub button{font-size:14px;padding:4px 10px}
 .goldstar{font-size:12px;color:#b8862d;background:#fff0b0;padding:0 5px;border-radius:3px}
 .rare{font-size:11px;color:#7a5ad0;letter-spacing:-1px}

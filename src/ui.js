@@ -238,6 +238,8 @@ const UI = {
       if(Array.isArray(st)) return UI.line(st[0],st[1]);
       if(CG.replaying && (st.give||st.love||st.flag||st.exp||st.stones)) continue;
       if(st.cg){ CG.open(st.cg, st.who, st.title); continue; }
+      if(st.face){ CG.setFace(st.face); continue; }
+      if(st.cgscene){ CG.setScene(st.cgscene); continue; }
       if(st.cgend){ CG.close(); CG.replaying=false; continue; }
       if(st.love){ for(const k in st.love) Social.add(k, st.love[k]); Sound.pick(); continue; }
       if(st.give){ for(const k in st.give){ addItem(k,st.give[k]); } Sound.pick(); UI.toast('获得 '+Object.keys(st.give).map(k=>ITEMS[k].name+'×'+st.give[k]).join('、')); continue; }
@@ -291,7 +293,7 @@ const UI = {
   menu(tab){
     if(!$('#panel').hidden){ UI.closePanel(); return; }
     tab=tab||UI._tab||'bag'; UI._tab=tab;
-    const tabs=[['bag','行囊'],['cult','修炼'],['people','人物'],['book','图鉴'],['quest','任务'],['replay','往事'],['save','存档'],['set','设置']];
+    const tabs=[['bag','行囊'],['cult','修炼'],['people','人物'],['mail','信件'],['book','图鉴'],['quest','任务'],['replay','往事'],['save','存档'],['set','设置']];
     const head=`<div class="tabs">${tabs.map(([k,n])=>`<button data-t="${k}" class="${k===tab?'on':''}">${n}</button>`).join('')}</div>`;
     let body='';
     if(tab==='bag'){
@@ -301,7 +303,7 @@ const UI = {
     }
     if(tab==='cult'){ const st=stats(), need=expNeed(S.L);
       body=`<div class="cult"><div class="realm-big">${realmName(S.L)}</div><div class="xbar"><i style="width:${Math.min(100,S.exp/need*100)}%"></i></div><p class="muted">修为 ${Math.floor(S.exp)} / ${need}</p>
-        <div class="stats"><span>生命<b>${st.hp}</b></span><span>灵力<b>${st.mp}</b></span><span>攻击<b>${st.atk}</b></span><span>防御<b>${st.def}</b></span><span>体力上限<b>${maxEnergy()}</b></span></div>
+        <div class="stats"><span>生命<b>${st.hp}</b></span><span>灵力<b>${st.mp}</b></span><span>攻击<b>${st.atk}</b></span><span>防御<b>${st.def}</b></span></div>
         <div class="tip"><b>灵根</b> ${Sect.rootName()}　<b>门派</b> ${S.sect?SECTS[S.sect].name+'（绝学：'+SECTS[S.sect].skill.name+'）':'未拜师'}${S.pet?'　<b>灵宠</b> '+BEASTS[S.pet.kind].name+' Lv'+S.pet.lv:''}${Sect.fortune()?'　<b>今日卦象</b> '+Sect.fortune().name:''}　<b>善恶</b> ${(S.karma||0)>=0?'善 '+(S.karma||0):'恶 '+(-S.karma)}</div>
         <p class="tip">${S.L===0?'到蒲团上打坐，引气入体。':S.L<9?'打坐、服用聚气丹、击败妖兽都能增加修为。修为圆满会自动突破到下一层。':S.L===9?'炼气九层圆满后，需要服下筑基丹，在蒲团上冲击筑基。':'已入筑基。下一章的修行敬请期待。'}</p></div>`; }
     if(tab==='book'){
@@ -309,12 +311,12 @@ const UI = {
     if(tab==='quest'){ const q=QUESTS[S.quest];
       body=`<div class="qcur"><b>${esc(q.title)}</b><p>${esc(q.desc)}</p>${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}</div>
         <ul class="qdone">${QUESTS.slice(0,S.quest).map(x=>`<li>✓ ${esc(x.title)}</li>`).join('')}</ul>`; }
-    if(tab==='people'){ body=`<div class="people">${UI.people()}</div><p class="muted">每天和大家聊聊天、送一份礼物，好感就会慢慢上升。</p>`; }
+    if(tab==='people'){ body=`<div class="people">${UI.people()}</div><p class="muted">每天和大家聊聊天、送一份礼物，好感就会慢慢上升。好感各自独立，不会吃醋，可以和每个人都到 8 心。</p>`; }
     if(tab==='replay'){ body=Replay.html(); }
     if(tab==='set'){ body=`<div class="set"><button class="btn" id="sMute">声音：${S.mute?'关':'开'}</button><button class="btn" id="sMusic">音乐：${S.music===false?'关':'开'}</button><button class="btn" id="sSave">保存游戏</button><button class="btn" id="sSlots">存档 / 读档</button>
       <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），E/空格 互动（靠近时头顶会出现 E），鼠标滚轮或 1–6 选道具，Esc 行囊，M 地图，J 任务。<br>手机：点哪里就走到哪里，点人物或物体即可互动；点左上角任务的「寻路」自动前往。<br>iPhone 若听不到音乐，请关闭侧边的静音开关。</p></div>`; }
     UI.panel('行囊', head+body, b=>{
-      b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); if(t.dataset.t==='quest'){ $('#panel').hidden=true; UI._panelKind=''; return UI.tasks(); } if(t.dataset.t==='save'){ $('#panel').hidden=true; return SaveSys.panel(); } UI._tab=t.dataset.t; $('#panel').hidden=true; UI.menu(t.dataset.t); });
+      b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); if(t.dataset.t==='quest'){ $('#panel').hidden=true; UI._panelKind=''; return UI.tasks(); } if(t.dataset.t==='mail'){ $('#panel').hidden=true; UI._panelKind=''; return Mail.open(); } if(t.dataset.t==='save'){ $('#panel').hidden=true; return SaveSys.panel(); } UI._tab=t.dataset.t; $('#panel').hidden=true; UI.menu(t.dataset.t); });
       b.querySelectorAll('.cell').forEach(c=>c.onclick=()=>{ const id=c.dataset.id, it=ITEMS[id];
         $('#idesc').innerHTML=`<b>${it.name}</b> ${esc(it.desc||'')} ${it.use?`<button class="btn mini" id="iUse">服用</button>`:''}`;
         const u=$('#iUse'); if(u) u.onclick=()=>{ UI.useItem(id); $('#panel').hidden=true; UI.menu('bag'); }; });
@@ -363,7 +365,7 @@ const UI = {
   dayCard(passedOut){
     const ready=Object.values(S.farm).filter(p=>p.crop&&p.stage>=3).length;
     UI.fx=true; UI.sync(); const el=$('#daycard'); el.hidden=false;
-    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?'<span>听说青丘山林里今天有些不寻常……</span>':''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
+    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?'<span>听说青丘山林里今天有些不寻常……</span>':''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}${Mail.unread()?`<span>信箱里有 ${Mail.unread()} 封新信。</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
     el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
     setTimeout(()=>{ el.hidden=true; UI.fx=false; UI.hud(); UI.sync(); },2200);
   },

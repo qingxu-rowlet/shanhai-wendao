@@ -206,6 +206,7 @@ function interact(o){
     case 'chest': if(!S.flags.chest){ S.flags.chest=true; addItem('huichun',2); S.stones+=20; Sound.coin(); return UI.say([['旁白','箱子里有云游子留下的两颗回春丹和二十块灵石。']]); }
       return UI.say([['旁白','空空的木箱。']]);
     case 'shrine': return Story.shrine();
+    case 'mail': return Mail.open();
     case 'altar': return Sect.altar();
     case 'puppet': return Life.puppetMenu();
     case 'qiyu': return Hooks.qiyu(o);
@@ -401,7 +402,7 @@ function render(){
     list.push({y:p[1]+0.98, draw:()=>{ drawShadow(ox+p[0]*T, oy+p[1]*T, Z); drawSprite(BEASTS[S.pet.kind].spr, ox+p[0]*T, oy+p[1]*T, Z, RT.moving?-Math.abs(Math.sin(RT.t*9))*1.5:0, p[0]>RT.fx); }}); }
   list.sort((a,b)=>a.y-b.y).forEach(d=>d.draw());
   Nav.drawWorld(g, ox, oy, T, Z);
-  drawPrompt(g, ox, oy, T, Z);
+  drawPrompt(g, ox, oy, T, Z); Mail.drawFlag(g, ox, oy, T, Z);
   // path marker
   if(RT.path.length){ const [tx,ty]=RT.path[RT.path.length-1]; g.strokeStyle='rgba(255,255,255,.7)'; g.lineWidth=Z; g.strokeRect(ox+tx*T+2*Z, oy+ty*T+2*Z, T-4*Z, T-4*Z); }
   drawNight(g, ox, oy, T, Z);

@@ -40,6 +40,9 @@ const Review = {
     // 心动事件
     ...['tang','ge'].flatMap(id=>[2,4,6,8].map(lv=>({id:`cg-${id}-${lv}`, group:'心动事件', title:`${id==='tang'?'苏小棠':'顾长歌'} ${lv}♥`, check:'插画场景、人物位置、选项和好感变化。',
       run(){ Review.base({quest:'q8', L:10, sect:'dan', flags:{qiongqi_done:true, tang_sect:true}}); Review.at('town',12,11,'down'); setTimeout(()=>Dev.run(`cg:${id}:${lv}`),400); }}))),
+    {id:'mail', group:'心动事件', title:'信箱', check:'洞府门口的信箱上有红色「!」。打开看看几封信，收下礼物；也可以从行囊 → 信件打开。',
+      run(){ Review.base({quest:'q8', L:10, sect:'dan', flags:{qiongqi_done:true, tang_sect:true}}); for(const id of ['tang','ge','ahe']) Social.rel(id).pts=650;
+        S.mail=[{id:'tang',from:'苏小棠',li:2,day:S.day,read:false,taken:false},{id:'ge',from:'顾长歌',li:2,day:S.day,read:false,taken:false},{id:'ahe',from:'阿禾',li:0,day:S.day,read:false,taken:false}]; Review.at('home',8,6,'up'); }},
     // 存档与回放
     {id:'replay', group:'存档', title:'往事回廊：重温拜师大典', check:'这个存档已拜入青云剑宗。重温时选别的门派，结束后打开行囊确认门派还是青云剑宗。',
       run(){ Review.base({quest:'end', L:10, sect:'jian', flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true}}); Review.at('town',12,11,'down'); setTimeout(()=>{ UI._tab='replay'; UI.menu('replay'); },400); }},
