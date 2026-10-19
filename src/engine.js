@@ -1,0 +1,473 @@
+/* ============================================================
+   山海问道 · engine: state, rendering, movement, time, farming, beasts
+   ============================================================ */
+const TILE = 16;
+const SAVE_KEY = 'shanhai-wendao.v1';
+const MIN_SEC = 0.6;           // real seconds per game minute
+const DAY_START = 6*60, PASS_OUT = 26*60;
+
+let S = null;                  // saved game state
+let RT = {                     // runtime-only state
+  paused:true, mapId:null, map:null, solid:null, ents:[], beasts:[],
+  fx:0, fy:0, stamina:100, winded:false, runHeld:false, runToggle:false, running:false, moving:false, path:[], pending:null, dir:'down', step:0, keys:[], walk:0, slot:0, autoNav:false, navPath:[], navT:0, tileKey:'',
+  cam:{x:0,y:0}, scale:3, dpr:1, fade:0, fadeTo:null, t:0, toastT:0, shake:0
+};
+
+function newState(){
+  return { map:'home', x:11, y:6, L:0, exp:0, hp:50, mp:16, energy:100, stones:20, day:1, min:DAY_START,
+    inv:{}, sel:'hoe', farm:{}, gathered:{}, killed:{}, quest:0, questStarted:-1, flags:{},
+    st:{planted:0, watered:0, kills:0, harvested:0, meditated:0}, seen:{}, mute:false, side:{}, track:'main', name:'无名', look:defaultLook('m'), qv:2, karma:0 };
+}
+function maxEnergy(){ return 100 + 10*S.L + (S.bonusEnergy||0); }
+function stats(){ return Sect.apply(statsFor(S.L)); }
+function save(){ try{ localStorage.setItem(slotKey(RT.slot), JSON.stringify(S)); return true; }catch(e){ return false; } }
+function loadSave(i){ const s=readSlot(i); if(s){ s.side=s.side||{}; s.track=s.track||'main'; s.look=s.look||defaultLook('m'); s.name=s.name||'无名'; s.st.meditated=s.st.meditated||0; if(s.quest>0) s.flags.intro_done=true; } return s; }
+function addItem(id,n=1){ S.inv[id]=(S.inv[id]||0)+n; if(S.inv[id]<=0) delete S.inv[id]; UI.hud(); }
+
+/* ---------- sprite & tile caches ---------- */
+const SPRC = {};
+function sprite(key, color){
+  const ck = key+(color||''); if(SPRC[ck]) return SPRC[ck];
+  const rows = SPR[key]; const h=rows.length, w=Math.max(...rows.map(r=>r.length));
+  const c=document.createElement('canvas'); c.width=w+2; c.height=h+2; const g=c.getContext('2d');
+  const filled=(x,y)=>y>=0&&y<h&&x>=0&&x<w&&rows[y][x]&&rows[y][x]!=='.';
+  // outline first, then pixels
+  g.fillStyle=PAL.k;
+  for(let y=-1;y<=h;y++) for(let x=-1;x<=w;x++){ if(filled(x,y)) continue;
+    if(filled(x-1,y)||filled(x+1,y)||filled(x,y-1)||filled(x,y+1)) g.fillRect(x+1,y+1,1,1); }
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){ const ch=rows[y][x]; if(!ch||ch==='.') continue;
+    g.fillStyle = ch==='X' ? (color||'#fff') : (PAL[ch]||'#f0f'); g.fillRect(x+1,y+1,1,1); }
+  // anchor: last row with pixels (so a tall sprite stands on its tile)
+  let bottom=h-1; while(bottom>0 && !rows[bottom].replace(/\./g,'')) bottom--;
+  c.bottom=bottom+2; return SPRC[ck]=c;
+}
+function rng(seed){ let s=seed>>>0||1; return ()=>((s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5|0, ((s^s>>>14)>>>0)%10000)/10000); }
+const TILEC = {};
+function tileCanvas(ch, v, frame){
+  const key=ch+v+(frame||0); if(TILEC[key]) return TILEC[key];
+  const c=document.createElement('canvas'); c.width=c.height=TILE; const g=c.getContext('2d'), R=rng(ch.charCodeAt(0)*977+v*131+(frame||0)*7);
+  const px=(x,y,col)=>{ g.fillStyle=col; g.fillRect(x,y,1,1); };
+  const grass=()=>{ g.fillStyle='#6fbf4f'; g.fillRect(0,0,16,16);
+    for(let i=0;i<22;i++) px(R()*16|0,R()*16|0, R()<.5?'#5fae43':'#83cf5c');
+    for(let i=0;i<3;i++){ const x=R()*14|0,y=2+R()*12|0; px(x,y,'#4f9a3a'); px(x+1,y-1,'#4f9a3a'); } };
+  switch(ch){
+    case ',': grass(); for(let i=0;i<3;i++){ const x=1+R()*13|0,y=1+R()*13|0, col=['#f2f2a0','#f5a3c0','#ffffff','#b9a3f5'][R()*4|0]; px(x,y,col); px(x+1,y,col); px(x,y+1,col); px(x+1,y+1,'#e8b84a'); } break;
+    case ':': grass(); for(let i=0;i<5;i++){ const x=R()*14|0,y=4+R()*10|0; for(let k=0;k<4;k++){ px(x,y-k,'#3f8a33'); } px(x+1,y-2,'#3f8a33'); px(x-1,y-1,'#58a744'); } break;
+    case '=': g.fillStyle='#d4ae78'; g.fillRect(0,0,16,16); for(let i=0;i<14;i++) px(R()*16|0,R()*16|0, R()<.5?'#c49c66':'#e0bd88');
+      for(let i=0;i<2;i++){ const x=R()*14|0,y=R()*14|0; px(x,y,'#a7895f'); px(x+1,y,'#bfa27a'); } break;
+    case '#': g.fillStyle='#cdbfa6'; g.fillRect(0,0,16,16); g.fillStyle='#ad9f86';
+      g.fillRect(0,7,16,1); g.fillRect(0,15,16,1); g.fillRect(v%2?4:11,0,1,7); g.fillRect(v%2?11:4,8,1,7);
+      for(let i=0;i<8;i++) px(R()*16|0,R()*16|0,'#d9cdb6'); break;
+    case '~': g.fillStyle='#4a9fd8'; g.fillRect(0,0,16,16);
+      for(let i=0;i<3;i++){ const x=(R()*12|0)+((frame||0)?1:0), y=R()*15|0; g.fillStyle='#8fd0f5'; g.fillRect(x,y,3,1); }
+      for(let i=0;i<6;i++) px(R()*16|0,R()*16|0,'#3f8fc6'); break;
+    case 'B': g.fillStyle='#4a9fd8'; g.fillRect(0,0,16,16); g.fillStyle='#a8743f'; g.fillRect(0,1,16,14);
+      g.fillStyle='#8a5a30'; for(let y=1;y<15;y+=4) g.fillRect(0,y,16,1); g.fillStyle='#5e3a20'; g.fillRect(0,1,16,1); g.fillRect(0,14,16,1); break;
+    case 'W': g.fillStyle='#8b7a64'; g.fillRect(0,0,16,16); g.fillStyle='#a8957a'; g.fillRect(0,0,16,3);
+      g.fillStyle='#6f604e'; for(let i=0;i<4;i++){ const x=R()*13|0,y=4+R()*10|0; g.fillRect(x,y,3,1); g.fillRect(x+2,y+1,1,2); }
+      for(let i=0;i<10;i++) px(R()*16|0,3+R()*13|0,'#97866e'); g.fillStyle='#5f9e43'; g.fillRect(0,0,16,1); break;
+    case 'F': g.fillStyle='#b98b5a'; g.fillRect(0,0,16,16); for(let i=0;i<14;i++) px(R()*16|0,R()*16|0,R()<.5?'#a87c4e':'#c99a68'); break;
+    case 't': g.fillStyle='#7a5232'; g.fillRect(0,0,16,16); g.fillStyle='#664228'; for(let y=2;y<16;y+=4) g.fillRect(1,y,14,1);
+      for(let i=0;i<8;i++) px(R()*16|0,R()*16|0,'#8a6040'); break;
+    case 'w': g.fillStyle='#57391f'; g.fillRect(0,0,16,16); g.fillStyle='#46301a'; for(let y=2;y<16;y+=4) g.fillRect(1,y,14,1);
+      for(let i=0;i<6;i++) px(R()*16|0,R()*16|0,'#6a4628'); break;
+    case 'f': grass(); g.fillStyle='#8a5a36'; g.fillRect(0,6,16,2); g.fillRect(0,10,16,2); g.fillStyle='#5e3a20'; g.fillRect(2,4,3,10); g.fillRect(11,4,3,10);
+      g.fillStyle='#a8743f'; g.fillRect(2,4,3,1); g.fillRect(11,4,3,1); break;
+    default: grass();
+  }
+  return TILEC[key]=c;
+}
+
+/* ---------- buildings (drawn procedurally) ---------- */
+const BLDC = {};
+function building(o){
+  const key=o.style+o.w+'x'+o.h; if(BLDC[key]) return BLDC[key];
+  const W=o.w*TILE, H=(o.h+1)*TILE; const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
+  if(o.style==='cave'){
+    g.fillStyle='#7d6c58'; g.beginPath(); g.moveTo(0,H); g.quadraticCurveTo(4,6,W/2,4); g.quadraticCurveTo(W-4,6,W,H); g.fill();
+    g.fillStyle='#958168'; g.beginPath(); g.moveTo(8,H); g.quadraticCurveTo(14,14,W/2,12); g.quadraticCurveTo(W-14,14,W-8,H); g.fill();
+    g.fillStyle='#5f9e43'; g.fillRect(W/2-20,5,40,3); g.fillRect(W/2-12,3,24,3);
+    g.fillStyle='#2a1e1a'; g.beginPath(); g.ellipse(W/2,H-2,13,20,0,Math.PI,0); g.fill(); g.fillRect(W/2-13,H-2,26,2);
+    g.fillStyle='#c8413b'; g.fillRect(W/2-18,H-34,36,8); g.fillStyle='#e8b84a'; g.fillRect(W/2-16,H-32,32,4);
+    g.fillStyle='#6f604e'; for(let i=0;i<10;i++) g.fillRect(10+(i*37)%(W-20), 18+(i*23)%(H-30), 4,1);
+  } else {
+    const wallTop=Math.round(H*0.42);
+    g.fillStyle=o.style==='shop'?'#f3e3c3':'#eadcc0'; g.fillRect(4,wallTop,W-8,H-wallTop);
+    g.fillStyle='#8a5a36'; g.fillRect(4,wallTop,4,H-wallTop); g.fillRect(W-8,wallTop,4,H-wallTop); g.fillRect(4,H-4,W-8,4);
+    for(let x=24;x<W-20;x+=24){ g.fillRect(x,wallTop,3,H-wallTop); }
+    // windows
+    g.fillStyle='#5e3a20'; g.fillRect(14,wallTop+10,16,12); g.fillRect(W-30,wallTop+10,16,12);
+    g.fillStyle='#f2d88a'; g.fillRect(16,wallTop+12,12,8); g.fillRect(W-28,wallTop+12,12,8);
+    g.fillStyle='#5e3a20'; g.fillRect(21,wallTop+12,2,8); g.fillRect(W-23,wallTop+12,2,8);
+    // door
+    g.fillStyle='#5e3a20'; g.fillRect(W/2-9,H-24,18,20); g.fillStyle='#8a5a36'; g.fillRect(W/2-7,H-22,6,18); g.fillRect(W/2+1,H-22,6,18);
+    // roof with upturned eaves
+    const roofCol=o.style==='shop'?'#3d5a7a':'#7a3d3d', roofDark=o.style==='shop'?'#2c4560':'#5c2c2c';
+    g.fillStyle=roofCol; g.beginPath(); g.moveTo(-2,wallTop+4); g.quadraticCurveTo(10,wallTop-2,16,wallTop-14); g.lineTo(W-16,wallTop-14);
+    g.quadraticCurveTo(W-10,wallTop-2,W+2,wallTop+4); g.lineTo(W-6,wallTop+2); g.lineTo(6,wallTop+2); g.fill();
+    g.fillStyle=roofDark; for(let x=20;x<W-16;x+=6) g.fillRect(x,wallTop-12,2,12);
+    g.fillStyle='#c8413b'; g.fillRect(14,wallTop-16,W-28,3);
+    g.fillStyle='#e8b84a'; g.fillRect(W/2-14,wallTop-24,28,9); g.fillStyle='#c8413b'; g.fillRect(W/2-12,wallTop-22,24,5);
+    // lanterns
+    g.fillStyle='#c8413b'; g.fillRect(8,wallTop+4,5,7); g.fillRect(W-13,wallTop+4,5,7);
+    g.fillStyle='#ffdd77'; g.fillRect(9,wallTop+6,3,3); g.fillRect(W-12,wallTop+6,3,3);
+  }
+  return BLDC[key]=c;
+}
+
+/* ---------- maps ---------- */
+function tileAt(x,y){ const m=RT.map; if(x<0||y<0||x>=m.w||y>=m.h) return 'W'; return m.ground[y][x]||'.'; }
+function farmKey(x,y){ return S.map+':'+x+','+y; }
+function enterMap(id, x, y){
+  RT.mapId=id; RT.map=MAPS[id]; S.map=id; S.x=x; S.y=y; RT.fx=x; RT.fy=y; RT.path=[]; RT.pending=null; RT.moving=false; RT.tileKey=id+x+','+y; RT.navPath=[]; RT.navT=0;
+  if(id==='forest') Hooks.placeQiyu();
+  Sect.syncLooks();
+  const m=RT.map; RT.solid=[...Array(m.h)].map((_,yy)=>[...Array(m.w)].map((_,xx)=>'W~f'.includes(tileAt(xx,yy))));
+  RT.ents=[];
+  for(const o of m.objects){
+    if(o.type==='building'){ for(let yy=o.y;yy<o.y+o.h;yy++) for(let xx=o.x;xx<o.x+o.w;xx++) RT.solid[yy][xx]=true; }
+    else if(o.cond && !o.cond(S)) continue;
+    else if(o.type==='gather'){ if(S.gathered[id+':'+o.x+','+o.y]===S.day) continue; RT.solid[o.y][o.x]=true; }
+    else RT.solid[o.y][o.x]=true;
+    RT.ents.push(o);
+  }
+  spawnBeasts();
+  UI.mapName(m.name); UI.miniReset&&UI.miniReset(); Music.play(areaTheme());
+}
+function spawnBeasts(){
+  RT.beasts=[]; const m=RT.map; if(!m.spawns) return;
+  const killed=S.killed[S.day+':'+RT.mapId]||[]; let idx=0;
+  const R=rng(S.day*31+RT.mapId.length);
+  for(const sp of m.spawns){
+    for(let k=0;k<sp.n;k++,idx++){
+      if(killed.includes(idx)) continue;
+      if(sp.minRealm && S.L<sp.minRealm) continue;
+      for(let tries=0;tries<40;tries++){
+        const x=sp.area[0]+(R()*(sp.area[2]-sp.area[0]+1)|0), y=sp.area[1]+(R()*(sp.area[3]-sp.area[1]+1)|0);
+        if(!RT.solid[y][x] && tileAt(x,y)!=='=' && Math.abs(x-S.x)+Math.abs(y-S.y)>5){ RT.beasts.push({kind:sp.kind, idx, x, y, fx:x, fy:y, area:sp.area, t:R()*2, stun:0}); break; }
+      }
+    }
+  }
+}
+function blockedForWalk(x,y){ if(x<0||y<0||x>=RT.map.w||y>=RT.map.h) return true; return RT.solid[y][x]; }
+
+/* ---------- pathfinding ---------- */
+function bfs(sx,sy, goal){ // goal(x,y) → true when reached
+  const m=RT.map, prev=new Map(), q=[[sx,sy]], k=(x,y)=>y*m.w+x; prev.set(k(sx,sy),null);
+  while(q.length){ const [x,y]=q.shift(); if(goal(x,y)){ const path=[]; let c=k(x,y); while(c!=null && c!==k(sx,sy)){ path.unshift([c%m.w,(c/m.w)|0]); c=prev.get(c); } return path; }
+    for(const [dx,dy] of [[0,1],[1,0],[0,-1],[-1,0]]){ const nx=x+dx, ny=y+dy; if(blockedForWalk(nx,ny)||prev.has(k(nx,ny))) continue; prev.set(k(nx,ny),k(x,y)); q.push([nx,ny]); } }
+  return null;
+}
+
+/* ---------- interaction ---------- */
+function entAt(x,y){
+  for(const o of RT.ents){
+    if(o.type==='building'){ if(x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h) return o; if(o.door&&o.door[0]===x&&o.door[1]===y&&o.act) return o; }
+    else if(o.x===x&&o.y===y) return o;
+  }
+  return null;
+}
+function setPath(path){ if(!path) return false; if(Math.hypot(RT.fx-S.x,RT.fy-S.y)>0.05) path.unshift([S.x,S.y]); RT.path=path; return true; }
+function tapWorld(tx,ty){
+  if(RT.paused) return; RT.autoNav=false;
+  const o=entAt(tx,ty), isFarm=tileAt(tx,ty)==='F';
+  if(S.sel==='rod' && tileAt(tx,ty)==='~'){ goAndDo((x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1, ()=>{ face(tx,ty); Mini.fish(tx,ty); }); return; }
+  if(o && (o.act||o.type==='npc'||o.type==='gather'||o.type==='sign'||o.type==='building')){
+    const reach=o.type==='building' ? (x,y)=>o.door&&x===o.door[0]&&y===o.door[1] : (x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1;
+    goAndDo(reach, ()=>{ face(tx, o.type==='building'?y0(o):ty); interact(o); });
+    return;
+  }
+  if(isFarm){ goAndDo((x,y)=>Math.max(Math.abs(x-tx),Math.abs(y-ty))<=1, ()=>{ face(tx,ty); farmAct(tx,ty); }); return; }
+  const path=bfs(S.x,S.y,(x,y)=>x===tx&&y===ty); if(path){ setPath(path); RT.pending=null; }
+}
+function y0(o){ return o.y+o.h-1; }
+function goAndDo(reach, fn){
+  if(reach(S.x,S.y)){ RT.path=[]; fn(); return; }
+  const path=bfs(S.x,S.y,reach); if(path){ setPath(path); RT.pending=fn; } else UI.toast('过不去');
+}
+function face(tx,ty){ const dx=tx-S.x, dy=ty-S.y; if(Math.abs(dx)>Math.abs(dy)) RT.dir=dx>0?'right':'left'; else if(dy) RT.dir=dy>0?'down':'up'; }
+function facedTile(){ const d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[RT.dir]; return [S.x+d[0], S.y+d[1]]; }
+function interactFacing(){
+  const [x,y]=facedTile(); const o=entAt(x,y);
+  if(o){ interact(o); return; }
+  if(S.sel==='rod' && tileAt(x,y)==='~'){ Mini.fish(x,y); return; }
+  if(tileAt(x,y)==='F') farmAct(x,y); else if(tileAt(S.x,S.y)==='F') farmAct(S.x,S.y);
+}
+function interact(o){
+  if(o.type==='npc') return Story.talk(o.id);
+  if(o.type==='gather') return gather(o);
+  if(o.type==='sign') return UI.say([['旁白', o.text]]);
+  switch(o.act){
+    case 'sleep': return UI.confirm('回洞府休息，结束今天？', ()=>sleep(false));
+    case 'meditate': return meditate();
+    case 'alchemy': return UI.alchemy();
+    case 'shop': return UI.shop();
+    case 'chest': if(!S.flags.chest){ S.flags.chest=true; addItem('huichun',2); S.stones+=20; Sound.coin(); return UI.say([['旁白','箱子里有云游子留下的两颗回春丹和二十块灵石。']]); }
+      return UI.say([['旁白','空空的木箱。']]);
+    case 'shrine': return Story.shrine();
+    case 'altar': return Sect.altar();
+    case 'puppet': return Life.puppetMenu();
+    case 'qiyu': return Hooks.qiyu(o);
+  }
+  if(o.type==='building' && o.label) UI.toast(o.label);
+}
+function useEnergy(n){ if(S.energy<n){ UI.toast('体力不够了，回洞府休息吧'); return false; } S.energy-=n; UI.hud(); return true; }
+
+function farmAct(x,y){
+  const k=farmKey(x,y), p=S.farm[k], sel=S.sel, item=ITEMS[sel];
+  if(p&&p.crop&&p.stage>=3){ const c=CROPS[p.crop]; addItem(c.yield[0],c.yield[1]); S.st.harvested++; delete p.crop; p.stage=0; p.days=0; Sound.pick();
+    UI.float(x,y,`+${c.yield[1]} ${ITEMS[c.yield[0]].name}`); Story.check(); return; }
+  if(sel==='hoe'){ if(p&&p.tilled) return UI.toast('已经翻过土了'); if(!useEnergy(2)) return; S.farm[k]={tilled:1,water:0,stage:0,days:0}; Sound.dig(); return; }
+  if(sel==='can'){ if(!p||!p.tilled) return UI.toast('先用锄头翻土'); if(p.water) return UI.toast('今天已经浇过水了'); if(!useEnergy(2)) return; p.water=1; S.st.watered++; Sound.water(); Story.check(); return; }
+  if(item&&item.seed){ if(!p||!p.tilled) return UI.toast('先用锄头翻土'); if(p.crop) return UI.toast('这里已经种了'+CROPS[p.crop].name);
+    if(!S.inv[sel]) return; addItem(sel,-1); p.crop=item.seed; p.stage=0; p.days=0; S.st.planted++; Sound.dig(); Story.check(); return; }
+  if(p&&p.crop) return UI.toast(`${CROPS[p.crop].name}：还要 ${Math.max(1,CROPS[p.crop].days-p.days)} 天${p.water?'':'（今天还没浇水）'}`);
+  UI.toast('选择锄头、水壶或种子来照料灵田');
+}
+function gather(o){
+  if(!o.free && !useEnergy(1)) return;
+  S.gathered[RT.mapId+':'+o.x+','+o.y]=S.day; RT.ents=RT.ents.filter(e=>e!==o); RT.solid[o.y][o.x]=false;
+  const n=o.free?1:1+(Math.random()<.35?1:0); addItem(o.item,n); Sound.pick(); UI.float(o.x,o.y,`+${n} ${ITEMS[o.item].name}`);
+}
+
+/* ---------- cultivation ---------- */
+function gainExp(n){
+  S.exp+=n; let up=false;
+  while(true){
+    const need=expNeed(S.L);
+    if(S.L===9){ S.exp=Math.min(S.exp,need); break; }
+    if(S.L>=12){ S.exp=Math.min(S.exp,need); break; }
+    if(S.exp<need) break;
+    S.exp-=need; S.L++; up=true;
+  }
+  if(up){ const st=stats(); S.hp=st.hp; S.mp=st.mp; Sound.levelup(); UI.banner('突破！'+realmName(S.L)); }
+  UI.hud(); Story.check();
+}
+function meditate(){
+  if(S.L===9 && S.exp>=expNeed(9)){
+    if(S.inv.zhuji) return UI.confirm('炼气九层圆满。服下筑基丹，冲击筑基？（将面对心魔与天劫）', ()=>Mini.breakthrough());
+    return UI.say([['旁白','炼气九层已经圆满，再打坐也无法精进。需要一颗筑基丹才能冲击筑基。']]);
+  }
+  if(S.min>=24*60) return UI.toast('太晚了，回洞府休息吧');
+  UI.confirm('在蒲团上打坐一个时辰（2 小时）？', ()=>{
+    const gain=Math.round((14+4*S.L)*(S.L>=10?1.6:1)*2*Sect.medMul());
+    UI.meditateFx(()=>{ S.min+=120; S.st.meditated++; const st=stats(); S.mp=st.mp; gainExp(gain); UI.float(S.x,S.y,`+${gain} 修为`); UI.hud(); });
+  });
+}
+function sleep(passedOut){
+  S.day++; S.min=DAY_START; S.energy=maxEnergy(); const st=stats(); S.hp=st.hp; S.mp=st.mp;
+  if(passedOut){ const lost=Math.floor(S.stones*0.1); S.stones-=lost; S.energy=Math.round(maxEnergy()*0.6); }
+  for(const k in S.farm){ const p=S.farm[k]; if(p.crop&&p.water){ p.days++; const c=CROPS[p.crop]; p.stage=p.days>=c.days?3:Math.max(1,Math.min(2,Math.floor(p.days/c.days*3))); } p.water=0; }
+  // keep save small: drop old day bookkeeping
+  for(const k in S.killed) if(!k.startsWith(S.day+':')) delete S.killed[k];
+  Hooks.newDay();
+  enterMap('home', 11, 5); RT.dir='down';
+  save();
+  UI.dayCard(passedOut);
+}
+
+/* ---------- main loop ---------- */
+function update(dt){
+  RT.t+=dt;
+  if(RT.fadeTo){ RT.fade=Math.min(1,RT.fade+dt*4); if(RT.fade>=1){ const f=RT.fadeTo; RT.fadeTo=null; f(); } }
+  else if(RT.fade>0) RT.fade=Math.max(0,RT.fade-dt*4);
+  if(RT.paused) return;
+  // clock
+  S.min+=dt/MIN_SEC; if(Math.floor(S.min)%10===0){ UI.clock(); Music.play(areaTheme()); }
+  { const st=stats(); if(S.hp<st.hp) S.hp=Math.min(st.hp, S.hp+dt/MIN_SEC*st.hp/240); } // wounds heal over ~4 game hours
+  if(S.min>=PASS_OUT){ RT.paused=true; UI.say([['旁白','夜深了，你累得昏倒在地……']], ()=>sleep(true)); return; }
+  // movement: keys walk freely (diagonals, slide around corners); taps follow a path without stopping per tile
+  const kv=keyVector(), want=(RT.runHeld||RT.runToggle)&&(kv||RT.path.length);
+  RT.running = want && !RT.winded && RT.stamina>0;
+  if(RT.running){ RT.stamina=Math.max(0,RT.stamina-26*dt); if(RT.stamina<=0){ RT.winded=true; UI.toast('跑不动了，歇一歇……'); } }
+  else { RT.stamina=Math.min(100,RT.stamina+(kv||RT.path.length?16:30)*dt); if(RT.winded&&RT.stamina>=35) RT.winded=false; }
+  const SPEED=5.2*(RT.running?1.75:1);
+  if(kv){ RT.path=[]; RT.pending=null; RT.autoNav=false; moveFree(kv[0]*SPEED*dt, kv[1]*SPEED*dt); RT.moving=true; }
+  else if(RT.path.length){ followPath(SPEED*dt); RT.moving=true; }
+  else RT.moving=false;
+  if(RT.moving){ RT.trail=RT.trail||[]; RT.trail.push([RT.fx,RT.fy]); if(RT.trail.length>40) RT.trail.shift(); }
+  if(RT.paused) return;
+  if(!RT.path.length && RT.pending && !kv){ const f=RT.pending; RT.pending=null; f(); }
+  else if(!RT.path.length && RT.autoNav && !kv && !RT.fadeTo) Nav.arrive();
+  Nav.tick(dt);
+  updateBeasts(dt);
+}
+function keyVector(){
+  if(!RT.keys.length||RT.paused) return null;
+  let dx=0, dy=0; for(const k of RT.keys){ if(k==='left') dx--; if(k==='right') dx++; if(k==='up') dy--; if(k==='down') dy++; }
+  if(!dx&&!dy) return null; const last=RT.keys[RT.keys.length-1];
+  RT.dir = (last==='left'&&dx<0)||(last==='right'&&dx>0)||(last==='up'&&dy<0)||(last==='down'&&dy>0) ? last : (dx? (dx>0?'right':'left') : (dy>0?'down':'up'));
+  const n=Math.hypot(dx,dy); return [dx/n, dy/n];
+}
+function hitsAt(x,y){ // feet hitbox inside the player's tile
+  const l=x+0.22, r=x+0.78, top=y+0.5, bot=y+0.96;
+  for(const [cx,cy] of [[l,top],[r,top],[l,bot],[r,bot]]) if(blockedForWalk(Math.floor(cx),Math.floor(cy))) return true;
+  return false;
+}
+function moveFree(dx,dy){
+  if(dx){ if(!hitsAt(RT.fx+dx,RT.fy)) RT.fx+=dx; else if(!dy){ const c=Math.round(RT.fy), d=c-RT.fy; if(Math.abs(d)<0.5&&Math.abs(d)>0.01&&!hitsAt(RT.fx+dx,c)) RT.fy+=Math.sign(d)*Math.min(Math.abs(d),Math.abs(dx)); } }
+  if(dy){ if(!hitsAt(RT.fx,RT.fy+dy)) RT.fy+=dy; else if(!dx){ const c=Math.round(RT.fx), d=c-RT.fx; if(Math.abs(d)<0.5&&Math.abs(d)>0.01&&!hitsAt(c,RT.fy+dy)) RT.fx+=Math.sign(d)*Math.min(Math.abs(d),Math.abs(dy)); } }
+  RT.walk+=Math.hypot(dx,dy); onTile();
+}
+function followPath(dist){
+  while(dist>0 && RT.path.length && !RT.paused){
+    const [tx,ty]=RT.path[0]; if(blockedForWalk(tx,ty)){ RT.path=[]; RT.pending=null; break; }
+    const dx=tx-RT.fx, dy=ty-RT.fy, d=Math.hypot(dx,dy);
+    if(Math.abs(dx)>0.01||Math.abs(dy)>0.01){ if(Math.abs(dx)>Math.abs(dy)) RT.dir=dx>0?'right':'left'; else RT.dir=dy>0?'down':'up'; }
+    if(d<=dist){ RT.fx=tx; RT.fy=ty; dist-=d; RT.walk+=d; RT.path.shift(); onTile(); }
+    else { RT.fx+=dx/d*dist; RT.fy+=dy/d*dist; RT.walk+=dist; dist=0; onTile(); }
+  }
+}
+function onTile(){
+  const nx=Math.floor(RT.fx+0.5), ny=Math.floor(RT.fy+0.75), k=RT.mapId+nx+','+ny;
+  if(k===RT.tileKey) return; RT.tileKey=k; S.x=nx; S.y=ny;
+  const ex=RT.map.exits.find(e=>e.x===S.x&&e.y===S.y);
+  if(ex){ RT.path=[]; RT.pending=null; RT.keys=[]; RT.paused=true; RT.fadeTo=()=>{ enterMap(ex.to,ex.tx,ex.ty); RT.paused=false; UI.sync(); save(); Story.check(); if(RT.autoNav) Nav.go(true); }; Sound.step(); }
+}
+function updateBeasts(dt){
+  for(const b of RT.beasts){
+    b.stun=Math.max(0,b.stun-dt); b.t-=dt;
+    if(b.t<=0 && b.stun<=0){
+      const near=Math.abs(b.x-S.x)+Math.abs(b.y-S.y)<=4;
+      let opts=[[0,1],[1,0],[0,-1],[-1,0]];
+      if(near) opts.sort((a,c)=>(Math.abs(b.x+a[0]-S.x)+Math.abs(b.y+a[1]-S.y))-(Math.abs(b.x+c[0]-S.x)+Math.abs(b.y+c[1]-S.y)));
+      else opts.sort(()=>Math.random()-.5);
+      for(const [dx,dy] of opts){ const nx=b.x+dx, ny=b.y+dy;
+        if(nx<b.area[0]-2||ny<b.area[1]-2||nx>b.area[2]+2||ny>b.area[3]+2) continue;
+        if(blockedForWalk(nx,ny)||RT.beasts.some(o=>o!==b&&o.x===nx&&o.y===ny)) continue;
+        b.x=nx; b.y=ny; break; }
+      b.t=near?0.45:0.8+Math.random()*1.4;
+    }
+    const sp=(Math.abs(b.x-S.x)+Math.abs(b.y-S.y)<=4?4:2.2)*dt, dx=b.x-b.fx, dy=b.y-b.fy, d=Math.hypot(dx,dy);
+    if(d<=sp){ b.fx=b.x; b.fy=b.y; } else { b.fx+=dx/d*sp; b.fy+=dy/d*sp; }
+    if(b.stun<=0 && Math.hypot(b.fx-RT.fx,b.fy-RT.fy)<0.7){ startWildBattle(b); return; }
+  }
+}
+function startWildBattle(b){
+  RT.path=[]; RT.pending=null; RT.keys=[]; RT.autoNav=false;
+  Battle.start(b.kind, result=>{
+    if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push(b.idx); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
+    else if(result==='flee'){ b.stun=3; }
+    else if(result==='lose'){ UI.say([['旁白','你眼前一黑……醒来时已躺在洞府里。']], ()=>sleep(true)); }
+  });
+}
+
+/* ---------- rendering ---------- */
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+function resize(){
+  RT.dpr=Math.min(3,window.devicePixelRatio||1);
+  const w=innerWidth, h=innerHeight; cv.width=Math.round(w*RT.dpr); cv.height=Math.round(h*RT.dpr);
+  cv.style.width=w+'px'; cv.style.height=h+'px';
+  RT.scale=Math.max(2, Math.min(5, Math.floor(Math.min(w,h)/(TILE*9.5))));
+}
+addEventListener('resize',resize);
+function render(){
+  const g=ctx, Z=RT.scale*RT.dpr, m=RT.map; g.imageSmoothingEnabled=false;
+  g.fillStyle='#1b2a1c'; g.fillRect(0,0,cv.width,cv.height);
+  if(!m) return;
+  const vw=cv.width/Z, vh=cv.height/Z;
+  // camera
+  let cx=RT.fx*TILE+8-vw/2, cy=RT.fy*TILE+8-vh/2;
+  cx = m.w*TILE<=vw ? (m.w*TILE-vw)/2 : Math.max(0,Math.min(m.w*TILE-vw,cx));
+  cy = m.h*TILE<=vh ? (m.h*TILE-vh)/2 : Math.max(0,Math.min(m.h*TILE-vh,cy));
+  RT.cam.x=cx; RT.cam.y=cy;
+  const ox=Math.round(-cx*Z), oy=Math.round(-cy*Z), T=TILE*Z;
+  const x0=Math.max(0,Math.floor(cx/TILE)), y0=Math.max(0,Math.floor(cy/TILE)), x1=Math.min(m.w-1,Math.ceil((cx+vw)/TILE)), y1=Math.min(m.h-1,Math.ceil((cy+vh)/TILE));
+  const wf=Math.floor(RT.t*1.5)%2;
+  for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++){
+    const ch=tileAt(x,y), v=((x*7+y*13)^(x*y))&3;
+    g.drawImage(tileCanvas(ch,v,ch==='~'?wf:0), ox+x*T, oy+y*T, T, T);
+    if(ch==='F'){ const p=S.farm[farmKey(x,y)]; if(p&&p.tilled) g.drawImage(tileCanvas(p.water?'w':'t',v), ox+x*T, oy+y*T, T, T); }
+    if(ch==='~' && tileAt(x,y-1)!=='~' && tileAt(x,y-1)!=='B'){ g.fillStyle='#d4ae78'; g.fillRect(ox+x*T, oy+y*T, T, 2*Z); }
+  }
+  Life.drawGround(g, ox, oy, T, Z);
+  // y-sorted drawables
+  const list=[];
+  for(const o of m.objects===undefined?[]:RT.ents){
+    if(o.type==='building') list.push({y:o.y+o.h, draw:()=>{ const c=building(o); g.drawImage(c, ox+o.x*T, oy+(o.y+o.h)*T-c.height*Z, c.width*Z, c.height*Z); }});
+    else if(o.look){ list.push({y:o.y+0.99, draw:()=>{ const c=lookSprite(o.look,'down',Math.floor(RT.t*1.5+o.x)%2?0:2); const w=c.width*Z,h=c.height*Z; g.drawImage(c, Math.round(ox+o.x*T+(T-w)/2), Math.round(oy+o.y*T+T-c.bottom*Z), w, h); }}); }
+    else { const key=o.spr||o.type; if(!SPR[key]) continue;
+      list.push({y:o.y+0.99, draw:()=>drawSprite(key, ox+o.x*T, oy+o.y*T, Z, o.type==='npc'?Math.sin(RT.t*2+o.x)*0.4:0)}); }
+  }
+  for(const k in S.farm){ if(!k.startsWith(RT.mapId+':')) continue; const p=S.farm[k]; if(!p.crop) continue;
+    const [x,y]=k.split(':')[1].split(',').map(Number); const key=CROPS[p.crop].stages[p.stage];
+    list.push({y:y+0.5, draw:()=>{ drawSprite(key, ox+x*T, oy+y*T, Z, 0); if(p.stage>=3){ g.fillStyle='rgba(255,240,150,'+(0.35+0.25*Math.sin(RT.t*4))+')'; g.fillRect(ox+x*T+7*Z, oy+y*T-2*Z, 2*Z, 2*Z); } }}); }
+  for(const b of RT.beasts){ list.push({y:b.fy+0.99, draw:()=>{ drawShadow(ox+b.fx*T, oy+b.fy*T, Z); drawSprite(BEASTS[b.kind].spr, ox+b.fx*T, oy+b.fy*T, Z, Math.abs(Math.sin(RT.t*6+b.idx))*-1, b.fx>b.x); }}); }
+  list.push({y:RT.fy+0.99, draw:()=>drawPlayer(ox+RT.fx*T, oy+RT.fy*T, Z)});
+  if(S.pet){ const tr=RT.trail||[], p=tr.length>16?tr[tr.length-16]:[RT.fx-.9,RT.fy+.1];
+    list.push({y:p[1]+0.98, draw:()=>{ drawShadow(ox+p[0]*T, oy+p[1]*T, Z); drawSprite(BEASTS[S.pet.kind].spr, ox+p[0]*T, oy+p[1]*T, Z, RT.moving?-Math.abs(Math.sin(RT.t*9))*1.5:0, p[0]>RT.fx); }}); }
+  list.sort((a,b)=>a.y-b.y).forEach(d=>d.draw());
+  Nav.drawWorld(g, ox, oy, T, Z);
+  // path marker
+  if(RT.path.length){ const [tx,ty]=RT.path[RT.path.length-1]; g.strokeStyle='rgba(255,255,255,.7)'; g.lineWidth=Z; g.strokeRect(ox+tx*T+2*Z, oy+ty*T+2*Z, T-4*Z, T-4*Z); }
+  drawNight(g, ox, oy, T, Z);
+  if(RT.stamina<100){ const px=ox+(RT.fx+.95)*T, py=oy+(RT.fy-.15)*T, r=3.2*Z;
+    g.lineWidth=1.6*Z; g.strokeStyle='rgba(40,25,10,.6)'; g.beginPath(); g.arc(px,py,r,0,7); g.stroke();
+    g.strokeStyle=RT.winded?((Math.floor(RT.t*6)%2)?'#e0402e':'#ff9a7a'):RT.stamina>40?'#7be05a':'#f2c14e'; g.beginPath(); g.arc(px,py,r,-Math.PI/2,-Math.PI/2+Math.PI*2*RT.stamina/100); g.stroke(); }
+  Nav.drawArrow(g, ox, oy, T, Z);
+  if(RT.fade>0){ g.fillStyle=`rgba(10,8,6,${RT.fade})`; g.fillRect(0,0,cv.width,cv.height); }
+}
+function drawShadow(x,y,Z){ ctx.fillStyle='rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(x+8*Z, y+15*Z, 6*Z, 2*Z, 0, 0, 7); ctx.fill(); }
+function drawSprite(key, x, y, Z, bob, flip){
+  const c=sprite(key); const w=c.width*Z, h=c.height*Z;
+  const dx=Math.round(x+(TILE*Z-w)/2), dy=Math.round(y+TILE*Z-c.bottom*Z+(bob||0)*Z);
+  if(flip){ ctx.save(); ctx.translate(dx+w,dy); ctx.scale(-1,1); ctx.drawImage(c,0,0,w,h); ctx.restore(); }
+  else ctx.drawImage(c,dx,dy,w,h);
+}
+function drawPlayer(x,y,Z){
+  drawShadow(x,y,Z);
+  const d=RT.dir==='up'?'up':RT.dir==='down'?'down':'side', f=RT.moving?Math.floor(RT.walk*3.2)%4:0;
+  const c=lookSprite(S.look,d,f), w=c.width*Z, h=c.height*Z, bob=(f===1||f===3)?-Z:0;
+  const dx=Math.round(x+(TILE*Z-w)/2), dy=Math.round(y+TILE*Z-c.bottom*Z+bob);
+  if(RT.dir==='left'){ ctx.save(); ctx.translate(dx+w,dy); ctx.scale(-1,1); ctx.drawImage(c,0,0,w,h); ctx.restore(); } else ctx.drawImage(c,dx,dy,w,h);
+}
+const NIGHT=document.createElement('canvas');
+function drawNight(g, ox, oy, T, Z){
+  const h=S.min/60; let a=0;
+  if(h>=17.5) a=Math.min(0.55,(h-17.5)/3.5*0.55); if(h<6) a=0.4; else if(h<7) a=(7-h)*0.25;
+  if(a<=0.01) return;
+  NIGHT.width=cv.width; NIGHT.height=cv.height; const n=NIGHT.getContext('2d');
+  n.fillStyle=`rgba(18,24,60,${a})`; n.fillRect(0,0,NIGHT.width,NIGHT.height);
+  n.globalCompositeOperation='destination-out';
+  const lights=RT.ents.filter(o=>o.type==='lantern'||o.type==='furnace'||o.type==='shrine'||o.type==='building');
+  for(const o of lights){ const lx=ox+(o.x+(o.w||1)/2)*T, ly=oy+(o.y+(o.h||1)/2)*T, r=(o.type==='building'?4:2.6)*T;
+    const gr=n.createRadialGradient(lx,ly,0,lx,ly,r); gr.addColorStop(0,'rgba(0,0,0,.9)'); gr.addColorStop(1,'rgba(0,0,0,0)'); n.fillStyle=gr; n.fillRect(lx-r,ly-r,r*2,r*2); }
+  const px=ox+(RT.fx+.5)*T, py=oy+(RT.fy+.5)*T, pr=2.2*T, gp=n.createRadialGradient(px,py,0,px,py,pr); gp.addColorStop(0,'rgba(0,0,0,.6)'); gp.addColorStop(1,'rgba(0,0,0,0)'); n.fillStyle=gp; n.fillRect(px-pr,py-pr,pr*2,pr*2);
+  n.globalCompositeOperation='source-over';
+  g.drawImage(NIGHT,0,0);
+  g.globalCompositeOperation='lighter';
+  for(const o of lights){ if(o.type!=='lantern') continue; const lx=ox+(o.x+.5)*T, ly=oy+(o.y+.3)*T, r=1.4*T, gr=g.createRadialGradient(lx,ly,0,lx,ly,r); gr.addColorStop(0,`rgba(255,170,60,${a*0.5})`); gr.addColorStop(1,'rgba(255,170,60,0)'); g.fillStyle=gr; g.fillRect(lx-r,ly-r,r*2,r*2); }
+  g.globalCompositeOperation='source-over';
+}
+
+/* ---------- input ---------- */
+cv.addEventListener('pointerdown', e=>{
+  Sound.unlock();
+  if(RT.paused||!RT.map) return;
+  const Z=RT.scale, x=(e.clientX)/Z+RT.cam.x, y=(e.clientY)/Z+RT.cam.y;
+  tapWorld(Math.floor(x/TILE), Math.floor(y/TILE));
+});
+const KEYDIR={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right'};
+addEventListener('keydown', e=>{
+  Sound.unlock();
+  if(UI.onKey(e)) return;
+  if(RT.paused) return;
+  if(e.key==='Shift'){ RT.runHeld=true; }
+  if(KEYDIR[e.code]){ const d=KEYDIR[e.code]; RT.keys=RT.keys.filter(k=>k!==d); RT.keys.push(d); e.preventDefault(); }
+  else if(e.code==='KeyM'){ e.preventDefault(); UI.worldMap(); }
+  else if(e.code==='KeyQ'||e.code==='KeyJ'){ e.preventDefault(); UI.tasks(); }
+  else if(e.code==='KeyE'||e.code==='Space'||e.code==='Enter'){ e.preventDefault(); interactFacing(); }
+  else if(/^Digit[1-8]$/.test(e.code)){ UI.pickSlot(+e.code.slice(5)-1); }
+  else if(e.code==='Escape'||e.code==='Tab'||e.code==='KeyI'){ e.preventDefault(); UI.menu(); }
+});
+addEventListener('keyup', e=>{ if(e.key==='Shift') RT.runHeld=false; const d=KEYDIR[e.code]; if(d) RT.keys=RT.keys.filter(k=>k!==d); });
+addEventListener('blur', ()=>{ RT.keys=[]; RT.runHeld=false; });
+let wheelAcc=0;
+addEventListener('wheel', e=>{
+  if(!S||RT.paused||!$('#panel').hidden) return; e.preventDefault();
+  wheelAcc+=e.deltaY; if(Math.abs(wheelAcc)<40) return; const dir=Math.sign(wheelAcc); wheelAcc=0;
+  const ids=UI.hotbarItems(); let i=ids.indexOf(S.sel); i=(i+dir+ids.length)%ids.length; S.sel=ids[i]; UI.hotbar(); Sound.tick();
+}, {passive:false});
+
+let last=performance.now();
+function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; update(dt); render(); requestAnimationFrame(frame); }
