@@ -62,11 +62,11 @@ const Med = {
         if(!sitting && Med.full()){ early=true; txt.textContent='修为圆满，提前出关。'; }
         if(S.L>before){ rl.textContent=realmName(S.L); rl.classList.remove('pop'); void rl.offsetWidth; rl.classList.add('pop'); Sound.levelup(); } }
       bar.style.width=(early?100:f*100)+'%'; if(!early) txt.textContent=`第 ${S.day} 天 ${fmtTime(S.min)}　${sitting?'静坐中':'修为 +'+gained}`;
-      if(f<1&&!early) return requestAnimationFrame(step);
+      if(f<1&&!early) return setTimeout(()=>step(performance.now()),16);   // a timer, so it also finishes in a background tab
       setTimeout(()=>{ el.remove(); UI.fx=false; S.st.meditated++; const st=stats(); S.hp=st.hp; S.mp=st.mp;
         if(S.L>L0) UI.banner('突破！'+realmName(S.L)); else if(early) UI.banner(S.L===9?'炼气九层圆满！':'修为圆满'); if(gained) UI.float(S.x,S.y,`+${gained} 修为`); UI.clock(); UI.hud(); save(); UI.sync(); Story.check(); },early?1200:500);
     };
-    requestAnimationFrame(step);
+    setTimeout(()=>step(performance.now()),16);
   },
   // move the clock forward, turning the day over at midnight
   advance(min){ S.min+=min; while(S.min>=24*60){ S.min-=24*60; passDay(); } },

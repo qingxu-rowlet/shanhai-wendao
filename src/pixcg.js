@@ -256,23 +256,30 @@ const QY_PX = {
     cast:[{who:'me',x:.2,y:.83,back:true,face:1,s:.6}] },
 };
 
+// small adjustments so the pixel cast stands on the ink paintings
+const INK_QY = {
+  ruins:{cast:{me:{y:.97, s:.6}}}, wenyao:{cast:{me:{y:.76, x:.3, s:.7}}}, lushu:{cast:{me:{y:.8}, horse:{y:.8}}}, spring:{cast:{me:{y:.84}}},
+  danghost:{fire:[.6,.74]}, swordtomb:{glow:[.62,.86]}, baize:{cast:{me:{y:.88}, baize:{y:.68}}}, zhulong:{cast:{me:{y:.81}}},
+  xingxing:{cast:{xingxing:{y:.29}}}, qingniao:{cast:{bird:{y:.43}}}, chess:{cast:{me:{y:.86}}},
+};
 /* ---------- the viewer ---------- */
 const PixCG = {
   on:false, parts:[],
-  open({base, cast, fx, extra, title, small, seed, pick}){
+  open({base, ink, cast, fx, extra, title, small, seed, pick}){
     const el=$('#cg'); el.hidden=false; el.className='pix'; PixCG.on=true; PixCG.parts=[]; const token=PixCG.token=(PixCG.token||0)+1;
     el.innerHTML=`<canvas id="cgBg" class="px"></canvas><div class="cg-title"><small>${esc(small||'')}</small><b>${esc(title||'')}</b></div>`;
     const cv=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1), W=cv.width=Math.round(innerWidth*dpr), H=cv.height=Math.round(innerHeight*dpr), g=cv.getContext('2d');
     const BW=160, BH=Math.round(BW*H/W), low=document.createElement('canvas'); low.width=BW; low.height=BH;
     const bake=fn=>{ const c=document.createElement('canvas'); c.width=BW; c.height=BH; fn(c.getContext('2d'),BW,BH,rng(seed||7)); return c; };
-    PixCG.cur={W,H,BW,BH,low,base:bake(base),cast,fx,extra,pick,bake,seed}; let t0=performance.now();
+    const bakeInk=fn=>{ const c=document.createElement('canvas'); c.width=W; c.height=H; const g2=c.getContext('2d'); fn(g2,W,H,rng(seed||7)); Land.edge(g2,W,H); return c; };
+    PixCG.cur={W,H,BW,BH,low,base:ink?null:bake(base),inkBase:ink?bakeInk(ink):null,cast,fx,extra,pick,bake,bakeInk,seed}; let t0=performance.now();
     const loop=now=>{ if(!PixCG.on||PixCG.token!==token) return; PixCG.frame(g,(now-t0)/1000); requestAnimationFrame(loop); };
     PixCG.frame(g,0); requestAnimationFrame(loop); el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
   },
-  swap(o){ const c=PixCG.cur; if(!c) return; Object.assign(c,o); c.base=c.bake(o.base); PixCG.parts=[]; const el=$('#cg'); el.classList.remove('swap'); void el.offsetWidth; el.classList.add('swap'); },
+  swap(o){ const c=PixCG.cur; if(!c) return; Object.assign(c,o); if(o.ink){ c.inkBase=c.bakeInk(o.ink); c.base=null; } else { c.base=c.bake(o.base); c.inkBase=null; } PixCG.parts=[]; const el=$('#cg'); el.classList.remove('swap'); void el.offsetWidth; el.classList.add('swap'); },
   frame(g,t){
     const c=PixCG.cur; if(!c) return; const {W,H,BW,BH,low}=c, lg=low.getContext('2d');
-    lg.drawImage(c.base,0,0); const ex=c.extra||{};
+    if(c.inkBase){ g.drawImage(c.inkBase,0,0); lg.clearRect(0,0,BW,BH); } else lg.drawImage(c.base,0,0); const ex=c.extra||{};
     if(ex.fire) PFX.fire(lg,Math.round(BW*ex.fire[0]),Math.round(BH*ex.fire[1]),t);
     if(ex.dragon){ for(let i=0;i<=60;i++){ const u=i/60, x=Math.round(-10+u*(BW+20)), y=Math.round(BH*(.22+.08*Math.sin(u*Math.PI*2.4+t*.4)+u*.05)), w=Math.round(2+4*Math.sin(u*Math.PI));
         PX.r(lg,x,y-w,2,w*2,'#c83c28'); PX.r(lg,x,y-w,2,1,'#f07050'); if(i%3===0) PX.r(lg,x,y+w-1,1,1,'#7a1a10'); }
@@ -285,6 +292,7 @@ const PixCG = {
     else if(c.fx) PFX.run(c.fx,lg,BW,BH,t,PixCG.parts);
     if(ex.ghostTails){ for(let i=0;i<9;i++){ const a=-Math.PI*.95+i*.11*Math.PI, x0=BW*.6, y0=BH*.8; for(let k=0;k<14;k++){ if((k+Math.floor(t*6))%3===0) continue; PX.r(lg,x0+Math.cos(a)*k*1.6,y0+Math.sin(a)*k*1.4,1,1,'rgba(140,190,255,.5)'); } } }
     g.imageSmoothingEnabled=false; g.drawImage(low,0,0,W,H);
+    if(c.inkBase&&c.fx==='lanterns'){ /* lanterns already drawn */ }
     // the cast, big and crisp; they breathe (1px bob) and blink
     const k=Math.max(3,Math.round(Math.min(H*.3,W*.4)/24)), mood=CG.on?CG.face:'normal';
     for(const m of c.cast){ const base=m, mm=(m.moods&&m.moods[mood])||{}, pose=mm.pose||m.pose||'stand', prop=mm.prop!==undefined?mm.prop:m.prop, wear=mm.wear||m.wear;
@@ -306,21 +314,28 @@ const PixCG = {
 };
 
 /* ---------- heart events use the pixel scenes ---------- */
+// where the pixel cast stands on each ink painting
+const INK_ROM = { herb:{gy:.88}, sunset:{gy:.8, y:.8}, rainpath:{gy:.92}, herbhut:{gy:.9, win:[.62,.14,.28,.32]}, lantern:{gy:.728, y:.728},
+  bamboo:{gy:.9}, moon:{gy:.79}, campfire:{gy:.86, fire:[.5,.86]}, dusk:{gy:.9} };
+const romSetup=scene=>{ const sc=PXSCENES[scene], ink=SCENES_INK[scene], k=INK_ROM[scene]||{};
+  const cast=sc.cast.map(m=>{ const c={...m}; if(ink){ if(k.y) c.y=k.y; else if(c.y&&scene!=='rainpath') delete c.y; } return c; });
+  return ink ? {ink:ink.base, cast, fx:sc.fx, extra:{fire:k.fire||sc.fire, win:k.win||sc.win}, gy:k.gy||ink.ground||.88} : {base:sc.base, cast, fx:sc.fx, extra:{fire:sc.fire, win:sc.win}, gy:sc.gy}; };
 CG.open=function(scene, who, title){
-  CG.on=true; CG.who=who; CG.face='normal'; const sc=PXSCENES[scene];
-  PixCG.open({base:sc.base, cast:sc.cast, fx:sc.fx, extra:{fire:sc.fire, win:sc.win}, title, small:'心动事件 · '+NPCS[who].name, seed:scene.length*97});
-  PixCG.cur.gy=sc.gy; Music.play('romance', true);
+  CG.on=true; CG.who=who; CG.face='normal'; const s=romSetup(scene);
+  PixCG.open({...s, title, small:'心动事件 · '+NPCS[who].name, seed:scene.length*97});
+  PixCG.cur.gy=s.gy; Music.play('romance', true);
 };
-CG.setScene=function(scene){ const sc=PXSCENES[scene]; if(!sc||!PixCG.cur) return; PixCG.swap({base:sc.base, cast:sc.cast, fx:sc.fx, extra:{fire:sc.fire, win:sc.win}, gy:sc.gy}); };
+CG.setScene=function(scene){ if(!PXSCENES[scene]||!PixCG.cur) return; PixCG.swap(romSetup(scene)); };
 CG.setFace=function(f){ CG.face=f; };
 CG.close=function(){ CG.on=false; CG.who=null; PixCG.close(); Music.play(areaTheme(),true); };
 
 /* ---------- 奇遇 scenes ---------- */
 const QyCG = {
   on:false,
-  open(q){ const sc=QY_PX[q.id]; if(!sc) return; QyCG.on=true;
-    PixCG.open({base:sc.base, cast:sc.cast, fx:sc.fx, extra:{fire:sc.fire, glow:sc.glow, dragon:sc.dragon, ghostTails:sc.ghostTails}, title:q.title, small:'奇遇 · '+Qiyu.TIER[q.tier], seed:q.id.length*131});
-    PixCG.cur.gy=sc.gy||.86; },
+  open(q){ const sc=QY_PX[q.id]; if(!sc) return; QyCG.on=true; const ink=QY_INK[q.id], k=INK_QY[q.id]||{};
+    const cast=sc.cast.map(m=>({...m, ...(k.cast&&k.cast[m.who||m.beast||m.spr||'npc']||{})}));
+    PixCG.open({base:sc.base, ink:ink&&ink.base, cast, fx:k.fx!==undefined?k.fx:sc.fx, extra:{fire:k.fire||sc.fire, glow:k.glow||sc.glow, dragon:sc.dragon, ghostTails:sc.ghostTails}, title:q.title, small:'奇遇 · '+Qiyu.TIER[q.tier], seed:q.id.length*131});
+    PixCG.cur.gy=ink?(ink.gy||.86):(sc.gy||.86); },
   close(){ if(!QyCG.on) return; QyCG.on=false; PixCG.close(); },
 };
 { const _q=Hooks.qiyu; Hooks.qiyu=function(o){ const q=QIYU.find(x=>x.id===(S.qiyu&&S.qiyu.ev)); if(q) QyCG.open(q); return _q.call(Hooks,o); }; }
