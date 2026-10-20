@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5738e833ff"><script>(function(){var B="5738e833ff";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b210527f86"><script>(function(){var B="b210527f86";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -5177,6 +5177,16 @@ const Review = {
       run(){ Review.base({quest:'q6', L:5, inv:{huichun:3, juqi:1}, kills:3}); Review.at('forest',15,20,'down'); setTimeout(()=>Battle.start('qiongqi',r=>UI.toast(r==='win'?'赢了！':'输了')),400); }},
     {id:'dodge-p2', group:'战斗', title:'穷奇二阶段（风刃、怒吼）', check:'直接从穷奇半血开始，看二阶段的风刃（找缝隙）和怒吼（找圆环的缺口）。弹幕比一阶段快一些。',
       run(){ Review.base({quest:'q6', L:5, inv:{huichun:3, juqi:1}, kills:3}); Review.at('forest',15,20,'down'); setTimeout(()=>{ Battle._begin('qiongqi',r=>UI.toast(r==='win'?'赢了！':'输了')); const s=Battle.s; s.hp=Math.round(s.max*.52); Battle.act('atk'); },400); }},
+    {id:'alchemy', group:'v0.9.7 试玩修正', title:'炼丹（变简单了）', check:'站在丹炉前，材料够炼好几炉。按住「鼓风」把火候保持在金色区域里，看上品是不是能炼出来了（上品 58%，中品 35%）。',
+      run(){ Review.base({quest:'q8', L:9, inv:{lingcao:12, lingmo:6, zhuguo:6, qq_yu:2}}); Review.at('home',18,5,'up'); setTimeout(()=>UI.alchemy(),500); }},
+    {id:'med-full', group:'v0.9.7 试玩修正', title:'修为圆满后静坐、坐到天黑', check:'炼气九层圆满、身上有筑基丹。按 E 打坐：先问冲击筑基还是静坐；选静坐，面板会说明修为不再增长，试试「坐到天黑」。',
+      run(){ Review.base({quest:'q8', L:9, inv:{zhuji:1}}); S.exp=expNeed(9); S.min=10*60; Review.at('home',16,5,'up'); setTimeout(()=>meditate(),500); }},
+    {id:'med-cap', group:'v0.9.7 试玩修正', title:'闭关修为不再虚高', check:'炼气八层。把滑条拉到 30 天：修为应该只显示到炼气九层圆满为止（几百，不是上万），开始后修满会提前出关。',
+      run(){ Review.base({quest:'q8', L:8}); S.min=10*60; Review.at('home',16,5,'up'); setTimeout(()=>meditate(),500); }},
+    {id:'rod', group:'v0.9.7 试玩修正', title:'青竹钓竿', check:'钱掌柜的店里能买青竹钓竿（400 灵石，你有 600）。买了以后去池塘边钓几条鱼，收线框应该更大、鱼更慢。悬赏榜也能用 8 声望换。',
+      run(){ Review.base({quest:'q8', L:5, inv:{rod:1}}); S.stones=600; S.rep=10; Review.at('town',5,6,'up'); setTimeout(()=>UI.shop(),500); }},
+    {id:'talk-fix', group:'v0.9.7 试玩修正', title:'种田台词清理', check:'依次播放改过的台词：云游子讲筑基丹（不再提朱果种）、钱掌柜的订单、阿禾的芦花鸡奖励。点屏幕任意处都能翻页。',
+      run(){ Review.base({quest:'q8', L:5}); Review.at('town',12,9,'up'); setTimeout(()=>UI.say([...SCRIPTS.q6_start, ...SIDES.find(q=>q.id==='order').start, ...SIDES.find(q=>q.id==='chick').done, ...SIDES.find(q=>q.id==='dan').done]),500); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},
