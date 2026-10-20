@@ -45,6 +45,10 @@ const Review = {
       run(){ Review.base({quest:'q8', L:7}); S.karma=5; S.qiyu={ev:'baize', spot:1, done:false}; Hooks.placeQiyu(); S.min=10*60; Review.at('forest',16,10,'right'); }},
     {id:'bounty', group:'悬赏榜', title:'悬赏榜', check:'面前就是悬赏榜，按 E。测试角色已经能交付一个悬赏，并有 12 点声望可以兑换东西。看看委托的文字、进度、交付 / 领赏和声望兑换。',
       run(){ Review.base({quest:'q8', L:5, inv:{lingcao:4, lingmo:3, hide:3, huichun:2, juqi:1, fish_li:1}}); S.rep=12; Bounty.roll(); S.bounty.list[0]={kind:'item', key:'lingcao', n:3, who:'钱掌柜', text:'城里药铺订了一批灵草——交 3 个灵草', pay:38, rep:1, done:false}; Review.at('town',14,8,'up'); setTimeout(()=>Bounty.open(),500); }},
+    {id:'dodge', group:'战斗', title:'穷奇 · 回合 + 躲弹幕', check:'你的回合照常选招式；穷奇的回合会弹出一个框，用 WASD / 方向键（手机：按住屏幕拖动）操纵灵珠躲开弹幕。打一整场：五种弹幕的难度、时长、伤害合不合适？护体后弹幕会变慢、伤害减半。',
+      run(){ Review.base({quest:'q6', L:5, inv:{huichun:3, juqi:1}, kills:3}); Review.at('forest',15,20,'down'); setTimeout(()=>Battle.start('qiongqi',r=>UI.toast(r==='win'?'赢了！':'输了')),400); }},
+    {id:'dodge-p2', group:'战斗', title:'穷奇二阶段（风刃、怒吼）', check:'直接从穷奇半血开始，看二阶段的风刃（找缝隙）和怒吼（找圆环的缺口）。弹幕比一阶段快一些。',
+      run(){ Review.base({quest:'q6', L:5, inv:{huichun:3, juqi:1}, kills:3}); Review.at('forest',15,20,'down'); setTimeout(()=>{ Battle._begin('qiongqi',r=>UI.toast(r==='win'?'赢了！':'输了')); const s=Battle.s; s.hp=Math.round(s.max*.52); Battle.act('atk'); },400); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},

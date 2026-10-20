@@ -314,7 +314,7 @@ const UI = {
         <ul class="qdone">${QUESTS.slice(0,S.quest).map(x=>`<li>✓ ${esc(x.title)}</li>`).join('')}</ul>`; }
     if(tab==='people'){ body=`<div class="people">${UI.people()}</div><p class="muted">每天和大家聊聊天、送一份礼物，好感就会慢慢上升。好感各自独立，不会吃醋，可以和每个人都到 8 心。</p>`; }
     if(tab==='replay'){ body=Replay.html(); }
-    if(tab==='set'){ body=`<div class="set"><button class="btn" id="sMute">声音：${S.mute?'关':'开'}</button><button class="btn" id="sMusic">音乐：${S.music===false?'关':'开'}</button><button class="btn" id="sSave">保存游戏</button><button class="btn" id="sSlots">存档 / 读档</button>
+    if(tab==='set'){ body=`<div class="set"><button class="btn" id="sMute">声音：${S.mute?'关':'开'}</button><button class="btn" id="sMusic">音乐：${S.music===false?'关':'开'}</button><button class="btn" id="sDodge">首领战：${S.dodgeOff?'经典回合制':'回合 + 躲弹幕'}</button><button class="btn" id="sSave">保存游戏</button><button class="btn" id="sSlots">存档 / 读档</button>
       <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），E/空格 互动（靠近时头顶会出现 E），鼠标滚轮或 1–6 选道具，Esc 行囊，M 地图，J 任务。<br>手机：点哪里就走到哪里，点人物或物体即可互动；点左上角任务的「寻路」自动前往。<br>iPhone 若听不到音乐，请关闭侧边的静音开关。</p></div>`; }
     UI.panel('行囊', head+body, b=>{
       b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); if(t.dataset.t==='quest'){ $('#panel').hidden=true; UI._panelKind=''; return UI.tasks(); } if(t.dataset.t==='mail'){ $('#panel').hidden=true; UI._panelKind=''; return Mail.open(); } if(t.dataset.t==='save'){ $('#panel').hidden=true; return SaveSys.panel(); } UI._tab=t.dataset.t; $('#panel').hidden=true; UI.menu(t.dataset.t); });
@@ -326,6 +326,7 @@ const UI = {
       b.querySelectorAll('[data-cg]').forEach(x=>x.onclick=()=>{ const [id,lv]=x.dataset.cg.split(':'); CG.replaying=true; CG.replay(id,+lv); });
       b.querySelectorAll('[data-npc]').forEach(c=>{ const sp=npcSprite(c.dataset.npc); if(sp) c.getContext('2d').drawImage(sp,0,0); });
       const m=$('#sMute'); if(m) m.onclick=()=>{ S.mute=!S.mute; m.textContent='声音：'+(S.mute?'关':'开'); };
+      const dg=$('#sDodge'); if(dg) dg.onclick=()=>{ S.dodgeOff=!S.dodgeOff; dg.textContent='首领战：'+(S.dodgeOff?'经典回合制':'回合 + 躲弹幕'); save(); };
       const mu=$('#sMusic'); if(mu) mu.onclick=()=>{ S.music=S.music===false; mu.textContent='音乐：'+(S.music===false?'关':'开'); if(S.music===false) Music.stop(); else Music.play(areaTheme(),true); };
       const ss=$('#sSlots'); if(ss) ss.onclick=()=>{ $('#panel').hidden=true; SaveSys.panel(); };
       const sv=$('#sSave'); if(sv) sv.onclick=()=>{ UI.toast(save()?'已保存':'保存失败（浏览器不允许存储）'); };

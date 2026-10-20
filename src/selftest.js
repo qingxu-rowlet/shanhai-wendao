@@ -17,7 +17,7 @@ const SelfTest = {
         n++; await W(680); }
       const ok=$('#bOk'); if(ok) ok.click(); await W(50); return !!ok; };
     const backup=localStorage.getItem(slotKey(2)); const realRandom=Math.random;
-    Dev.god=false; RT.slot=2;
+    Dev.god=false; RT.slot=2; Dodge.auto=true;   // dodge phases resolve instantly (one hit) so the run stays fast
     try{
       await step('开局：创建角色、序章对话', async()=>{ localStorage.removeItem(slotKey(2)); Creator.open(2); await W(30); $('#crGo').click(); await W(80);
         for(let i=0;i<40&&!$('#rtGo');i++){ const d=$('#dlg'); const ch=d.querySelectorAll('[data-i]'); if(ch.length) ch[0].click(); else d.onclick&&(d.onclick(),d.onclick&&d.onclick()); await W(15); }
@@ -65,7 +65,7 @@ const SelfTest = {
       await step('往事回廊：重温讨伐穷奇后回到现在', async()=>{ const st=S.stones, L=S.L; Dev.god=true; Replay.start('qiongqi'); await W(1100); await adv(); await W(1500); $('#cine').click(); await W(150); await fight(); Dev.god=false; await adv(); await W(1200);
         return {fail:!(Replay.active===null&&S.L===L&&S.stones===st&&S.flags.qiongqi_done)}; });
       await step('没有脚本错误', async()=>({fail:SelfTest.errors.length>0, info:SelfTest.errors.slice(0,2).join(' | ')}));
-    } finally {
+    } finally { Dodge.auto=false;
       Math.random=realRandom; Dev.god=false;
       try{ if(backup) localStorage.setItem(slotKey(2),backup); else localStorage.removeItem(slotKey(2)); }catch(e){}
     }
