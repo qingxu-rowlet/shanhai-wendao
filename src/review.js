@@ -43,6 +43,8 @@ const Review = {
         setTimeout(()=>Qiyu.pickFor(),500); }},
     {id:'qiyu-map', group:'奇遇', title:'山林里的奇遇闪光', check:'今天的奇遇已经放在山林里（白泽问道）。跟着闪光找过去，按 E。',
       run(){ Review.base({quest:'q8', L:7}); S.karma=5; S.qiyu={ev:'baize', spot:1, done:false}; Hooks.placeQiyu(); S.min=10*60; Review.at('forest',16,10,'right'); }},
+    {id:'bounty', group:'悬赏榜', title:'悬赏榜', check:'面前就是悬赏榜，按 E。测试角色已经能交付一个悬赏，并有 12 点声望可以兑换东西。看看委托的文字、进度、交付 / 领赏和声望兑换。',
+      run(){ Review.base({quest:'q8', L:5, inv:{lingcao:4, lingmo:3, hide:3, huichun:2, juqi:1, fish_li:1}}); S.rep=12; Bounty.roll(); S.bounty.list[0]={kind:'item', key:'lingcao', n:3, who:'钱掌柜', text:'城里药铺订了一批灵草——交 3 个灵草', pay:38, rep:1, done:false}; Review.at('town',14,8,'up'); setTimeout(()=>Bounty.open(),500); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},

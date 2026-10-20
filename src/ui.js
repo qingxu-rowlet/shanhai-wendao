@@ -366,7 +366,7 @@ const UI = {
   dayCard(passedOut){
     const ready=Object.values(S.farm).filter(p=>p.crop&&p.stage>=3).length;
     UI.fx=true; UI.sync(); const el=$('#daycard'); el.hidden=false;
-    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?`<span>${Qiyu.hint()}</span>`:''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}${Mail.unread()?`<span>信箱里有 ${Mail.unread()} 封新信。</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
+    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?`<span>${Qiyu.hint()}</span>`:''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}<span>桃源镇的悬赏榜贴出了新的委托。</span>${Mail.unread()?`<span>信箱里有 ${Mail.unread()} 封新信。</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
     el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
     setTimeout(()=>{ el.hidden=true; UI.fx=false; UI.hud(); UI.sync(); },2200);
   },

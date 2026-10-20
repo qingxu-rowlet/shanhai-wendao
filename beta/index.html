@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="98d30189a2"><script>(function(){var B="98d30189a2";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5a700a0f39"><script>(function(){var B="5a700a0f39";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -404,6 +404,15 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .goldstar{font-size:12px;color:#b8862d;background:#fff0b0;padding:0 5px;border-radius:3px}
 .bk.qy{align-items:center}.bk.qy .qyt{flex:none;width:42px;text-align:center;font-family:var(--f-head);font-size:13px;padding:6px 0;border-radius:4px;background:#d9c9a8;color:#5a4630}
 .bk.qy.t-rare .qyt{background:#c9b8f5;color:#3a2a6a}.bk.qy.t-legend .qyt{background:#f2c14e;color:#5a3a10}.bk.qy.t-legend:not(.unk){box-shadow:0 0 0 2px #f2c14e inset}
+.bounty h4{margin:14px 0 6px;font-family:var(--f-head);font-weight:400}
+.blist{display:flex;flex-direction:column;gap:8px}
+.bnote{background:#fbf3e4;border:2px solid #c8a870;border-radius:4px;padding:8px 10px;box-shadow:2px 2px 0 rgba(90,60,30,.18);display:flex;flex-direction:column;gap:3px}
+.bnote small{color:#8a6a4a}.bnote b{font-weight:400;line-height:1.5}
+.bnote.ready{border-color:#3f8f6a;background:#eef8ec}.bnote.done{opacity:.55}
+.brow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}.brow .bpay{color:#b8862d;margin-left:auto}
+.bshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+.bitem{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;border:2px solid #c8a870;border-radius:4px;background:#fbf3e4;font:inherit;font-size:13px;cursor:pointer}
+.bitem img{width:28px;height:28px}.bitem em{font-style:normal;color:#8b5bc5;font-size:12px}.bitem:disabled{opacity:.45;cursor:default}
 .rare{font-size:11px;color:#7a5ad0;letter-spacing:-1px}
 .bk.king{background:linear-gradient(90deg,#fff0b0,#f6dca8)}
 .kingfish h3{color:var(--cinnabar);animation:pulse .6s infinite}
@@ -1862,6 +1871,7 @@ function interact(o){
       return UI.say([['旁白','空空的木箱。']]);
     case 'shrine': return Story.shrine();
     case 'mail': return Mail.open();
+    case 'board': return Bounty.open();
     case 'altar': return Sect.altar();
     case 'puppet': return Life.puppetMenu();
     case 'qiyu': return Hooks.qiyu(o);
@@ -2686,7 +2696,7 @@ const UI = {
   dayCard(passedOut){
     const ready=Object.values(S.farm).filter(p=>p.crop&&p.stage>=3).length;
     UI.fx=true; UI.sync(); const el=$('#daycard'); el.hidden=false;
-    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?`<span>${Qiyu.hint()}</span>`:''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}${Mail.unread()?`<span>信箱里有 ${Mail.unread()} 封新信。</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
+    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?`<span>${Qiyu.hint()}</span>`:''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}<span>桃源镇的悬赏榜贴出了新的委托。</span>${Mail.unread()?`<span>信箱里有 ${Mail.unread()} 封新信。</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
     el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
     setTimeout(()=>{ el.hidden=true; UI.fx=false; UI.hud(); UI.sync(); },2200);
   },
@@ -4303,6 +4313,86 @@ const Mail = {
 { const _nd=Hooks.newDay; Hooks.newDay=function(){ _nd.apply(this,arguments); Mail.newDay(); }; }
 
 /* ============================================================
+   山海问道 · 悬赏榜 — a notice board in 桃源镇 with three fresh requests every morning.
+   Requests reuse what the game already tracks: beasts slain by kind, items in the bag (handed in),
+   gifts given today, today's 奇遇. Rewards are spirit stones and 声望 (renown), which buys rare goods.
+   ============================================================ */
+// the board: a little roofed notice board, painted like the trees
+SPR.board=SPR.sign; SPRC.board=(()=>{ const c=document.createElement('canvas'); c.width=20; c.height=24; const g=c.getContext('2d'), f=(x,y,w,h,col)=>{ g.fillStyle=col; g.fillRect(x,y,w,h); };
+  f(3,8,2,15,'#4a2e1a'); f(15,8,2,15,'#4a2e1a'); f(3,8,1,15,'#6b4428'); f(15,8,1,15,'#6b4428');           // posts
+  f(0,3,20,3,'#7a3636'); f(1,2,18,1,'#a0504a'); f(2,1,16,1,'#642a2a'); f(0,6,20,1,'#4a1f1f'); f(0,1,2,2,'#2a1e1a'); f(18,1,2,2,'#2a1e1a');  // little roof
+  f(2,7,16,11,'#2a1e1a'); f(3,8,14,9,'#a8743f'); f(3,8,14,1,'#c8945a');                                     // board
+  f(4,9,5,6,'#f3e6c8'); f(10,10,6,5,'#fbf3e4'); f(5,11,3,1,'#8a6a4a'); f(5,13,3,1,'#8a6a4a'); f(11,12,4,1,'#8a6a4a'); f(6,9,1,1,'#c8413b'); f(12,10,1,1,'#c8413b');  // posted notes
+  f(1,22,18,2,'rgba(0,0,0,0)'); c.bottom=23; return c; })();
+MAPS.town.objects.push({type:'board', x:14, y:7, act:'board', spr:'board'});
+
+const RANKS=[[0,'无名小卒'],[5,'小有名气'],[15,'桃源侠士'],[30,'青丘名士'],[60,'名动一方']];
+const REP_SHOP=[{id:'juqi',n:1,cost:1},{id:'huichun',n:2,cost:2},{id:'xueshen',n:1,cost:3},{id:'peiyuan',n:1,cost:4},{id:'zhuguo',n:2,cost:4},{id:'wuse',n:1,cost:6}];
+// request templates; `make` returns the request (or null when it doesn't fit today)
+const BOUNTY_KINDS = [
+  {kind:'kill', make:()=>{ const pool=[['dangkang','当康又拱了镇外的菜地','钱掌柜'],['xingxing','狌狌溜进镇里偷鸡','阿禾']]; if(S.L>=4) pool.push(['guidiao','山林里有蛊雕伤人','猎户']);
+    const [k,why,who]=pool[Math.random()*pool.length|0], n=2+(Math.random()*3|0); return {key:k, n, base:(S.st.kb||{})[k]||0, who, text:`${why}——击败 ${n} 只${BEASTS[k].name}`, pay:15*n+(k==='guidiao'?30:0), rep:k==='guidiao'?2:1}; }},
+  {kind:'item', make:()=>{ const pool=[['lingcao',3,'城里药铺订了一批灵草','钱掌柜',30],['lingmo',2,'奶奶想喝灵菇汤','阿禾',25],['hide',2,'要给孩子们做冬衣','裁缝',40],
+      ['huichun',1,'镇上有人受了伤','云游子',45],['juqi',1,'有位书生想试试修仙','书生',40],['zhuguo',1,'过寿要用朱果做寿桃','王大娘',70],['fish_li',1,'今晚想吃红烧鲤鱼','钱掌柜',30],['fish_yin',1,'要一条银鱼熬汤','阿禾',30]];
+    const [id,n,why,who,pay]=pool[Math.random()*pool.length|0]; return {key:id, n, who, text:`${why}——交 ${n} 个${ITEMS[id].name}`, pay, rep:1}; }},
+  {kind:'gift', make:()=>{ const pool=['ahe','qian','yunyou','tang','ge'].filter(k=>NPCS[k]); const k=pool[Math.random()*pool.length|0];
+    return {key:k, n:1, who:'镇上的热心人', text:`${NPCS[k].name}最近闷闷不乐——今天之内送份礼物，哄哄开心`, pay:25, rep:1}; }},
+  {kind:'qiyu', make:()=>S.qiyu&&!S.qiyu.done ? {key:S.qiyu.ev, n:1, who:'云游子', text:'听说青丘山林里今天有异象——去看看是什么（找到奇遇）', pay:40, rep:2} : null},
+];
+const Bounty = {
+  rep(){ return S.rep||0; },
+  rank(){ let r=0; RANKS.forEach(([n],i)=>{ if(Bounty.rep()>=n) r=i; }); return r; },
+  // the day's requests: three (four from 桃源侠士 up), never two of the same kind+target
+  roll(){
+    const want=Bounty.rank()>=2?4:3, list=[], mul=1+.25*Bounty.rank();
+    for(let tries=0; list.length<want && tries<40; tries++){
+      const K=BOUNTY_KINDS[Math.random()*BOUNTY_KINDS.length|0], b=K.make(); if(!b) continue;
+      // different kinds first; repeats of a kind only once every kind is on the board
+      const kinds=new Set(list.map(x=>x.kind)), avail=BOUNTY_KINDS.filter(k=>k.kind!=='qiyu'||(S.qiyu&&!S.qiyu.done)).length;
+      if(kinds.has(K.kind)&&kinds.size<avail) continue;
+      if(list.some(x=>x.kind===K.kind&&x.key===b.key)) continue;
+      if(K.kind==='qiyu'&&kinds.has('qiyu')) continue;
+      list.push({...b, kind:K.kind, pay:Math.round(b.pay*mul), done:false});
+    }
+    S.bounty={day:S.day, list, bonus:false};
+  },
+  today(){ if(!S.bounty||S.bounty.day!==S.day) Bounty.roll(); return S.bounty; },
+  prog(b){
+    if(b.kind==='kill') return Math.min(b.n, ((S.st.kb||{})[b.key]||0)-b.base);
+    if(b.kind==='item') return Math.min(b.n, S.inv[b.key]||0);
+    if(b.kind==='gift') return Social.rel(b.key).gifted===S.day?1:0;
+    if(b.kind==='qiyu') return S.qiyu&&S.qiyu.ev===b.key&&S.qiyu.done?1:0;
+    return 0; },
+  ready(b){ return !b.done && Bounty.prog(b)>=b.n; },
+  claim(i){
+    const B=Bounty.today(), b=B.list[i]; if(!b||!Bounty.ready(b)) return;
+    if(b.kind==='item') addItem(b.key,-b.n);
+    const r0=Bounty.rank(); b.done=true; S.stones+=b.pay; S.rep=Bounty.rep()+b.rep; Sound.coin();
+    let msg=`完成悬赏：灵石 +${b.pay}，声望 +${b.rep}`;
+    if(!B.bonus && B.list.every(x=>x.done)){ B.bonus=true; S.rep+=1; addItem('juqi',1); msg+='　·　今日悬赏全部完成！额外 声望 +1、聚气丹 ×1'; }
+    UI.toast(msg); UI.hud();
+    if(Bounty.rank()>r0){ Sound.levelup(); UI.banner('声望提升：'+RANKS[Bounty.rank()][1]); }
+    UI.closePanel(); Bounty.open();
+  },
+  buy(i){ const it=REP_SHOP[i]; if(Bounty.rep()<it.cost) return UI.toast('声望不够'); S.rep-=it.cost; addItem(it.id,it.n); Sound.coin(); UI.toast(`换得 ${ITEMS[it.id].name} ×${it.n}`); UI.closePanel(); Bounty.open(); },
+  open(){
+    const B=Bounty.today(), rk=Bounty.rank(), next=RANKS[rk+1];
+    UI.panel('桃源镇 · 悬赏榜', `<div class="bounty">
+      <p class="muted">声望 <b>${Bounty.rep()}</b>　·　${RANKS[rk][1]}${next?`（${next[0]} 声望升为「${next[1]}」）`:''}　·　每天清晨换一批悬赏，全部完成有额外奖励。${rk<2?'到「桃源侠士」后每天有 4 个悬赏。':''}</p>
+      <div class="blist">${B.list.map((b,i)=>{ const p=Bounty.prog(b);
+        return `<div class="bnote ${b.done?'done':Bounty.ready(b)?'ready':''}"><small>${esc(b.who)}</small><b>${esc(b.text)}</b>
+          <div class="brow"><span>${b.done?'✓ 已完成':`进度 ${p}/${b.n}`}</span><span class="bpay">灵石 ${b.pay}　声望 ${b.rep}</span>
+          ${b.done?'':`<button class="btn mini ${Bounty.ready(b)?'main':''}" data-c="${i}" ${Bounty.ready(b)?'':'disabled'}>${b.kind==='item'?'交付':'领赏'}</button>`}</div></div>`; }).join('')}</div>
+      <h4>声望兑换</h4><div class="bshop">${REP_SHOP.map((it,i)=>`<button class="bitem" data-b="${i}" ${Bounty.rep()<it.cost?'disabled':''}><img class="px" src="${iconURL(ITEMS[it.id].icon,ITEMS[it.id].color)}" alt=""><span>${ITEMS[it.id].name}×${it.n}</span><em>${it.cost} 声望</em></button>`).join('')}</div></div>`, b=>{
+      b.querySelectorAll('[data-c]').forEach(x=>x.onclick=()=>Bounty.claim(+x.dataset.c));
+      b.querySelectorAll('[data-b]').forEach(x=>x.onclick=()=>Bounty.buy(+x.dataset.b)); });
+  },
+  // for the HUD task list: how many requests are ready to hand in
+  readyCount(){ return S.bounty&&S.bounty.day===S.day ? S.bounty.list.filter(Bounty.ready).length : 0; },
+};
+{ const _nd=Hooks.newDay; Hooks.newDay=function(){ _nd.apply(this,arguments); Bounty.roll(); }; }
+
+/* ============================================================
    山海问道 · 闭关 — choose how long to meditate (two hours up to a month), see which realm you will reach,
    then watch a progress bar. Long sessions pass whole days (letters, 奇遇 and fortunes still roll each morning).
    Midnight no longer knocks you out: the day simply turns over.
@@ -4921,6 +5011,8 @@ const Review = {
         setTimeout(()=>Qiyu.pickFor(),500); }},
     {id:'qiyu-map', group:'奇遇', title:'山林里的奇遇闪光', check:'今天的奇遇已经放在山林里（白泽问道）。跟着闪光找过去，按 E。',
       run(){ Review.base({quest:'q8', L:7}); S.karma=5; S.qiyu={ev:'baize', spot:1, done:false}; Hooks.placeQiyu(); S.min=10*60; Review.at('forest',16,10,'right'); }},
+    {id:'bounty', group:'悬赏榜', title:'悬赏榜', check:'面前就是悬赏榜，按 E。测试角色已经能交付一个悬赏，并有 12 点声望可以兑换东西。看看委托的文字、进度、交付 / 领赏和声望兑换。',
+      run(){ Review.base({quest:'q8', L:5, inv:{lingcao:4, lingmo:3, hide:3, huichun:2, juqi:1, fish_li:1}}); S.rep=12; Bounty.roll(); S.bounty.list[0]={kind:'item', key:'lingcao', n:3, who:'钱掌柜', text:'城里药铺订了一批灵草——交 3 个灵草', pay:38, rep:1, done:false}; Review.at('town',14,8,'up'); setTimeout(()=>Bounty.open(),500); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},

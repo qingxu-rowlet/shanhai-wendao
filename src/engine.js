@@ -224,6 +224,7 @@ function interact(o){
       return UI.say([['旁白','空空的木箱。']]);
     case 'shrine': return Story.shrine();
     case 'mail': return Mail.open();
+    case 'board': return Bounty.open();
     case 'altar': return Sect.altar();
     case 'puppet': return Life.puppetMenu();
     case 'qiyu': return Hooks.qiyu(o);
