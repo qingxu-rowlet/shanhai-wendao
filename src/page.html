@@ -404,6 +404,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .cg-title small{font-family:var(--f-head);font-size:14px;letter-spacing:.2em;color:#ffd0dc}
 .cg-title b{font-family:var(--f-brush);font-weight:400;font-size:clamp(40px,11vw,64px);line-height:1.1}
 #cg.go .cg-title{animation:inkIn 1.4s ease-out both}
+#cg.pix #cgBg{image-rendering:pixelated}
+#cg.pix .cg-title{text-shadow:0 2px 0 #2a1e1a,2px 0 0 #2a1e1a,-2px 0 0 #2a1e1a,0 -2px 0 #2a1e1a,0 0 10px rgba(0,0,0,.5)}
+#cg.swap #cgBg{animation:cgSwap .8s ease-out}
 #cgHer.bust{height:min(34vh,280px)!important}
 #cgMe{height:min(26vh,220px)!important}
 #cgHer.pop{animation:cgPop .35s ease-out}
