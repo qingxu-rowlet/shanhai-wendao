@@ -116,7 +116,8 @@ const Life = {
     if(r<.6) return F('fish_li',.8,.6); return F('fish_yin',1.2,.9);
   },
   bookHTML(tab){
-    const C=Life.col(), sub=`<div class="tabs sub">${[['beast','妖兽'],['crop','灵材'],['fish','鱼类']].map(([k,n])=>`<button data-bk="${k}" class="${k===tab?'on':''}">${n}</button>`).join('')}</div>`;
+    const C=Life.col(), sub=`<div class="tabs sub">${[['beast','妖兽'],['crop','灵材'],['fish','鱼类'],['qiyu','奇遇']].map(([k,n])=>`<button data-bk="${k}" class="${k===tab?'on':''}">${n}</button>`).join('')}</div>`;
+    if(tab==='qiyu') return Qiyu.bookHTML(sub);
     if(tab==='crop'){ const got=CROP_ORDER.filter(id=>C.crops[id]).length;
       return sub+`<p class="muted">已收集 ${got}/${CROP_ORDER.length}　${S.flags.crop_set?'✓ 已领取集齐奖励（回春丹 ×3）':'集齐奖励：回春丹 ×3'}</p><div class="book">${CROP_ORDER.map(id=>{ const r=C.crops[id], it=ITEMS[id];
         return `<div class="bk ${r?'':'unk'}"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""><div><b>${r?it.name:'？？？'}${r&&r.gold?' <span class="goldstar">★金品</span>':''}</b><p>${r?`${esc(it.desc)}<br>采集 ${r.n} 次`:'采集到就会记录在这里。'}</p></div></div>`; }).join('')}</div>`; }

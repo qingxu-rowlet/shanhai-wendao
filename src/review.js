@@ -38,6 +38,11 @@ const Review = {
       run(){ Review.base({quest:'q4', L:2}); S.min=17*60; Review.at('forest',8,11,'down'); }},
     {id:'art-night', group:'美术', title:'洞府（夜里）', check:'萤火虫、灯笼的光、夜里的路和崖壁。',
       run(){ Review.base({quest:'q4', L:2}); S.min=21*60; Review.at('home',11,6,'down'); }},
+    {id:'qiyu', group:'奇遇', title:'奇遇一览（直接触发任意一个）', check:'从列表里挑一个奇遇直接开始。测试角色已有灵草、灵菇、朱果、兽皮和灵石，善念 5、炼气七层，所有条件都满足。看完可以在 行囊 → 图鉴 → 奇遇 里看记录。',
+      run(){ Review.base({quest:'q8', L:7, inv:{lingcao:3, lingmo:3, zhuguo:2, hide:4, huichun:2}, flags:{fox_kind:true}}); S.karma=5; S.stones=400; S.min=22*60; Review.at('forest',14,12,'down');
+        setTimeout(()=>Qiyu.pickFor(),500); }},
+    {id:'qiyu-map', group:'奇遇', title:'山林里的奇遇闪光', check:'今天的奇遇已经放在山林里（白泽问道）。跟着闪光找过去，按 E。',
+      run(){ Review.base({quest:'q8', L:7}); S.karma=5; S.qiyu={ev:'baize', spot:1, done:false}; Hooks.placeQiyu(); S.min=10*60; Review.at('forest',16,10,'right'); }},
     // 配乐
     {id:'music-village', group:'配乐', title:'村庄主题', check:'桃源镇白天的古筝 + 箫。点一下画面开始播放（iPhone 请关闭静音开关）。',
       run(){ Review.base({quest:'q4', L:2}); S.min=10*60; Review.at('town',12,11,'down'); Music.play('village',true); }},

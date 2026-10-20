@@ -246,6 +246,7 @@ const UI = {
       if(st.stones){ S.stones+=st.stones; Sound.coin(); UI.toast(`灵石 +${st.stones}`); UI.hud(); continue; }
       if(st.exp){ gainExp(st.exp); continue; }
       if(st.flag){ S.flags[st.flag]=true; continue; }
+      if(st.run){ if(!CG.replaying) st.run(); continue; }
       if(st.go){ q.steps=[...SCRIPTS[st.go]]; q.i=0; continue; }
       if(st.end){ q.i=q.steps.length; break; }
       if(st.roottest){ $('#dlg').hidden=true; Sect.rootTest(()=>{ $('#dlg').hidden=false; UI.sync(); UI.next(); }); return; }
@@ -365,7 +366,7 @@ const UI = {
   dayCard(passedOut){
     const ready=Object.values(S.farm).filter(p=>p.crop&&p.stage>=3).length;
     UI.fx=true; UI.sync(); const el=$('#daycard'); el.hidden=false;
-    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?'<span>听说青丘山林里今天有些不寻常……</span>':''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}${Mail.unread()?`<span>信箱里有 ${Mail.unread()} 封新信。</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
+    el.innerHTML=`<div><b>第 ${S.day} 天</b><span>${passedOut?'你在洞府醒来，丢了一些灵石……':'晨光透进洞府，新的一天开始了。'}</span>${ready?`<span>有 ${ready} 株灵植可以收获了！</span>`:''}${Sect.fortune()?`<span>今日卦象：${Sect.fortune().name}</span>`:''}${S.qiyu?`<span>${Qiyu.hint()}</span>`:''}${S._puppetNote?`<span>${S._puppetNote}</span>`:''}${Mail.unread()?`<span>信箱里有 ${Mail.unread()} 封新信。</span>`:''}${(S.glow||[]).length?'<span>池塘里好像有金光在闪……</span>':''}</div>`; S._puppetNote='';
     el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
     setTimeout(()=>{ el.hidden=true; UI.fx=false; UI.hud(); UI.sync(); },2200);
   },
