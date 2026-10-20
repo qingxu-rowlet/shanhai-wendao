@@ -268,6 +268,7 @@ const UI = {
     const p=$('#dText'); let n=0; UI.typing=true; clearInterval(UI._ti);
     UI._ti=setInterval(()=>{ n++; p.textContent=text.slice(0,n); if(n%2===0) Sound.talk(); if(n>=text.length){ clearInterval(UI._ti); UI.typing=false; } },28);
     d.onclick=()=>{ if(UI.typing){ clearInterval(UI._ti); p.textContent=text; UI.typing=false; return; } Sound.tick(); UI.next(); };
+    UI._lineAt=performance.now();
   },
   choice(st){
     const d=$('#dlg');
@@ -336,12 +337,12 @@ const UI = {
   shop(){
     const render=(tab)=>{
       let body=`<div class="tabs"><button data-t="buy" class="${tab==='buy'?'on':''}">买</button><button data-t="sell" class="${tab==='sell'?'on':''}">卖</button></div><p class="muted">灵石：<b id="shStones">${S.stones}</b></p>`;
-      if(tab==='buy') body+=SHOP.sell.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" ${S.stones<ITEMS[id].price?'disabled':''}>${ITEMS[id].price} 灵石</button></div>`).join('');
+      if(tab==='buy') body+=SHOP.sell.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" ${S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])?'disabled':''}>${ITEMS[id].sell===0&&S.inv[id]?'已拥有':ITEMS[id].price+' 灵石'}</button></div>`).join('');
       else { const ids=Object.keys(S.inv).filter(k=>ITEMS[k].sell&&S.inv[k]>0);
         body+=ids.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name} ×${S.inv[id]}</b><small>每个 ${ITEMS[id].sell} 灵石</small></div><button class="btn mini" data-sell="${id}">卖 1</button><button class="btn mini" data-sellall="${id}">全卖</button></div>`).join('')||'<p class="muted">没有可以卖的东西。灵草、灵菇、兽皮和丹药都能卖。</p>'; }
       UI.panel('钱记杂货', `<p class="greet">钱掌柜：「客官，看看有什么需要的？」</p>`+body, b=>{
         b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); render(t.dataset.t); });
-        b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy; if(S.stones<ITEMS[id].price) return; S.stones-=ITEMS[id].price; addItem(id); Sound.coin(); render('buy'); });
+        b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy; if(S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])) return; S.stones-=ITEMS[id].price; addItem(id); Sound.coin(); render('buy'); });
         b.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{ const id=x.dataset.sell; addItem(id,-1); S.stones+=ITEMS[id].sell; Sound.coin(); render('sell'); });
         b.querySelectorAll('[data-sellall]').forEach(x=>x.onclick=()=>{ const id=x.dataset.sellall, n=S.inv[id]; addItem(id,-n); S.stones+=ITEMS[id].sell*n; Sound.coin(); render('sell'); });
       });
@@ -373,7 +374,7 @@ const UI = {
   },
   title(){
     const t=$('#title'); t.hidden=false; const has=!!loadSave();
-    t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">种田 · 修仙 · 降妖　——　青丘篇</p>
+    t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">修仙 · 降妖 · 奇遇　——　青丘篇</p>
       <div class="tbtns">${has?'<button class="btn main" id="tCont">继续修行</button>':''}<button class="btn ${has?'':'main'}" id="tNew">新的修行</button></div>
       <p class="tnote" id="tNote"></p></div>`;
     UI.sync();
@@ -389,6 +390,13 @@ const UI = {
     return false;
   },
 };
+// a tap anywhere on the screen moves the dialogue on (not just on the box); the tap that opened it is ignored
+addEventListener('click', e=>{
+  const d=$('#dlg'); if(d.hidden||!d.onclick||d.contains(e.target)) return;
+  if(performance.now()-(UI._lineAt||0)<250) return;
+  if(e.target.closest('#reviewNote,#panel,#minigame,#battle,#title,button,a,input')) return;
+  d.onclick();
+});
 $('#menuB').onclick=()=>{ Sound.tick(); UI.menu(); };
 $('#mini').onclick=()=>{ Sound.tick(); UI.worldMap(); };
 UI.musicBtn=()=>{ const b=$('#musicB'); if(b) b.classList.toggle('off', !!(S&&S.music===false)); };

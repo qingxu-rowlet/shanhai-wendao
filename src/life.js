@@ -65,7 +65,7 @@ const Life = {
   checkSets(){
     const C=Life.col();
     if(!S.flags.crop_set && CROP_ORDER.every(id=>C.crops[id])){ S.flags.crop_set=true; addItem('huichun',3); UI.banner('灵材图鉴集齐！'); UI.toast('奖励：回春丹 ×3'); }
-    if(!S.flags.fish_set && FISH_ORDER.every(id=>C.fish[id])){ S.flags.fish_set=true; S.flags.goldrod=true; UI.banner('鱼类图鉴集齐！'); UI.toast('奖励：钓竿升级为金钓竿（收线框更大）'); }
+    if(!S.flags.fish_set && FISH_ORDER.every(id=>C.fish[id])){ S.flags.fish_set=true; S.flags.goldrod=true; UI.banner('鱼类图鉴集齐！'); UI.toast('奖励：钓竿升级为金钓竿（收线框最大，鱼也游得更慢）'); }
   },
   /* ---------- each morning ---------- */
   newDay(){
@@ -147,10 +147,10 @@ Mini.reel=function(fish){
   el.innerHTML=`<div class="mg wood fishg ${king?'kingfish':''}"><h3>${king?'鱼王上钩了！！':'收线！'}</h3><div class="reel-wrap"><div class="reel"><div class="catch" id="rcBox"></div><div class="fishi" id="rcFish"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""></div></div>
     <div class="rprog"><i id="rcProg"></i></div></div><p class="mg-tip">${king?'它的力气大得惊人——稳住！':'按住「提竿」让绿框上升，把鱼框住！'}</p><button class="btn main big" id="rcBtn">提竿（按住）</button></div>`;
   if(king){ Music.stinger('boss'); }
-  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const box=(S.flags.goldrod?.34:.26)*(king?.9:1); const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
+  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const tier=S.flags.goldrod?2:S.inv.rod_bamboo?1:0, box=[.26,.32,.38][tier]*(king?.9:1), slow=[1,.85,.75][tier]; const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
   Mini.run(dt=>{
     t+=dt; bv+=(holding?1.8:-1.6)*dt; bv*=.93; b=Math.max(0,Math.min(1-box,b+bv*dt*2)); if(b===0||b===1-box) bv=0;
-    if(Math.random()<dt*fish.jumpy) fTarget=Math.random(); f+=(fTarget-f)*Math.min(1,dt*fish.speed*2);
+    if(Math.random()<dt*fish.jumpy) fTarget=Math.random(); f+=(fTarget-f)*Math.min(1,dt*fish.speed*2*slow);
     const inside=f>=b&&f<=b+box; p=Math.max(0,Math.min(1,p+(inside?(king?.28:.32):(king?-.2:-.22))*dt));
     $('#rcBox').style.bottom=(b*100)+'%'; $('#rcBox').style.height=(box*100)+'%'; $('#rcFish').style.bottom=`calc(${f*100}% - 12px)`; $('#rcProg').style.height=(p*100)+'%';
     $('#rcBox').classList.toggle('on',inside);

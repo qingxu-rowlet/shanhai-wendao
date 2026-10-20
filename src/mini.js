@@ -31,7 +31,7 @@ const Mini = {
 
   /* ---------- 炼丹：keep the heat inside the moving sweet spot ---------- */
   alchemy(recipe, done){
-    const out=ITEMS[recipe.out], wide=S.sect==='dan'?.17:.12, total=7;
+    const out=ITEMS[recipe.out], wide=S.sect==='dan'?.21:.16, total=7;
     const el=Mini.open(`<div class="mg wood alc"><h3>炼制 ${out.name}</h3>
       <div class="alc-wrap"><div class="furnace"><div class="flame" id="alcFlame"></div></div>
         <div class="heat"><div class="zone" id="alcZone"></div><div class="needle" id="alcNeedle"></div></div></div>
@@ -39,17 +39,17 @@ const Mini = {
       <button class="btn main big" id="alcBtn">鼓风（按住）</button></div>`);
     let h=.3, v=0, t=-1.2, inside=0, holding=false; const unbind=Mini.hold($('#alcBtn'), x=>holding=x);
     Mini.run(dt=>{
-      t+=dt; v+=(holding?1.7:-1.15)*dt; v*=.94; h=Math.max(0,Math.min(1,h+v*dt*2.2)); if(h===0||h===1) v=0;
-      const c=.5+.26*Math.sin(t*1.25)+.1*Math.sin(t*3.3);
+      t+=dt; v+=(holding?1.5:-1.05)*dt; v*=.92; h=Math.max(0,Math.min(1,h+v*dt*2.2)); if(h===0||h===1) v=0;
+      const c=.5+.22*Math.sin(t*.95)+.06*Math.sin(t*2.3);
       if(t>0){ if(Math.abs(h-c)<wide) inside+=dt; }
       $('#alcZone').style.bottom=((c-wide)*100)+'%'; $('#alcZone').style.height=(wide*200)+'%';
       $('#alcNeedle').style.bottom=(h*100)+'%'; $('#alcFlame').style.transform=`scale(${.5+h*.9})`; $('#alcFlame').style.opacity=.5+h*.5;
       $('#alcProg').style.width=Math.max(0,t/total*100)+'%';
       if(t<0) $('#alcTip').textContent='准备……';
       else if(Math.abs(h-c)<wide) $('#alcTip').textContent='火候正好！'; else $('#alcTip').textContent=h>c?'火太旺了！':'火太弱了！';
-      if(t>=total){ unbind(); Mini.stop(); const r=inside/total, grade=r>=.68?'top':r>=.42?'mid':r>=.2?'low':'fail';
+      if(t>=total){ unbind(); Mini.stop(); const r=inside/total, grade=r>=.58?'top':r>=.35?'mid':r>=.15?'low':'fail';
         const name={top:'上品',mid:'中品',low:'下品',fail:'炸炉'}[grade];
-        el.querySelector('.alc').innerHTML=`<h3>${grade==='fail'?'炸炉了……':name+out.name}</h3><p class="mg-tip">火候命中 ${Math.round(r*100)}%</p><button class="btn main" id="alcOk">好</button>`;
+        el.querySelector('.alc').innerHTML=`<h3>${grade==='fail'?'炸炉了……':name+out.name}</h3><p class="mg-tip">火候命中 ${Math.round(r*100)}%（上品要 58%，中品 35%）</p><button class="btn main" id="alcOk">好</button>`;
         if(grade==='fail') Sound.hurt(); else Sound.levelup();
         $('#alcOk').onclick=()=>{ Mini.close(); done(grade); }; }
     });

@@ -6,8 +6,10 @@
 Object.assign(ITEMS, {
   peiyuan: {name:'培元丹', icon:'i_pill', color:'#e86a5a', sell:90, use:'exp', amount:150, desc:'服下增加 150 修为。丹香里带着一丝暖意。'},
   xueshen: {name:'雪参',   icon:'i_lingcao', color:'#f1ece2', sell:120, use:'heal', amount:200, desc:'雪线上才长的老参。恢复 200 生命。'},
+  rod_bamboo:{name:'青竹钓竿', icon:'i_rod', color:'#5fa35a', price:400, sell:0, desc:'老竹子做的好钓竿。放在行囊里，钓鱼时自动换用：收线框更大，鱼也游得慢一些。'},
   wuse:    {name:'五色石', icon:'i_feather', color:'#8b5bc5', sell:260, desc:'传说是女娲补天剩下的碎石，五色流转。值不少灵石。'},
 });
+SHOP.sell.push('rod_bamboo');
 // lasting gifts from encounters: {hp, mp, atk, def, med}
 { const _stats=stats; stats=function(){ const s=_stats(), b=S.bonus||{}; return {...s, hp:s.hp+(b.hp||0), mp:s.mp+(b.mp||0), atk:s.atk+(b.atk||0), def:s.def+(b.def||0)}; }; }
 { const _med=Sect.medMul; Sect.medMul=function(){ return +(_med.call(Sect)*(1+((S.bonus||{}).med||0))).toFixed(2); }; }
@@ -16,6 +18,8 @@ const karma=n=>{ S.karma=(S.karma||0)+n; };
 const night=()=>{ const h=S.min/60; return h>=19||h<5; };
 const hasRoot=el=>S.root&&Sect.rootName().includes(el);
 
+// seeds left over from old quest rewards become fruit on load
+{ const _m=Sect.migrate; Sect.migrate=function(){ const r=_m.apply(this,arguments); if(S&&S.inv){ for(const [k,to] of [['seed_zg','zhuguo'],['seed_lc','lingcao']]) if(S.inv[k]){ S.inv[to]=(S.inv[to]||0)+S.inv[k]; delete S.inv[k]; } } return r; }; }
 // fix the two old encounters that still spoke of farming
 { const h=QIYU.find(q=>q.id==='hunter'); h.run=()=>[['老猎人','年轻人，我这儿有颗南边换来的朱果。拿 2 张兽皮来换，怎么样？'],
     {choice:'换吗？', options:[

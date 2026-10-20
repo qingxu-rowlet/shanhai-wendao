@@ -153,7 +153,7 @@ function enterMap(id, x, y){
 }
 function spawnBeasts(){
   RT.beasts=[]; const m=RT.map; if(!m.spawns) return;
-  const killed=S.killed[S.day+':'+RT.mapId]||[]; let idx=0;
+  const now=S.day*1440+S.min, killed=(S.killed[S.day+':'+RT.mapId]||[]).filter(k=>typeof k==='number'||now-k.t<240).map(k=>typeof k==='number'?k:k.i); let idx=0;
   const R=rng(S.day*31+RT.mapId.length);
   for(const sp of m.spawns){
     for(let k=0;k<sp.n;k++,idx++){
@@ -362,7 +362,7 @@ function updateBeasts(dt){
 function startWildBattle(b){
   RT.path=[]; RT.pending=null; RT.keys=[]; RT.autoNav=false;
   Battle.start(b.kind, result=>{
-    if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push(b.idx); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
+    if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push({i:b.idx, t:S.day*1440+S.min}); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
     else if(result==='flee'){ b.stun=3; }
     else if(result==='lose'){ UI.say([['旁白','你眼前一黑……醒来时已躺在洞府里。']], ()=>sleep(true)); }
   });

@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="68b88f96f0"><script>(function(){var B="68b88f96f0";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5738e833ff"><script>(function(){var B="5738e833ff";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -206,6 +206,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #medbar .mrealm.pop{animation:cgPop .5s ease-out}
 .med input[type=range]{width:100%;accent-color:#c8413b;margin:4px 0 10px}
 .med-len{font-size:16px}
+.med-full{background:#fff0d0;border:2px solid #e8b84a;border-radius:6px;padding:8px 10px;line-height:1.6;margin:0 0 8px}
 .med-out{background:#fbf3e4;border:2px solid #c8a870;border-radius:6px;padding:10px 12px;line-height:1.8}
 .med-out .up{margin-left:8px;color:#c8413b;font-weight:bold}
 .med-ahead{margin-top:10px}.med-ahead small{color:#7a5a2a}
@@ -400,7 +401,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .cg-title small{font-family:var(--f-head);font-size:14px;letter-spacing:.2em;color:#ffd0dc}
 .cg-title b{font-family:var(--f-brush);font-weight:400;font-size:clamp(40px,11vw,64px);line-height:1.1}
 #cg.go .cg-title{animation:inkIn 1.4s ease-out both}
-#cgHer.bust{height:min(62vh,520px)!important}
+#cgHer.bust{height:min(34vh,280px)!important}
+#cgMe{height:min(26vh,220px)!important}
 #cgHer.pop{animation:cgPop .35s ease-out}
 @keyframes cgPop{40%{transform:translateY(-6px)}}
 #cg.swap #cgBg{animation:cgSwap .8s ease-out}
@@ -1208,8 +1210,8 @@ const MAPS = {
       {type:'gather', x:8, y:17, item:'lingmo', spr:'mushspot'},{type:'gather', x:26, y:5, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:9, y:21, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:24, y:2, item:'lingmo', spr:'mushspot'},
     ],
     spawns:[ // wandering beasts: area [x0,y0,x1,y1]
-      {kind:'dangkang', n:2, area:[2,1,12,10]},
-      {kind:'xingxing', n:2, area:[16,5,28,14]},
+      {kind:'dangkang', n:3, area:[2,1,12,10]},
+      {kind:'xingxing', n:3, area:[16,5,28,14]},
       {kind:'guidiao',  n:2, area:[2,14,12,24], minRealm:4},
     ],
     exits:[{x:14,y:0,to:'home',tx:11,ty:14}]},
@@ -1240,7 +1242,7 @@ const SCRIPTS = {
     {choice:'要随老道修仙吗？', options:[{text:'弟子愿意！', go:'intro_yes'},{text:'修仙……能吃饱饭吗？', go:'intro_food'}]},
   ],
   intro_food:[
-    ['云游子','哈哈哈！修仙之人，餐风饮露亦可。不过嘛，灵田里种出的灵草，也是能吃的。'],
+    ['云游子','哈哈哈！修仙之人，餐风饮露亦可。不过嘛，山里采来的灵草，炖汤也是一绝。'],
     {go:'intro_yes'},
   ],
   intro_yes:[
@@ -1299,7 +1301,7 @@ const SCRIPTS = {
   ],
   q6_start:[
     ['云游子','穷奇羽是炼制筑基丹的药引。再加三颗朱果、两朵灵菇，便能在丹炉里炼成。'],
-    ['云游子','朱果种在钱掌柜那里有卖。等你修到炼气九层圆满，服下筑基丹，便可冲击筑基。'],
+    ['云游子','朱果在山林深处能采到，钱掌柜那里也有卖。等你修到炼气九层圆满，服下筑基丹，便可冲击筑基。'],
   ],
   zhuji_break:[
     ['旁白','丹田中的灵气缓缓凝聚，化作一汪澄澈的灵液……'],
@@ -1345,7 +1347,7 @@ const SCRIPTS = {
   ],
   // NPC small talk (when no quest line is active for them)
   talk_ahe:[['阿禾','山林里的灵菇炖汤可好喝了！你要是采多了，可以卖给钱掌柜。']],
-  talk_yunyou:[['云游子','修行无他，一日三件事：种田、打坐、炼丹。不急不躁，自然水到渠成。']],
+  talk_yunyou:[['云游子','修行无他，一日三件事：打坐、炼丹、行善。不急不躁，自然水到渠成。']],
   talk_ahe_after:[['阿禾','谢谢你赶走了穷奇！今天的鸡蛋分你一个～'],{give:{lingcao:1}}],
 };
 
@@ -1358,7 +1360,7 @@ const QUESTS = [
   {id:'q6', title:'讨伐穷奇', desc:'到青丘山林南边的狐祠，击退穷奇。', check:s=>s.flags.qiongqi_done},
   {id:'q7', title:'筑基', desc:'炼制筑基丹（3 朱果 + 2 灵菇 + 1 穷奇羽），修到炼气九层圆满后在蒲团突破。', start:'q6_start', check:s=>s.L>=10, progress:s=>`${realmName(s.L)} · 筑基丹 ${count(s,'zhuji')}/1`},
   {id:'q8', title:'青丘狐影', desc:'去山林南边的狐祠，看看狐火的来历。', start:'q7_start', check:s=>s.flags.chapter1_done},
-  {id:'end', title:'第一章 完', desc:'饕餮苏醒……下一章敬请期待。自由种田修炼吧！', check:s=>false},
+  {id:'end', title:'第一章 完', desc:'饕餮苏醒……下一章敬请期待。可以继续闭关、钓鱼、做悬赏、找奇遇。', check:s=>false},
 ];
 function count(s,id){ return s.inv[id]||0; }
 
@@ -1811,7 +1813,7 @@ function enterMap(id, x, y){
 }
 function spawnBeasts(){
   RT.beasts=[]; const m=RT.map; if(!m.spawns) return;
-  const killed=S.killed[S.day+':'+RT.mapId]||[]; let idx=0;
+  const now=S.day*1440+S.min, killed=(S.killed[S.day+':'+RT.mapId]||[]).filter(k=>typeof k==='number'||now-k.t<240).map(k=>typeof k==='number'?k:k.i); let idx=0;
   const R=rng(S.day*31+RT.mapId.length);
   for(const sp of m.spawns){
     for(let k=0;k<sp.n;k++,idx++){
@@ -2020,7 +2022,7 @@ function updateBeasts(dt){
 function startWildBattle(b){
   RT.path=[]; RT.pending=null; RT.keys=[]; RT.autoNav=false;
   Battle.start(b.kind, result=>{
-    if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push(b.idx); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
+    if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push({i:b.idx, t:S.day*1440+S.min}); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
     else if(result==='flee'){ b.stun=3; }
     else if(result==='lose'){ UI.say([['旁白','你眼前一黑……醒来时已躺在洞府里。']], ()=>sleep(true)); }
   });
@@ -2609,6 +2611,7 @@ const UI = {
     const p=$('#dText'); let n=0; UI.typing=true; clearInterval(UI._ti);
     UI._ti=setInterval(()=>{ n++; p.textContent=text.slice(0,n); if(n%2===0) Sound.talk(); if(n>=text.length){ clearInterval(UI._ti); UI.typing=false; } },28);
     d.onclick=()=>{ if(UI.typing){ clearInterval(UI._ti); p.textContent=text; UI.typing=false; return; } Sound.tick(); UI.next(); };
+    UI._lineAt=performance.now();
   },
   choice(st){
     const d=$('#dlg');
@@ -2677,12 +2680,12 @@ const UI = {
   shop(){
     const render=(tab)=>{
       let body=`<div class="tabs"><button data-t="buy" class="${tab==='buy'?'on':''}">买</button><button data-t="sell" class="${tab==='sell'?'on':''}">卖</button></div><p class="muted">灵石：<b id="shStones">${S.stones}</b></p>`;
-      if(tab==='buy') body+=SHOP.sell.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" ${S.stones<ITEMS[id].price?'disabled':''}>${ITEMS[id].price} 灵石</button></div>`).join('');
+      if(tab==='buy') body+=SHOP.sell.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" ${S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])?'disabled':''}>${ITEMS[id].sell===0&&S.inv[id]?'已拥有':ITEMS[id].price+' 灵石'}</button></div>`).join('');
       else { const ids=Object.keys(S.inv).filter(k=>ITEMS[k].sell&&S.inv[k]>0);
         body+=ids.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name} ×${S.inv[id]}</b><small>每个 ${ITEMS[id].sell} 灵石</small></div><button class="btn mini" data-sell="${id}">卖 1</button><button class="btn mini" data-sellall="${id}">全卖</button></div>`).join('')||'<p class="muted">没有可以卖的东西。灵草、灵菇、兽皮和丹药都能卖。</p>'; }
       UI.panel('钱记杂货', `<p class="greet">钱掌柜：「客官，看看有什么需要的？」</p>`+body, b=>{
         b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); render(t.dataset.t); });
-        b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy; if(S.stones<ITEMS[id].price) return; S.stones-=ITEMS[id].price; addItem(id); Sound.coin(); render('buy'); });
+        b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy; if(S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])) return; S.stones-=ITEMS[id].price; addItem(id); Sound.coin(); render('buy'); });
         b.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{ const id=x.dataset.sell; addItem(id,-1); S.stones+=ITEMS[id].sell; Sound.coin(); render('sell'); });
         b.querySelectorAll('[data-sellall]').forEach(x=>x.onclick=()=>{ const id=x.dataset.sellall, n=S.inv[id]; addItem(id,-n); S.stones+=ITEMS[id].sell*n; Sound.coin(); render('sell'); });
       });
@@ -2714,7 +2717,7 @@ const UI = {
   },
   title(){
     const t=$('#title'); t.hidden=false; const has=!!loadSave();
-    t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">种田 · 修仙 · 降妖　——　青丘篇</p>
+    t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">修仙 · 降妖 · 奇遇　——　青丘篇</p>
       <div class="tbtns">${has?'<button class="btn main" id="tCont">继续修行</button>':''}<button class="btn ${has?'':'main'}" id="tNew">新的修行</button></div>
       <p class="tnote" id="tNote"></p></div>`;
     UI.sync();
@@ -2730,6 +2733,13 @@ const UI = {
     return false;
   },
 };
+// a tap anywhere on the screen moves the dialogue on (not just on the box); the tap that opened it is ignored
+addEventListener('click', e=>{
+  const d=$('#dlg'); if(d.hidden||!d.onclick||d.contains(e.target)) return;
+  if(performance.now()-(UI._lineAt||0)<250) return;
+  if(e.target.closest('#reviewNote,#panel,#minigame,#battle,#title,button,a,input')) return;
+  d.onclick();
+});
 $('#menuB').onclick=()=>{ Sound.tick(); UI.menu(); };
 $('#mini').onclick=()=>{ Sound.tick(); UI.worldMap(); };
 UI.musicBtn=()=>{ const b=$('#musicB'); if(b) b.classList.toggle('off', !!(S&&S.music===false)); };
@@ -2782,7 +2792,7 @@ const TALK = { // by friendship tier: 0 (<2♥) · 1 (2–3♥) · 2 (4–5♥) 
        ['等我长大了，也要像你一样修仙！','你下次去山里，能带我去看看灵菇长在哪里吗？'],
        ['你是我在桃源镇最好的朋友！这个秘密只告诉你：我在后院藏了一罐糖。']],
   qian:[['客官里面请～','做生意讲究童叟无欺，这是我钱家的祖训。'],
-        ['{名}啊，你那灵田种得不错，以后有好货先给我留着。','最近城里的药价涨了，嘿嘿。'],
+        ['{名}啊，你采来的药材成色不错，以后有好货先给我留着。','最近城里的药价涨了，嘿嘿。'],
         ['跟你说句实话，我年轻时也想修仙，可惜没有灵根。','你是我见过最实在的修士。'],
         ['以后店里的东西，你随便看，给你算便宜点！']],
   yunyou:[['修行之道，一张一弛。','莫急，莫躁。'],
@@ -2821,13 +2831,13 @@ const SIDES = [
     done:[['阿禾','哇，好新鲜的灵菇！奶奶喝了一定会好起来的。'],['阿禾','这些灵石你收下，还有这颗回春丹是奶奶以前留的。']],
     target:s=>count(s,'lingmo')>=3?npcAt('ahe'):['forest',3,11,'灵菇']},
   {id:'chick', giver:'ahe', title:'走失的芦花鸡', desc:'阿禾家的芦花鸡跑进了青丘山林深处，把它带回来。', need:{chicken:1},
-    unlock:s=>s.side.soup==='done', reward:{stones:50, give:{seed_zg:2}, heart:{ahe:80}},
+    unlock:s=>s.side.soup==='done', reward:{stones:50, give:{zhuguo:2}, heart:{ahe:80}},
     start:[['阿禾','呜呜，{名}，我家的芦花鸡不见了！'],['阿禾','有人说看见它往山林南边跑了，在狐祠东边那一带……你能帮我找找吗？']],
-    done:[['阿禾','芦花！你回来啦！'],['旁白','芦花鸡咯咯叫着扑进阿禾怀里。'],['阿禾','谢谢你，{名}！这两颗朱果种是我从奶奶那里求来的，给你！']],
+    done:[['阿禾','芦花！你回来啦！'],['旁白','芦花鸡咯咯叫着扑进阿禾怀里。'],['阿禾','谢谢你，{名}！这两颗朱果是我从奶奶那里求来的，给你！']],
     target:s=>count(s,'chicken')?npcAt('ahe'):['forest',26,22,'芦花鸡']},
   {id:'order', giver:'qian', title:'钱掌柜的订单', desc:'钱掌柜要收 5 株灵草，送去城里的药铺。', need:{lingcao:5},
     unlock:s=>s.quest>=3, reward:{stones:90, heart:{qian:40}},
-    start:[['钱掌柜','{名}啊，城里药铺跟我订了一批灵草，5 株，价钱好说！'],['钱掌柜','你那片灵田种出来的灵草，成色可比野生的强。']],
+    start:[['钱掌柜','{名}啊，城里药铺跟我订了一批灵草，5 株，价钱好说！'],['钱掌柜','山林里就采得到，灵草在洞府前和山林北边最多。']],
     done:[['钱掌柜','好好好，这成色！说好的，90 灵石，童叟无欺。']],
     target:s=>count(s,'lingcao')>=5?npcAt('qian'):['forest',4,2,'灵草（山林采集）']},
   {id:'hides', giver:'qian', title:'兽皮生意', desc:'钱掌柜想收 4 张兽皮，做成冬天的皮袄。', need:{hide:4},
@@ -2841,9 +2851,9 @@ const SIDES = [
     done:[['云游子','根基扎实了不少。这两颗聚气丹，拿去吧。']],
     target:s=>sideReady(s,SIDES.find(q=>q.id==='daily'))?npcAt('yunyou'):['home',16,4,'蒲团']},
   {id:'dan', giver:'yunyou', title:'初窥丹道', desc:'在洞府的丹炉里炼成一颗聚气丹（2 株灵草）。', count:{type:'craft', key:'juqi', n:1},
-    unlock:s=>s.quest>=4, reward:{give:{seed_zg:3}, heart:{yunyou:40}},
+    unlock:s=>s.quest>=4, reward:{give:{zhuguo:3}, heart:{yunyou:40}},
     start:[['云游子','修仙者，丹药为辅。你洞府旁那只丹炉，是老道年轻时用过的。'],['云游子','先试着炼一颗聚气丹吧，两株灵草便够。']],
-    done:[['云游子','火候虽然欠一点，但丹成了。好！'],['云游子','这三颗朱果种，以后炼筑基丹用得上。']],
+    done:[['云游子','火候虽然欠一点，但丹成了。好！'],['云游子','这三颗朱果，以后炼筑基丹用得上。']],
     target:s=>sideReady(s,SIDES.find(q=>q.id==='dan'))?npcAt('yunyou'):['home',18,4,'丹炉']},
   {id:'letters', giver:'tang', title:'小棠的花笺', desc:'苏小棠想用野山茶做花笺，需要 3 朵野山茶。', need:{flower:3},
     unlock:s=>(s.rel&&s.rel.tang&&s.rel.tang.pts>0), reward:{give:{huichun:2}, heart:{tang:100}},
@@ -3624,7 +3634,7 @@ const Mini = {
 
   /* ---------- 炼丹：keep the heat inside the moving sweet spot ---------- */
   alchemy(recipe, done){
-    const out=ITEMS[recipe.out], wide=S.sect==='dan'?.17:.12, total=7;
+    const out=ITEMS[recipe.out], wide=S.sect==='dan'?.21:.16, total=7;
     const el=Mini.open(`<div class="mg wood alc"><h3>炼制 ${out.name}</h3>
       <div class="alc-wrap"><div class="furnace"><div class="flame" id="alcFlame"></div></div>
         <div class="heat"><div class="zone" id="alcZone"></div><div class="needle" id="alcNeedle"></div></div></div>
@@ -3632,17 +3642,17 @@ const Mini = {
       <button class="btn main big" id="alcBtn">鼓风（按住）</button></div>`);
     let h=.3, v=0, t=-1.2, inside=0, holding=false; const unbind=Mini.hold($('#alcBtn'), x=>holding=x);
     Mini.run(dt=>{
-      t+=dt; v+=(holding?1.7:-1.15)*dt; v*=.94; h=Math.max(0,Math.min(1,h+v*dt*2.2)); if(h===0||h===1) v=0;
-      const c=.5+.26*Math.sin(t*1.25)+.1*Math.sin(t*3.3);
+      t+=dt; v+=(holding?1.5:-1.05)*dt; v*=.92; h=Math.max(0,Math.min(1,h+v*dt*2.2)); if(h===0||h===1) v=0;
+      const c=.5+.22*Math.sin(t*.95)+.06*Math.sin(t*2.3);
       if(t>0){ if(Math.abs(h-c)<wide) inside+=dt; }
       $('#alcZone').style.bottom=((c-wide)*100)+'%'; $('#alcZone').style.height=(wide*200)+'%';
       $('#alcNeedle').style.bottom=(h*100)+'%'; $('#alcFlame').style.transform=`scale(${.5+h*.9})`; $('#alcFlame').style.opacity=.5+h*.5;
       $('#alcProg').style.width=Math.max(0,t/total*100)+'%';
       if(t<0) $('#alcTip').textContent='准备……';
       else if(Math.abs(h-c)<wide) $('#alcTip').textContent='火候正好！'; else $('#alcTip').textContent=h>c?'火太旺了！':'火太弱了！';
-      if(t>=total){ unbind(); Mini.stop(); const r=inside/total, grade=r>=.68?'top':r>=.42?'mid':r>=.2?'low':'fail';
+      if(t>=total){ unbind(); Mini.stop(); const r=inside/total, grade=r>=.58?'top':r>=.35?'mid':r>=.15?'low':'fail';
         const name={top:'上品',mid:'中品',low:'下品',fail:'炸炉'}[grade];
-        el.querySelector('.alc').innerHTML=`<h3>${grade==='fail'?'炸炉了……':name+out.name}</h3><p class="mg-tip">火候命中 ${Math.round(r*100)}%</p><button class="btn main" id="alcOk">好</button>`;
+        el.querySelector('.alc').innerHTML=`<h3>${grade==='fail'?'炸炉了……':name+out.name}</h3><p class="mg-tip">火候命中 ${Math.round(r*100)}%（上品要 58%，中品 35%）</p><button class="btn main" id="alcOk">好</button>`;
         if(grade==='fail') Sound.hurt(); else Sound.levelup();
         $('#alcOk').onclick=()=>{ Mini.close(); done(grade); }; }
     });
@@ -3771,8 +3781,10 @@ const Hooks = {
 Object.assign(ITEMS, {
   peiyuan: {name:'培元丹', icon:'i_pill', color:'#e86a5a', sell:90, use:'exp', amount:150, desc:'服下增加 150 修为。丹香里带着一丝暖意。'},
   xueshen: {name:'雪参',   icon:'i_lingcao', color:'#f1ece2', sell:120, use:'heal', amount:200, desc:'雪线上才长的老参。恢复 200 生命。'},
+  rod_bamboo:{name:'青竹钓竿', icon:'i_rod', color:'#5fa35a', price:400, sell:0, desc:'老竹子做的好钓竿。放在行囊里，钓鱼时自动换用：收线框更大，鱼也游得慢一些。'},
   wuse:    {name:'五色石', icon:'i_feather', color:'#8b5bc5', sell:260, desc:'传说是女娲补天剩下的碎石，五色流转。值不少灵石。'},
 });
+SHOP.sell.push('rod_bamboo');
 // lasting gifts from encounters: {hp, mp, atk, def, med}
 { const _stats=stats; stats=function(){ const s=_stats(), b=S.bonus||{}; return {...s, hp:s.hp+(b.hp||0), mp:s.mp+(b.mp||0), atk:s.atk+(b.atk||0), def:s.def+(b.def||0)}; }; }
 { const _med=Sect.medMul; Sect.medMul=function(){ return +(_med.call(Sect)*(1+((S.bonus||{}).med||0))).toFixed(2); }; }
@@ -3781,6 +3793,8 @@ const karma=n=>{ S.karma=(S.karma||0)+n; };
 const night=()=>{ const h=S.min/60; return h>=19||h<5; };
 const hasRoot=el=>S.root&&Sect.rootName().includes(el);
 
+// seeds left over from old quest rewards become fruit on load
+{ const _m=Sect.migrate; Sect.migrate=function(){ const r=_m.apply(this,arguments); if(S&&S.inv){ for(const [k,to] of [['seed_zg','zhuguo'],['seed_lc','lingcao']]) if(S.inv[k]){ S.inv[to]=(S.inv[to]||0)+S.inv[k]; delete S.inv[k]; } } return r; }; }
 // fix the two old encounters that still spoke of farming
 { const h=QIYU.find(q=>q.id==='hunter'); h.run=()=>[['老猎人','年轻人，我这儿有颗南边换来的朱果。拿 2 张兽皮来换，怎么样？'],
     {choice:'换吗？', options:[
@@ -3997,7 +4011,7 @@ const Life = {
   checkSets(){
     const C=Life.col();
     if(!S.flags.crop_set && CROP_ORDER.every(id=>C.crops[id])){ S.flags.crop_set=true; addItem('huichun',3); UI.banner('灵材图鉴集齐！'); UI.toast('奖励：回春丹 ×3'); }
-    if(!S.flags.fish_set && FISH_ORDER.every(id=>C.fish[id])){ S.flags.fish_set=true; S.flags.goldrod=true; UI.banner('鱼类图鉴集齐！'); UI.toast('奖励：钓竿升级为金钓竿（收线框更大）'); }
+    if(!S.flags.fish_set && FISH_ORDER.every(id=>C.fish[id])){ S.flags.fish_set=true; S.flags.goldrod=true; UI.banner('鱼类图鉴集齐！'); UI.toast('奖励：钓竿升级为金钓竿（收线框最大，鱼也游得更慢）'); }
   },
   /* ---------- each morning ---------- */
   newDay(){
@@ -4079,10 +4093,10 @@ Mini.reel=function(fish){
   el.innerHTML=`<div class="mg wood fishg ${king?'kingfish':''}"><h3>${king?'鱼王上钩了！！':'收线！'}</h3><div class="reel-wrap"><div class="reel"><div class="catch" id="rcBox"></div><div class="fishi" id="rcFish"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""></div></div>
     <div class="rprog"><i id="rcProg"></i></div></div><p class="mg-tip">${king?'它的力气大得惊人——稳住！':'按住「提竿」让绿框上升，把鱼框住！'}</p><button class="btn main big" id="rcBtn">提竿（按住）</button></div>`;
   if(king){ Music.stinger('boss'); }
-  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const box=(S.flags.goldrod?.34:.26)*(king?.9:1); const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
+  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const tier=S.flags.goldrod?2:S.inv.rod_bamboo?1:0, box=[.26,.32,.38][tier]*(king?.9:1), slow=[1,.85,.75][tier]; const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
   Mini.run(dt=>{
     t+=dt; bv+=(holding?1.8:-1.6)*dt; bv*=.93; b=Math.max(0,Math.min(1-box,b+bv*dt*2)); if(b===0||b===1-box) bv=0;
-    if(Math.random()<dt*fish.jumpy) fTarget=Math.random(); f+=(fTarget-f)*Math.min(1,dt*fish.speed*2);
+    if(Math.random()<dt*fish.jumpy) fTarget=Math.random(); f+=(fTarget-f)*Math.min(1,dt*fish.speed*2*slow);
     const inside=f>=b&&f<=b+box; p=Math.max(0,Math.min(1,p+(inside?(king?.28:.32):(king?-.2:-.22))*dt));
     $('#rcBox').style.bottom=(b*100)+'%'; $('#rcBox').style.height=(box*100)+'%'; $('#rcFish').style.bottom=`calc(${f*100}% - 12px)`; $('#rcProg').style.height=(p*100)+'%';
     $('#rcBox').classList.toggle('on',inside);
@@ -4464,7 +4478,7 @@ SPR.board=SPR.sign; SPRC.board=(()=>{ const c=document.createElement('canvas'); 
 MAPS.town.objects.push({type:'board', x:14, y:7, act:'board', spr:'board'});
 
 const RANKS=[[0,'无名小卒'],[5,'小有名气'],[15,'桃源侠士'],[30,'青丘名士'],[60,'名动一方']];
-const REP_SHOP=[{id:'juqi',n:1,cost:1},{id:'huichun',n:2,cost:2},{id:'xueshen',n:1,cost:3},{id:'peiyuan',n:1,cost:4},{id:'zhuguo',n:2,cost:4},{id:'wuse',n:1,cost:6}];
+const REP_SHOP=[{id:'juqi',n:1,cost:1},{id:'huichun',n:2,cost:2},{id:'xueshen',n:1,cost:3},{id:'peiyuan',n:1,cost:4},{id:'zhuguo',n:2,cost:4},{id:'wuse',n:1,cost:6},{id:'rod_bamboo',n:1,cost:8,once:true}];
 // request templates; `make` returns the request (or null when it doesn't fit today)
 const BOUNTY_KINDS = [
   {kind:'kill', make:()=>{ const pool=[['dangkang','当康又拱了镇外的菜地','钱掌柜'],['xingxing','狌狌溜进镇里偷鸡','阿禾']]; if(S.L>=4) pool.push(['guidiao','山林里有蛊雕伤人','猎户']);
@@ -4511,7 +4525,7 @@ const Bounty = {
     if(Bounty.rank()>r0){ Sound.levelup(); UI.banner('声望提升：'+RANKS[Bounty.rank()][1]); }
     UI.closePanel(); Bounty.open();
   },
-  buy(i){ const it=REP_SHOP[i]; if(Bounty.rep()<it.cost) return UI.toast('声望不够'); S.rep-=it.cost; addItem(it.id,it.n); Sound.coin(); UI.toast(`换得 ${ITEMS[it.id].name} ×${it.n}`); UI.closePanel(); Bounty.open(); },
+  buy(i){ const it=REP_SHOP[i]; if(Bounty.rep()<it.cost) return UI.toast('声望不够'); if(it.once&&S.inv[it.id]) return UI.toast('已经有了'); S.rep-=it.cost; addItem(it.id,it.n); Sound.coin(); UI.toast(`换得 ${ITEMS[it.id].name} ×${it.n}`); UI.closePanel(); Bounty.open(); },
   open(){
     const B=Bounty.today(), rk=Bounty.rank(), next=RANKS[rk+1];
     UI.panel('桃源镇 · 悬赏榜', `<div class="bounty">
@@ -4520,7 +4534,7 @@ const Bounty = {
         return `<div class="bnote ${b.done?'done':Bounty.ready(b)?'ready':''}"><small>${esc(b.who)}</small><b>${esc(b.text)}</b>
           <div class="brow"><span>${b.done?'✓ 已完成':`进度 ${p}/${b.n}`}</span><span class="bpay">灵石 ${b.pay}　声望 ${b.rep}</span>
           ${b.done?'':`<button class="btn mini ${Bounty.ready(b)?'main':''}" data-c="${i}" ${Bounty.ready(b)?'':'disabled'}>${b.kind==='item'?'交付':'领赏'}</button>`}</div></div>`; }).join('')}</div>
-      <h4>声望兑换</h4><div class="bshop">${REP_SHOP.map((it,i)=>`<button class="bitem" data-b="${i}" ${Bounty.rep()<it.cost?'disabled':''}><img class="px" src="${iconURL(ITEMS[it.id].icon,ITEMS[it.id].color)}" alt=""><span>${ITEMS[it.id].name}×${it.n}</span><em>${it.cost} 声望</em></button>`).join('')}</div></div>`, b=>{
+      <h4>声望兑换</h4><div class="bshop">${REP_SHOP.map((it,i)=>`<button class="bitem" data-b="${i}" ${Bounty.rep()<it.cost||(it.once&&S.inv[it.id])?'disabled':''}><img class="px" src="${iconURL(ITEMS[it.id].icon,ITEMS[it.id].color)}" alt=""><span>${ITEMS[it.id].name}×${it.n}</span><em>${it.cost} 声望</em></button>`).join('')}</div></div>`, b=>{
       b.querySelectorAll('[data-c]').forEach(x=>x.onclick=()=>Bounty.claim(+x.dataset.c));
       b.querySelectorAll('[data-b]').forEach(x=>x.onclick=()=>Bounty.buy(+x.dataset.b)); });
   },
@@ -4538,11 +4552,15 @@ const MED_STEPS = [[2,'2 小时'],[4,'4 小时'],[6,'半天'],[24,'1 天'],[48,'
 const Med = {
   // cultivation from one 2-hour block at level L; a full day counts as six blocks (the rest is eating and sleeping)
   block(L){ return Math.round((14+4*L)*(L>=10?1.6:1)*2*Sect.medMul()); },
-  blocks(h){ return h<24 ? h/2 : Math.round(h/24*6); },
+  blocks(h){ return h<24 ? Math.max(1,Math.round(h/2)) : Math.round(h/24*6); },
+  full(){ return (S.L===9||S.L>=12) && S.exp>=expNeed(S.L); },
+  // hours until the clock next shows `hr` o'clock
+  until(hr){ let m=hr*60-S.min; if(m<=0) m+=24*60; return m/60; },
   // run the numbers without touching the save
   sim(h){ let L=S.L, exp=S.exp, total=0;
-    for(let i=0;i<Med.blocks(h);i++){ const g=Med.block(L); total+=g; exp+=g;
-      while(true){ const need=expNeed(L); if(L===9||L>=12){ exp=Math.min(exp,need); break; } if(exp<need) break; exp-=need; L++; } }
+    for(let i=0;i<Med.blocks(h);i++){ const g=Med.block(L), before=exp; exp+=g;
+      while(true){ const need=expNeed(L); if(L===9||L>=12){ exp=Math.min(exp,need); break; } if(exp<need) break; exp-=need; L++; }
+      total+= exp>=before ? exp-before : g; if((L===9||L>=12)&&exp>=expNeed(L)) break; }
     return {L, exp, total, capped:(L===9||L>=12)&&exp>=expNeed(L)}; },
   // how many days of 闭关 until each of the next few realms
   ahead(){ const out=[]; let L=S.L, exp=S.exp, blocks=0;
@@ -4550,45 +4568,48 @@ const Med = {
       const need=expNeed(L); if(L!==9&&L<12&&exp>=need){ exp-=need; L++; out.push([L, blocks]); } else if(L===9&&exp>=need){ out.push([9.5, blocks]); exp=need; } }
     return out; },
   when(blocks){ const h=blocks*2; return h<24?`${h} 小时`:`${Math.ceil(blocks/6)} 天`; },
-  open(){
-    if(S.L===9 && S.exp>=expNeed(9)){
-      if(S.inv.zhuji) return UI.confirm('炼气九层圆满。服下筑基丹，冲击筑基？（将面对心魔与天劫）', ()=>Mini.breakthrough());
-      return UI.say([['旁白','炼气九层已经圆满，再打坐也无法精进。需要一颗筑基丹才能冲击筑基。']]);
-    }
-    if(S.L>=12 && S.exp>=expNeed(12)) return UI.say([['旁白','你的修为已经到了这一章的顶点。下一章的修行敬请期待。']]);
+  open(skipAsk){
+    // 炼气九层圆满 with a 筑基丹: break through, or just sit and let time pass
+    if(!skipAsk && S.L===9 && S.exp>=expNeed(9) && S.inv.zhuji)
+      return UI.say([{choice:'炼气九层圆满。要服下筑基丹，冲击筑基吗？（将面对心魔与天劫）', options:[{text:'冲击筑基', fn:()=>Mini.breakthrough()},{text:'先不了，只静坐一会儿', fn:()=>Med.open(true)}]}]);
+    const full=Med.full();
     let k=Med._k||0;
     const ahead=Med.ahead().map(([L,b])=>`<li><b>${L===9.5?'炼气九层圆满':realmName(L)}</b><span>约 ${Med.when(b)}</span></li>`).join('');
     UI.panel('闭关打坐', `<div class="med">
+      ${full?`<p class="med-full">${S.L===9?'炼气九层已经圆满，需要筑基丹才能再进一步。':'修为已经到了这一章的顶点。'}现在打坐不会再增加修为，只会让时间过去——想等到夜里找奇遇，可以用下面的「坐到天黑」。</p>`:''}
       <p class="muted">现在：<b>${realmName(S.L)}</b>　修为 ${Math.floor(S.exp)} / ${expNeed(S.L)}　（${Sect.rootName()}${Sect.medMul()!==1?'，打坐 ×'+Sect.medMul():''}）</p>
       <label class="med-len">打坐多久：<b id="medLen"></b></label>
       <input type="range" id="medR" min="0" max="${MED_STEPS.length-1}" step="1" value="${k}">
       <div class="med-out" id="medOut"></div>
       ${ahead?`<div class="med-ahead"><small>一直闭关的话：</small><ul>${ahead}</ul></div>`:''}
       <p class="muted">闭关一天按六个时辰算（其余时间吃饭睡觉）。闭关期间日子照常过：会收到信件，也会错过当天的奇遇。</p>
-      <div class="mg-btns"><button class="btn main" id="medGo">开始打坐</button><button class="btn" id="medNo">算了</button></div></div>`, b=>{
+      <div class="mg-btns"><button class="btn main" id="medGo">开始打坐</button><button class="btn" id="medNight">坐到天黑（19:00）</button><button class="btn" id="medDawn">坐到天亮（6:00）</button><button class="btn" id="medNo">算了</button></div></div>`, b=>{
       const r=$('#medR'), show=()=>{ k=+r.value; Med._k=k; const [h,name]=MED_STEPS[k], s=Med.sim(h);
         $('#medLen').textContent=name;
-        $('#medOut').innerHTML=`修为 <b>+${s.total}</b>　→　<b>${realmName(s.L)}</b>${s.capped&&s.L===9?'（圆满，需筑基丹）':''}${s.L>S.L?`<span class="up">突破 ${s.L-S.L} 层！</span>`:''}<br><span class="muted">结束时：第 ${S.day+Math.floor((S.min+h*60)/(24*60))} 天 ${fmtTime((S.min+h*60)%(24*60))}</span>`; };
+        $('#medOut').innerHTML=full?`静坐 ${name}，修为不变<br><span class="muted">结束时：第 ${S.day+Math.floor((S.min+h*60)/(24*60))} 天 ${fmtTime((S.min+h*60)%(24*60))}</span>`:`修为 <b>+${s.total}</b>　→　<b>${realmName(s.L)}</b>${s.capped&&s.L===9?'（圆满，需筑基丹）':''}${s.L>S.L?`<span class="up">突破 ${s.L-S.L} 层！</span>`:''}<br><span class="muted">结束时：第 ${S.day+Math.floor((S.min+h*60)/(24*60))} 天 ${fmtTime((S.min+h*60)%(24*60))}</span>`; };
       r.oninput=show; show();
       $('#medGo').onclick=()=>{ UI.closePanel(); Med.run(MED_STEPS[k][0]); };
+      $('#medNight').onclick=()=>{ UI.closePanel(); Med.run(Med.until(19)); };
+      $('#medDawn').onclick=()=>{ UI.closePanel(); Med.run(Med.until(6)); };
       $('#medNo').onclick=()=>UI.closePanel(); });
   },
   run(h){
-    const blocks=Med.blocks(h), dur=Math.min(4.5, 1.4+Math.log2(1+h/2)*.45)*1000, L0=S.L;
+    const blocks=Med.blocks(h), per=h*60/blocks, dur=Math.min(4.5, 1.4+Math.log2(1+h/2)*.45)*1000, L0=S.L, sitting=Med.full(); let early=false;
     UI.fx=true; UI.sync(); Sound.magic();
     const el=document.createElement('div'); el.id='medbar'; el.innerHTML=`<div class="medbox"><b>闭关中……</b><div class="xbar"><i></i></div><span class="mtxt"></span><span class="mrealm">${realmName(S.L)}</span></div>`;
     document.body.appendChild(el);
     let done=0, gained=0; const t0=performance.now(), bar=el.querySelector('i'), txt=el.querySelector('.mtxt'), rl=el.querySelector('.mrealm');
     const step=now=>{
       const f=Math.min(1,(now-t0)/dur), want=Math.round(blocks*f);
-      while(done<want){ done++; const g=Med.block(S.L), before=S.L; gained+=g; gainExpQuiet(g);
-        // time passes with each block: a day-long block is four game hours
-        Med.advance(h<24?120:24*60/6);
+      while(done<want && !early){ done++; const before=S.L; if(!sitting){ gained+=gainExpQuiet(Med.block(S.L)); }
+        // time passes with each block (a day-long session is six blocks of four hours)
+        Med.advance(per);
+        if(!sitting && Med.full()){ early=true; txt.textContent='修为圆满，提前出关。'; }
         if(S.L>before){ rl.textContent=realmName(S.L); rl.classList.remove('pop'); void rl.offsetWidth; rl.classList.add('pop'); Sound.levelup(); } }
-      bar.style.width=(f*100)+'%'; txt.textContent=`第 ${S.day} 天 ${fmtTime(S.min)}　修为 +${gained}`;
-      if(f<1) return requestAnimationFrame(step);
+      bar.style.width=(early?100:f*100)+'%'; if(!early) txt.textContent=`第 ${S.day} 天 ${fmtTime(S.min)}　${sitting?'静坐中':'修为 +'+gained}`;
+      if(f<1&&!early) return requestAnimationFrame(step);
       setTimeout(()=>{ el.remove(); UI.fx=false; S.st.meditated++; const st=stats(); S.hp=st.hp; S.mp=st.mp;
-        if(S.L>L0) UI.banner('突破！'+realmName(S.L)); UI.float(S.x,S.y,`+${gained} 修为`); UI.clock(); UI.hud(); save(); UI.sync(); Story.check(); },500);
+        if(S.L>L0) UI.banner('突破！'+realmName(S.L)); else if(early) UI.banner(S.L===9?'炼气九层圆满！':'修为圆满'); if(gained) UI.float(S.x,S.y,`+${gained} 修为`); UI.clock(); UI.hud(); save(); UI.sync(); Story.check(); },early?1200:500);
     };
     requestAnimationFrame(step);
   },
@@ -4596,8 +4617,10 @@ const Med = {
   advance(min){ S.min+=min; while(S.min>=24*60){ S.min-=24*60; passDay(); } },
 };
 // like gainExp but without the banner/sound per level (the bar shows those)
-function gainExpQuiet(n){ S.exp+=n;
-  while(true){ const need=expNeed(S.L); if(S.L===9||S.L>=12){ S.exp=Math.min(S.exp,need); break; } if(S.exp<need) break; S.exp-=need; S.L++; } }
+// returns how much actually landed (nothing once the bar is full)
+function gainExpQuiet(n){ const L0=S.L, e0=S.exp; let got=n; S.exp+=n;
+  while(true){ const need=expNeed(S.L); if(S.L===9||S.L>=12){ if(S.exp>need){ got-=S.exp-need; S.exp=need; } break; } if(S.exp<need) break; S.exp-=need; S.L++; }
+  return Math.max(0,got); }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -4788,7 +4811,7 @@ Story.side=(id, after)=>{
 UI.title=()=>{
   const t=$('#title'); t.hidden=false; clearInterval(Creator.timer); Music.play('village');
   const slots=[...Array(SLOTS)].map((_,i)=>readSlot(i));
-  t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">种田 · 修仙 · 降妖　——　青丘篇</p>
+  t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">修仙 · 降妖 · 奇遇　——　青丘篇</p>
     <div class="slots">${slots.map((s,i)=>s?`<div class="slot-card wood"><canvas class="px" data-pv="${i}" width="18" height="22"></canvas>
         <div class="sc-info"><b>${esc(s.name||'无名')}</b><span>${realmName(s.L)} · 第 ${s.day} 天</span><span class="muted">${esc(MAPS[s.map].name)}</span></div>
         <div class="sc-btns"><button class="btn main mini" data-play="${i}">继续</button><button class="btn mini" data-saves="${i}">读档</button><button class="btn mini" data-del="${i}">删除</button></div></div>`

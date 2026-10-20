@@ -13,7 +13,7 @@ SPR.board=SPR.sign; SPRC.board=(()=>{ const c=document.createElement('canvas'); 
 MAPS.town.objects.push({type:'board', x:14, y:7, act:'board', spr:'board'});
 
 const RANKS=[[0,'无名小卒'],[5,'小有名气'],[15,'桃源侠士'],[30,'青丘名士'],[60,'名动一方']];
-const REP_SHOP=[{id:'juqi',n:1,cost:1},{id:'huichun',n:2,cost:2},{id:'xueshen',n:1,cost:3},{id:'peiyuan',n:1,cost:4},{id:'zhuguo',n:2,cost:4},{id:'wuse',n:1,cost:6}];
+const REP_SHOP=[{id:'juqi',n:1,cost:1},{id:'huichun',n:2,cost:2},{id:'xueshen',n:1,cost:3},{id:'peiyuan',n:1,cost:4},{id:'zhuguo',n:2,cost:4},{id:'wuse',n:1,cost:6},{id:'rod_bamboo',n:1,cost:8,once:true}];
 // request templates; `make` returns the request (or null when it doesn't fit today)
 const BOUNTY_KINDS = [
   {kind:'kill', make:()=>{ const pool=[['dangkang','当康又拱了镇外的菜地','钱掌柜'],['xingxing','狌狌溜进镇里偷鸡','阿禾']]; if(S.L>=4) pool.push(['guidiao','山林里有蛊雕伤人','猎户']);
@@ -60,7 +60,7 @@ const Bounty = {
     if(Bounty.rank()>r0){ Sound.levelup(); UI.banner('声望提升：'+RANKS[Bounty.rank()][1]); }
     UI.closePanel(); Bounty.open();
   },
-  buy(i){ const it=REP_SHOP[i]; if(Bounty.rep()<it.cost) return UI.toast('声望不够'); S.rep-=it.cost; addItem(it.id,it.n); Sound.coin(); UI.toast(`换得 ${ITEMS[it.id].name} ×${it.n}`); UI.closePanel(); Bounty.open(); },
+  buy(i){ const it=REP_SHOP[i]; if(Bounty.rep()<it.cost) return UI.toast('声望不够'); if(it.once&&S.inv[it.id]) return UI.toast('已经有了'); S.rep-=it.cost; addItem(it.id,it.n); Sound.coin(); UI.toast(`换得 ${ITEMS[it.id].name} ×${it.n}`); UI.closePanel(); Bounty.open(); },
   open(){
     const B=Bounty.today(), rk=Bounty.rank(), next=RANKS[rk+1];
     UI.panel('桃源镇 · 悬赏榜', `<div class="bounty">
@@ -69,7 +69,7 @@ const Bounty = {
         return `<div class="bnote ${b.done?'done':Bounty.ready(b)?'ready':''}"><small>${esc(b.who)}</small><b>${esc(b.text)}</b>
           <div class="brow"><span>${b.done?'✓ 已完成':`进度 ${p}/${b.n}`}</span><span class="bpay">灵石 ${b.pay}　声望 ${b.rep}</span>
           ${b.done?'':`<button class="btn mini ${Bounty.ready(b)?'main':''}" data-c="${i}" ${Bounty.ready(b)?'':'disabled'}>${b.kind==='item'?'交付':'领赏'}</button>`}</div></div>`; }).join('')}</div>
-      <h4>声望兑换</h4><div class="bshop">${REP_SHOP.map((it,i)=>`<button class="bitem" data-b="${i}" ${Bounty.rep()<it.cost?'disabled':''}><img class="px" src="${iconURL(ITEMS[it.id].icon,ITEMS[it.id].color)}" alt=""><span>${ITEMS[it.id].name}×${it.n}</span><em>${it.cost} 声望</em></button>`).join('')}</div></div>`, b=>{
+      <h4>声望兑换</h4><div class="bshop">${REP_SHOP.map((it,i)=>`<button class="bitem" data-b="${i}" ${Bounty.rep()<it.cost||(it.once&&S.inv[it.id])?'disabled':''}><img class="px" src="${iconURL(ITEMS[it.id].icon,ITEMS[it.id].color)}" alt=""><span>${ITEMS[it.id].name}×${it.n}</span><em>${it.cost} 声望</em></button>`).join('')}</div></div>`, b=>{
       b.querySelectorAll('[data-c]').forEach(x=>x.onclick=()=>Bounty.claim(+x.dataset.c));
       b.querySelectorAll('[data-b]').forEach(x=>x.onclick=()=>Bounty.buy(+x.dataset.b)); });
   },

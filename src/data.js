@@ -723,8 +723,8 @@ const MAPS = {
       {type:'gather', x:8, y:17, item:'lingmo', spr:'mushspot'},{type:'gather', x:26, y:5, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:9, y:21, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:24, y:2, item:'lingmo', spr:'mushspot'},
     ],
     spawns:[ // wandering beasts: area [x0,y0,x1,y1]
-      {kind:'dangkang', n:2, area:[2,1,12,10]},
-      {kind:'xingxing', n:2, area:[16,5,28,14]},
+      {kind:'dangkang', n:3, area:[2,1,12,10]},
+      {kind:'xingxing', n:3, area:[16,5,28,14]},
       {kind:'guidiao',  n:2, area:[2,14,12,24], minRealm:4},
     ],
     exits:[{x:14,y:0,to:'home',tx:11,ty:14}]},
@@ -755,7 +755,7 @@ const SCRIPTS = {
     {choice:'要随老道修仙吗？', options:[{text:'弟子愿意！', go:'intro_yes'},{text:'修仙……能吃饱饭吗？', go:'intro_food'}]},
   ],
   intro_food:[
-    ['云游子','哈哈哈！修仙之人，餐风饮露亦可。不过嘛，灵田里种出的灵草，也是能吃的。'],
+    ['云游子','哈哈哈！修仙之人，餐风饮露亦可。不过嘛，山里采来的灵草，炖汤也是一绝。'],
     {go:'intro_yes'},
   ],
   intro_yes:[
@@ -814,7 +814,7 @@ const SCRIPTS = {
   ],
   q6_start:[
     ['云游子','穷奇羽是炼制筑基丹的药引。再加三颗朱果、两朵灵菇，便能在丹炉里炼成。'],
-    ['云游子','朱果种在钱掌柜那里有卖。等你修到炼气九层圆满，服下筑基丹，便可冲击筑基。'],
+    ['云游子','朱果在山林深处能采到，钱掌柜那里也有卖。等你修到炼气九层圆满，服下筑基丹，便可冲击筑基。'],
   ],
   zhuji_break:[
     ['旁白','丹田中的灵气缓缓凝聚，化作一汪澄澈的灵液……'],
@@ -860,7 +860,7 @@ const SCRIPTS = {
   ],
   // NPC small talk (when no quest line is active for them)
   talk_ahe:[['阿禾','山林里的灵菇炖汤可好喝了！你要是采多了，可以卖给钱掌柜。']],
-  talk_yunyou:[['云游子','修行无他，一日三件事：种田、打坐、炼丹。不急不躁，自然水到渠成。']],
+  talk_yunyou:[['云游子','修行无他，一日三件事：打坐、炼丹、行善。不急不躁，自然水到渠成。']],
   talk_ahe_after:[['阿禾','谢谢你赶走了穷奇！今天的鸡蛋分你一个～'],{give:{lingcao:1}}],
 };
 
@@ -873,7 +873,7 @@ const QUESTS = [
   {id:'q6', title:'讨伐穷奇', desc:'到青丘山林南边的狐祠，击退穷奇。', check:s=>s.flags.qiongqi_done},
   {id:'q7', title:'筑基', desc:'炼制筑基丹（3 朱果 + 2 灵菇 + 1 穷奇羽），修到炼气九层圆满后在蒲团突破。', start:'q6_start', check:s=>s.L>=10, progress:s=>`${realmName(s.L)} · 筑基丹 ${count(s,'zhuji')}/1`},
   {id:'q8', title:'青丘狐影', desc:'去山林南边的狐祠，看看狐火的来历。', start:'q7_start', check:s=>s.flags.chapter1_done},
-  {id:'end', title:'第一章 完', desc:'饕餮苏醒……下一章敬请期待。自由种田修炼吧！', check:s=>false},
+  {id:'end', title:'第一章 完', desc:'饕餮苏醒……下一章敬请期待。可以继续闭关、钓鱼、做悬赏、找奇遇。', check:s=>false},
 ];
 function count(s,id){ return s.inv[id]||0; }
 
