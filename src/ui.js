@@ -242,9 +242,16 @@ const UI = {
       if(st.cgscene){ CG.setScene(st.cgscene); continue; }
       if(st.cgend){ CG.close(); CG.replaying=false; continue; }
       if(st.love){ for(const k in st.love) Social.add(k, st.love[k]); Sound.pick(); continue; }
-      if(st.give){ for(const k in st.give){ addItem(k,st.give[k]); } Sound.pick(); UI.toast('获得 '+Object.keys(st.give).map(k=>ITEMS[k].name+'×'+st.give[k]).join('、')); continue; }
-      if(st.stones){ S.stones+=st.stones; Sound.coin(); UI.toast(`灵石 +${st.stones}`); UI.hud(); continue; }
-      if(st.exp){ gainExp(st.exp); continue; }
+      if(st.give||st.stones||st.exp){
+        const got=[]; let s2=st;
+        while(true){
+          if(s2.give){ for(const k in s2.give){ addItem(k,s2.give[k]); got.push(`${ITEMS[k].name} ×${s2.give[k]}`); } }
+          if(s2.stones){ S.stones+=s2.stones; got.push(`灵石 ×${s2.stones}`); }
+          if(s2.exp){ gainExp(s2.exp); got.push(`修为 +${s2.exp}`); }
+          const nx=q.steps[q.i]; if(nx&&!Array.isArray(nx)&&(nx.give||nx.stones||nx.exp)&&!CG.replaying){ s2=nx; q.i++; } else break;
+        }
+        Sound.coin(); UI.hud(); return UI.line('获得', '✦ '+got.join('　✦ '));
+      }
       if(st.flag){ S.flags[st.flag]=true; continue; }
       if(st.run){ if(!CG.replaying) st.run(); continue; }
       if(st.go){ q.steps=[...SCRIPTS[st.go]]; q.i=0; continue; }
@@ -263,7 +270,7 @@ const UI = {
     const npcId=Object.keys(NPCS).find(k=>NPCS[k].name===who);
     const d=$('#dlg'), port=isMe?'__me':PORTRAIT[who]||(npcId&&!PORTRAIT[who]?'__npc':null);
     d.innerHTML=`<div class="dlg wood">${port?`<div class="port"><canvas id="dPort" class="px"></canvas><span>${esc(who)}</span></div>`:''}
-      <div class="dtext ${who==='旁白'?'narr':''}">${port?'':(who!=='旁白'?`<span class="who">${esc(who)}</span>`:'')}<p id="dText"></p></div><i class="more">▼</i></div>`;
+      <div class="dtext ${who==='旁白'?'narr':''}${who==='获得'?' gain':''}">${port?'':(who!=='旁白'?`<span class="who">${esc(who)}</span>`:'')}<p id="dText"></p></div><i class="more">▼</i></div>`;
     if(port){ const c=$('#dPort'), sp=port==='__me'?lookSprite(S.look,'down',0):port==='__npc'?npcSprite(npcId):sprite(port); c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0); }
     const p=$('#dText'); let n=0; UI.typing=true; clearInterval(UI._ti);
     UI._ti=setInterval(()=>{ n++; p.textContent=text.slice(0,n); if(n%2===0) Sound.talk(); if(n>=text.length){ clearInterval(UI._ti); UI.typing=false; } },28);

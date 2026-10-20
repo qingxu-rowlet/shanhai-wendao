@@ -20,6 +20,9 @@ const hasRoot=el=>S.root&&Sect.rootName().includes(el);
 
 // seeds left over from old quest rewards become fruit on load
 { const _m=Sect.migrate; Sect.migrate=function(){ const r=_m.apply(this,arguments); if(S&&S.inv){ for(const [k,to] of [['seed_zg','zhuguo'],['seed_lc','lingcao']]) if(S.inv[k]){ S.inv[to]=(S.inv[to]||0)+S.inv[k]; delete S.inv[k]; } } return r; }; }
+// encounter rewards scale with realm
+function QX(n){ return Math.round(n*(1+S.L*.3)); }
+function QG(n){ return Math.round(n*(1+S.L*.15)); }
 // fix the two old encounters that still spoke of farming
 { const h=QIYU.find(q=>q.id==='hunter'); h.run=()=>[['老猎人','年轻人，我这儿有颗南边换来的朱果。拿 2 张兽皮来换，怎么样？'],
     {choice:'换吗？', options:[
@@ -27,7 +30,7 @@ const hasRoot=el=>S.root&&Sect.rootName().includes(el);
       {text:'不了', fn:()=>UI.say([['老猎人','好嘞，山里见。']])}]}]; }
 { const s=QIYU.find(q=>q.id==='spring'); s.run=()=>[['旁白','山石间涌出一汪泛着微光的泉水，灵气浓得几乎化不开。'],
     {choice:'在灵泉里泡一会儿？', options:[
-      {text:'泡一会儿', fn:()=>{ const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min+=60; UI.hud(); UI.say([['旁白','暖流游遍全身，疲惫一扫而空。（生命、灵力全满）'],{exp:30}]); }},
+      {text:'泡一会儿', fn:()=>{ const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min+=60; UI.hud(); UI.say([['旁白','暖流游遍全身，疲惫一扫而空。（生命、灵力全满）'],{exp:QX(40)}]); }},
       {text:'在泉边采药', fn:()=>UI.say([['旁白','泉水滋养的灵草格外肥美。'],{give:{lingcao:3}}])}]}]; }
 for(const q of QIYU) q.tier=q.tier||'common';
 QIYU.find(q=>q.id==='ruins').tier='rare';
@@ -56,30 +59,30 @@ QIYU.push(
     {choice:'你要怎么做？', options:[
       {text:'给她 2 朵灵菇', fn:()=>{ if((S.inv.lingmo||0)<2) return UI.say([['旁白','你身上灵菇不够。你记下了，下次再来帮她。']]); addItem('lingmo',-2); karma(2);
         UI.say([['老婆婆','好孩子，好孩子！这两颗丹药是我家老头子年轻时炼的，你拿着。'],{give:{huichun:2}},['旁白','（善念 +2）']]); }},
-      {text:'替她下坡去采', fn:()=>{ S.min+=60; karma(1); UI.say([['旁白','你下到坡底采了一篮灵菇。老婆婆分了你一半。'],{give:{lingmo:2}},{exp:20},['旁白','（善念 +1）']]); }},
+      {text:'替她下坡去采', fn:()=>{ S.min+=60; karma(1); UI.say([['旁白','你下到坡底采了一篮灵菇。老婆婆分了你一半。'],{give:{lingmo:2}},{exp:QX(20)},['旁白','（善念 +1）']]); }},
       {text:'没空', fn:()=>UI.say([['老婆婆','唉……']])}]}]},
   {id:'chess', tier:'common', title:'松下对弈', run:()=>[['旁白','老松树下，两位白胡子老人在下棋，已经僵持了很久。'],['执黑的老人','后生，你来看看，这一手该落在哪里？'],
     {choice:'你看了看棋盘……', options:[
-      {text:'落在天元', fn:()=>UI.say([['执白的老人','哈！好大的口气！'],['执黑的老人','……妙，妙啊。'],['旁白','两位老人对视一笑，一阵风过，石桌上只剩一枚棋子。'],{exp:60}])},
+      {text:'落在天元', fn:()=>UI.say([['执白的老人','哈！好大的口气！'],['执黑的老人','……妙，妙啊。'],['旁白','两位老人对视一笑，一阵风过，石桌上只剩一枚棋子。'],{exp:QX(60)}])},
       {text:'劝他们和棋', fn:()=>{ karma(1); UI.say([['两位老人','哈哈哈——和棋，和棋！'],['旁白','他们留下一枚聚气丹，飘然而去。'],{give:{juqi:1}},['旁白','（善念 +1）']]); }},
-      {text:'观棋不语', fn:()=>UI.say([['旁白','你看了整整一个时辰。等你回过神，棋盘上的黑白子化成了两只鹤，冲天飞走了。'],{exp:90}])}]}]},
+      {text:'观棋不语', fn:()=>UI.say([['旁白','你看了整整一个时辰。等你回过神，棋盘上的黑白子化成了两只鹤，冲天飞走了。'],{exp:QX(90)}])}]}]},
   {id:'tomb', tier:'common', title:'无名修士墓', run:()=>[['旁白','一场山雨把土冲开了，露出一块残碑：「……散修……葬于此，后来者……」后面的字看不清了。'],
     {choice:'你要怎么做？', options:[
-      {text:'整理坟土，拜一拜', fn:()=>{ karma(2); UI.say([['旁白','你把坟土培好，恭恭敬敬拜了三拜。'],['旁白','起身时，碑后的泥里露出一枚玉简——记着一段前人的心得。'],{exp:70},['旁白','（善念 +2）']]); }},
+      {text:'整理坟土，拜一拜', fn:()=>{ karma(2); UI.say([['旁白','你把坟土培好，恭恭敬敬拜了三拜。'],['旁白','起身时，碑后的泥里露出一枚玉简——记着一段前人的心得。'],{exp:QX(70)},['旁白','（善念 +2）']]); }},
       {text:'挖开看看有什么陪葬', fn:()=>{ karma(-2); if(Math.random()<.4) return UI.say([['旁白','墓里的尸骨猛地坐了起来——是被阴气养出来的蛊雕！'],{battle:'guidiao', win:'qy_tomb_win', lose:'qy_lose'}]);
-        UI.say([['旁白','你挖出一只朽烂的储物袋。'],{stones:80},['旁白','（恶念 +2）']]); }}]}]},
+        UI.say([['旁白','你挖出一只朽烂的储物袋。'],{stones:QG(80)},['旁白','（恶念 +2）']]); }}]}]},
 
   /* ---------- rare ---------- */
   {id:'wenyao', tier:'rare', title:'文鳐夜飞', night:true, hint:'听说今夜青丘山林的水边，会有东西飞起来……', run:()=>[['旁白','夜色里，池水忽然泛起银光——一群长着鸟翅的鱼跃出水面，在月下滑翔！'],
     ['旁白','《山海经》：文鳐鱼，状如鲤鱼，鱼身而鸟翼，常行西海，游于东海，以夜飞。'],
     {choice:'你要怎么做？', options:[
       {text:'静静看着', fn:()=>{ const st=stats(); S.mp=st.mp; UI.hud(); perk('med',.05,'心境澄明：打坐效率 +5%'); UI.say([['旁白','鱼群掠过月亮，像一阵银色的雨。你忽然觉得心里很静。'],['旁白','（永久：打坐效率 +5%）']]); }},
-      {text:'伸手去捞一条', fn:()=>UI.say([['旁白','你捞住一条，它在你掌心扑腾了两下，吐出一颗亮晶晶的珠子，又飞走了。'],{stones:120},{exp:60}])}]}]},
+      {text:'伸手去捞一条', fn:()=>UI.say([['旁白','你捞住一条，它在你掌心扑腾了两下，吐出一颗亮晶晶的珠子，又飞走了。'],{stones:QG(120)},{exp:QX(60)}])}]}]},
   {id:'lushu', tier:'rare', title:'鹿蜀之歌', run:()=>[['旁白','林间传来一阵歌声，像有人在唱谣。循声看去——一匹白头、虎纹、红尾的马站在溪边。'],
     ['旁白','《山海经》：鹿蜀，其状如马而白首，其文如虎而赤尾，其音如谣，佩之宜子孙。'],
     {choice:'你要怎么做？', options:[
       {text:'跟着它的歌声哼唱', fn:()=>{ perk('hp',20,'鹿蜀赠毛：生命上限 +20'); UI.say([['旁白','鹿蜀歪头看着你，打了个响鼻，蹭落一缕红尾毛，然后踏着歌声走远了。'],['旁白','你把尾毛编进腰带里，整个人都暖洋洋的。（永久：生命上限 +20）']]); }},
-      {text:'悄悄走近想骑它', fn:()=>UI.say([['旁白','鹿蜀一扬蹄子，你摔了个结结实实，它的歌声听起来像在笑。'],{exp:30}])}]}]},
+      {text:'悄悄走近想骑它', fn:()=>UI.say([['旁白','鹿蜀一扬蹄子，你摔了个结结实实，它的歌声听起来像在笑。'],{exp:QX(30)}])}]}]},
   {id:'foxfire', tier:'rare', title:'狐火引路', need:()=>!!S.flags.fox_kind, hint:'林子里亮着一点淡蓝色的狐火，像是在等谁……', run:()=>[['旁白','一团淡蓝的狐火在你面前晃了晃——是那只你喂过灵草的小狐狸！'],
     ['旁白','它咬住你的衣角，把你带到一棵老树下，用爪子刨了几下。'],
     ['旁白','树洞里藏着一只小小的玉匣。'],{give:{peiyuan:1, juqi:2}},
@@ -91,7 +94,7 @@ QIYU.push(
       {text:'拔！', fn:()=>{ const fit=S.sect==='jian'||hasRoot('金');
         if(fit){ perk('atk',3,'剑意入体：攻击 +3'); return UI.say([['旁白','剑「锵」地一声出鞘，一道剑意顺着手臂流进你的经脉——然后它化作光点散去了。'],['旁白','（永久：攻击 +3）'],S.sect==='jian'?['旁白','你隐约听见剑冢深处有人在笑：「青云剑宗的后辈……不错。」']:['旁白','你的金灵根嗡嗡作响，和剑意共鸣。']]); }
         UI.say([['旁白','剑纹丝不动。剑冢里所有的剑一齐鸣叫起来——一道剑灵扑了出来！'],{battle:'guidiao', win:'qy_sword_win', lose:'qy_lose'}]); }},
-      {text:'拜一拜，离开', fn:()=>{ karma(1); UI.say([['旁白','你对着剑冢拜了三拜。剑鸣声渐渐平息，像是在送你。'],{exp:50},['旁白','（善念 +1）']]); }}]}]},
+      {text:'拜一拜，离开', fn:()=>{ karma(1); UI.say([['旁白','你对着剑冢拜了三拜。剑鸣声渐渐平息，像是在送你。'],{exp:QX(50)},['旁白','（善念 +1）']]); }}]}]},
   {id:'danghost', tier:'rare', night:true, hint:'听说夜里的山林深处，有人在炼丹……', title:'丹鬼', run:()=>[['旁白','深夜的林子里亮着一点炉火。一个半透明的老人守着丹炉，嘴里念念有词。'],
     ['丹鬼','缺一味……缺一味……后生，你身上有没有灵草、灵菇、朱果？老夫炼了三百年，就差这一炉……'],
     {choice:'给他药材吗？（各 1 份）', options:[
@@ -110,7 +113,7 @@ QIYU.push(
       {text:'问它们娘娘为什么选你', fn:()=>{ perk('med',.1,'青鸟指点：打坐效率 +10%'); UI.say([['青鸟','……娘娘说，你在山里做的事，她都看见了。'],['旁白','青鸟在你额头轻轻啄了一下，飞走了。（永久：打坐效率 +10%）']]); }}]}]},
   {id:'zhulong', tier:'legend', night:true, need:()=>S.L>=7, hint:'今夜的天，好像比平常亮……', title:'烛龙睁目', run:()=>[['旁白','夜空忽然变成了白昼。北方的山脊上，一条人面蛇身、通体赤红的巨龙缓缓睁开了眼睛。'],
     ['旁白','《山海经》：钟山之神，名曰烛阴，视为昼，暝为夜，吹为冬，呼为夏。'],
-    ['旁白','它看了你一眼。只一眼，你就觉得经脉里的灵力全都烧了起来。'],{exp:300},
+    ['旁白','它看了你一眼。只一眼，你就觉得经脉里的灵力全都烧了起来。'],{exp:QX(300)},
     ['旁白','它闭上眼睛，夜色重新落下，好像什么都没发生过。'],
     {choice:'……', options:[{text:'对着北方深深一拜', fn:()=>{ perk('def',2,'烛龙一瞥：防御 +2'); UI.say([['旁白','（永久：防御 +2）']]); }}]}]},
 );
@@ -138,8 +141,8 @@ const Qiyu = {
     const qs=[...beasts].sort(()=>Math.random()-.5).slice(0,3); let right=0;
     const ask=i=>{
       if(i>=qs.length){ const steps=[['白泽','三问已毕。你答对了 '+right+' 问。']];
-        if(right===3){ perk('med',.15,'白泽授道：打坐效率 +15%'); steps.push(['白泽','善。天下妖兽一万一千五百二十种，你已识得几分。'],{exp:200},['旁白','（永久：打坐效率 +15%）']); }
-        else if(right>0) steps.push(['白泽','还需多看多记。'],{exp:60*right});
+        if(right===3){ perk('med',.15,'白泽授道：打坐效率 +15%'); steps.push(['白泽','善。天下妖兽一万一千五百二十种，你已识得几分。'],{exp:QX(200)},['旁白','（永久：打坐效率 +15%）']); }
+        else if(right>0) steps.push(['白泽','还需多看多记。'],{exp:QX(60*right)});
         else steps.push(['白泽','……回去好好读读《山海经》吧。']);
         steps.push(['旁白','白泽化作一团白光，消失在林间。']); return UI.say(steps); }
       const k=qs[i], others=beasts.filter(x=>x!==k).sort(()=>Math.random()-.5).slice(0,2), opts=[k,...others].sort(()=>Math.random()-.5);
