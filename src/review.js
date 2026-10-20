@@ -100,8 +100,18 @@ const Review = {
     enterMap(map,x,y); RT.dir=dir||'down'; UI.hud(); UI.sync(); save(); Music.play(areaTheme());
   },
   go(id){
-    const n=Review.NODES.find(x=>x.id===id); if(!n){ clearTimeout(Review._miss); Review._miss=setTimeout(()=>UI.toast('没有这个审查节点：'+id),3000); return; }  // wait: a stale cached page reloads itself first
+    const n=Review.NODES.find(x=>x.id===id); if(!n) return Review.missing(id);
     $('#reviewHub')&&$('#reviewHub').remove(); n.run(); Review.note(n);
+  },
+  // an unknown node usually means this page is older than the link (the tab stayed open, or the browser cached it):
+  // fetch the newest page and reload into it; only if this already is the newest, say the node doesn't exist
+  missing(id){
+    const meta=document.querySelector('meta[name=build]'), mine=meta&&meta.dataset.build;
+    if(!mine) return UI.toast('没有这个审查节点：'+id);
+    UI.toast('正在检查新版本……');
+    fetch(location.pathname+'?fresh='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{ const m=t.match(/data-build="([0-9a-f]+)"/);
+      if(m&&m[1]!==mine){ const u=new URL(location.href); u.searchParams.set('v',m[1]); location.replace(u.href); }
+      else UI.toast('没有这个审查节点：'+id); }).catch(()=>UI.toast('没有这个审查节点：'+id));
   },
   note(n){
     let el=$('#reviewNote'); if(!el){ el=document.createElement('div'); el.id='reviewNote'; el.className='wood'; document.body.appendChild(el); }
