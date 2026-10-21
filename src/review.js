@@ -64,6 +64,8 @@ const Review = {
         setTimeout(()=>UI.say([{choice:'和谁打一场？', options:['lili','qitu','zhuyan','dangkang','xingxing'].map(k=>({text:BEASTS[k].name, fn:()=>Battle.start(k,()=>{})}))}]),500); }},
     {id:'stick', group:'成长', title:'手机摇杆 · 地图边缘不被挡住', check:'用手机打开，站在青丘山林最上面。按住屏幕任意处拖动会出现摇杆，松手就停；轻点地面或人物仍然会自己走过去。往上走能从顶上的路口回洞府——地图最上面一排不再被任务栏挡住，最下面一排也不被血条和物品栏挡住。',
       run(){ Review.base({quest:'q6', L:7}); Review.at('forest',14,2,'up'); }},
+    {id:'hotbar', group:'成长', title:'快捷栏换道具 · 行囊下拉', check:'用手机打开。行囊里有普通钓竿和青竹钓竿（绿色的）。点青竹钓竿，下面会出现「放进快捷栏：1号 / 2号 / 3号」，点一个就换上去。再看「人物」和「图鉴」两页，内容长的时候能上下滑动。',
+      run(){ Review.base({quest:'q8', L:10, sect:'jian', inv:{rod:1, rod_bamboo:1, huichun:3, juqi:2}, flags:{qiongqi_done:true, tang_sect:true, met_ahe:true}}); S.bar=null; Review.at('town',12,12,'down'); setTimeout(()=>{ UI._tab='bag'; UI.menu('bag'); },500); }},
     {id:'guide', group:'成长', title:'新手引导（手机）', check:'用手机打开：会依次弹出走路、任务、互动、行囊的提示；左上角任务栏只显示正在追踪的一条，点「展开」看全部。',
       run(){ Review.base({quest:'q1', L:0}); S.tips={}; Review.at('home',11,6,'down'); }},
     {id:'fx-enter', group:'风穴副本', title:'风穴入口 → 风谷', check:'站在山林东北角的风穴洞口前，按 E 进去。风谷里每隔几秒起风，会把你往下吹；躲在岩石正下方（头上是石头）就不会被吹走，头顶会显示「避风」。收集 3 片穷奇羽打开谷口。路上有蛊雕和狌狌，蛊雕也要躲弹幕。',

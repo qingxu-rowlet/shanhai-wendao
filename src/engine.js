@@ -191,7 +191,7 @@ function setPath(path){ if(!path) return false; if(Math.hypot(RT.fx-S.x,RT.fy-S.
 function tapWorld(tx,ty){
   if(RT.paused) return; RT.autoNav=false;
   const o=entAt(tx,ty), isFarm=tileAt(tx,ty)==='F';
-  if(S.sel==='rod' && tileAt(tx,ty)==='~'){ goAndDo((x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1, ()=>{ face(tx,ty); Mini.fish(tx,ty); }); return; }
+  if(isRod(S.sel) && tileAt(tx,ty)==='~'){ goAndDo((x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1, ()=>{ face(tx,ty); Mini.fish(tx,ty); }); return; }
   if(o && (o.act||o.type==='npc'||o.type==='gather'||o.type==='sign'||o.type==='building')){
     const reach=o.type==='building' ? (x,y)=>o.door&&x===o.door[0]&&y===o.door[1] : (x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1;
     goAndDo(reach, ()=>{ face(tx, o.type==='building'?y0(o):ty); interact(o); });
@@ -211,7 +211,7 @@ function interactFacing(){
   if(RT.prompt){ const p=RT.prompt; if(p.o){ face(p.x,p.y); return interact(p.o); } if(p.fish){ face(p.x,p.y); return Mini.fish(p.x,p.y); } }
   const [x,y]=facedTile(); const o=entAt(x,y);
   if(o){ interact(o); return; }
-  if(S.sel==='rod' && tileAt(x,y)==='~'){ Mini.fish(x,y); return; }
+  if(isRod(S.sel) && tileAt(x,y)==='~'){ Mini.fish(x,y); return; }
   if(tileAt(x,y)==='F') farmAct(x,y); else if(tileAt(S.x,S.y)==='F') farmAct(S.x,S.y);
 }
 function interact(o){
@@ -439,7 +439,7 @@ function drawPlayer(x,y,Z){
   const c=lookSprite(S.look,d,f), w=c.width*Z, h=c.height*Z, bob=(f===1||f===3)?-Z:0;
   const dx=Math.round(x+(TILE*Z-w)/2), dy=Math.round(y+TILE*Z-c.bottom*Z+bob);
   if(RT.dir==='left'){ ctx.save(); ctx.translate(dx+w,dy); ctx.scale(-1,1); ctx.drawImage(c,0,0,w,h); ctx.restore(); } else ctx.drawImage(c,dx,dy,w,h);
-  if(S.sel==='rod' && S.inv.rod) drawRod(dx, dy, w, Z);
+  if(isRod(S.sel) && S.inv[S.sel]) drawRod(dx, dy, w, Z);
 }
 // the fishing rod in hand; while fishing it reaches out over the water with a line and a bobber
 function drawRod(dx, dy, w, Z){
@@ -468,7 +468,7 @@ function findPrompt(){
   }
   const [fx,fy]=facedTile(); near.sort((a,b)=>((a.x===fx&&a.y===fy)?-1:0)-((b.x===fx&&b.y===fy)?-1:0)||a.d-b.d);
   if(near.length) return near[0];
-  if(S.sel==='rod'&&S.inv.rod){ for(const [dx,dy] of [[fx-S.x,fy-S.y],[0,1],[1,0],[0,-1],[-1,0]]){ const x=S.x+dx,y=S.y+dy; if(tileAt(x,y)==='~') return {fish:true,x,y}; } }
+  if(isRod(S.sel)&&S.inv[S.sel]){ for(const [dx,dy] of [[fx-S.x,fy-S.y],[0,1],[1,0],[0,-1],[-1,0]]){ const x=S.x+dx,y=S.y+dy; if(tileAt(x,y)==='~') return {fish:true,x,y}; } }
   return null;
 }
 function drawPrompt(g, ox, oy, T, Z){
@@ -515,10 +515,16 @@ cv.addEventListener('pointerdown', e=>{
   setTimeout(()=>{ if(Stick.id===e.pointerId&&!Stick.on&&!RT.paused){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); Stick.knob(0,0); } },260);
 });
 cv.addEventListener('pointermove', e=>{
-  if(e.pointerId!==Stick.id) return; const dx=e.clientX-Stick.x, dy=e.clientY-Stick.y, d=Math.hypot(dx,dy);
-  if(!Stick.on&&d>10){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); }
-  if(!Stick.on) return; const R=44, k=Math.min(d,R)/(d||1); Stick.knob(dx*k,dy*k);
-  RT.stick = d<8 ? null : [dx/d*Math.min(1,.45+d/R*.55), dy/d*Math.min(1,.45+d/R*.55)];
+  if(e.pointerId!==Stick.id) return; let dx=e.clientX-Stick.x, dy=e.clientY-Stick.y, d=Math.hypot(dx,dy);
+  if(!Stick.on&&d>6){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); }
+  if(!Stick.on) return; const R=44;
+  // the ring follows a finger that runs past its edge, so turning back is instant
+  if(d>R){ Stick.x+=dx/d*(d-R); Stick.y+=dy/d*(d-R); dx=e.clientX-Stick.x; dy=e.clientY-Stick.y; d=R; Stick.el.style.left=Stick.x+'px'; Stick.el.style.top=Stick.y+'px'; }
+  Stick.knob(dx,dy);
+  if(d<5){ RT.stick=null; return; }
+  // eight directions (doorways and gaps between trees are easier to hit); full speed from a short drag
+  const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*(Math.PI/4), sp=Math.min(1,.6+d/26*.4);
+  RT.stick=[Math.round(Math.cos(a)*1e3)/1e3*sp, Math.round(Math.sin(a)*1e3)/1e3*sp];
 });
 const stickUp=e=>{ if(e.pointerId!==Stick.id) return; const tap=!Stick.on&&performance.now()-Stick.t<400; Stick.end(); if(tap&&!RT.paused) tapAt(e.clientX,e.clientY); };
 cv.addEventListener('pointerup', stickUp); cv.addEventListener('pointercancel', e=>{ if(e.pointerId===Stick.id) Stick.end(); });

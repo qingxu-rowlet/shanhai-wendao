@@ -1,6 +1,7 @@
 /* ============================================================
    山海问道 · UI: HUD, dialogue, menus, shop, alchemy, battle, story, sound
    ============================================================ */
+const isRod=id=>id==='rod'||id==='rod_bamboo';   // the plain rod or the 青竹钓竿
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ICONC={};
@@ -207,8 +208,14 @@ const UI = {
   },
   clock(){ if(!S) return; const st=stats(); $('#hHp').style.width=Math.max(0,S.hp/st.hp*100)+'%'; $('#hMp').style.width=Math.max(0,S.mp/st.mp*100)+'%'; $('#hHpT').textContent=`${Math.ceil(S.hp)}/${st.hp}`; $('#hMpT').textContent=`${S.mp}/${st.mp}`; $('#hDay').textContent=`第 ${S.day} 天`; $('#hTime').textContent=fmtTime(S.min);
     const h=S.min/60; $('#hSun').className='sun '+(h>=18||h<6?'moon':''); },
-  hotbarItems(){ const ids=[]; if(S.inv.rod) ids.push('rod');
-    for(const id of ['huichun','juqi']) if(S.inv[id]) ids.push(id); return ids; },
+  // three quick slots: what you put there stays; a slot whose item ran out is refilled with the next default (best rod, then pills)
+  hotbarItems(){ const has=id=>id&&S.inv[id]>0;
+    if(!Array.isArray(S.bar)) S.bar=[null,null,null];
+    const defs=[S.inv.rod_bamboo?'rod_bamboo':'rod','huichun','juqi',S.inv.rod_bamboo?'rod':null].filter(has);
+    for(let i=0;i<3;i++){ if(has(S.bar[i])) continue; const d=defs.find(id=>!S.bar.includes(id)&&!(isRod(id)&&S.bar.some(isRod))); S.bar[i]=d||null; }
+    return S.bar.filter(has); },
+  barable(id){ const it=ITEMS[id]; return !!(it&&(it.tool||it.use)); },
+  putInBar(id,i){ if(!Array.isArray(S.bar)) UI.hotbarItems(); const j=S.bar.indexOf(id); if(j>=0) S.bar[j]=S.bar[i]; S.bar[i]=id; if(isRod(S.sel)&&isRod(id)) S.sel=id; UI.hotbar(); save&&save(); },
   hotbar(){
     const ids=UI.hotbarItems(); if(!ids.includes(S.sel)) S.sel=ids[0]||'';
     $('#hotbar').hidden=!ids.length;
@@ -218,7 +225,7 @@ const UI = {
   pickSlot(i){ const id=UI.hotbarItems()[i]; if(id) UI.selectItem(id); },
   selectItem(id){ Sound.tick(); const it=ITEMS[id];
     if(it.use){ if(S.sel===id){ UI.useItem(id); return; } S.sel=id; UI.hotbar(); UI.toast(it.name+'：再点一次服用'); return; }
-    S.sel=S.sel===id&&id==='rod'?'':id; UI.hotbar(); UI.toast(S.sel?it.name+(id==='rod'?'：靠近水边，点水面或按 E 钓鱼':''):'收起了'+it.name); },
+    S.sel=S.sel===id&&isRod(id)?'':id; UI.hotbar(); UI.toast(S.sel?it.name+(isRod(id)?'：靠近水边，点水面或按 E 钓鱼':''):'收起了'+it.name); },
   useItem(id){ const it=ITEMS[id]; if(!S.inv[id]) return; addItem(id,-1); Sound.magic();
     if(it.use==='exp'){ gainExp(it.amount); UI.toast(`服下${it.name}，修为 +${it.amount}`); }
     if(it.use==='heal'){ const st=stats(); S.hp=Math.min(st.hp,S.hp+it.amount*(S.sect==='dan'?1.5:1)); UI.toast(`服下${it.name}，生命恢复`); }
@@ -323,12 +330,15 @@ const UI = {
     if(tab==='people'){ body=`<div class="people">${UI.people()}</div><p class="muted">每天和大家聊聊天、送一份礼物，好感就会慢慢上升。好感各自独立，不会吃醋，可以和每个人都到 8 心。</p>`; }
     if(tab==='replay'){ body=Replay.html(); }
     if(tab==='set'){ body=`<div class="set"><button class="btn" id="sMute">声音：${S.mute?'关':'开'}</button><button class="btn" id="sMusic">音乐：${S.music===false?'关':'开'}</button><button class="btn" id="sDodge">首领战：${S.dodgeOff?'经典回合制':'回合 + 躲弹幕'}</button><button class="btn" id="sSave">保存游戏</button><button class="btn" id="sSlots">存档 / 读档</button>
-      <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），E/空格 互动（靠近时头顶会出现 E），鼠标滚轮或 1–6 选道具，Esc 行囊，M 地图，J 任务。<br>手机：点哪里就走到哪里，点人物或物体即可互动；点左上角任务的「寻路」自动前往。<br>iPhone 若听不到音乐，请关闭侧边的静音开关。</p></div>`; }
+      <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），E/空格 互动（靠近时头顶会出现 E），鼠标滚轮或 1–6 选道具，Esc 行囊，M 地图，J 任务。<br>手机：按住屏幕拖动出现摇杆，往哪拖就往哪走；轻点人物或物体会走过去互动；行囊里点道具可以「放进快捷栏」；点左上角任务的「寻路」自动前往。<br>iPhone 若听不到音乐，请关闭侧边的静音开关。</p></div>`; }
     UI.panel('行囊', head+body, b=>{
       b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); if(t.dataset.t==='quest'){ $('#panel').hidden=true; UI._panelKind=''; return UI.tasks(); } if(t.dataset.t==='mail'){ $('#panel').hidden=true; UI._panelKind=''; return Mail.open(); } if(t.dataset.t==='save'){ $('#panel').hidden=true; return SaveSys.panel(); } UI._tab=t.dataset.t; $('#panel').hidden=true; UI.menu(t.dataset.t); });
       b.querySelectorAll('.cell').forEach(c=>c.onclick=()=>{ const id=c.dataset.id, it=ITEMS[id];
-        $('#idesc').innerHTML=`<b>${it.name}</b> ${esc(it.desc||'')} ${it.use?`<button class="btn mini" id="iUse">服用</button>`:''}`;
-        const u=$('#iUse'); if(u) u.onclick=()=>{ UI.useItem(id); $('#panel').hidden=true; UI.menu('bag'); }; });
+        const bar=UI.barable(id)?(UI.hotbarItems(), S.bar):null;
+        $('#idesc').innerHTML=`<b>${it.name}</b> ${esc(it.desc||'')} ${it.use?`<button class="btn mini" id="iUse">服用</button>`:''}
+          ${bar?`<div class="barpick"><span>放进快捷栏：</span>${bar.map((b,i)=>`<button class="btn mini${b===id?' on':''}" data-slot="${i}">${i+1}号 · ${b?esc(ITEMS[b].name):'空'}</button>`).join('')}</div>`:''}`;
+        const u=$('#iUse'); if(u) u.onclick=()=>{ UI.useItem(id); $('#panel').hidden=true; UI.menu('bag'); };
+        $('#idesc').querySelectorAll('[data-slot]').forEach(x=>x.onclick=()=>{ Sound.tick(); const i=+x.dataset.slot; if(S.bar[i]===id) return; const old=S.bar[i]; UI.putInBar(id,i); UI.toast(`${it.name}放进了快捷栏 ${i+1} 号${old&&old!==id?'，换下了'+ITEMS[old].name:''}`); c.click(); }); });
       b.querySelectorAll('[data-replay]').forEach(x=>x.onclick=()=>{ Sound.tick(); Replay.start(x.dataset.replay); });
       b.querySelectorAll('[data-bk]').forEach(x=>x.onclick=()=>{ Sound.tick(); UI._bookTab=x.dataset.bk; $('#panel').hidden=true; UI.menu('book'); });
       b.querySelectorAll('[data-cg]').forEach(x=>x.onclick=()=>{ const [id,lv]=x.dataset.cg.split(':'); CG.replaying=true; CG.replay(id,+lv); });

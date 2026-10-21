@@ -139,7 +139,7 @@ const Life = {
     return _farm(x,y);
   };
 }
-{ const _fish=Mini.fish; Mini.fish=function(tx,ty){ if(!S.inv.rod) return UI.toast('需要钓竿（钱掌柜那里有卖）'); if(tx==null){ const p=findPrompt(); if(p&&p.fish){ tx=p.x; ty=p.y; } } Mini._spot=(tx!=null)?Life.glowAt(RT.mapId,tx,ty):null; S.sel='rod'; RT.fishing=tx!=null?{x:tx,y:ty,bite:false}:null; _fish.call(Mini); $('#minigame').classList.add('sheet'); }; }
+{ const _fish=Mini.fish; Mini.fish=function(tx,ty){ if(!S.inv.rod&&!S.inv.rod_bamboo) return UI.toast('需要钓竿（钱掌柜那里有卖）'); if(tx==null){ const p=findPrompt(); if(p&&p.fish){ tx=p.x; ty=p.y; } } Mini._spot=(tx!=null)?Life.glowAt(RT.mapId,tx,ty):null; if(!isRod(S.sel)||!S.inv[S.sel]) S.sel=S.inv.rod_bamboo?'rod_bamboo':'rod'; RT.fishing=tx!=null?{x:tx,y:ty,bite:false}:null; _fish.call(Mini); $('#minigame').classList.add('sheet'); }; }
 { const _close=Mini.close; Mini.close=function(){ RT.fishing=null; $('#minigame').classList.remove('sheet'); return _close.apply(Mini,arguments); }; }
 Mini.fishPick=()=>Life.pick(Mini._spot);
 Mini.reel=function(fish){
@@ -147,7 +147,7 @@ Mini.reel=function(fish){
   el.innerHTML=`<div class="mg wood fishg ${king?'kingfish':''}"><h3>${king?'鱼王上钩了！！':'收线！'}</h3><div class="reel-wrap"><div class="reel"><div class="catch" id="rcBox"></div><div class="fishi" id="rcFish"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""></div></div>
     <div class="rprog"><i id="rcProg"></i></div></div><p class="mg-tip">${king?'它的力气大得惊人——稳住！':'按住「提竿」让绿框上升，把鱼框住！'}</p><button class="btn main big" id="rcBtn">提竿（按住）</button></div>`;
   if(king){ Music.stinger('boss'); }
-  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const tier=S.flags.goldrod?2:S.inv.rod_bamboo?1:0, box=[.26,.32,.38][tier]*(king?.9:1), slow=[1,.85,.75][tier]; const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
+  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const tier=S.flags.goldrod?2:S.sel==='rod_bamboo'?1:0, box=[.26,.32,.38][tier]*(king?.9:1), slow=[1,.85,.75][tier]; const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
   Mini.run(dt=>{
     t+=dt; bv+=(holding?1.8:-1.6)*dt; bv*=.93; b=Math.max(0,Math.min(1-box,b+bv*dt*2)); if(b===0||b===1-box) bv=0;
     if(Math.random()<dt*fish.jumpy) fTarget=Math.random(); f+=(fTarget-f)*Math.min(1,dt*fish.speed*2*slow);
