@@ -310,6 +310,7 @@ function update(dt){
   updateBeasts(dt);
 }
 function keyVector(){
+  if(RT.stick&&!RT.paused){ const [sx,sy]=RT.stick; RT.dir=Math.abs(sx)>Math.abs(sy)?(sx>0?'right':'left'):(sy>0?'down':'up'); return RT.stick; }
   if(!RT.keys.length||RT.paused) return null;
   let dx=0, dy=0; for(const k of RT.keys){ if(k==='left') dx--; if(k==='right') dx++; if(k==='up') dy--; if(k==='down') dy++; }
   if(!dx&&!dy) return null; const last=RT.keys[RT.keys.length-1];
@@ -361,7 +362,7 @@ function updateBeasts(dt){
   }
 }
 function startWildBattle(b){
-  RT.path=[]; RT.pending=null; RT.keys=[]; RT.autoNav=false;
+  RT.path=[]; RT.pending=null; RT.keys=[]; RT.autoNav=false; if(typeof Stick!=='undefined') Stick.end();
   Battle.start(b.kind, result=>{
     if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push({i:b.idx, t:S.day*1440+S.min}); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
     else if(result==='flee'){ b.stun=3; }
@@ -385,8 +386,10 @@ function render(){
   const vw=cv.width/Z, vh=cv.height/Z;
   // camera
   let cx=RT.fx*TILE+8-vw/2, cy=RT.fy*TILE+8-vh/2;
+  RT.padT=(RT.padT||0)+((RT.padTgo||0)-(RT.padT||0))*.15; RT.padB=(RT.padB||0)+((RT.padBgo||0)-(RT.padB||0))*.15;
+  const pt=RT.padT/RT.scale, pb=(RT.padB||0)/RT.scale;
   cx = m.w*TILE<=vw ? (m.w*TILE-vw)/2 : Math.max(0,Math.min(m.w*TILE-vw,cx));
-  cy = m.h*TILE<=vh ? (m.h*TILE-vh)/2 : Math.max(0,Math.min(m.h*TILE-vh,cy));
+  cy = m.h*TILE+pt+pb<=vh ? (m.h*TILE-(vh-pt-pb))/2-pt : Math.max(-pt,Math.min(m.h*TILE-vh+pb,cy));
   RT.cam.x=cx; RT.cam.y=cy;
   const ox=Math.round(-cx*Z), oy=Math.round(-cy*Z), T=TILE*Z;
   const x0=Math.max(0,Math.floor(cx/TILE)), y0=Math.max(0,Math.floor(cy/TILE)), x1=Math.min(m.w-1,Math.ceil((cx+vw)/TILE)), y1=Math.min(m.h-1,Math.ceil((cy+vh)/TILE));
@@ -493,12 +496,34 @@ function drawNight(g, ox, oy, T, Z){
 }
 
 /* ---------- input ---------- */
+const tapAt=(px,py)=>{ const Z=RT.scale, x=px/Z+RT.cam.x, y=py/Z+RT.cam.y; tapWorld(Math.floor(x/TILE), Math.floor(y/TILE)); };
+const Stick={ el:null, id:null, x:0, y:0, t:0, on:false,
+  show(){ if(!Stick.el){ Stick.el=document.createElement('div'); Stick.el.id='stick'; Stick.el.innerHTML='<i></i>'; document.body.appendChild(Stick.el); }
+    Stick.el.style.left=Stick.x+'px'; Stick.el.style.top=Stick.y+'px'; Stick.el.classList.add('on'); },
+  knob(dx,dy){ Stick.el.firstChild.style.transform=`translate(${dx}px,${dy}px)`; },
+  end(){ Stick.id=null; Stick.on=false; RT.stick=null; if(Stick.el) Stick.el.classList.remove('on'); } };
 cv.addEventListener('pointerdown', e=>{
   Sound.unlock();
   if(RT.paused||!RT.map) return;
-  const Z=RT.scale, x=(e.clientX)/Z+RT.cam.x, y=(e.clientY)/Z+RT.cam.y;
-  tapWorld(Math.floor(x/TILE), Math.floor(y/TILE));
+  if(e.pointerType==='mouse') return tapAt(e.clientX,e.clientY);
+  if(Stick.id!==null) return; Stick.id=e.pointerId; Stick.x=e.clientX; Stick.y=e.clientY; Stick.t=performance.now(); Stick.on=false;
+  try{ cv.setPointerCapture(e.pointerId); }catch(_){}
+  // holding still for a moment also brings up the stick
+  setTimeout(()=>{ if(Stick.id===e.pointerId&&!Stick.on&&!RT.paused){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); Stick.knob(0,0); } },260);
 });
+cv.addEventListener('pointermove', e=>{
+  if(e.pointerId!==Stick.id) return; const dx=e.clientX-Stick.x, dy=e.clientY-Stick.y, d=Math.hypot(dx,dy);
+  if(!Stick.on&&d>10){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); }
+  if(!Stick.on) return; const R=44, k=Math.min(d,R)/(d||1); Stick.knob(dx*k,dy*k);
+  RT.stick = d<8 ? null : [dx/d*Math.min(1,.45+d/R*.55), dy/d*Math.min(1,.45+d/R*.55)];
+});
+const stickUp=e=>{ if(e.pointerId!==Stick.id) return; const tap=!Stick.on&&performance.now()-Stick.t<400; Stick.end(); if(tap&&!RT.paused) tapAt(e.clientX,e.clientY); };
+cv.addEventListener('pointerup', stickUp); cv.addEventListener('pointercancel', e=>{ if(e.pointerId===Stick.id) Stick.end(); });
+// keep the map's top and bottom rows clear of the HUD (measured twice a second; eased so unfolding the task list doesn't jerk the view)
+setInterval(()=>{ const h=innerHeight; let t=0, b=h;
+  for(const s of ['.hud-tl','.hud-tr']){ const el=$(s); if(el&&el.offsetParent!==null){ const r=el.getBoundingClientRect(); if(r.height) t=Math.max(t,r.bottom); } }
+  for(const s of ['.vitals','#hotbar','#menuB']){ const el=$(s); if(el&&el.offsetParent!==null){ const r=el.getBoundingClientRect(); if(r.height) b=Math.min(b,r.top); } }
+  RT.padTgo=Math.min(t+4,h*.4); RT.padBgo=Math.min(h-b+4,h*.3); },500);
 const KEYDIR={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right'};
 addEventListener('keydown', e=>{
   Sound.unlock();

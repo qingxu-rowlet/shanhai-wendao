@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="2ca9a91574"><script>(function(){var B="2ca9a91574";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="db687ca21e"><script>(function(){var B="db687ca21e";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,6 +18,9 @@
 }
 html,body{height:100%;margin:0;overflow:hidden;background:#1b2a1c;color:var(--ink);font-family:var(--f-body);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;touch-action:manipulation}
 canvas#cv{position:fixed;inset:0;display:block;touch-action:none}
+#stick{position:fixed;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;background:rgba(255,243,220,.14);border:2px solid rgba(255,243,220,.45);pointer-events:none;z-index:4;opacity:0;transition:opacity .12s}
+#stick.on{opacity:1}
+#stick i{position:absolute;left:28px;top:28px;width:40px;height:40px;border-radius:50%;background:rgba(242,193,78,.85);box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .px{image-rendering:pixelated;image-rendering:crisp-edges}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
@@ -1994,6 +1997,7 @@ function update(dt){
   updateBeasts(dt);
 }
 function keyVector(){
+  if(RT.stick&&!RT.paused){ const [sx,sy]=RT.stick; RT.dir=Math.abs(sx)>Math.abs(sy)?(sx>0?'right':'left'):(sy>0?'down':'up'); return RT.stick; }
   if(!RT.keys.length||RT.paused) return null;
   let dx=0, dy=0; for(const k of RT.keys){ if(k==='left') dx--; if(k==='right') dx++; if(k==='up') dy--; if(k==='down') dy++; }
   if(!dx&&!dy) return null; const last=RT.keys[RT.keys.length-1];
@@ -2045,7 +2049,7 @@ function updateBeasts(dt){
   }
 }
 function startWildBattle(b){
-  RT.path=[]; RT.pending=null; RT.keys=[]; RT.autoNav=false;
+  RT.path=[]; RT.pending=null; RT.keys=[]; RT.autoNav=false; if(typeof Stick!=='undefined') Stick.end();
   Battle.start(b.kind, result=>{
     if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push({i:b.idx, t:S.day*1440+S.min}); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
     else if(result==='flee'){ b.stun=3; }
@@ -2069,8 +2073,10 @@ function render(){
   const vw=cv.width/Z, vh=cv.height/Z;
   // camera
   let cx=RT.fx*TILE+8-vw/2, cy=RT.fy*TILE+8-vh/2;
+  RT.padT=(RT.padT||0)+((RT.padTgo||0)-(RT.padT||0))*.15; RT.padB=(RT.padB||0)+((RT.padBgo||0)-(RT.padB||0))*.15;
+  const pt=RT.padT/RT.scale, pb=(RT.padB||0)/RT.scale;
   cx = m.w*TILE<=vw ? (m.w*TILE-vw)/2 : Math.max(0,Math.min(m.w*TILE-vw,cx));
-  cy = m.h*TILE<=vh ? (m.h*TILE-vh)/2 : Math.max(0,Math.min(m.h*TILE-vh,cy));
+  cy = m.h*TILE+pt+pb<=vh ? (m.h*TILE-(vh-pt-pb))/2-pt : Math.max(-pt,Math.min(m.h*TILE-vh+pb,cy));
   RT.cam.x=cx; RT.cam.y=cy;
   const ox=Math.round(-cx*Z), oy=Math.round(-cy*Z), T=TILE*Z;
   const x0=Math.max(0,Math.floor(cx/TILE)), y0=Math.max(0,Math.floor(cy/TILE)), x1=Math.min(m.w-1,Math.ceil((cx+vw)/TILE)), y1=Math.min(m.h-1,Math.ceil((cy+vh)/TILE));
@@ -2177,12 +2183,34 @@ function drawNight(g, ox, oy, T, Z){
 }
 
 /* ---------- input ---------- */
+const tapAt=(px,py)=>{ const Z=RT.scale, x=px/Z+RT.cam.x, y=py/Z+RT.cam.y; tapWorld(Math.floor(x/TILE), Math.floor(y/TILE)); };
+const Stick={ el:null, id:null, x:0, y:0, t:0, on:false,
+  show(){ if(!Stick.el){ Stick.el=document.createElement('div'); Stick.el.id='stick'; Stick.el.innerHTML='<i></i>'; document.body.appendChild(Stick.el); }
+    Stick.el.style.left=Stick.x+'px'; Stick.el.style.top=Stick.y+'px'; Stick.el.classList.add('on'); },
+  knob(dx,dy){ Stick.el.firstChild.style.transform=`translate(${dx}px,${dy}px)`; },
+  end(){ Stick.id=null; Stick.on=false; RT.stick=null; if(Stick.el) Stick.el.classList.remove('on'); } };
 cv.addEventListener('pointerdown', e=>{
   Sound.unlock();
   if(RT.paused||!RT.map) return;
-  const Z=RT.scale, x=(e.clientX)/Z+RT.cam.x, y=(e.clientY)/Z+RT.cam.y;
-  tapWorld(Math.floor(x/TILE), Math.floor(y/TILE));
+  if(e.pointerType==='mouse') return tapAt(e.clientX,e.clientY);
+  if(Stick.id!==null) return; Stick.id=e.pointerId; Stick.x=e.clientX; Stick.y=e.clientY; Stick.t=performance.now(); Stick.on=false;
+  try{ cv.setPointerCapture(e.pointerId); }catch(_){}
+  // holding still for a moment also brings up the stick
+  setTimeout(()=>{ if(Stick.id===e.pointerId&&!Stick.on&&!RT.paused){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); Stick.knob(0,0); } },260);
 });
+cv.addEventListener('pointermove', e=>{
+  if(e.pointerId!==Stick.id) return; const dx=e.clientX-Stick.x, dy=e.clientY-Stick.y, d=Math.hypot(dx,dy);
+  if(!Stick.on&&d>10){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); }
+  if(!Stick.on) return; const R=44, k=Math.min(d,R)/(d||1); Stick.knob(dx*k,dy*k);
+  RT.stick = d<8 ? null : [dx/d*Math.min(1,.45+d/R*.55), dy/d*Math.min(1,.45+d/R*.55)];
+});
+const stickUp=e=>{ if(e.pointerId!==Stick.id) return; const tap=!Stick.on&&performance.now()-Stick.t<400; Stick.end(); if(tap&&!RT.paused) tapAt(e.clientX,e.clientY); };
+cv.addEventListener('pointerup', stickUp); cv.addEventListener('pointercancel', e=>{ if(e.pointerId===Stick.id) Stick.end(); });
+// keep the map's top and bottom rows clear of the HUD (measured twice a second; eased so unfolding the task list doesn't jerk the view)
+setInterval(()=>{ const h=innerHeight; let t=0, b=h;
+  for(const s of ['.hud-tl','.hud-tr']){ const el=$(s); if(el&&el.offsetParent!==null){ const r=el.getBoundingClientRect(); if(r.height) t=Math.max(t,r.bottom); } }
+  for(const s of ['.vitals','#hotbar','#menuB']){ const el=$(s); if(el&&el.offsetParent!==null){ const r=el.getBoundingClientRect(); if(r.height) b=Math.min(b,r.top); } }
+  RT.padTgo=Math.min(t+4,h*.4); RT.padBgo=Math.min(h-b+4,h*.3); },500);
 const KEYDIR={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right'};
 addEventListener('keydown', e=>{
   Sound.unlock();
@@ -5779,7 +5807,7 @@ Object.assign(SCRIPTS, {
    worded for touch or keyboard. On phones the task list folds down to the tracked task; tap to unfold.
    ============================================================ */
 const TIPS = {
-  move:  {touch:'点地面上任何地方，角色就会走过去。', key:'用 WASD 或方向键走路，也可以用鼠标点地面。'},
+  move:  {touch:'按住屏幕任意处拖动就能走路（会出现一个摇杆）；轻点地面或人物，角色会自己走过去。', key:'用 WASD 或方向键走路，也可以用鼠标点地面。'},
   quest: {touch:'左上角是任务。点「寻路」，角色会自动走到目的地。', key:'左上角是任务。点「寻路」自动走过去，按 J 看全部任务。'},
   talk:  {touch:'靠近人或东西时，头顶会出现「聊 / 采 / 点」——点一下它就能互动。', key:'靠近人或东西时头顶会出现 E，按 E 互动。'},
   bag:   {touch:'左下角「囊」是行囊：物品、修炼、人物、图鉴、存档都在里面。', key:'左下角「囊」是行囊（Esc 打开）：物品、修炼、人物、图鉴、存档都在里面。'},
@@ -6431,6 +6459,8 @@ const Review = {
     {id:'beasts', group:'成长', title:'新妖兽：狸力、鵸鵌、朱厌', check:'直接挑一只打：每种都有自己的弹幕。当康（冲撞）、狌狌（扔果子）也改成躲弹幕了。',
       run(){ Review.base({quest:'q8', L:7, inv:{huichun:3}, kills:3}); Review.at('forest',20,20,'down');
         setTimeout(()=>UI.say([{choice:'和谁打一场？', options:['lili','qitu','zhuyan','dangkang','xingxing'].map(k=>({text:BEASTS[k].name, fn:()=>Battle.start(k,()=>{})}))}]),500); }},
+    {id:'stick', group:'成长', title:'手机摇杆 · 地图边缘不被挡住', check:'用手机打开，站在青丘山林最上面。按住屏幕任意处拖动会出现摇杆，松手就停；轻点地面或人物仍然会自己走过去。往上走能从顶上的路口回洞府——地图最上面一排不再被任务栏挡住，最下面一排也不被血条和物品栏挡住。',
+      run(){ Review.base({quest:'q6', L:7}); Review.at('forest',14,2,'up'); }},
     {id:'guide', group:'成长', title:'新手引导（手机）', check:'用手机打开：会依次弹出走路、任务、互动、行囊的提示；左上角任务栏只显示正在追踪的一条，点「展开」看全部。',
       run(){ Review.base({quest:'q1', L:0}); S.tips={}; Review.at('home',11,6,'down'); }},
     {id:'fx-enter', group:'风穴副本', title:'风穴入口 → 风谷', check:'站在山林东北角的风穴洞口前，按 E 进去。风谷里每隔几秒起风，会把你往下吹；躲在岩石正下方（头上是石头）就不会被吹走，头顶会显示「避风」。收集 3 片穷奇羽打开谷口。路上有蛊雕和狌狌，蛊雕也要躲弹幕。',
