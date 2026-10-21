@@ -13,7 +13,8 @@ const POSE_BODY = {
   lantern:{rows:['.....WCCCCW.....','....CCWCCCC.....','....CCCCCCCC....','....CAAAAAACS...','....PPPPPPP.....','....PPPPPPP.....','....pPPPPPp.....','.....FF..FF.....'], hand:[12,15]},
   point:{rows:['.....WCCCCWCCS..','....CCWCCCC.....','....CCCCCCC.....','....CAAAAAA.....','....PPPPPPP.....','....PPPPPPP.....','....pPPPPPp.....','.....FF..FF.....'], hand:[13,12]},
   walk: {rows:['.....WCCCCW.....','....CCWCCCC.....','...SCCCCCCS.....','....CAAAAAA.....','....PPPPPPP.....','...PPPPPPPP.....','...pPP..PPp.....','..FF.....FF.....'], hand:[10,14]},
-  sit:  {rows:['.....WCCCCW.....','....CCWCCCC.....','....CCCCCSC.....','....CAAAAAA.....','....PPPPPPPPPPF.','....pPPPPPPPPpF.'], hand:[9,14]},
+  sit:  {rows:['.....WCCCCW.....','....CCWCCCC.....','....CCCCCSC.....','....CAAAAAA.....','...PPPPPPPPP....','..pPPPPPPPPPp...'], hand:[9,14]},
+  sitedge:{rows:['.....WCCCCW.....','....CCWCCCC.....','....CCCCCSC.....','....CAAAAAA.....','....PPPPPPPPP...','....pPPPPPPPPp..','.........ppPP...','.........ppPP...','.........ppPP...','.........FFFFF..'], hand:[9,14], seat:4},
   kneel:{rows:['.....WCCCCW.....','....CCWCCCC.....','....CCCCCSC.....','....CAAAAAA.....','....PPPPPPPP....','...FpPPPPPPPp...'], hand:[9,14]},
   reach:{rows:['.....WCCCCW.....','....CCWCCCCC....','....CCCCCCCCC...','....CAAAAAA.CS..','....PPPPPPPP....','...FpPPPPPPPp...'], hand:[13,15]},
   crouch:{rows:['.....WCCCCW.....','....CCWCPPPP....','....CCCSPPPP....','....CAAAPPPP....','....PPPPPPPP....','....pPPPPPFF....'], hand:[7,14]},
@@ -161,7 +162,9 @@ const PXSCENES = {
       for(let x=0;x<W*.3;x+=7){ PX.r(g,x,hz+H*.08,1,H*.05,'#8a5a36'); } PX.r(g,0,hz+H*.09,W*.3,1,'#8a5a36'); PX.r(g,0,hz+H*.115,W*.3,1,'#8a5a36');
       PX.tree(g,W*.1,hz+H*.13,H*.24,R,'blossom',{d:'#a04a6a',m:'#e07a9a',l:'#f8b0c4',h:'#fff0f4',t:'#5e3a20'}); PX.tree(g,W*.92,hz+H*.12,H*.2,R);
       for(let i=0;i<20;i++) PX.flower(g,R()*W,hz+H*(.14+R()*.3),['#f8b8c8','#fff3a8','#ffffff','#c8b8f8'][i%4]); },
-    cast:[{who:'me',x:.3,pose:'stand',face:1},{who:'tang',x:.66,pose:'reach',prop:'herb',wear:['basket'],face:-1,moods:{blush:{pose:'hold',prop:'sachet'},smile:{pose:'kneel',prop:'herb'}}}] },
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.36,pose:'stand',face:1},{at:2,x:.4,pose:'kneel',face:1},{at:5,x:.4,pose:'stand',face:1}]},
+          {who:'tang',wear:['basket'],moods:{blush:{pose:'hold',prop:'sachet'}},beats:[{at:0,x:.66,pose:'reach',prop:'herb',face:1},{at:1,x:.66,pose:'reach',prop:'herb',face:-1},{at:3,x:.66,pose:'kneel',prop:'herb',face:-1},{at:5,x:.66,pose:'stand',prop:null,face:-1}]}],
+    stage:(g,W,H,p,t,gy)=>FP.herbs(g,W,H,p,t,gy) },
   sunset:{ gy:.8, fx:'fireflies', base(g,W,H,R){ const hz=Math.round(H*.56);
       PX.sky(g,W,0,hz,['#3c2a5a','#7a3a6a','#e0765a','#f8c48a']); PX.orb(g,W*.7,hz-H*.06,9,'#ffdca0','#ffb878'); PX.cloud(g,W*.2,H*.18,26,'#f0a080'); PX.cloud(g,W*.55,H*.12,18,'#c87088');
       PX.ridge(g,W,H,hz,H*.1,'#7a4a6a','#a0607a',R); PX.ridge(g,W,H,hz+H*.03,H*.06,'#5a3456',null,R);
@@ -169,14 +172,18 @@ const PXSCENES = {
       for(let i=0;i<10;i++){ const x=R()*W, y=hz+H*(.12+R()*.3); PX.r(g,x,y,7,2,'#3f7a4a'); if(R()<.5){ PX.r(g,x+2,y-3,3,3,'#f6b0c0'); PX.r(g,x+3,y-4,1,1,'#fbe0ea'); } }
       for(let i=0;i<30;i++){ const x=R()<.5?R()*W*.18:W*.84+R()*W*.16; PX.r(g,x,hz-2-R()*H*.12,1,H*.14,'#24142a'); }
       PX.rock(g,W*.5,H*.82,W*.48,H*.06); },
-    cast:[{who:'me',x:.38,y:.78,pose:'sit',face:1},{who:'tang',x:.6,y:.78,pose:'sit',face:-1}] },
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.44,pose:'sitedge',face:1}]},
+          {who:'tang',beats:[{at:0,x:.68,pose:'sitedge',face:1},{at:2,x:.68,pose:'sitedge',face:-1}]}],
+    stage:(g,W,H,p,t,gy)=>FP.pier(g,W,H,p,t,gy,.84),
+    front:(g,W,H,p,t,gy)=>{ FP.lotus(g,W*.12,H*(gy+.1),p,t,true); FP.lotus(g,W*.9,H*(gy+.07),p,t,false); FP.lotus(g,W*.58,H*(gy+.13),p,t,true); FP.reeds(g,W*.93,H*(gy+.04),p,t,4); } },
   rainpath:{ gy:.9, fx:'rain', base(g,W,H,R){ const hz=Math.round(H*.5);
       PX.sky(g,W,0,hz,['#4a5a6a','#6a7a86','#8a96a0']); PX.ridge(g,W,H,hz,H*.14,'#5a6a72','#6a7a82',R); PX.ridge(g,W,H,hz+H*.05,H*.08,'#46545a',null,R);
       PX.r(g,0,hz+H*.08,W,H,'#3a464c'); for(let i=0;i<50;i++) PX.grass(g,R()*W,hz+H*(.1+R()*.4),'#2e3c38','#46585a');
       for(let y=Math.round(hz+H*.1);y<H;y++){ const t=(y-hz)/(H-hz), w=W*(.06+t*.3); PX.r(g,W*.58-w/2,y,w,1,'#5a5a56'); }
       PX.tree(g,W*.14,H*.85,H*.3,R,'pine',{d:'#1e2e2a',m:'#2e3c38',l:'#46585a',t:'#2a2018'}); PX.tree(g,W*.88,H*.88,H*.26,R,'pine',{d:'#1e2e2a',m:'#2e3c38',l:'#46585a',t:'#2a2018'});
       PX.r(g,W*.5,hz+H*.02,W*.16,H*.06,'#4a3a2a'); PX.roof(g,W*.58,hz-H*.01,W*.16,'#2a2018','#3a2a1e'); PX.r(g,W*.56,hz+H*.035,3,4,'#ffd27a'); },
-    cast:[{who:'me',x:.4,y:.92,pose:'walk',face:1,s:.75}] },
+    cast:[{who:'me',beats:[{at:0,x:-.12,pose:'walk',face:1},{at:1,x:.62,pose:'stand',face:1}]}],
+    stage:(g,W,H,p,t,gy)=>FP.puddles(g,W,H,p,t,gy) },
   herbhut:{ gy:.88, fx:'rainwindow', win:[.6,.14,.3,.3], base(g,W,H,R){
       PX.r(g,0,0,W,H,'#5a4028'); for(let x=0;x<W;x+=8) PX.r(g,x+7,0,1,H,'#3a2818'); PX.r(g,0,H*.8,W,H,'#3a2818'); for(let x=0;x<W;x+=10) PX.r(g,x,H*.8,1,H,'#2a1a10');
       const [wx,wy,ww,wh]=[W*.6,H*.14,W*.3,H*.3]; PX.r(g,wx,wy,ww,wh,'#4a5a6a'); PX.r(g,wx,wy+wh*.6,ww,wh*.4,'#3a4a52');
@@ -184,7 +191,9 @@ const PXSCENES = {
       for(const sy of [.24,.44]){ PX.r(g,W*.04,H*sy,W*.4,2,'#8a5a36'); for(let i=0;i<7;i++){ const x=W*.06+i*W*.055; PX.r(g,x,H*sy-6,4,6,['#5fa35a','#c8413b','#e8b84a','#8b5bc5','#4a7fd0'][i%5]); PX.r(g,x+1,H*sy-7,2,1,'#d8c8a8'); } }
       for(let i=0;i<4;i++) PX.r(g,W*.08+i*W*.08,H*.62,8,7,'#b88a4a'); PX.lantern(g,W*.48,H*.3,true);
       g.fillStyle='rgba(255,200,120,.12)'; g.fillRect(W*.3,H*.2,W*.36,H*.6); },
-    cast:[{who:'me',x:.32,pose:'stand',face:1},{who:'tang',x:.62,pose:'crouch',face:-1,wear:['wet'],moods:{normal:{pose:'kneel',wear:['basket']},blush:{pose:'crouch'},smile:{pose:'kneel'}}}] },
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:3,x:.34,pose:'stand',face:1}]},
+          {who:'tang',wear:['wet'],beats:[{at:0,x:.64,pose:'crouch',face:1},{at:2,x:.64,pose:'crouch',face:-1},{at:5,x:.64,pose:'kneel',face:-1,wear:['wet','basket']}]}],
+    stage:(g,W,H,p,t,gy)=>FP.planks(g,W,H,p,t,gy) },
   lantern:{ gy:.7, fx:'lanterns', base(g,W,H,R){ const hz=Math.round(H*.48);
       PX.sky(g,W,0,hz,['#0a1030','#1a2458','#3a3a78']); PX.stars(g,W,hz*.8,R,50); PX.orb(g,W*.82,H*.1,6,'#f6f0d6','#8a8ac0');
       PX.ridge(g,W,H,hz,H*.08,'#1a1a3a','#2a2a50',R); PX.r(g,0,hz+H*.04,W,H,'#0e1430');
@@ -192,27 +201,38 @@ const PXSCENES = {
       for(let x=0;x<W;x++){ const u=x/W, y=Math.round(H*.7-(1-Math.pow(2*u-1,2))*H*.12); PX.r(g,x,y,1,H*.03,'#4a3a5a'); PX.r(g,x,y,1,1,'#7a6a8a'); PX.r(g,x,y+H*.03,1,2,'#2a1e3a'); if(x%14===0){ PX.r(g,x,y-H*.035,1,H*.035,'#7a6a8a'); } }
       for(let x=0;x<W;x+=2){ const u=x/W, y=Math.round(H*.665-(1-Math.pow(2*u-1,2))*H*.12); PX.r(g,x,y,1,1,'#7a6a8a'); }
       for(let i=0;i<11;i++){ const u=i/10; PX.lantern(g,u*W,H*.14+Math.sin(u*Math.PI)*H*.06,true); } for(let x=0;x<W;x++) PX.r(g,x,H*.14+Math.sin(x/W*Math.PI)*H*.06-1,1,1,'#2a2a40'); },
-    cast:[{who:'me',x:.36,y:.6,pose:'stand',face:1},{who:'tang',x:.62,y:.6,pose:'lantern',prop:'lantern',face:-1,moods:{blush:{pose:'hold',prop:'sachet'}}}] },
+    cast:[{who:'me',beats:[{at:0,x:.36,pose:'stand',face:1},{at:4,x:.36,pose:'stand',face:1}]},
+          {who:'tang',moods:{blush:{pose:'hold',prop:'sachet'}},beats:[{at:0,x:1.2,pose:'lantern',prop:'lantern',face:-1},{at:2,x:.62,pose:'lantern',prop:'lantern',face:-1},{at:4,x:.62,pose:'lantern',prop:'lantern',face:1},{at:5,x:.62,pose:'lantern',prop:'lantern',face:-1}]}],
+    stage:(g,W,H,p,t,gy)=>FP.bridge(g,W,H,p,t,gy) },
   /* ---- 顾长歌 ---- */
   bamboo:{ gy:.9, fx:'leaves', base(g,W,H,R){ PX.sky(g,W,0,H,['#e8f4dc','#d0e8c0','#b8d8a8']); PX.ridge(g,W,H,H*.5,H*.1,'#a8cfa0',null,R);
       for(let i=0;i<26;i++){ const x=Math.round(R()*W); PX.bamboo(g,x,H,-5,R); } PX.r(g,0,H*.86,W,H,'#8a6a4a'); for(let x=0;x<W;x+=3) PX.r(g,x,H*.86,2,1,'#a8885a');
       for(let i=0;i<30;i++) PX.grass(g,R()*W,H*(.88+R()*.1),'#4a7a40','#6aa04a'); PX.rock(g,W*.12,H*.9,W*.16,H*.06);
       g.fillStyle='rgba(255,255,230,.12)'; for(let i=0;i<4;i++){ g.beginPath(); g.moveTo(W*(.2+i*.22),0); g.lineTo(W*(.28+i*.22),0); g.lineTo(W*(.12+i*.22),H); g.lineTo(W*(.04+i*.22),H); g.fill(); } },
-    cast:[{who:'me',x:.27,pose:'sword',prop:'wood',face:1},{who:'ge',x:.72,pose:'guard',prop:'swordup',face:-1,moods:{smile:{pose:'stand',prop:null,wear:['backsword']}}}] },
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.3,pose:'stand',face:1},{at:3,x:.3,pose:'hold',prop:'wood',face:1},{at:4,x:.3,pose:'sword',prop:'wood',face:1}]},
+          {who:'ge',moods:{smile:{pose:'stand',prop:null,wear:['backsword']}},beats:[{at:0,x:.7,pose:'sword',prop:'sword',face:1},{at:1,x:.7,pose:'stand',prop:'sword',face:-1},{at:4,x:.7,pose:'guard',prop:'swordup',face:-1}]}],
+    stage:(g,W,H,p,t,gy)=>{ FP.floor(g,W,H,p,t,gy,'#8a7a5a','#a89a70','#b8a050'); FP.stump(g,W*.12,H*gy+2*p,p); FP.stump(g,W*.9,H*gy+3*p,p); } },
   moon:{ gy:.8, fx:'fireflies', base(g,W,H,R){ const hz=Math.round(H*.62); PX.sky(g,W,0,hz,['#0c1228','#1c2850','#3a4a7a']); PX.stars(g,W,hz*.7,R,60); PX.orb(g,W*.7,H*.2,12,'#f6f2dc','#8a96c0');
       PX.cloud(g,W*.2,H*.26,30,'#3a4a7a'); PX.ridge(g,W,H,hz,H*.12,'#28305a','#3a4470',R); PX.ridge(g,W,H,hz+H*.06,H*.06,'#1e2448',null,R);
       for(let x=0;x<W*.72;x++){ const y=Math.round(H*.8+Math.sin(x*.05)*1.5); PX.r(g,x,y,1,H-y,'#0c1020'); PX.r(g,x,y,1,1,'#2a3050'); }
       PX.tree(g,W*.08,H*.8,H*.32,R,'pine',{d:'#0a0e1a',m:'#141c30',l:'#24304a',t:'#0a0e1a'}); },
-    cast:[{who:'me',x:.26,pose:'sit',face:1},{who:'ge',x:.46,pose:'sit',prop:'swordlap',face:1,moods:{sad:{pose:'sit',prop:'swordlap'},smile:{pose:'sit',prop:null}}}] },
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:2,x:.3,pose:'sit',face:1}]},
+          {who:'ge',beats:[{at:0,x:.5,pose:'sit',prop:'swordlap',face:1},{at:1,x:.5,pose:'sit',prop:'swordlap',face:-1},{at:3,x:.5,pose:'sit',prop:'swordlap',face:1},{at:6,x:.5,pose:'sit',prop:'swordlap',face:-1}]}],
+    stage:(g,W,H,p,t,gy)=>FP.ledge(g,W,H,p,t,gy,.7) },
   campfire:{ gy:.84, fx:'sparks', fire:[.5,.84], base(g,W,H,R){ PX.sky(g,W,0,H,['#05070e','#0e1420','#1a2030']); PX.stars(g,W,H*.5,R,90);
       for(let i=0;i<9;i++) PX.tree(g,R()*W,H*.78,H*(.25+R()*.2),R,'pine',{d:'#04060a',m:'#0a0e14',l:'#141a22',t:'#04060a'}); PX.r(g,0,H*.78,W,H,'#0a0c10');
       for(let x=W*.76,i=0;i<16;i++){ PX.r(g,x+i,H*.84-i*1.2,32-i*2,1,'#2a2018'); } PX.r(g,W*.76+12,H*.84-8,6,8,'#3a2a1a'); },
-    cast:[{who:'me',x:.3,pose:'sit',face:1},{who:'ge',x:.68,pose:'sit',prop:'jade',face:-1,moods:{sad:{pose:'sit',prop:'jade'}}}] },
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.28,pose:'stand',face:1},{at:2,x:.28,pose:'sit',face:1}]},
+          {who:'ge',beats:[{at:0,x:.7,pose:'sit',prop:'jade',face:-1}]}],
+    stage:(g,W,H,p,t,gy)=>{ FP.floor(g,W,H,p,t,gy,'#1a1a1a','#2a2620','#3a3020'); FP.log(g,W*.2,H*gy+p,p,14); FP.log(g,W*.64,H*gy+p,p,14); },
+    front:(g,W,H,p,t,gy)=>FP.campfire(g,W*.5,H*gy+3*p,p,t) },
   dusk:{ gy:.88, fx:'leaves', base(g,W,H,R){ const hz=Math.round(H*.6); PX.sky(g,W,0,hz,['#2a1a3a','#6a2a4a','#c85a5a','#f0a070']); PX.orb(g,W*.5,hz-H*.04,10,'#ffc890','#f08060');
       PX.ridge(g,W,H,hz,H*.1,'#5a2a40','#7a3a50',R); PX.ridge(g,W,H,hz+H*.06,H*.06,'#401c30',null,R); PX.r(g,0,H*.84,W,H,'#28101e');
       for(let i=0;i<7;i++) PX.tree(g,R()*W,H*.86,H*(.2+R()*.15),R,'round',{d:'#1a0a12',m:'#2a1420',l:'#3a1e2a',h:'#4a2a34',t:'#1a0a12'});
       for(let i=0;i<3;i++){ const x=W*(.15+i*.12), y=H*(.18+i*.04); PX.r(g,x-4,y,3,1,'#1a0a12'); PX.r(g,x-1,y+1,2,1,'#1a0a12'); PX.r(g,x+1,y,3,1,'#1a0a12'); } },
-    cast:[{who:'me',x:.42,pose:'guard',prop:'swordup',face:-1},{who:'ge',x:.58,pose:'guard',prop:'swordup',face:1,moods:{smile:{pose:'stand',prop:null,wear:['backsword']}}}] },
+    cast:[{who:'me',beats:[{at:0,x:.26,pose:'guard',prop:'swordup',face:1},{at:1,x:.38,pose:'guard',prop:'swordup',face:-1},{at:3,x:.38,pose:'sword',prop:'sword',face:-1},{at:5,x:.38,pose:'stand',prop:'sword',face:1}]},
+          {who:'ge',moods:{smile:{pose:'stand',prop:null,wear:['backsword']}},beats:[{at:0,x:.74,pose:'guard',prop:'swordup',face:-1},{at:1,x:.62,pose:'guard',prop:'swordup',face:1},{at:3,x:.62,pose:'sword',prop:'sword',face:1},{at:5,x:.62,pose:'stand',prop:'sword',face:-1}]}],
+    stage:(g,W,H,p,t,gy)=>FP.floor(g,W,H,p,t,gy,'#2a1420','#3a1e2a','#8a4a3a') },
 };
 
 /* ---------- 奇遇 scenes ---------- */
@@ -295,35 +315,102 @@ const PixCG = {
     if(c.inkBase&&c.fx==='lanterns'){ /* lanterns already drawn */ }
     // the cast, big and crisp; they breathe (1px bob) and blink
     const k=Math.max(3,Math.round(Math.min(H*.3,W*.4)/24)), mood=CG.on?CG.face:'normal';
-    for(const m of c.cast){ const base=m, mm=(m.moods&&m.moods[mood])||{}, pose=mm.pose||m.pose||'stand', prop=mm.prop!==undefined?mm.prop:m.prop, wear=mm.wear||m.wear;
+    const fp=Math.max(2,Math.round(k*.72/2));          // the size of one fine pixel (chibis and stage props share it)
+    if(c.stage) c.stage(g,W,H,fp,t,c.gy||.86);
+    const line=Math.max(0,(CG.lines||1)-1); c.st=c.st||[];
+    for(let ci=0;ci<c.cast.length;ci++){ let m=c.cast[ci];
+      if(m.beats){ const b=[...m.beats].reverse().find(b=>b.at<=line)||m.beats[0], st=c.st[ci]||(c.st[ci]={x:b.x, face:b.face||1, b});
+        if(st.b!==b){ if(b.x!==st.x&&!st.walk) st.walk={from:st.x, to:b.x, t0:t, dur:Math.abs(b.x-st.x)/.2}; if((b.face||1)!==st.face&&b.x===st.x) st.hop=t; st.b=b; }
+        let x=st.x, pose=b.pose, face=b.face||1, walking=false;
+        if(st.walk){ const u=Math.min(1,(t-st.walk.t0)/st.walk.dur); x=st.walk.from+(st.walk.to-st.walk.from)*u; face=Math.sign(st.walk.to-st.walk.from)||1; walking=u<1; pose=Math.floor(t*6)%2?'walk':'stand';
+          if(u>=1){ st.x=st.walk.to; st.walk=null; st.hop=t; } }
+        if(!walking&&face!==st.face){ st.face=face; }
+        m={...m, ...b, x, face, pose:walking?pose:(b.pose||'stand'), hopY:(st.hop&&t-st.hop<.18)?-fp*2:0}; }
+      const base=m, mm=(m.moods&&m.moods[mood])||{}, pose=mm.pose||m.pose||'stand', prop=mm.prop!==undefined?mm.prop:m.prop, wear=mm.wear||m.wear;
       const isNpc=m.who==='tang'||m.who==='ge', blink=(Math.floor(t*10+(m.x*37|0))%38)===0;
-      const md=isNpc?(blink&&mood==='normal'?'blink':mood):(m.mood||(blink?'blink':null));
+      let md=isNpc?(blink&&mood==='normal'?'blink':mood):(m.mood||(blink?'blink':null));
+      if(m.who==='ge') md={smile:'subtle', blush:'subtle', sad:'dim'}[md]||md;      // 顾长歌 keeps it quiet
       const look=m.who==='me'?S.look:m.who==='tang'?T():m.who==='ge'?G():m.look;
       let spr, sz=k*(m.s||1);
-      if(m.beast) spr=pxBeast(m.beast); else if(m.spr) spr=sprite(m.spr); else spr=poseSprite(look,pose,md,prop,wear,m.back);
-      if(m.beast||m.spr) sz=k*(m.s||1)*1.2;
+      if(m.beast) spr=pxBeast(m.beast); else if(m.spr) spr=sprite(m.spr); else spr=cgChibi(look,pose,md,prop,wear,m.back);
+      if(m.beast||m.spr) sz=k*(m.s||1)*1.2; else if(spr.fine) sz=fp*(m.s||1);
       const bob=(m.beast&&m.fly)?Math.round(Math.sin(t*2+m.x*9)*sz*2):(Math.floor(t*1.6+m.x*5)%2)*Math.round(sz*.5);
-      const w=spr.width*sz, h=spr.height*sz, fx=W*m.x, fy=H*(m.y||c.gy||.86)-(spr.bottom||spr.height)*sz+bob;
+      const w=spr.width*sz, h=spr.height*sz, fx=W*m.x, fy=H*(m.y||c.gy||.86)-(spr.bottom||spr.height)*sz+bob+(m.hopY||0);
+      if(fx<-w||fx>W+w) continue;
       g.save(); if(m.alpha) g.globalAlpha=m.alpha+.1*Math.sin(t*2);
       if(m.glow){ const gr=g.createRadialGradient(fx,fy+h*.5,0,fx,fy+h*.5,w*.8); gr.addColorStop(0,'rgba(255,255,230,.45)'); gr.addColorStop(1,'rgba(255,255,230,0)'); g.fillStyle=gr; g.fillRect(fx-w,fy-h*.3,w*2,h*1.6); }
       if((m.face||1)<0){ g.translate(Math.round(fx+w/2),Math.round(fy)); g.scale(-1,1); g.drawImage(spr,0,0,w,h); }
       else g.drawImage(spr,Math.round(fx-w/2),Math.round(fy),w,h);
       g.restore(); }
+    if(c.front) c.front(g,W,H,fp,t,c.gy||.86);
   },
   close(){ PixCG.on=false; PixCG.cur=null; const el=$('#cg'); el.hidden=true; el.innerHTML=''; el.className=''; },
 };
 
+{ const _line=UI.line; UI.line=function(){ if(CG.on) CG.lines=(CG.lines||0)+1; return _line.apply(UI,arguments); }; }
+/* ---------- fine-pixel stage props (same pixel size as the chibis) ---------- */
+const FP = {
+  r(g,x,y,w,h,p,c){ g.fillStyle=c; g.fillRect(Math.round(x),Math.round(y),Math.round(w*p),Math.round(h*p)); },
+  // a wooden pier over the pond, from the left edge to `end`; its top surface is at gy
+  pier(g,W,H,p,t,gy,end){ const top=Math.round(H*gy), cols=Math.ceil(W*end/p), y0=top;
+    for(let i=0;i<cols;i++){ const x=i*p;
+      FP.r(g,x,y0,1,1,p,'#e8b884'); FP.r(g,x,y0+p,1,2,p,i%8===0?'#8a5a36':'#c8945a'); FP.r(g,x,y0+3*p,1,3,p,'#8a5a36'); FP.r(g,x,y0+6*p,1,1,p,'#5e3a20');
+      if(i%8===4) FP.r(g,x,y0+p*2,1,1,p,'#a87444'); }
+    for(let i=4;i<cols;i+=18){ const x=i*p; FP.r(g,x,y0+7*p,3,12,p,'#5e3a20'); FP.r(g,x,y0+7*p,1,12,p,'#7a4a2a');
+      const wl=y0+15*p+Math.round(Math.sin(t*2+i)*p*.6); FP.r(g,x-3*p,wl,9,1,p,'rgba(255,220,170,.55)'); FP.r(g,x-1*p,wl+2*p,5,1,p,'rgba(255,220,170,.35)'); }
+    const ex=cols*p; FP.r(g,ex-3*p,y0-5*p,3,18,p,'#5e3a20'); FP.r(g,ex-3*p,y0-5*p,1,18,p,'#7a4a2a'); FP.r(g,ex-4*p,y0-6*p,5,1,p,'#3e2414');
+    FP.r(g,ex-3*p,y0-3*p,3,1,p,'#c8413b'); },
+  lotus(g,x,y,p,t,bud){ const s=Math.sin(t*1.2+x)*.5;
+    for(let j=0;j<3;j++){ const w=[7,11,9][j]; FP.r(g,x-w/2*p,y+j*p,w,1,p,j===0?'#7ab860':'#4f8a3a'); }
+    FP.r(g,x-5*p,y+3*p,10,1,p,'#2f5a2a'); FP.r(g,x+p,y,1,3,p,'#2f5a2a');
+    if(bud){ FP.r(g,x-p,y-5*p+s,1,5,p,'#3f7a3a'); FP.r(g,x-2*p,y-8*p+s,3,3,p,'#f6b0c4'); FP.r(g,x-p,y-9*p+s,1,1,p,'#fbe0ea'); FP.r(g,x-2*p,y-6*p+s,1,1,p,'#e07a9a'); } },
+  // rows of herbs in a dewy field, from y down to the bottom
+  herbs(g,W,H,p,t,gy){ const y0=Math.round(H*gy); FP.r(g,0,y0,W/p+1,(H-y0)/p+1,p,'#5f9a48');
+    for(let r=0;r<6;r++){ const y=y0+r*7*p; FP.r(g,0,y+5*p,W/p+1,1,p,'#7a5a3a');
+      for(let x=(r%2)*5*p;x<W;x+=10*p){ FP.r(g,x,y+p,7,3,p,'#3f7a3a'); FP.r(g,x+p,y,5,2,p,'#5fa35a'); FP.r(g,x+2*p,y-p,3,1,p,'#8ad06a'); if(((x/p)+r)%3===0) FP.r(g,x+3*p,y-2*p,1,1,p,'#fff6c0');
+        if(Math.sin(t*3+x+r)>.97) FP.r(g,x+4*p,y,1,1,p,'#ffffff'); } } },
+  // a stone bridge deck with a rail and lanterns hung along it
+  bridge(g,W,H,p,t,gy){ const y0=Math.round(H*gy), n=Math.ceil(W/p)+1;
+    for(let i=0;i<n;i++){ const x=i*p; FP.r(g,x,y0,1,1,p,'#b8b2a6'); FP.r(g,x,y0+p,1,3,p,i%6===0?'#7a7468':'#9a948a'); FP.r(g,x,y0+4*p,1,2,p,'#5a5448');
+      if(i%16===8){ FP.r(g,x,y0-9*p,2,9,p,'#5a5448'); FP.r(g,x,y0-9*p,1,9,p,'#7a7468'); FP.r(g,x-p,y0-10*p,4,1,p,'#3a342c');
+        const ly=y0-7*p, f=Math.sin(t*4+i)>.5; FP.r(g,x+2*p,ly,1,1,p,'#3a2a22'); FP.r(g,x+p,ly+p,3,4,p,'#d8413b'); FP.r(g,x+2*p,ly+2*p,1,2,p,f?'#fff0b0':'#ffd27a'); } }
+    for(let i=0;i<n;i++) FP.r(g,i*p,y0-6*p,1,1,p,'#4a443a'); },
+  // a forest floor with fallen leaves, small stones and grass
+  floor(g,W,H,p,t,gy,c1,c2,leaf){ const y0=Math.round(H*gy); FP.r(g,0,y0,W/p+1,(H-y0)/p+1,p,c1);
+    for(let i=0;i<W/p;i+=3) FP.r(g,i*p,y0,2,1,p,c2);
+    for(let k=0;k<60;k++){ const x=((k*53)%Math.ceil(W/p))*p, y=y0+(2+(k*17)%Math.max(3,Math.floor((H-y0)/p-2)))*p; FP.r(g,x,y,2,1,p,k%3?leaf:'#9a8a6a'); if(k%5===0) FP.r(g,x+p,y-p,1,1,p,leaf); } },
+  stump(g,x,y,p){ FP.r(g,x-3*p,y-4*p,7,4,p,'#5a8a40'); FP.r(g,x-3*p,y-4*p,7,1,p,'#a8d080'); FP.r(g,x-2*p,y-5*p,5,1,p,'#c8e0a0'); FP.r(g,x-p,y-4*p,1,4,p,'#3a6a30'); },
+  ledge(g,W,H,p,t,gy,end){ const y0=Math.round(H*gy), n=Math.ceil(W*end/p);
+    for(let i=0;i<n;i++){ const x=i*p, d=Math.round(Math.sin(i*.4)*1.2); FP.r(g,x,y0+d*p,1,1,p,'#4a4a5a'); FP.r(g,x,y0+(d+1)*p,1,(H-y0)/p,p,i%5===0?'#1a1e2c':'#24283a'); }
+    for(let i=2;i<n;i+=7){ FP.r(g,i*p,y0-2*p,1,2,p,'#3a5a3a'); FP.r(g,(i+1)*p,y0-3*p,1,3,p,'#4a6a4a'); } },
+  campfire(g,x,y,p,t){ const f=Math.floor(t*8)%3;
+    const gr=g.createRadialGradient(x,y-6*p,0,x,y-6*p,40*p); gr.addColorStop(0,'rgba(255,170,70,.35)'); gr.addColorStop(1,'rgba(255,170,70,0)'); g.fillStyle=gr; g.fillRect(x-40*p,y-46*p,80*p,80*p);
+    for(let i=0;i<8;i++){ const a=i/8*Math.PI*2; FP.r(g,x+Math.cos(a)*7*p-p,y+Math.sin(a)*2*p,3,2,p,'#7a7468'); }
+    FP.r(g,x-6*p,y-2*p,12,2,p,'#5e3a20'); FP.r(g,x-5*p,y-4*p,10,2,p,'#7a4a2a');
+    FP.r(g,x-4*p,y-7*p-f*p,8,4+f,p,'#e8502a'); FP.r(g,x-3*p,y-10*p+f*p%2,6,5,p,'#ff9a3a'); FP.r(g,x-1*p,y-13*p+f*p,3,5,p,'#ffd27a'); FP.r(g,x,y-15*p+f*p,1,2,p,'#fff4c0');
+    for(let k=0;k<6;k++){ const u=((t*.8+k/6)%1); FP.r(g,x+Math.sin(t*3+k*2)*4*p,y-14*p-u*30*p,1,1,p,u<.5?'#ffd27a':'#ff7a3a'); } },
+  log(g,x,y,p,w){ FP.r(g,x,y-3*p,w,3,p,'#7a4a2a'); FP.r(g,x,y-3*p,w,1,p,'#a87444'); FP.r(g,x,y-3*p,2,3,p,'#c89060'); FP.r(g,x+p*.5,y-2*p,1,1,p,'#7a4a2a'); },
+  puddles(g,W,H,p,t,gy){ const y0=Math.round(H*gy); FP.r(g,0,y0,W/p+1,(H-y0)/p+1,p,'#4a4a44');
+    for(let i=0;i<W/p;i+=5) FP.r(g,i*p,y0+((i*7)%5)*p,3,1,p,'#5a5a52');
+    for(let k=0;k<5;k++){ const x=W*(.1+k*.2), y=y0+(4+k%3*3)*p; FP.r(g,x-6*p,y,12,2,p,'#6a7a86'); const r=((t*1.5+k*.3)%1)*6; FP.r(g,x-r*p,y,Math.max(1,r*2),1,p,'#a8b8c4'); } },
+  planks(g,W,H,p,t,gy){ const y0=Math.round(H*gy); FP.r(g,0,y0,W/p+1,(H-y0)/p+1,p,'#6a4a2a');
+    for(let r=0;r*4*p<H-y0;r++){ FP.r(g,0,y0+r*4*p,W/p+1,1,p,'#4a3018'); for(let i=(r%2)*9;i<W/p;i+=18) FP.r(g,i*p,y0+r*4*p,1,4,p,'#4a3018'); }
+    FP.r(g,0,y0,W/p+1,1,p,'#8a6a40'); },
+  reeds(g,x,y,p,t,n){ for(let i=0;i<n;i++){ const h=10+((i*7)%6), bx=x+i*3*p, sw=Math.round(Math.sin(t*1.5+i)*.6);
+    for(let j=0;j<h;j++) FP.r(g,bx+(j>h*.6?sw*p:0),y-j*p,1,1,p,j<3?'#3a4a2a':'#5a6a3a'); FP.r(g,bx+sw*p,y-(h+3)*p,1,3,p,'#8a6a4a'); } },
+};
 /* ---------- heart events use the pixel scenes ---------- */
 // where the pixel cast stands on each ink painting
-const INK_ROM = { herb:{gy:.88}, sunset:{gy:.8, y:.8}, rainpath:{gy:.92}, herbhut:{gy:.9, win:[.62,.14,.28,.32]}, lantern:{gy:.728, y:.728},
-  bamboo:{gy:.9}, moon:{gy:.79}, campfire:{gy:.86, fire:[.5,.86]}, dusk:{gy:.9} };
+const INK_ROM = { herb:{gy:.78}, sunset:{gy:.78}, rainpath:{gy:.8}, herbhut:{gy:.78, win:[.62,.14,.28,.32]}, lantern:{gy:.728},
+  bamboo:{gy:.79}, moon:{gy:.79}, campfire:{gy:.78}, dusk:{gy:.79} };
 const romSetup=scene=>{ const sc=PXSCENES[scene], ink=SCENES_INK[scene], k=INK_ROM[scene]||{};
   const cast=sc.cast.map(m=>{ const c={...m}; if(ink){ if(k.y) c.y=k.y; else if(c.y&&scene!=='rainpath') delete c.y; } return c; });
-  return ink ? {ink:ink.base, cast, fx:sc.fx, extra:{fire:k.fire||sc.fire, win:k.win||sc.win}, gy:k.gy||ink.ground||.88} : {base:sc.base, cast, fx:sc.fx, extra:{fire:sc.fire, win:sc.win}, gy:sc.gy}; };
+  const more={stage:sc.stage, front:sc.front, st:[]};
+  return ink ? {ink:ink.base, cast, fx:sc.fx==='sparks'?null:sc.fx, extra:{fire:k.fire, win:k.win||sc.win}, gy:k.gy||ink.ground||.88, ...more} : {base:sc.base, cast, fx:sc.fx, extra:{fire:sc.fire, win:sc.win}, gy:sc.gy, ...more}; };
 CG.open=function(scene, who, title){
   CG.on=true; CG.who=who; CG.face='normal'; const s=romSetup(scene);
-  PixCG.open({...s, title, small:'心动事件 · '+NPCS[who].name, seed:scene.length*97});
-  PixCG.cur.gy=s.gy; Music.play('romance', true);
+  CG.lines=0; PixCG.open({...s, title, small:'心动事件 · '+NPCS[who].name, seed:scene.length*97});
+  Object.assign(PixCG.cur,{gy:s.gy, stage:s.stage, front:s.front, st:[]}); Music.play('romance', true);
 };
 CG.setScene=function(scene){ if(!PXSCENES[scene]||!PixCG.cur) return; PixCG.swap(romSetup(scene)); };
 CG.setFace=function(f){ CG.face=f; };

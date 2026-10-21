@@ -100,7 +100,7 @@ const SCENES_INK = {
       farHills(g,W,H,R,H*.56,'#5a3040'); Land.water(g,W,H*.6,H,R,.35,'#d88a6a');
       for(let i=0;i<9;i++){ const x=R()*W, y=H*(.68+R()*.28); g.fillStyle='rgba(60,100,60,.5)'; g.beginPath(); g.ellipse(x,y,W*.035,H*.01,0,.3,Math.PI*2-.3); g.fill(); if(R()<.5){ g.fillStyle='rgba(240,150,170,.8)'; g.beginPath(); g.ellipse(x,y-H*.015,W*.008,H*.012,0,0,7); g.fill(); } }
       for(let i=0;i<20;i++){ const x=R()<.5?R()*W*.2:W*.82+R()*W*.18; Land.grass(g,x,H*.68,H*.12,2,R,.6); }
-      Land.rock(g,W*.5,H*.82,W*.42,H*.1,R,.55); },
+      },
     fx:'fireflies', cast:{npc:{x:.6,pose:'sit',face:-1,y:.8},me:{x:.38,pose:'sit',face:1,y:.8}}, ground:.82 },
   rainpath:{ base(g,W,H,R){ Land.paper(g,W,H,R,'#e3dccd'); Land.peaks(g,W,H,R,{y:H*.5,amp:H*.3,n:6,a:.25}); Land.mist(g,W,H,H*.5,H*.2,.7);
       Land.pine(g,W*.12,H*.86,H*.5,R,.8); Land.pine(g,W*.9,H*.88,H*.45,R,.75);
