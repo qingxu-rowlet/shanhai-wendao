@@ -33,7 +33,7 @@ const SelfTest = {
       await step('战斗结束后不能再放技能扣灵力', async()=>{ Battle._begin('dangkang',()=>{}); Battle.s.hp=1; S.mp=40; Battle.act('skill'); const m=S.mp; Battle.act('skill'); Battle.act('skill'); const after=S.mp; await W(700); $('#bOk')&&$('#bOk').click(); await W(30); return {fail:after!==m, info:`灵力 ${m} → ${after}`}; });
       await step('备战：修到炼气五层、买 2 颗回春丹', async()=>{ while(S.L<5) gainExp(60); await W(30); await adv(); S.stones+=300; UI.shop(); $('[data-buy="huichun"]').click(); $('[data-buy="huichun"]').click(); UI.closePanel(); await W(30); await adv();
         return {fail:QUESTS[S.quest].id!=='q6'}; });
-      await step('讨伐穷奇：登场动画 + 二阶段 + 顾长歌出手', async()=>{ Dev.god=true; Story.shrine(); await adv(); await W(200); const cine=!$('#cine').hidden; await W(1300); $('#cine').click(); await W(200);
+      await step('讨伐穷奇：登场动画 + 二阶段 + 顾长歌出手', async()=>{ Dev.god=true; S.flags.fx_valley=true; enterMap('fx3',8,11); Dungeon.boss(); await adv(); await W(200); const cine=!$('#cine').hidden; await W(1300); $('#cine').click(); await W(200);
         let phase=false; const iv=setInterval(()=>{ if(Battle.s&&Battle.s.phase2) phase=true; },100); await fight(); clearInterval(iv); Dev.god=false; await W(60);
         const lines=[]; for(let i=0;i<40&&!$('#dlg').hidden;i++){ const d=$('#dlg'); if(UI.typing&&d.onclick) d.onclick(); lines.push(d.innerText); d.onclick&&d.onclick(); await W(15); } await adv();
         return {fail:!(cine&&phase&&S.flags.qiongqi_done&&lines.join('').includes('顾长歌')), info:QUESTS[S.quest].id}; });

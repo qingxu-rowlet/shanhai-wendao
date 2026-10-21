@@ -29,9 +29,9 @@ const Med = {
       return UI.say([{choice:'炼气九层圆满。要服下筑基丹，冲击筑基吗？（将面对心魔与天劫）', options:[{text:'冲击筑基', fn:()=>Mini.breakthrough()},{text:'先不了，只静坐一会儿', fn:()=>Med.open(true)}]}]);
     const full=Med.full();
     let k=Med._k||0;
-    const ahead=Med.ahead().map(([L,b])=>`<li><b>${L===9.5?'炼气九层圆满':realmName(L)}</b><span>约 ${Med.when(b)}</span></li>`).join('');
+    const ahead=Med.ahead().map(([L,b])=>`<li><b>${L%1?realmName(Math.floor(L))+(L===9.5?'圆满':'（瓶颈）'):realmName(L)}</b><span>约 ${Med.when(b)}</span></li>`).join('');
     UI.panel('闭关打坐', `<div class="med">
-      ${full?`<p class="med-full">${S.L===9?'炼气九层已经圆满，需要筑基丹才能再进一步。':'修为已经到了这一章的顶点。'}现在打坐不会再增加修为，只会让时间过去——想等到夜里找奇遇，可以用下面的「坐到天黑」。</p>`:''}
+      ${full?`<p class="med-full">${bottleneck(S.L)?bottleneck(S.L):S.L===9?'炼气九层已经圆满，需要筑基丹才能再进一步。':'修为已经到了这一章的顶点。'}现在打坐不会再增加修为，只会让时间过去——想等到夜里找奇遇，可以用下面的「坐到天黑」。</p>`:''}
       <p class="muted">现在：<b>${realmName(S.L)}</b>　修为 ${Math.floor(S.exp)} / ${expNeed(S.L)}　（${Sect.rootName()}${Sect.medMul()!==1?'，打坐 ×'+Sect.medMul():''}）</p>
       <label class="med-len">打坐多久：<b id="medLen"></b></label>
       <input type="range" id="medR" min="0" max="${MED_STEPS.length-1}" step="1" value="${k}">

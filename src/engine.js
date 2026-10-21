@@ -229,6 +229,7 @@ function interact(o){
     case 'puppet': return Life.puppetMenu();
     case 'qiyu': return Hooks.qiyu(o);
   }
+  if(typeof Dungeon!=='undefined' && Dungeon.act(o)) return;
   if(o.type==='building' && o.label) UI.toast(o.label);
 }
 function useEnergy(n){ return true; } // energy was retired; kept so older calls still work
@@ -364,7 +365,7 @@ function startWildBattle(b){
   Battle.start(b.kind, result=>{
     if(result==='win'){ Sect.tame(b.kind); const key=S.day+':'+RT.mapId; (S.killed[key]=S.killed[key]||[]).push({i:b.idx, t:S.day*1440+S.min}); RT.beasts=RT.beasts.filter(o=>o!==b); S.st.kills++; S.st.kb=S.st.kb||{}; S.st.kb[b.kind]=(S.st.kb[b.kind]||0)+1; Story.check(); }
     else if(result==='flee'){ b.stun=3; }
-    else if(result==='lose'){ UI.say([['旁白','你眼前一黑……醒来时已躺在洞府里。']], ()=>sleep(true)); }
+    else if(result==='lose'){ UI.say([['旁白', typeof Dungeon!=='undefined'&&Dungeon.inside()?'你眼前一黑……再睁眼时，已被狂风卷回了这一层的入口。':'你眼前一黑……醒来时已躺在洞府里。']], ()=>sleep(true)); }
   });
 }
 
@@ -395,7 +396,7 @@ function render(){
   const list=[];
   for(const o of m.objects===undefined?[]:RT.ents){
     if(o.type==='building') list.push({y:o.y+o.h, draw:()=>{ const c=building(o); g.fillStyle='rgba(20,40,20,.25)'; g.beginPath(); g.ellipse(ox+(o.x+o.w/2)*T, oy+(o.y+o.h)*T-Z, o.w*T*.52, 3*Z, 0, 0, 7); g.fill(); g.drawImage(c, ox+o.x*T, oy+(o.y+o.h)*T-c.height*Z, c.width*Z, c.height*Z); }});
-    else if(o.look){ list.push({y:o.y+0.99, draw:()=>{ drawObjShadow(g, {type:'npc',x:o.x,y:o.y}, ox, oy, T, Z); const c=lookSprite(o.look,'down',Math.floor(RT.t*1.5+o.x)%2?0:2); const w=c.width*Z,h=c.height*Z; g.drawImage(c, Math.round(ox+o.x*T+(T-w)/2), Math.round(oy+o.y*T+T-c.bottom*Z), w, h); }}); }
+    else if(o.look){ list.push({y:o.y+0.99, draw:()=>{ if(o.ghost){ g.save(); g.globalAlpha=.5+.12*Math.sin(RT.t*2+o.x); } drawObjShadow(g, {type:'npc',x:o.x,y:o.y}, ox, oy, T, Z); const c=lookSprite(o.look,'down',Math.floor(RT.t*1.5+o.x)%2?0:2); const w=c.width*Z,h=c.height*Z; g.drawImage(c, Math.round(ox+o.x*T+(T-w)/2), Math.round(oy+o.y*T+T-c.bottom*Z), w, h);  if(o.ghost) g.restore();}}); }
     else { const key=objSprite(o); if(!SPR[key]) continue;
       list.push({y:o.y+0.99, draw:()=>(drawObjShadow(g, o, ox, oy, T, Z), drawSprite(key, ox+o.x*T, oy+o.y*T, Z, o.type==='npc'?Math.sin(RT.t*2+o.x)*0.4:0))}); }
   }

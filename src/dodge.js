@@ -51,7 +51,7 @@ const Dodge = {
     const R=3.2, SPEED=58; let t=0, last=performance.now(), ended=false;
     const segDist=(px,py,b)=>{ const dx=Math.cos(b.a), dy=Math.sin(b.a), qx=px-b.cx, qy=py-b.cy; return Math.abs(qx*dy-qy*dx); };
     const hitTest=b=>{
-      if(b.k==='feather'||b.k==='blade') return Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
+      if(b.k==='feather'||b.k==='blade'||b.k==='orbit') return b.x!==undefined&&Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
       if(b.k==='slash') return b.t>b.warn && segDist(P.me.x,P.me.y,b)<b.w/2+R*.6;
       if(b.k==='band') return b.t>b.warn && Math.abs((b.dir==='h'?P.me.y:P.me.x)-b.at)<b.w/2+R*.4;
       if(b.k==='ring'){ const d=Math.hypot(P.me.x-b.cx,P.me.y-b.cy); if(Math.abs(d-b.R)>b.th+R*.6) return false;
@@ -63,12 +63,14 @@ const Dodge = {
       // move
       const vx=(keys.r?1:0)-(keys.l?1:0), vy=(keys.d?1:0)-(keys.u?1:0), n=Math.hypot(vx,vy)||1;
       P.me.x+=vx/n*SPEED*dt; P.me.y+=vy/n*SPEED*dt; P.me.x=Math.max(R,Math.min(100-R,P.me.x)); P.me.y=Math.max(R,Math.min(100-R,P.me.y));
+      if(pat.pull){ const dx=50-P.me.x, dy=50-P.me.y, d=Math.hypot(dx,dy)||1; if(d>2){ P.me.x+=dx/d*pat.pull*m*dt; P.me.y+=dy/d*pat.pull*m*dt; } }
       if(t<pat.dur-.5) pat.spawn(P,t,dt,m);
       for(const b of P.list){ b.t+=dt;
         if(b.vx!==undefined){ b.x+=b.vx*dt; b.y+=b.vy*dt; }
         if(b.k==='ring') b.R+=b.vr*dt;
+        if(b.k==='orbit'){ b.a+=b.va*dt; b.R+=b.vr*dt; b.x=50+Math.cos(b.a)*b.R; b.y=50+Math.sin(b.a)*b.R; }
         if(P.inv<=0 && hitTest(b)){ P.hits++; P.inv=.7; P.flash=.25; Sound.hurt(); ov.classList.remove('hurt'); void ov.offsetWidth; ov.classList.add('hurt'); } }
-      P.list=P.list.filter(b=>{ if(b.k==='slash'||b.k==='band') return b.t<b.warn+b.act; if(b.k==='ring') return b.R<80; return b.x>-10&&b.x<110&&b.y>-10&&b.y<110; });
+      P.list=P.list.filter(b=>{ if(b.k==='slash'||b.k==='band') return b.t<b.warn+b.act; if(b.k==='ring') return b.R<80; if(b.k==='orbit') return b.R>3; return b.x>-10&&b.x<110&&b.y>-10&&b.y<110; });
       P.inv-=dt; P.flash-=dt;
       draw(); ov.querySelector('.dg-time i').style.width=Math.max(0,100-t/pat.dur*100)+'%';
       if(t>=pat.dur) return finish();
@@ -87,8 +89,10 @@ const Dodge = {
           if(b.dir==='h') g.fillRect(0,b.at-b.w/2,100,b.w); else g.fillRect(b.at-b.w/2,0,b.w,100);
           if(!live){ g.strokeStyle='rgba(255,80,60,.7)'; g.lineWidth=.6; g.setLineDash([2,2]); if(b.dir==='h') g.strokeRect(0,b.at-b.w/2,100,b.w); else g.strokeRect(b.at-b.w/2,0,b.w,100); g.setLineDash([]); }
           else { g.fillStyle='rgba(60,30,30,.85)'; const p=(b.t-b.warn)/b.act; if(b.dir==='h'){ g.beginPath(); g.ellipse(-20+p*140,b.at,14,b.w*.32,0,0,7); g.fill(); } else { g.beginPath(); g.ellipse(b.at,-20+p*140,b.w*.32,14,0,0,7); g.fill(); } } }
+        if(b.k==='orbit'&&b.x!==undefined){ g.save(); g.translate(b.x,b.y); g.rotate(b.a+Math.PI/2); g.fillStyle='#e8f2ff'; g.beginPath(); g.ellipse(0,0,4,1.5,0,0,7); g.fill(); g.fillStyle='#7fb2e8'; g.beginPath(); g.ellipse(2.4,0,1.5,1,0,0,7); g.fill(); g.restore(); }
         if(b.k==='ring'){ g.strokeStyle='rgba(255,200,120,.9)'; g.lineWidth=b.th; g.beginPath(); g.arc(b.cx,b.cy,b.R,b.gap+b.gw/2,b.gap-b.gw/2+Math.PI*2); g.stroke(); }
       }
+      if(pat.pull){ for(let k=0;k<3;k++){ g.strokeStyle=`rgba(200,220,240,${.25-k*.06})`; g.lineWidth=1.2; g.beginPath(); g.arc(50,50,6+k*6+(t*20%6),t*3+k,t*3+k+4.2); g.stroke(); } }
       // the bead (blinks while invulnerable)
       if(P.inv<=0 || Math.floor(P.inv*16)%2){ const gr=g.createRadialGradient(P.me.x,P.me.y,0,P.me.x,P.me.y,R*2.6); gr.addColorStop(0,'rgba(140,240,200,.55)'); gr.addColorStop(1,'rgba(140,240,200,0)'); g.fillStyle=gr; g.fillRect(P.me.x-R*3,P.me.y-R*3,R*6,R*6);
         g.fillStyle=s.guard?'#e8d07a':'#5fd6a8'; g.beginPath(); g.arc(P.me.x,P.me.y,R,0,7); g.fill(); g.fillStyle='#eafff6'; g.beginPath(); g.arc(P.me.x-1,P.me.y-1,1.1,0,7); g.fill(); }
@@ -104,9 +108,9 @@ const Dodge = {
     const s=Battle.s; if(!Dodge.on(s)||s.stun) return _et.call(Battle);
     const pat=Dodge.pattern(s); if(!pat) return _et.call(Battle);     // e.g. 蓄力: nothing to dodge, the classic turn handles it
     s.busy=true; Battle.ui(); Battle.log(`${s.B.name}：${pat.name}！`);
-    setTimeout(()=>{ if(Battle.s!==s) return;
+    setTimeout(()=>{ if(Battle.s!==s||s.dead) return;
       Dodge.run(pat, s, hits=>{
-        if(Battle.s!==s) return; const st=stats(), per=Dodge.perHit(s,pat); let dmg=hits*per, msg='';
+        if(Battle.s!==s||s.dead) return; const st=stats(), per=Dodge.perHit(s,pat); let dmg=hits*per, msg='';
         if(hits===0){ msg=`你避开了${pat.name}，毫发无伤！`; Battle.float('完美闪避','perfect'); }
         else { msg=`被${pat.name}击中 ${hits} 下。`; S.hp-=dmg; $('#battle').classList.remove('shake'); void $('#battle').offsetWidth; $('#battle').classList.add('shake'); Battle.float('-'+dmg,'me'); }
         if(pat.mp&&hits){ S.mp=Math.max(0,S.mp-pat.mp*hits); msg+=`灵力被震散 ${pat.mp*hits}。`; }
@@ -121,4 +125,5 @@ const Dodge = {
 }
 // the intent line tells you a dodge is coming and how much each hit hurts
 { const _ui=Battle.ui; Battle.ui=function(){ _ui.call(Battle); const s=Battle.s; if(!Dodge.on(s)||s.stun) return; const pat=Dodge.pattern(s); if(!pat) return;
-    const el=$('#bIntent'); el.textContent=`${pat.name} · 躲弹幕（每中一下约 ${Dodge.perHit(s,pat)}${s.guard?'':'，护体可减半'}）`; el.className='b-intent warn'; }; }
+    const tip={tornado:'被吸向中间，往外顶着走',featherrain:'找羽毛之间的空隙',big:'红框亮起就离开那一行',double:'红线是预警，别站在线上',wind:'找风刃的缺口',roar:'从圆环的缺口穿出去'}[Battle.intent()];
+    const el=$('#bIntent'); el.textContent=`${pat.name} · 躲弹幕（每中一下约 ${Dodge.perHit(s,pat)}${s.guard?'':'，护体可减半'}）${S.flags.fx_tell&&tip?'　看破：'+tip:''}`; el.className='b-intent warn'; }; }

@@ -144,7 +144,7 @@ const Battle = {
   enemyTurn(){
     const s=Battle.s; s.busy=true; Battle.ui();
     setTimeout(()=>{
-      if(Battle.s!==s) return; // battle ended meanwhile
+      if(Battle.s!==s||s.dead) return; // battle ended meanwhile
       const st=stats(), it=Battle.intent(), a=s.B.atk; let dmg=0, msg='';
       const hurt=(raw,pierce,guardMul=.35)=>{ let d=Math.max(1,Math.round(raw*(0.9+Math.random()*.2)-(pierce?0:st.def))); if(s.guard) d=Math.max(1,Math.round(d*guardMul)); return d; };
       if(s.stun){ s.stun=0; msg=`${s.B.name}被定身符定住，动弹不得！`; }
