@@ -177,12 +177,15 @@ function bfs(sx,sy, goal){ // goal(x,y) → true when reached
 }
 
 /* ---------- interaction ---------- */
-function entAt(x,y){
+function entAt(x,y){ // something you can use wins over scenery on the same tile
+  let any=null;
   for(const o of RT.ents){
-    if(o.type==='building'){ if(x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h) return o; if(o.door&&o.door[0]===x&&o.door[1]===y&&o.act) return o; }
-    else if(o.x===x&&o.y===y) return o;
+    let hit=false;
+    if(o.type==='building'){ hit=(x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h)||(o.door&&o.door[0]===x&&o.door[1]===y&&!!o.act); }
+    else hit=o.x===x&&o.y===y;
+    if(!hit) continue; if(o.act||o.type==='npc'||o.type==='gather'||o.type==='sign'||o.type==='building') return o; any=any||o;
   }
-  return null;
+  return any;
 }
 function setPath(path){ if(!path) return false; if(Math.hypot(RT.fx-S.x,RT.fy-S.y)>0.05) path.unshift([S.x,S.y]); RT.path=path; return true; }
 function tapWorld(tx,ty){

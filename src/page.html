@@ -414,9 +414,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .title-saves{display:flex;flex-direction:column;gap:8px;width:min(340px,86vw)}
 .reroll{color:var(--cinnabar)}
 /* 心动事件 CG */
-#cg{position:fixed;inset:0;z-index:23;overflow:hidden;background:#000}
-#cgBg{position:absolute;inset:0;width:100%;height:100%}
-.cg-chars{position:absolute;left:0;right:0;bottom:22%;display:flex;justify-content:center;align-items:flex-end;gap:4vw;pointer-events:none}
+#cg{position:fixed;inset:0;z-index:23;overflow:hidden;background:#000;--cgB:0px}
+#cgBg{position:absolute;left:0;right:0;top:0;width:100%;height:calc(100% - var(--cgB))}
+#cg::after{content:'';position:absolute;left:0;right:0;bottom:var(--cgB);height:2px;background:linear-gradient(90deg,transparent,rgba(242,193,78,.55),transparent)}
+.cg-chars{position:absolute;left:0;right:0;bottom:calc(var(--cgB) + 12%);display:flex;justify-content:center;align-items:flex-end;gap:4vw;pointer-events:none}
 .cg-chars canvas{height:min(46vh,380px);width:auto;image-rendering:pixelated;filter:drop-shadow(0 12px 0 rgba(0,0,0,.3))}
 #cgMe{height:min(40vh,330px)!important;opacity:.95}
 #cg.go .cg-chars canvas{animation:cgIn 1.2s ease-out both}

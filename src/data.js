@@ -711,7 +711,7 @@ const MAPS = {
 'WWWWWWWWWW###########WWWWWWWWW'],
     objects:[
       {type:'tree',x:1,y:1},{type:'tree',x:3,y:4},{type:'pine',x:6,y:2},{type:'tree',x:9,y:1},{type:'pine',x:11,y:5},
-      {type:'tree',x:17,y:1},{type:'pine',x:20,y:2},{type:'tree',x:26,y:1},{type:'tree',x:28,y:3},{type:'pine',x:25,y:6},
+      {type:'tree',x:17,y:1},{type:'pine',x:20,y:2},{type:'tree',x:28,y:3},{type:'pine',x:25,y:6},
       {type:'tree',x:1,y:10},{type:'pine',x:7,y:12},{type:'tree',x:11,y:14},{type:'tree',x:2,y:16},{type:'pine',x:4,y:20},
       {type:'tree',x:8,y:18},{type:'tree',x:15,y:16},{type:'pine',x:21,y:12},{type:'tree',x:27,y:10},{type:'tree',x:28,y:16},
       {type:'pine',x:25,y:20},{type:'tree',x:27,y:23},{type:'tree',x:1,y:23},{type:'pine',x:6,y:23},{type:'tree',x:16,y:9},

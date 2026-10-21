@@ -288,7 +288,7 @@ const PixCG = {
   open({base, ink, cast, fx, extra, title, small, seed, pick}){
     const el=$('#cg'); el.hidden=false; el.className='pix'; PixCG.on=true; PixCG.parts=[]; const token=PixCG.token=(PixCG.token||0)+1;
     el.innerHTML=`<canvas id="cgBg" class="px"></canvas><div class="cg-title"><small>${esc(small||'')}</small><b>${esc(title||'')}</b></div>`;
-    const cv=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1), W=cv.width=Math.round(innerWidth*dpr), H=cv.height=Math.round(innerHeight*dpr), g=cv.getContext('2d');
+    const cv=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1), [aw,ah]=cgArea(), W=cv.width=Math.round(aw*dpr), H=cv.height=Math.round(ah*dpr), g=cv.getContext('2d');
     const BW=160, BH=Math.round(BW*H/W), low=document.createElement('canvas'); low.width=BW; low.height=BH;
     const bake=fn=>{ const c=document.createElement('canvas'); c.width=BW; c.height=BH; fn(c.getContext('2d'),BW,BH,rng(seed||7)); return c; };
     const bakeInk=fn=>{ const c=document.createElement('canvas'); c.width=W; c.height=H; const g2=c.getContext('2d'); fn(g2,W,H,rng(seed||7)); Land.edge(g2,W,H); return c; };

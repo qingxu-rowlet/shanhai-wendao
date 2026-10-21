@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="db687ca21e"><script>(function(){var B="db687ca21e";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="8afa1f43fb"><script>(function(){var B="8afa1f43fb";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -414,9 +414,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .title-saves{display:flex;flex-direction:column;gap:8px;width:min(340px,86vw)}
 .reroll{color:var(--cinnabar)}
 /* 心动事件 CG */
-#cg{position:fixed;inset:0;z-index:23;overflow:hidden;background:#000}
-#cgBg{position:absolute;inset:0;width:100%;height:100%}
-.cg-chars{position:absolute;left:0;right:0;bottom:22%;display:flex;justify-content:center;align-items:flex-end;gap:4vw;pointer-events:none}
+#cg{position:fixed;inset:0;z-index:23;overflow:hidden;background:#000;--cgB:0px}
+#cgBg{position:absolute;left:0;right:0;top:0;width:100%;height:calc(100% - var(--cgB))}
+#cg::after{content:'';position:absolute;left:0;right:0;bottom:var(--cgB);height:2px;background:linear-gradient(90deg,transparent,rgba(242,193,78,.55),transparent)}
+.cg-chars{position:absolute;left:0;right:0;bottom:calc(var(--cgB) + 12%);display:flex;justify-content:center;align-items:flex-end;gap:4vw;pointer-events:none}
 .cg-chars canvas{height:min(46vh,380px);width:auto;image-rendering:pixelated;filter:drop-shadow(0 12px 0 rgba(0,0,0,.3))}
 #cgMe{height:min(40vh,330px)!important;opacity:.95}
 #cg.go .cg-chars canvas{animation:cgIn 1.2s ease-out both}
@@ -1226,7 +1227,7 @@ const MAPS = {
 'WWWWWWWWWW###########WWWWWWWWW'],
     objects:[
       {type:'tree',x:1,y:1},{type:'tree',x:3,y:4},{type:'pine',x:6,y:2},{type:'tree',x:9,y:1},{type:'pine',x:11,y:5},
-      {type:'tree',x:17,y:1},{type:'pine',x:20,y:2},{type:'tree',x:26,y:1},{type:'tree',x:28,y:3},{type:'pine',x:25,y:6},
+      {type:'tree',x:17,y:1},{type:'pine',x:20,y:2},{type:'tree',x:28,y:3},{type:'pine',x:25,y:6},
       {type:'tree',x:1,y:10},{type:'pine',x:7,y:12},{type:'tree',x:11,y:14},{type:'tree',x:2,y:16},{type:'pine',x:4,y:20},
       {type:'tree',x:8,y:18},{type:'tree',x:15,y:16},{type:'pine',x:21,y:12},{type:'tree',x:27,y:10},{type:'tree',x:28,y:16},
       {type:'pine',x:25,y:20},{type:'tree',x:27,y:23},{type:'tree',x:1,y:23},{type:'pine',x:6,y:23},{type:'tree',x:16,y:9},
@@ -1864,12 +1865,15 @@ function bfs(sx,sy, goal){ // goal(x,y) → true when reached
 }
 
 /* ---------- interaction ---------- */
-function entAt(x,y){
+function entAt(x,y){ // something you can use wins over scenery on the same tile
+  let any=null;
   for(const o of RT.ents){
-    if(o.type==='building'){ if(x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h) return o; if(o.door&&o.door[0]===x&&o.door[1]===y&&o.act) return o; }
-    else if(o.x===x&&o.y===y) return o;
+    let hit=false;
+    if(o.type==='building'){ hit=(x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h)||(o.door&&o.door[0]===x&&o.door[1]===y&&!!o.act); }
+    else hit=o.x===x&&o.y===y;
+    if(!hit) continue; if(o.act||o.type==='npc'||o.type==='gather'||o.type==='sign'||o.type==='building') return o; any=any||o;
   }
-  return null;
+  return any;
 }
 function setPath(path){ if(!path) return false; if(Math.hypot(RT.fx-S.x,RT.fy-S.y)>0.05) path.unshift([S.x,S.y]); RT.path=path; return true; }
 function tapWorld(tx,ty){
@@ -4245,6 +4249,8 @@ const CG_SCENES = {
   campfire:{sky:['#05070e','#0e1420','#1a2030'], sun:null, hills:['#141a22','#0e1218','#080a0e'], fx:'sparks', fore:'camp', stars:true},
   dusk:    {sky:['#2a1a3a','#9a4a5a','#f0a070'], sun:'#ffc890', sunY:.48, hills:['#5a2a40','#401c30','#28101e'], fx:'leaves', fore:'duskwood'},
 };
+// CG pictures sit above the dialogue box instead of under it: the bottom band of the screen is kept for the text
+function cgArea(){ const tall=innerHeight/innerWidth>1.5, b=Math.max(170,Math.min(tall?300:260,Math.round(innerHeight*(tall?.36:.3)))); $('#cg').style.setProperty('--cgB',b+'px'); return [innerWidth, innerHeight-b]; }
 const CG = {
   parts:[], on:false, who:null, face:'normal', scene:null,
   bake(sc, w, h){
@@ -4329,7 +4335,7 @@ const CG = {
   open(scene, who, title){
     const el=$('#cg'); el.hidden=false; CG.parts=[]; CG.on=true; CG.who=who; CG.face='normal'; CG.scene=CG_SCENES[scene]; const token=CG.token=(CG.token||0)+1;
     el.innerHTML=`<canvas id="cgBg"></canvas><div class="cg-chars"><canvas id="cgMe" class="px"></canvas><canvas id="cgHer" class="px bust"></canvas></div><div class="cg-title"><small>心动事件 · ${esc(NPCS[who].name)}</small><b>${esc(title)}</b></div>`;
-    const bg=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1); bg.width=innerWidth*dpr; bg.height=innerHeight*dpr;
+    const bg=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1), [aw,ah]=cgArea(); bg.width=aw*dpr; bg.height=ah*dpr;
     const me=$('#cgMe'), ms=lookSprite(S.look,'side',0); me.width=ms.width; me.height=ms.height; me.getContext('2d').drawImage(ms,0,0);
     CG.draw(false); let t0=performance.now(), last=t0;
     const loop=now=>{ if(!CG.on||CG.token!==token) return; const dt=Math.min(.05,(now-last)/1000); last=now; CG.paint(bg,CG.scene,(now-t0)/1000,dt); requestAnimationFrame(loop); };
@@ -5122,7 +5128,7 @@ const PixCG = {
   open({base, ink, cast, fx, extra, title, small, seed, pick}){
     const el=$('#cg'); el.hidden=false; el.className='pix'; PixCG.on=true; PixCG.parts=[]; const token=PixCG.token=(PixCG.token||0)+1;
     el.innerHTML=`<canvas id="cgBg" class="px"></canvas><div class="cg-title"><small>${esc(small||'')}</small><b>${esc(title||'')}</b></div>`;
-    const cv=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1), W=cv.width=Math.round(innerWidth*dpr), H=cv.height=Math.round(innerHeight*dpr), g=cv.getContext('2d');
+    const cv=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1), [aw,ah]=cgArea(), W=cv.width=Math.round(aw*dpr), H=cv.height=Math.round(ah*dpr), g=cv.getContext('2d');
     const BW=160, BH=Math.round(BW*H/W), low=document.createElement('canvas'); low.width=BW; low.height=BH;
     const bake=fn=>{ const c=document.createElement('canvas'); c.width=BW; c.height=BH; fn(c.getContext('2d'),BW,BH,rng(seed||7)); return c; };
     const bakeInk=fn=>{ const c=document.createElement('canvas'); c.width=W; c.height=H; const g2=c.getContext('2d'); fn(g2,W,H,rng(seed||7)); Land.edge(g2,W,H); return c; };

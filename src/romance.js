@@ -58,6 +58,8 @@ const CG_SCENES = {
   campfire:{sky:['#05070e','#0e1420','#1a2030'], sun:null, hills:['#141a22','#0e1218','#080a0e'], fx:'sparks', fore:'camp', stars:true},
   dusk:    {sky:['#2a1a3a','#9a4a5a','#f0a070'], sun:'#ffc890', sunY:.48, hills:['#5a2a40','#401c30','#28101e'], fx:'leaves', fore:'duskwood'},
 };
+// CG pictures sit above the dialogue box instead of under it: the bottom band of the screen is kept for the text
+function cgArea(){ const tall=innerHeight/innerWidth>1.5, b=Math.max(170,Math.min(tall?300:260,Math.round(innerHeight*(tall?.36:.3)))); $('#cg').style.setProperty('--cgB',b+'px'); return [innerWidth, innerHeight-b]; }
 const CG = {
   parts:[], on:false, who:null, face:'normal', scene:null,
   bake(sc, w, h){
@@ -142,7 +144,7 @@ const CG = {
   open(scene, who, title){
     const el=$('#cg'); el.hidden=false; CG.parts=[]; CG.on=true; CG.who=who; CG.face='normal'; CG.scene=CG_SCENES[scene]; const token=CG.token=(CG.token||0)+1;
     el.innerHTML=`<canvas id="cgBg"></canvas><div class="cg-chars"><canvas id="cgMe" class="px"></canvas><canvas id="cgHer" class="px bust"></canvas></div><div class="cg-title"><small>心动事件 · ${esc(NPCS[who].name)}</small><b>${esc(title)}</b></div>`;
-    const bg=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1); bg.width=innerWidth*dpr; bg.height=innerHeight*dpr;
+    const bg=$('#cgBg'), dpr=Math.min(2,devicePixelRatio||1), [aw,ah]=cgArea(); bg.width=aw*dpr; bg.height=ah*dpr;
     const me=$('#cgMe'), ms=lookSprite(S.look,'side',0); me.width=ms.width; me.height=ms.height; me.getContext('2d').drawImage(ms,0,0);
     CG.draw(false); let t0=performance.now(), last=t0;
     const loop=now=>{ if(!CG.on||CG.token!==token) return; const dt=Math.min(.05,(now-last)/1000); last=now; CG.paint(bg,CG.scene,(now-t0)/1000,dt); requestAnimationFrame(loop); };
