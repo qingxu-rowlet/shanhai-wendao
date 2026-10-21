@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="0053d1d3fc"><script>(function(){var B="0053d1d3fc";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="9a74d25672"><script>(function(){var B="9a74d25672";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -309,7 +309,16 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #battle>*:not(#bBg){position:relative;z-index:1}
 .bflash{position:absolute!important;inset:0;z-index:5!important;pointer-events:none;animation:bfl .5s ease-out forwards}
 @keyframes bfl{from{opacity:1}to{opacity:0}}
-.b-name.enraged{color:#ffb0a0;animation:pulse 1s infinite}
+.b-name.enraged{color:#ffb0a0;animation:pulse .6s 3}
+#battle>.ally-in{position:absolute!important;inset:0;z-index:6!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(10,12,20,.6);animation:allyIn 2.4s ease both;pointer-events:none}
+.ally-in canvas{width:min(60vw,300px);image-rendering:pixelated;animation:allySlide .5s ease-out both}
+.ally-in b{font-family:var(--f-brush);font-weight:400;font-size:clamp(30px,8vw,46px);color:#fff3dc;text-shadow:0 2px 0 #2a1e1a,0 0 14px rgba(160,200,255,.7)}
+@keyframes allyIn{0%{opacity:0}12%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes allySlide{from{transform:translateX(60vw)}}
+#allyStand{position:absolute;left:3%;bottom:4%;width:min(24vw,140px);image-rendering:pixelated;animation:allyBob 1.8s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25))}
+#allyStand.hit{animation:allyLunge .45s ease-out}
+@keyframes allyBob{50%{transform:translateY(-3px)}}
+@keyframes allyLunge{40%{transform:translateX(34vw) translateY(-6px)}100%{transform:none}}
 #battle>.dodge{position:absolute!important;inset:0;z-index:5!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(6,8,14,.62);touch-action:none;animation:dgIn .25s ease-out}
 .dodge.out{opacity:0;transition:opacity .25s}
 @keyframes dgIn{from{opacity:0;transform:scale(.96)}}
@@ -5584,10 +5593,11 @@ Object.assign(SCRIPTS, {
     {battle:'qiongqi', win:'fx_win', lose:'fx_boss_lose'}],
   fx_boss_lose:[['旁白','穷奇双翼一扇，你被狂风卷出了风眼。'],['旁白','（回到风眼入口，可以调整好再来。）']],
   fx_win:[
-    ['旁白','穷奇哀嚎一声，双翼上的白羽被剑气削落了大半，它撞开风壁，狼狈地逃入了云中。'],
+    ['旁白','你和顾长歌一左一右，剑光同时落下。穷奇哀嚎一声，双翼上的白羽被削落了大半，它撞开风壁，狼狈地逃入了云中。'],
     ['顾长歌','……还不错。'],
-    ['顾长歌','下次，别一个人来。'],
-    ['旁白','顾长歌收剑入鞘，转身走进了风里。地上只留下几片穷奇的白羽，和一道浅浅的剑痕。'],
+    ['顾长歌','我追它追到风穴口，听见里面有人在打，就知道是你。'],
+    ['顾长歌','下次再进这种地方，提前说一声。'],
+    ['旁白','顾长歌收剑入鞘，转身走进了风里。地上只留下几片穷奇的白羽，和两道交错的剑痕。'],
     ['阿禾','（风穴外远远传来喊声）{名}——你没事吧！镇上的人都说看见山里的风停了！'],
     {stones:120},{give:{qq_yu:1}},{flag:'qiongqi_done'},{run:()=>{ if(!S.flags.fx_clear){ S.flags.fx_clear=true; perk('atk',2,'风眼淬体：攻击 +2'); } }}],
   // 枯骨林 · three phantoms of those 穷奇 devoured (or rewarded)
@@ -5655,7 +5665,8 @@ const Dungeon = {
     RT.fadeTo=()=>{ enterMap(RT.mapId,x,y); UI.sync(); UI.hud(); save(); }; },
   // 风谷: calm → warning → gust (pushes you back down the valley unless a rock shields you from above)
   tick(dt){
-    // a phantom whose story is settled fades away
+    // anything whose condition no longer holds (a settled phantom, the beaten 穷奇, an opened wall) leaves the map at once
+    if(Dungeon.inside()) for(const e of RT.ents.filter(e=>e.cond&&!e.cond(S))){ RT.ents=RT.ents.filter(x=>x!==e); if(RT.solid[e.y]) RT.solid[e.y][e.x]=false; }
     if(RT.mapId==='fx2') for(const e of RT.ents.filter(e=>e.type==='phantom'&&S.flags['ph_'+e.ph])){ RT.ents=RT.ents.filter(x=>x!==e); RT.solid[e.y][e.x]=false; }
     if(RT.mapId!=='fx1'||S.flags.fx_gate&&S.flags.fx_valley_calm){ Dungeon.gust.phase='calm'; return; }
     if(RT.paused) return;
@@ -5705,13 +5716,22 @@ DODGE.qiongqi.featherrain={name:'羽雨', hit:.5, dur:4.8, spawn(P,t,dt,m){ P.ev
 // minions in the dungeon dodge too
 DODGE.guidiao={atk:{...DODGE.qiongqi.atk, name:'蛊雕俯冲', dur:3.4}, double:{...DODGE.qiongqi.double, name:'利爪', dur:3.4}, big:{...DODGE.qiongqi.big, name:'蛊雕扑击', dur:3.6}};
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ _pc.call(Battle); const s=Battle.s, p=s&&s.B.phase3;
-    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally='顾长歌'; s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
+    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally='顾长歌'; s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); Ally.arrive(s); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
+const Ally = {
+  arrive(s){ const host=$('#battle'); if(!host) return;
+    const el=document.createElement('div'); el.className='ally-in'; el.innerHTML='<canvas></canvas><b>顾长歌 赶来助战！</b>'; const c=el.querySelector('canvas'), sp=cgChibi(LOOK_GE,'guard','normal','swordup',null,false);
+    c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0); host.appendChild(el); setTimeout(()=>el.remove(),2400);
+    let st=$('#allyStand'); if(!st){ st=document.createElement('canvas'); st.id='allyStand'; host.querySelector('.b-stage').appendChild(st); }
+    const sp2=cgChibi(LOOK_GE,'stand','normal','sword',null,false); st.width=sp2.width; st.height=sp2.height; st.getContext('2d').drawImage(sp2,0,0); },
+  strike(s){ const d=Math.round(12+Math.random()*8); s.hp-=d; const st=$('#allyStand'); if(st){ st.classList.remove('hit'); void st.offsetWidth; st.classList.add('hit'); }
+    setTimeout(()=>{ if(Battle.s===s){ BossBg.flash('rgba(220,235,255,.45)'); Battle.float('顾长歌 -'+d,'pet'); Battle.hitFx(); Battle.ui(); } },220);
+    if(s.hp<=0&&!s.dead){ s.busy=true; s.dead=true; setTimeout(()=>Battle.end('win'),800); } },
+};
 // 顾长歌 strikes after each of your turns once he has joined; 戾气 hits harder but bleeds you
-{ const _act=Battle.act; Battle.act=function(a){ const s=Battle.s; const hp0=s&&s.hp; const r=_act.call(Battle,a); const s2=Battle.s;
-    if(s2&&s2===s&&!s2.over&&s2.hp>0&&s2.hp<hp0){
-      if(S.flags.fx_wrath&&s2.kind==='qiongqi'){ const extra=Math.round((hp0-s2.hp)*.3); s2.hp-=extra; S.hp=Math.max(1,S.hp-4); setTimeout(()=>Battle.float('戾气 -'+extra,'crit'),150); }
-      if(s2.ally){ const d=Math.round(12+Math.random()*8); s2.hp-=d; setTimeout(()=>{ if(Battle.s===s2){ Battle.float('顾长歌 -'+d,'pet'); Battle.hitFx(); Battle.ui(); } },350); }
-      if(s2.hp<=0&&!s2.dead){ s2.busy=true; s2.dead=true; setTimeout(()=>Battle.end('win'),700); } }
+{ const _act=Battle.act; Battle.act=function(a){ const s=Battle.s; if(!s||s.over||s.busy||s.dead) return _act.call(Battle,a); const hp0=s.hp, ally=!!s.ally; const r=_act.call(Battle,a); const s2=Battle.s;
+    if(s2&&s2===s&&!s2.over&&!s2.dead){
+      if(S.flags.fx_wrath&&s2.kind==='qiongqi'&&s2.hp<hp0){ const extra=Math.round((hp0-s2.hp)*.3); s2.hp-=extra; S.hp=Math.max(1,S.hp-4); setTimeout(()=>Battle.float('戾气 -'+extra,'crit'),150); if(s2.hp<=0){ s2.busy=true; s2.dead=true; setTimeout(()=>Battle.end('win'),700); } }
+      if(ally&&a!=='pill'&&!s2.dead) Ally.strike(s2); }
     return r; }; }
 // 清心 slows the bullets; 看破 explains the moves
 { const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) { const orig=pat.spawn; pat={...pat, spawn:(P,t,dt,m)=>orig(P,t,dt,m*.88)}; } return _run.call(Dodge,pat,s,done); }; }

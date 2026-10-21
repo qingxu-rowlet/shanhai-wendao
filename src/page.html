@@ -309,7 +309,16 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #battle>*:not(#bBg){position:relative;z-index:1}
 .bflash{position:absolute!important;inset:0;z-index:5!important;pointer-events:none;animation:bfl .5s ease-out forwards}
 @keyframes bfl{from{opacity:1}to{opacity:0}}
-.b-name.enraged{color:#ffb0a0;animation:pulse 1s infinite}
+.b-name.enraged{color:#ffb0a0;animation:pulse .6s 3}
+#battle>.ally-in{position:absolute!important;inset:0;z-index:6!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(10,12,20,.6);animation:allyIn 2.4s ease both;pointer-events:none}
+.ally-in canvas{width:min(60vw,300px);image-rendering:pixelated;animation:allySlide .5s ease-out both}
+.ally-in b{font-family:var(--f-brush);font-weight:400;font-size:clamp(30px,8vw,46px);color:#fff3dc;text-shadow:0 2px 0 #2a1e1a,0 0 14px rgba(160,200,255,.7)}
+@keyframes allyIn{0%{opacity:0}12%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes allySlide{from{transform:translateX(60vw)}}
+#allyStand{position:absolute;left:3%;bottom:4%;width:min(24vw,140px);image-rendering:pixelated;animation:allyBob 1.8s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25))}
+#allyStand.hit{animation:allyLunge .45s ease-out}
+@keyframes allyBob{50%{transform:translateY(-3px)}}
+@keyframes allyLunge{40%{transform:translateX(34vw) translateY(-6px)}100%{transform:none}}
 #battle>.dodge{position:absolute!important;inset:0;z-index:5!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(6,8,14,.62);touch-action:none;animation:dgIn .25s ease-out}
 .dodge.out{opacity:0;transition:opacity .25s}
 @keyframes dgIn{from{opacity:0;transform:scale(.96)}}
