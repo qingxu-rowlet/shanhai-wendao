@@ -221,7 +221,7 @@ DODGE.qiongqi.featherrain={name:'羽雨', hit:.5, dur:4.8, spawn(P,t,dt,m){ P.ev
 // minions in the dungeon dodge too
 DODGE.guidiao={atk:{...DODGE.qiongqi.atk, name:'蛊雕俯冲', dur:3.4}, double:{...DODGE.qiongqi.double, name:'利爪', dur:3.4}, big:{...DODGE.qiongqi.big, name:'蛊雕扑击', dur:3.6}};
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ _pc.call(Battle); const s=Battle.s, p=s&&s.B.phase3;
-    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally='顾长歌'; s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); Ally.arrive(s); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
+    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally=p.ally===false?null:'顾长歌'; s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); Ally.arrive(s); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
 const Ally = {
   arrive(s){ const host=$('#battle'); if(!host) return;
     const el=document.createElement('div'); el.className='ally-in'; el.innerHTML='<canvas></canvas><b>顾长歌 赶来助战！</b>'; const c=el.querySelector('canvas'), sp=cgChibi(LOOK_GE,'guard','normal','swordup',null,false);
@@ -240,3 +240,29 @@ const Ally = {
     return r; }; }
 // 清心 slows the bullets; 看破 explains the moves
 { const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) { const orig=pat.spawn; pat={...pat, spawn:(P,t,dt,m)=>orig(P,t,dt,m*.88)}; } return _run.call(Dodge,pat,s,done); }; }
+
+/* ---------- 狂暴穷奇: a rematch in the 风眼 once you have joined a sect (no 顾长歌 this time) ---------- */
+BEASTS.qiongqi2={...BEASTS.qiongqi, name:'狂暴穷奇', hp:1250, atk:42, def:12, exp:260, stones:[200,200], drop:['qq_yu',1],
+  lore:'伤好之后卷土重来的穷奇，双翼上新生的羽毛泛着血色。',
+  phase2:{at:.6, moves:['wind','featherrain','big','double','wind','roar'], line:'狂暴穷奇仰天长啸，风眼里的风变成了刀子！'},
+  phase3:{at:.3, ally:false, moves:['tornado','featherrain','tornado','big','featherrain','wind'], line:'狂暴穷奇彻底发狂了——风眼开始疯狂旋转！'}};
+SCENES.qiongqi2={...SCENES.qiongqi, title:'狂暴穷奇', sub:'伤愈复返，风血满翼'};
+DODGE.qiongqi2=Object.fromEntries(Object.entries(DODGE.qiongqi).map(([k,p])=>[k,{...p, spawn:(P,t,dt,m)=>p.spawn(P,t,dt,m*1.15)}]));
+MAPS.fx3.objects.push({type:'boss2', x:8, y:5, spr:'qiongqi', act:'fxboss2', cond:s=>!!s.flags.qiongqi_done&&!!s.sect});
+Object.assign(SCRIPTS, {
+  fx_rematch_meet:[
+    ['旁白','风眼里的风比上次更急。云层裂开，一只双翼泛着血色的巨虎从天而降。'],
+    ['狂暴穷奇','吼——好心人！我在云里养了这么久的伤，就等着这一口！'],
+    ['旁白','这一次，顾长歌不在。你握紧了刚学会的本门绝学。'],
+    {battle:'qiongqi2', win:'fx_rematch_win', lose:'fx_boss_lose'}],
+  fx_rematch_win:[
+    ['旁白','狂暴穷奇的血色羽毛一片片剥落，它嘶吼着撞进风壁，再一次逃进了云里。'],
+    {run:()=>{ S.fxRematchDay=S.day; if(!S.flags.fx_rematch){ S.flags.fx_rematch=true; S.stones+=300; perk('hp',30,'镇风：生命上限 +30'); UI.toast('获得称号「镇风」，灵石 +300'); } else { S.stones+=100; UI.toast('灵石 +100'); } UI.hud(); }},
+    ['旁白','风眼里的风渐渐平息。（狂暴穷奇明天还会再来，可以再次挑战。）']],
+});
+// the rematch ignores the first-fight rules: no ally joins in phase 3
+{ const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s; if(s&&s.kind==='qiongqi2'){ const ally0=s.ally; _pc.call(Battle); if(!ally0&&s.ally){ s.ally=null; const a=$('#battle>.ally-in'); if(a) a.remove(); const st=$('#allyStand'); if(st) st.remove(); } return; } return _pc.call(Battle); }; }
+{ const _arr=Ally.arrive; Ally.arrive=function(s){ if(s&&s.B&&s.B.phase3&&s.B.phase3.ally===false) return; return _arr.call(Ally,s); }; }
+{ const _act=Dungeon.act; Dungeon.act=function(o){ if(o.act==='fxboss2'){ if(S.fxRematchDay===S.day) return UI.say([['旁白','风眼里只剩下乱风。狂暴穷奇今天被你打跑了，过一天再来吧。']]), true; UI.say(SCRIPTS.fx_rematch_meet); return true; } return _act.call(Dungeon,o); }; }
+// a rumour on the morning card once you can take it on
+{ const _dc=UI.dayCard; UI.dayCard=function(){ const r=_dc.apply(UI,arguments); if(S.flags.qiongqi_done&&S.sect&&!S.flags.fx_rematch){ const d=$('#daycard div'); if(d){ const sp=document.createElement('span'); sp.textContent='听说风穴里的风又起来了……'; d.appendChild(sp); } } return r; }; }

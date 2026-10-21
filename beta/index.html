@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="98f5783a64"><script>(function(){var B="98f5783a64";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="2ca9a91574"><script>(function(){var B="2ca9a91574";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -5728,7 +5728,7 @@ DODGE.qiongqi.featherrain={name:'羽雨', hit:.5, dur:4.8, spawn(P,t,dt,m){ P.ev
 // minions in the dungeon dodge too
 DODGE.guidiao={atk:{...DODGE.qiongqi.atk, name:'蛊雕俯冲', dur:3.4}, double:{...DODGE.qiongqi.double, name:'利爪', dur:3.4}, big:{...DODGE.qiongqi.big, name:'蛊雕扑击', dur:3.6}};
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ _pc.call(Battle); const s=Battle.s, p=s&&s.B.phase3;
-    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally='顾长歌'; s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); Ally.arrive(s); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
+    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally=p.ally===false?null:'顾长歌'; s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); Ally.arrive(s); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
 const Ally = {
   arrive(s){ const host=$('#battle'); if(!host) return;
     const el=document.createElement('div'); el.className='ally-in'; el.innerHTML='<canvas></canvas><b>顾长歌 赶来助战！</b>'; const c=el.querySelector('canvas'), sp=cgChibi(LOOK_GE,'guard','normal','swordup',null,false);
@@ -5747,6 +5747,32 @@ const Ally = {
     return r; }; }
 // 清心 slows the bullets; 看破 explains the moves
 { const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) { const orig=pat.spawn; pat={...pat, spawn:(P,t,dt,m)=>orig(P,t,dt,m*.88)}; } return _run.call(Dodge,pat,s,done); }; }
+
+/* ---------- 狂暴穷奇: a rematch in the 风眼 once you have joined a sect (no 顾长歌 this time) ---------- */
+BEASTS.qiongqi2={...BEASTS.qiongqi, name:'狂暴穷奇', hp:1250, atk:42, def:12, exp:260, stones:[200,200], drop:['qq_yu',1],
+  lore:'伤好之后卷土重来的穷奇，双翼上新生的羽毛泛着血色。',
+  phase2:{at:.6, moves:['wind','featherrain','big','double','wind','roar'], line:'狂暴穷奇仰天长啸，风眼里的风变成了刀子！'},
+  phase3:{at:.3, ally:false, moves:['tornado','featherrain','tornado','big','featherrain','wind'], line:'狂暴穷奇彻底发狂了——风眼开始疯狂旋转！'}};
+SCENES.qiongqi2={...SCENES.qiongqi, title:'狂暴穷奇', sub:'伤愈复返，风血满翼'};
+DODGE.qiongqi2=Object.fromEntries(Object.entries(DODGE.qiongqi).map(([k,p])=>[k,{...p, spawn:(P,t,dt,m)=>p.spawn(P,t,dt,m*1.15)}]));
+MAPS.fx3.objects.push({type:'boss2', x:8, y:5, spr:'qiongqi', act:'fxboss2', cond:s=>!!s.flags.qiongqi_done&&!!s.sect});
+Object.assign(SCRIPTS, {
+  fx_rematch_meet:[
+    ['旁白','风眼里的风比上次更急。云层裂开，一只双翼泛着血色的巨虎从天而降。'],
+    ['狂暴穷奇','吼——好心人！我在云里养了这么久的伤，就等着这一口！'],
+    ['旁白','这一次，顾长歌不在。你握紧了刚学会的本门绝学。'],
+    {battle:'qiongqi2', win:'fx_rematch_win', lose:'fx_boss_lose'}],
+  fx_rematch_win:[
+    ['旁白','狂暴穷奇的血色羽毛一片片剥落，它嘶吼着撞进风壁，再一次逃进了云里。'],
+    {run:()=>{ S.fxRematchDay=S.day; if(!S.flags.fx_rematch){ S.flags.fx_rematch=true; S.stones+=300; perk('hp',30,'镇风：生命上限 +30'); UI.toast('获得称号「镇风」，灵石 +300'); } else { S.stones+=100; UI.toast('灵石 +100'); } UI.hud(); }},
+    ['旁白','风眼里的风渐渐平息。（狂暴穷奇明天还会再来，可以再次挑战。）']],
+});
+// the rematch ignores the first-fight rules: no ally joins in phase 3
+{ const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s; if(s&&s.kind==='qiongqi2'){ const ally0=s.ally; _pc.call(Battle); if(!ally0&&s.ally){ s.ally=null; const a=$('#battle>.ally-in'); if(a) a.remove(); const st=$('#allyStand'); if(st) st.remove(); } return; } return _pc.call(Battle); }; }
+{ const _arr=Ally.arrive; Ally.arrive=function(s){ if(s&&s.B&&s.B.phase3&&s.B.phase3.ally===false) return; return _arr.call(Ally,s); }; }
+{ const _act=Dungeon.act; Dungeon.act=function(o){ if(o.act==='fxboss2'){ if(S.fxRematchDay===S.day) return UI.say([['旁白','风眼里只剩下乱风。狂暴穷奇今天被你打跑了，过一天再来吧。']]), true; UI.say(SCRIPTS.fx_rematch_meet); return true; } return _act.call(Dungeon,o); }; }
+// a rumour on the morning card once you can take it on
+{ const _dc=UI.dayCard; UI.dayCard=function(){ const r=_dc.apply(UI,arguments); if(S.flags.qiongqi_done&&S.sect&&!S.flags.fx_rematch){ const d=$('#daycard div'); if(d){ const sp=document.createElement('span'); sp.textContent='听说风穴里的风又起来了……'; d.appendChild(sp); } } return r; }; }
 
 /* ============================================================
    山海问道 · 新手引导 — one short tip the first time each thing comes up (walk, tasks, interact, bag, meditate, dodge),
@@ -6413,6 +6439,8 @@ const Review = {
       run(){ Review.base({quest:'q6', L:7, inv:{huichun:3}, kills:3, flags:{fx_valley:true, fx_gate:true, fx_s1:true, fx_s2:true, fx_s3:true}}); Review.at('fx2',2,7,'right'); }},
     {id:'fx-boss', group:'风穴副本', title:'风眼 · 穷奇三阶段', check:'按 E 挑战穷奇。半血进二阶段（风刃、怒吼），四分之一血进三阶段：漩涡会把灵珠往中间吸，还有羽雨；顾长歌会赶来，每次你出手后他补一剑。猛扑和漩涡时记得护体。带了「清心」（弹幕变慢）。',
       run(){ Review.base({quest:'q6', L:7, inv:{huichun:3}, kills:3, flags:{fx_valley:true, fx_gate:true, fx_lit:true, fx_clear_heart:true}}); Review.at('fx3',8,8,'up'); }},
+    {id:'fx-rematch', group:'风穴副本', title:'狂暴穷奇（入宗门后再战）', check:'已拜入剑宗、筑基。风眼里有狂暴穷奇，按 E 挑战：血更厚、出手更狠、弹幕更快，这次没有顾长歌帮忙，要靠宗门绝学。每回合只被打中一两下、该护体时护体，带的回春丹够用就能赢。第一次赢得称号「镇风」、300 灵石、生命上限 +30；之后每天能再打一次，给 100 灵石。',
+      run(){ Review.base({quest:'q8', L:10, sect:'jian', inv:{huichun:4, juqi:2}, flags:{qiongqi_done:true, tang_sect:true, fx_valley:true, fx_gate:true, fx_lit:true}}); Review.at('fx3',8,8,'up'); }},
     {id:'neck', group:'风穴副本', title:'修炼瓶颈', check:'炼气六层修为已满，打坐面板会提示「炼气六层瓶颈：穿过风穴的风谷」，闭关也不会再涨修为。',
       run(){ Review.base({quest:'q6', L:6, kills:3}); S.exp=expNeed(6); S.min=10*60; Review.at('home',16,5,'up'); setTimeout(()=>meditate(),500); }},
     // 配乐

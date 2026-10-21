@@ -70,6 +70,8 @@ const Review = {
       run(){ Review.base({quest:'q6', L:7, inv:{huichun:3}, kills:3, flags:{fx_valley:true, fx_gate:true, fx_s1:true, fx_s2:true, fx_s3:true}}); Review.at('fx2',2,7,'right'); }},
     {id:'fx-boss', group:'风穴副本', title:'风眼 · 穷奇三阶段', check:'按 E 挑战穷奇。半血进二阶段（风刃、怒吼），四分之一血进三阶段：漩涡会把灵珠往中间吸，还有羽雨；顾长歌会赶来，每次你出手后他补一剑。猛扑和漩涡时记得护体。带了「清心」（弹幕变慢）。',
       run(){ Review.base({quest:'q6', L:7, inv:{huichun:3}, kills:3, flags:{fx_valley:true, fx_gate:true, fx_lit:true, fx_clear_heart:true}}); Review.at('fx3',8,8,'up'); }},
+    {id:'fx-rematch', group:'风穴副本', title:'狂暴穷奇（入宗门后再战）', check:'已拜入剑宗、筑基。风眼里有狂暴穷奇，按 E 挑战：血更厚、出手更狠、弹幕更快，这次没有顾长歌帮忙，要靠宗门绝学。每回合只被打中一两下、该护体时护体，带的回春丹够用就能赢。第一次赢得称号「镇风」、300 灵石、生命上限 +30；之后每天能再打一次，给 100 灵石。',
+      run(){ Review.base({quest:'q8', L:10, sect:'jian', inv:{huichun:4, juqi:2}, flags:{qiongqi_done:true, tang_sect:true, fx_valley:true, fx_gate:true, fx_lit:true}}); Review.at('fx3',8,8,'up'); }},
     {id:'neck', group:'风穴副本', title:'修炼瓶颈', check:'炼气六层修为已满，打坐面板会提示「炼气六层瓶颈：穿过风穴的风谷」，闭关也不会再涨修为。',
       run(){ Review.base({quest:'q6', L:6, kills:3}); S.exp=expNeed(6); S.min=10*60; Review.at('home',16,5,'up'); setTimeout(()=>meditate(),500); }},
     // 配乐
