@@ -115,7 +115,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .more{position:absolute;right:12px;bottom:6px;font-style:normal;color:var(--wood);animation:bob 1s infinite}
 @keyframes bob{50%{transform:translateY(3px)}}
 .choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.choices button{text-align:left;padding:10px 12px;border-radius:8px;background:#f3d49a;box-shadow:inset 0 0 0 2px var(--parch-d);font-size:16px}
+.choices button{text-align:left;padding:12px 14px;min-height:48px;border-radius:8px;background:#f3d49a;box-shadow:inset 0 0 0 2px var(--parch-d);font-size:17px}
+#actB{position:absolute;right:max(14px,env(safe-area-inset-right,0px));width:78px;height:78px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-family:var(--f-head);font-size:16px;touch-action:none;animation:actIn .18s ease-out}
+#actB i{font-style:normal;font-size:24px;line-height:1}#actB:active{transform:scale(.92)}
+@keyframes actIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 .choices button:hover,.choices button:focus-visible{background:#fff2c8;box-shadow:inset 0 0 0 3px var(--cinnabar)}
 
 /* ---------- panels ---------- */

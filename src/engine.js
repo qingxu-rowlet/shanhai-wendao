@@ -507,6 +507,8 @@ const Stick={ el:null, id:null, x:0, y:0, t:0, on:false,
   end(){ Stick.id=null; Stick.on=false; RT.stick=null; if(Stick.el) Stick.el.classList.remove('on'); } };
 cv.addEventListener('pointerdown', e=>{
   Sound.unlock();
+  // while someone is talking, a tap anywhere turns the page (choices still need their own buttons)
+  const dlg=document.getElementById('dlg'); if(dlg&&!dlg.hidden&&!dlg.querySelector('.choices')){ dlg.click(); return; }
   if(RT.paused||!RT.map) return;
   if(e.pointerType==='mouse') return tapAt(e.clientX,e.clientY);
   if(Stick.id!==null) return; Stick.id=e.pointerId; Stick.x=e.clientX; Stick.y=e.clientY; Stick.t=performance.now(); Stick.on=false;
