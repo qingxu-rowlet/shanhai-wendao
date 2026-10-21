@@ -49,7 +49,7 @@ const SelfTest = {
         $('[data-s="dan"]').click(); await W(20); $('#scYes').click(); await W(30); await adv(); const all=lines.join('');
         return {fail:!(S.sect==='dan'&&S.flags.tang_sect&&all.includes('散修')&&QUESTS[S.quest].id==='q8')}; });
       await step('点击宗门长老有反应', async()=>{ const m=RT.ents.find(o=>o.id==='m_shou'); interact(m); await W(20); const ok=!$('#dlg').hidden; await adv(2); return ok; });
-      await step('青丘狐影：放过九尾狐 → 饕餮苏醒 → 第一章完', async()=>{ Story.shrine(); await W(30);
+      await step('青丘狐影：九尾狐道谢 → 饕餮苏醒 → 第一章完', async()=>{ Story.shrine(); await W(30);
         for(let i=0;i<80;i++){ if(!$('#cine').hidden){ $('#cine').click(); await W(50); continue; } const d=$('#dlg'); if(d.hidden) break; const ch=d.querySelectorAll('[data-i]'); if(ch.length) ch[1].click(); else d.onclick&&(d.onclick(),d.onclick&&d.onclick()); await W(20); }
         return {fail:!(S.flags.chapter1_done&&S.flags.huli_friend&&QUESTS[S.quest].id==='end')}; });
       await step('支线：阿禾的灵菇汤（接取 → 交付）', async()=>{ S.inv.lingmo=3; Story.side('ahe'); await adv(); Story.side('ahe'); await adv(); return {fail:S.side.soup!=='done'}; });

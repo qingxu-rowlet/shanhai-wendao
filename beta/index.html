@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="9a74d25672"><script>(function(){var B="9a74d25672";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="98f5783a64"><script>(function(){var B="98f5783a64";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -209,6 +209,16 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #dlg .dtext.gain p{color:#7a4a00!important;font-weight:bold;font-size:1.15em}
 #dlg .dtext.gain .who{color:#b8862d!important;font-size:15px}
 .med-len{font-size:16px}
+.tip{position:fixed;left:50%;bottom:max(180px,calc(env(safe-area-inset-bottom,0px) + 180px));transform:translate(-50%,20px);opacity:0;transition:all .25s;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 12px;width:min(92vw,460px);font-size:15px;line-height:1.5}
+.tip.on{opacity:1;transform:translate(-50%,0)}.tip p{margin:0;flex:1}.tip-i{font-size:22px}
+#hQuest.compact .qrow:not(.on){display:none}
+.qfold{margin-left:auto;margin-right:6px;font:inherit;font-size:12px;padding:2px 8px;border-radius:4px;border:1px solid #b89a6a;background:#fbf3e4;color:#5a4630}
+.gf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.gfcard{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px;border-radius:6px;border:2px solid #c8a870;background:#fbf3e4;font:inherit;cursor:pointer}
+.gfcard small{font-size:12px;color:#8a6a4a}.gfcard b{font-family:var(--f-head);font-weight:400;font-size:20px}.gfcard span{font-size:13px;line-height:1.5}
+.gfcard.s-剑修{border-color:#7a9ac8}.gfcard.s-体修{border-color:#c8784a}.gfcard.s-灵修{border-color:#8b5bc5}.gfcard.s-身法{border-color:#3f8f6a}
+.gfcard:hover{transform:translateY(-2px);box-shadow:0 4px 0 rgba(90,60,30,.2)}
+.gflist{margin-top:10px}.gflist h4{margin:0 0 4px;font-family:var(--f-head);font-weight:400}.gflist p{margin:2px 0;font-size:14px}
 .med-full{background:#fff0d0;border:2px solid #e8b84a;border-radius:6px;padding:8px 10px;line-height:1.6;margin:0 0 8px}
 .med-out{background:#fbf3e4;border:2px solid #c8a870;border-radius:6px;padding:10px 12px;line-height:1.8}
 .med-out .up{margin-left:8px;color:#c8413b;font-weight:bold}
@@ -1328,29 +1338,28 @@ const SCRIPTS = {
     ['云游子','拜了师，也别忘了常回洞府打坐。'],
     ['云游子','对了，筑基之后你能感应到更多东西——山林南边的狐祠，最近总有狐火。去看看吧。'],
   ],
+  // 九尾狐 is no enemy: 穷奇 had taken her shrine; once it is gone she comes out to thank you
   huli_meet:[
-    ['旁白','狐祠前，九条雪白的狐尾在月光下缓缓展开。'],
-    ['九尾狐','小修士，你身上有穷奇的味道……是你赶走了它？'],
-    ['九尾狐','青丘本是我族之地。我守在这里三百年，可人类总说我会魅惑人心。'],
-    {choice:'你要怎么做？', options:[
-      {text:'降妖除魔，这是修士的本分。', go:'huli_fight'},
-      {text:'你没有害人，我不会对你动手。', go:'huli_spare'}]},
+    ['旁白','狐祠前，月光像水一样铺开。九条雪白的狐尾在香炉后面缓缓展开。'],
+    ['九尾狐','小修士，你身上有穷奇的味道……是你把它赶走的？'],
+    ['九尾狐','那畜生占了我的狐祠整整三个月，我只能躲在后山，看着它在我的香炉前啃骨头。'],
+    ['九尾狐','青丘本是我族之地。我守在这里三百年，可人类总说我会魅惑人心——你不怕我吗？'],
+    {choice:'你……', options:[
+      {text:'你不伤人，我便不会对你出手。', go:'huli_spare'},
+      {text:'这三百年，你一直一个人守在这里？', go:'huli_alone'}]},
   ],
-  huli_fight:[
-    ['九尾狐','……人类果然都一样。那就来吧！'],
-    {battle:'huli', win:'huli_win', lose:'huli_lose'},
-  ],
-  huli_win:[
-    ['旁白','九尾狐化作一团狐火消散，只留下一缕尾毛。'],
-    {flag:'huli_killed'},{go:'taotie_tease'},
-  ],
-  huli_lose:[
-    ['九尾狐','回去吧，小修士。等你想清楚了再来。'],
+  huli_alone:[
+    ['九尾狐','……从前有个人类的小姑娘，常来狐祠给我放野山茶。后来她长大了，就再也没来过。'],
+    ['九尾狐','你身上，也有野山茶的味道。'],
+    ['旁白','你想了想，对她说：你不伤人，我便不会对你出手。'],
+    {go:'huli_spare'},
   ],
   huli_spare:[
     ['九尾狐','……你是第一个这样对我说的人。'],
-    ['九尾狐','这缕尾毛送给你。若有一天你遇到危险，青丘的狐火会为你照路。'],
-    {give:{hu_wei:1}},{exp:150},{flag:'huli_friend'},{go:'taotie_tease'},
+    ['九尾狐','这缕尾毛送给你，就当谢礼。若有一天你遇到危险，青丘的狐火会为你照路。'],
+    {give:{hu_wei:1}},{exp:150},{flag:'huli_friend'},
+    ['九尾狐','不过，比穷奇更麻烦的东西，已经醒了。'],
+    {go:'taotie_tease'},
   ],
   taotie_tease:[
     ['旁白','忽然，大地震动。远方的群山之间，传来一声贪婪的低吼……'],
@@ -3362,10 +3371,10 @@ const Dodge = {
     ov.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY}; ov.setPointerCapture(e.pointerId); e.preventDefault(); });
     ov.addEventListener('pointermove',e=>{ if(!drag) return; P.me.x+=(e.clientX-drag.x)*scale; P.me.y+=(e.clientY-drag.y)*scale; drag={x:e.clientX,y:e.clientY}; });
     ov.addEventListener('pointerup',()=>drag=null); ov.addEventListener('pointercancel',()=>drag=null);
-    const R=3.2, SPEED=58; let t=0, last=performance.now(), ended=false;
+    const MD=Dodge.mods?Dodge.mods():{speed:1,inv:0,r:1,dur:1}, R=3.2*MD.r, SPEED=58*MD.speed, DUR=pat.dur*MD.dur; let t=0, last=performance.now(), ended=false;
     const segDist=(px,py,b)=>{ const dx=Math.cos(b.a), dy=Math.sin(b.a), qx=px-b.cx, qy=py-b.cy; return Math.abs(qx*dy-qy*dx); };
     const hitTest=b=>{
-      if(b.k==='feather'||b.k==='blade'||b.k==='orbit') return b.x!==undefined&&Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
+      if(b.k==='feather'||b.k==='blade'||b.k==='orbit'||b.k==='fruit'||b.k==='ember'||b.k==='stone') return b.x!==undefined&&Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
       if(b.k==='slash') return b.t>b.warn && segDist(P.me.x,P.me.y,b)<b.w/2+R*.6;
       if(b.k==='band') return b.t>b.warn && Math.abs((b.dir==='h'?P.me.y:P.me.x)-b.at)<b.w/2+R*.4;
       if(b.k==='ring'){ const d=Math.hypot(P.me.x-b.cx,P.me.y-b.cy); if(Math.abs(d-b.R)>b.th+R*.6) return false;
@@ -3379,16 +3388,16 @@ const Dodge = {
       const vx=(keys.r?1:0)-(keys.l?1:0), vy=(keys.d?1:0)-(keys.u?1:0), n=Math.hypot(vx,vy)||1;
       P.me.x+=vx/n*SPEED*dt; P.me.y+=vy/n*SPEED*dt; P.me.x=Math.max(R,Math.min(100-R,P.me.x)); P.me.y=Math.max(R,Math.min(100-R,P.me.y));
       if(pat.pull){ const dx=50-P.me.x, dy=50-P.me.y, d=Math.hypot(dx,dy)||1; if(d>2){ P.me.x+=dx/d*pat.pull*m*dt; P.me.y+=dy/d*pat.pull*m*dt; } }
-      if(t<pat.dur-.5) pat.spawn(P,t,dt,m);
+      if(t<DUR-.5) pat.spawn(P,t,dt,m);
       for(const b of P.list){ b.t+=dt;
-        if(b.vx!==undefined){ b.x+=b.vx*dt; b.y+=b.vy*dt; }
+        if(b.vx!==undefined){ if(b.ay) b.vy+=b.ay*dt; b.x+=b.vx*dt; b.y+=b.vy*dt; }
         if(b.k==='ring') b.R+=b.vr*dt;
         if(b.k==='orbit'){ b.a+=b.va*dt; b.R+=b.vr*dt; b.x=50+Math.cos(b.a)*b.R; b.y=50+Math.sin(b.a)*b.R; }
-        if(P.inv<=0 && hitTest(b)){ P.hits++; P.inv=.7; P.flash=.25; Sound.hurt(); ov.classList.remove('hurt'); void ov.offsetWidth; ov.classList.add('hurt'); } }
+        if(P.inv<=0 && hitTest(b)){ P.hits++; P.inv=.7+MD.inv; P.flash=.25; Sound.hurt(); ov.classList.remove('hurt'); void ov.offsetWidth; ov.classList.add('hurt'); } }
       P.list=P.list.filter(b=>{ if(b.k==='slash'||b.k==='band') return b.t<b.warn+b.act; if(b.k==='ring') return b.R<80; if(b.k==='orbit') return b.R>3; return b.x>-10&&b.x<110&&b.y>-10&&b.y<110; });
       P.inv-=dt; P.flash-=dt;
-      draw(); ov.querySelector('.dg-time i').style.width=Math.max(0,100-t/pat.dur*100)+'%';
-      if(t>=pat.dur) return finish();
+      draw(); ov.querySelector('.dg-time i').style.width=Math.max(0,100-t/DUR*100)+'%';
+      if(t>=DUR) return finish();
       requestAnimationFrame(step);
     };
     const draw=()=>{
@@ -3405,6 +3414,9 @@ const Dodge = {
           if(!live){ g.strokeStyle='rgba(255,80,60,.7)'; g.lineWidth=.6; g.setLineDash([2,2]); if(b.dir==='h') g.strokeRect(0,b.at-b.w/2,100,b.w); else g.strokeRect(b.at-b.w/2,0,b.w,100); g.setLineDash([]); }
           else { g.fillStyle='rgba(60,30,30,.85)'; const p=(b.t-b.warn)/b.act; if(b.dir==='h'){ g.beginPath(); g.ellipse(-20+p*140,b.at,14,b.w*.32,0,0,7); g.fill(); } else { g.beginPath(); g.ellipse(b.at,-20+p*140,b.w*.32,14,0,0,7); g.fill(); } } }
         if(b.k==='orbit'&&b.x!==undefined){ g.save(); g.translate(b.x,b.y); g.rotate(b.a+Math.PI/2); g.fillStyle='#e8f2ff'; g.beginPath(); g.ellipse(0,0,4,1.5,0,0,7); g.fill(); g.fillStyle='#7fb2e8'; g.beginPath(); g.ellipse(2.4,0,1.5,1,0,0,7); g.fill(); g.restore(); }
+        if(b.k==='fruit'){ g.fillStyle='#d8413b'; g.beginPath(); g.arc(b.x,b.y,b.r,0,7); g.fill(); g.fillStyle='#ffb0a0'; g.fillRect(b.x-b.r*.5,b.y-b.r*.6,1.2,1.2); g.fillStyle='#5fa35a'; g.fillRect(b.x-.5,b.y-b.r-1.6,1.4,1.8); }
+        if(b.k==='ember'){ const gr=g.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*2.4); gr.addColorStop(0,'rgba(255,220,120,1)'); gr.addColorStop(.45,'rgba(255,120,40,.9)'); gr.addColorStop(1,'rgba(255,80,20,0)'); g.fillStyle=gr; g.fillRect(b.x-b.r*2.4,b.y-b.r*2.4,b.r*4.8,b.r*4.8); }
+        if(b.k==='stone'){ g.fillStyle='#8a8478'; g.beginPath(); g.arc(b.x,b.y,b.r,0,7); g.fill(); g.fillStyle='#b8b2a6'; g.beginPath(); g.arc(b.x-b.r*.3,b.y-b.r*.3,b.r*.45,0,7); g.fill(); g.strokeStyle='#4a443a'; g.lineWidth=.6; g.beginPath(); g.arc(b.x,b.y,b.r,0,7); g.stroke(); }
         if(b.k==='ring'){ g.strokeStyle='rgba(255,200,120,.9)'; g.lineWidth=b.th; g.beginPath(); g.arc(b.cx,b.cy,b.R,b.gap+b.gw/2,b.gap-b.gw/2+Math.PI*2); g.stroke(); }
       }
       if(pat.pull){ for(let k=0;k<3;k++){ g.strokeStyle=`rgba(200,220,240,${.25-k*.06})`; g.lineWidth=1.2; g.beginPath(); g.arc(50,50,6+k*6+(t*20%6),t*3+k,t*3+k+4.2); g.stroke(); } }
@@ -5737,6 +5749,95 @@ const Ally = {
 { const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) { const orig=pat.spawn; pat={...pat, spawn:(P,t,dt,m)=>orig(P,t,dt,m*.88)}; } return _run.call(Dodge,pat,s,done); }; }
 
 /* ============================================================
+   山海问道 · 新手引导 — one short tip the first time each thing comes up (walk, tasks, interact, bag, meditate, dodge),
+   worded for touch or keyboard. On phones the task list folds down to the tracked task; tap to unfold.
+   ============================================================ */
+const TIPS = {
+  move:  {touch:'点地面上任何地方，角色就会走过去。', key:'用 WASD 或方向键走路，也可以用鼠标点地面。'},
+  quest: {touch:'左上角是任务。点「寻路」，角色会自动走到目的地。', key:'左上角是任务。点「寻路」自动走过去，按 J 看全部任务。'},
+  talk:  {touch:'靠近人或东西时，头顶会出现「聊 / 采 / 点」——点一下它就能互动。', key:'靠近人或东西时头顶会出现 E，按 E 互动。'},
+  bag:   {touch:'左下角「囊」是行囊：物品、修炼、人物、图鉴、存档都在里面。', key:'左下角「囊」是行囊（Esc 打开）：物品、修炼、人物、图鉴、存档都在里面。'},
+  med:   {touch:'在蒲团上打坐可以选择打坐多久，修为会一点点涨上去。', key:'在蒲团上打坐可以选择打坐多久，修为会一点点涨上去。'},
+  dodge: {touch:'敌人的回合要躲弹幕：手指按住屏幕任意处拖动，绿色灵珠会跟着移动。被打中会掉血。', key:'敌人的回合要躲弹幕：用 WASD / 方向键移动绿色灵珠。被打中会掉血。'},
+};
+const Guide = {
+  seen(k){ S.tips=S.tips||{}; return !!S.tips[k]; },
+  show(k, cb){
+    if(!S||Guide.seen(k)||Dodge.auto) return cb&&cb(); S.tips[k]=true;
+    const t=TIPS[k], el=document.createElement('div'); el.className='tip wood'; el.innerHTML=`<span class="tip-i">💡</span><p>${FINE_POINTER?t.key:t.touch}</p><button class="btn mini">知道了</button>`;
+    document.body.appendChild(el); requestAnimationFrame(()=>el.classList.add('on'));
+    let done=false; const close=()=>{ if(done) return; done=true; el.classList.remove('on'); setTimeout(()=>el.remove(),250); cb&&cb(); };
+    el.querySelector('button').onclick=e=>{ e.stopPropagation(); Sound.tick(); close(); }; el.onclick=close; setTimeout(close, cb?9000:7000);
+  },
+  // checked once a second: the first tip whose moment has come
+  tick(){
+    if(!S||!RT.map||UI.busy()||Dodge.auto||$('.tip')||(!S.flags.intro_done)) return;
+    if(!Guide.seen('move')) return Guide.show('move');
+    if(!Guide.seen('quest')) return Guide.show('quest');
+    if(!Guide.seen('talk')&&RT.prompt) return Guide.show('talk');
+    if(!Guide.seen('bag')&&Object.keys(S.inv).length>1) return Guide.show('bag');
+    if(!Guide.seen('med')&&RT.mapId==='home'&&Math.abs(S.x-16)+Math.abs(S.y-4)<=2) return Guide.show('med');
+  },
+};
+setInterval(()=>{ try{ Guide.tick(); }catch(e){} },1000);
+// the first dodge round waits for its tip
+{ const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(!Guide.seen('dodge')&&!Dodge.auto) return Guide.show('dodge',()=>_run.call(Dodge,pat,s,done)); return _run.call(Dodge,pat,s,done); }; }
+// phones: fold the task list down to the tracked task
+{ const _hud=UI.hud; UI.hud=function(){ _hud.apply(UI,arguments); const q=$('#hQuest'); if(!q) return;
+    const small=innerWidth<560; q.classList.toggle('compact', small&&!RT.hudOpen);
+    if(small){ const head=q.querySelector('.qhead'); if(head&&!head.querySelector('.qfold')){ const b=document.createElement('button'); b.className='qfold'; b.textContent=RT.hudOpen?'收起':'展开';
+        b.onclick=e=>{ e.stopPropagation(); Sound.tick(); RT.hudOpen=!RT.hudOpen; UI.hud(); }; head.insertBefore(b, head.querySelector('.qall')); } } }; }
+addEventListener('resize',()=>{ if(S) UI.hud(); });
+
+/* ============================================================
+   山海问道 · 山林妖兽 — three more beasts of the 山海经 in 青丘山林, and bullet patterns for every common beast.
+   狸力 (a boar with rooster's spurs, digs), 鵸鵌 (a three-headed crow, spreads fire three ways),
+   朱厌 (a white-headed ape with red feet, throws stones). 当康 charges, 狌狌 lobs fruit.
+   ============================================================ */
+Object.assign(SPR, {
+  lili:['................','................','................','.....nnnnn......','...nnnnnnnnn....','..nnNnnnnnnnnn..','.nnnnnnnnnnnsss.','.nnnnnnnnnnnsNs.','.nnnnnnnnnnnsss.','..nnnnnnnnnnnn..','...nnnnnnnnnn...','....y.y...y.y...','....y.y...y.y...','...yy.yy.yy.yy..','................','................'],
+  qitu:['................','.EE..EE..EE.....','.EyE.EyE.EyE....','..E...E...E.....','...EEEEEEE......','..EEEEEEEEEE....','.EEEeEEEEEEEE...','EEEeeEEEEEEEEE..','.EEEEEEEEEEEE...','...EEEEEEEEr....','....EEEEEErr....','.....y...y......','....yy..yy......','................','................','................'],
+  zhuyan:['................','.....wwwww......','....wwwwwww.....','....wEwwwEw.....','....wwwsswww....','.....wssssw.....','...hhhhhhhhh....','..hhhhhhhhhhh...','.hhhhhhhhhhhhh..','.hh.hhhhhhh.hh..','.hh.hhhhhhh.hh..','.ss.hhhhhhh.ss..','....hhh.hhh.....','....hhh.hhh.....','...rrr...rrr....','................'],
+});
+Object.assign(BEASTS, {
+  lili:{name:'狸力', spr:'lili', hp:44, atk:10, def:3, exp:20, stones:[8,14], drop:['lingmo',.5],
+    lore:'《山海经·南山经》：有兽焉，其状如豚，有距，其音如狗吠，其名曰狸力，见则其县多土功。', moves:['atk','charge','big','atk']},
+  qitu:{name:'鵸鵌', spr:'qitu', hp:52, atk:12, def:2, exp:28, stones:[10,18], drop:['hide',.5],
+    lore:'《山海经·西山经》：有鸟焉，其状如乌，三首六尾而善笑，名曰鵸鵌，服之使人不厌，又可以御凶。', moves:['atk','double','atk','big']},
+  zhuyan:{name:'朱厌', spr:'zhuyan', hp:72, atk:14, def:4, exp:36, stones:[14,24], drop:['zhuguo',.4],
+    lore:'《山海经·西山经》：有兽焉，其状如猿，而白首赤足，名曰朱厌，见则大兵。', moves:['atk','big','double','charge']},
+});
+MAPS.forest.spawns.push(
+  {kind:'lili', n:2, area:[16,15,28,24]},
+  {kind:'qitu', n:2, area:[16,1,28,4], minRealm:4},
+  {kind:'zhuyan', n:2, area:[13,18,28,24], minRealm:6});
+
+// --- bullet patterns for the common beasts ---
+const rnd=(a,b)=>a+Math.random()*(b-a);
+DODGE.dangkang={
+  atk:{name:'当康冲撞', hit:.5, dur:3.2, spawn(P,t,dt,m){ for(const at of [.3,1.5]) P.once('c'+at,t>=at,()=>P.add({k:'band', dir:'h', at:P.me.y, w:14, warn:.85/m, act:.3})); }},
+  big:{name:'獠牙横扫', hit:.9, dur:3.6, spawn(P,t,dt,m){ P.once('a',t>=.3,()=>P.add({k:'band', dir:'h', at:P.me.y, w:20, warn:.9/m, act:.3})); P.once('b',t>=1.7,()=>P.add({k:'band', dir:'v', at:P.me.x, w:18, warn:.85/m, act:.3})); }},
+};
+DODGE.xingxing={
+  atk:{name:'扔果子', hit:.45, dur:3.4, spawn(P,t,dt,m){ P.every('f',.42/m,()=>P.add({k:'fruit', x:104, y:rnd(10,60), vx:-rnd(30,46)*m, vy:-rnd(10,30), ay:46, r:2.6})); }},
+  double:{name:'连扔', hit:.4, dur:3.6, spawn(P,t,dt,m){ P.every('f',.28/m,()=>{ const left=Math.random()<.5; P.add({k:'fruit', x:left?-4:104, y:rnd(10,50), vx:(left?1:-1)*rnd(30,44)*m, vy:-rnd(10,30), ay:46, r:2.4}); }); }},
+};
+DODGE.lili={
+  atk:{name:'拱地', hit:.5, dur:3.4, spawn(P,t,dt,m){ P.every('d',.7/m,()=>P.add({k:'band', dir:'v', at:P.me.x+rnd(-6,6), w:9, warn:.7/m, act:.25})); }},
+  big:{name:'地裂', hit:.8, dur:3.8, spawn(P,t,dt,m){ P.every('d',.45/m,()=>P.add({k:'band', dir:'v', at:rnd(6,94), w:9, warn:.75/m, act:.25})); P.once('h',t>=1.6,()=>P.add({k:'band', dir:'h', at:P.me.y, w:12, warn:.8/m, act:.3})); }},
+};
+DODGE.qitu={
+  atk:{name:'三首吐火', hit:.45, dur:3.6, spawn(P,t,dt,m){ P.every('s',.6/m,()=>{ const base=Math.atan2(P.me.y-4,P.me.x-50); for(const da of [-.35,0,.35]) P.add({k:'ember', x:50, y:4, vx:Math.cos(base+da)*40*m, vy:Math.sin(base+da)*40*m, r:2.2}); }); }},
+  double:{name:'六尾乱扫', hit:.4, dur:3.8, spawn(P,t,dt,m){ P.every('s',.35/m,()=>{ const a=t*2.2; for(let i=0;i<3;i++){ const ang=a+i*Math.PI*2/3; P.add({k:'ember', x:50, y:30, vx:Math.cos(ang)*34*m, vy:Math.sin(ang)*34*m, r:2}); } }); }},
+  big:{name:'怪笑', hit:.7, dur:3.6, spawn(P,t,dt,m){ P.every('r',1.0/m,()=>P.add({k:'ring', cx:50, cy:20, R:2, vr:30*m, gap:Math.random()*Math.PI*2, gw:1.1, th:3})); }},
+};
+DODGE.zhuyan={
+  atk:{name:'投石', hit:.6, dur:3.6, spawn(P,t,dt,m){ P.every('b',.55/m,()=>P.add({k:'stone', x:rnd(8,92), y:-6, vx:rnd(-6,6), vy:rnd(28,40)*m, r:4.5})); }},
+  double:{name:'双拳捶地', hit:.55, dur:3.8, spawn(P,t,dt,m){ for(const at of [.4,1.6,2.6]) P.once('p'+at,t>=at,()=>P.add({k:'ring', cx:P.me.x, cy:P.me.y, R:1, vr:36*m, gap:Math.random()*Math.PI*2, gw:1.2, th:3})); }},
+  big:{name:'巨石', hit:1.0, dur:4.0, spawn(P,t,dt,m){ P.every('B',.9/m,()=>P.add({k:'stone', x:rnd(15,85), y:-10, vx:0, vy:26*m, r:8})); P.every('b',.5/m,()=>P.add({k:'stone', x:rnd(5,95), y:-4, vx:0, vy:34*m, r:3})); }},
+};
+
+/* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
    ============================================================ */
 const WORLD = { home:[0,0], town:[24,1], forest:[-3,17] };   // where each area sits on the world map (in tiles)
@@ -6031,7 +6132,7 @@ const Replay = {
     {id:'qiongqi', title:'讨伐穷奇',      unlock:s=>!!s.flags.qiongqi_done,  desc:'狐祠前，与穷奇的第一战。（以炼气五层、三颗回春丹重温）'},
     {id:'zhuji',   title:'筑基 · 心魔与天劫', unlock:s=>s.L>=10,            desc:'服下筑基丹，直面心魔，渡过天劫。'},
     {id:'sect',    title:'拜师大典',      unlock:s=>!!s.sect,                desc:'四大宗门齐聚桃源镇。（可以试试选别的宗门，回忆结束后不会改变）'},
-    {id:'huli',    title:'青丘狐影',      unlock:s=>!!s.flags.chapter1_done, desc:'九尾狐与饕餮苏醒。（可以试试另一个选择）'},
+    {id:'huli',    title:'青丘狐影',      unlock:s=>!!s.flags.chapter1_done, desc:'九尾狐道谢，饕餮苏醒。（可以试试另一个问题）'},
   ],
   start(id){
     if(Replay.active) return;
@@ -6212,7 +6313,7 @@ const SelfTest = {
         $('[data-s="dan"]').click(); await W(20); $('#scYes').click(); await W(30); await adv(); const all=lines.join('');
         return {fail:!(S.sect==='dan'&&S.flags.tang_sect&&all.includes('散修')&&QUESTS[S.quest].id==='q8')}; });
       await step('点击宗门长老有反应', async()=>{ const m=RT.ents.find(o=>o.id==='m_shou'); interact(m); await W(20); const ok=!$('#dlg').hidden; await adv(2); return ok; });
-      await step('青丘狐影：放过九尾狐 → 饕餮苏醒 → 第一章完', async()=>{ Story.shrine(); await W(30);
+      await step('青丘狐影：九尾狐道谢 → 饕餮苏醒 → 第一章完', async()=>{ Story.shrine(); await W(30);
         for(let i=0;i<80;i++){ if(!$('#cine').hidden){ $('#cine').click(); await W(50); continue; } const d=$('#dlg'); if(d.hidden) break; const ch=d.querySelectorAll('[data-i]'); if(ch.length) ch[1].click(); else d.onclick&&(d.onclick(),d.onclick&&d.onclick()); await W(20); }
         return {fail:!(S.flags.chapter1_done&&S.flags.huli_friend&&QUESTS[S.quest].id==='end')}; });
       await step('支线：阿禾的灵菇汤（接取 → 交付）', async()=>{ S.inv.lingmo=3; Story.side('ahe'); await adv(); Story.side('ahe'); await adv(); return {fail:S.side.soup!=='done'}; });
@@ -6260,7 +6361,7 @@ const Review = {
       run(){ Review.base({quest:'q7', L:9, full:true, flags:{qiongqi_done:true}, inv:{zhuji:1, huichun:3}}); Review.at('home',16,5,'up'); }},
     {id:'sect', group:'剧情', title:'拜师大典', check:'站在测灵石旁，点它：小棠拜入药王谷、长歌说「我是散修」、选门派、师父叫你小师弟/小师妹。',
       run(){ Review.base({quest:'sect', L:10, flags:{qiongqi_done:true, sect_open:true}}); Review.at('town',12,8,'up'); }},
-    {id:'huli', group:'剧情', title:'青丘狐影 → 饕餮', check:'站在狐祠前，点狐祠：九尾狐登场、二选一、饕餮登场动画、第一章结束。',
+    {id:'huli', group:'剧情', title:'青丘狐影 → 饕餮', check:'站在狐祠前，点狐祠：九尾狐出来道谢（只有对话，没有战斗）、两个问题二选一、饕餮登场动画、第一章结束。',
       run(){ Review.base({quest:'q8', L:10, sect:'jian', flags:{qiongqi_done:true, sect_open:true, tang_sect:true}, inv:{huichun:4}}); Review.at('forest',15,20,'down'); }},
     // 界面
     {id:'hud', group:'界面', title:'任务列表 HUD', check:'左上角同时有主线和几个支线：字够不够大？点一行切换追踪，点「寻路」自动走过去。手机上会不会挡视线？',
@@ -6301,6 +6402,11 @@ const Review = {
       run(){ Review.base({quest:'q8', L:5, inv:{rod:1}}); S.stones=600; S.rep=10; Review.at('town',5,6,'up'); setTimeout(()=>UI.shop(),500); }},
     {id:'talk-fix', group:'v0.9.7 试玩修正', title:'种田台词清理', check:'依次播放改过的台词：云游子讲筑基丹（不再提朱果种）、钱掌柜的订单、阿禾的芦花鸡奖励。点屏幕任意处都能翻页。',
       run(){ Review.base({quest:'q8', L:5}); Review.at('town',12,9,'up'); setTimeout(()=>UI.say([...SCRIPTS.q6_start, ...SIDES.find(q=>q.id==='order').start, ...SIDES.find(q=>q.id==='chick').done, ...SIDES.find(q=>q.id==='dan').done]),500); }},
+    {id:'beasts', group:'成长', title:'新妖兽：狸力、鵸鵌、朱厌', check:'直接挑一只打：每种都有自己的弹幕。当康（冲撞）、狌狌（扔果子）也改成躲弹幕了。',
+      run(){ Review.base({quest:'q8', L:7, inv:{huichun:3}, kills:3}); Review.at('forest',20,20,'down');
+        setTimeout(()=>UI.say([{choice:'和谁打一场？', options:['lili','qitu','zhuyan','dangkang','xingxing'].map(k=>({text:BEASTS[k].name, fn:()=>Battle.start(k,()=>{})}))}]),500); }},
+    {id:'guide', group:'成长', title:'新手引导（手机）', check:'用手机打开：会依次弹出走路、任务、互动、行囊的提示；左上角任务栏只显示正在追踪的一条，点「展开」看全部。',
+      run(){ Review.base({quest:'q1', L:0}); S.tips={}; Review.at('home',11,6,'down'); }},
     {id:'fx-enter', group:'风穴副本', title:'风穴入口 → 风谷', check:'站在山林东北角的风穴洞口前，按 E 进去。风谷里每隔几秒起风，会把你往下吹；躲在岩石正下方（头上是石头）就不会被吹走，头顶会显示「避风」。收集 3 片穷奇羽打开谷口。路上有蛊雕和狌狌，蛊雕也要躲弹幕。',
       run(){ Review.base({quest:'q6', L:6, inv:{huichun:3}, kills:3}); S.exp=expNeed(6); Review.at('forest',26,2,'up'); }},
     {id:'fx-grove', group:'风穴副本', title:'枯骨林（迷雾、幻影、点灯）', check:'只看得清身边一小圈。找到三个幻影（樵夫、恶霸、小姑娘），选项会改变善恶，并给风眼之战加成。读石碑，按「来路 → 亡者 → 己身」点亮三盏石灯，点错会灭灯并遇到伏击。',
@@ -6343,6 +6449,8 @@ const Review = {
     S.L=o.L||0; if(o.full) S.exp=expNeed(S.L); S.sect=o.sect===undefined?(S.L>=10&&o.quest!=='sect'?'jian':null):o.sect;
     if(S.quest>QUESTS.findIndex(q=>q.id==='q3')) S.flags.met_ahe=true;
     Object.assign(S.flags, o.flags||{}); Object.assign(S.side, o.side||{}); if(o.kills) S.st.kills=o.kills;
+    // review characters have already picked their techniques and seen the tips, so nothing pops up over what is being checked
+    S.tips={move:1,quest:1,talk:1,bag:1,med:1,dodge:1};
     const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min=S.min||9*60; Dev.god=false;
   },
   at(map,x,y,dir){

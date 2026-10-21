@@ -18,7 +18,7 @@ const Review = {
       run(){ Review.base({quest:'q7', L:9, full:true, flags:{qiongqi_done:true}, inv:{zhuji:1, huichun:3}}); Review.at('home',16,5,'up'); }},
     {id:'sect', group:'剧情', title:'拜师大典', check:'站在测灵石旁，点它：小棠拜入药王谷、长歌说「我是散修」、选门派、师父叫你小师弟/小师妹。',
       run(){ Review.base({quest:'sect', L:10, flags:{qiongqi_done:true, sect_open:true}}); Review.at('town',12,8,'up'); }},
-    {id:'huli', group:'剧情', title:'青丘狐影 → 饕餮', check:'站在狐祠前，点狐祠：九尾狐登场、二选一、饕餮登场动画、第一章结束。',
+    {id:'huli', group:'剧情', title:'青丘狐影 → 饕餮', check:'站在狐祠前，点狐祠：九尾狐出来道谢（只有对话，没有战斗）、两个问题二选一、饕餮登场动画、第一章结束。',
       run(){ Review.base({quest:'q8', L:10, sect:'jian', flags:{qiongqi_done:true, sect_open:true, tang_sect:true}, inv:{huichun:4}}); Review.at('forest',15,20,'down'); }},
     // 界面
     {id:'hud', group:'界面', title:'任务列表 HUD', check:'左上角同时有主线和几个支线：字够不够大？点一行切换追踪，点「寻路」自动走过去。手机上会不会挡视线？',
@@ -59,6 +59,11 @@ const Review = {
       run(){ Review.base({quest:'q8', L:5, inv:{rod:1}}); S.stones=600; S.rep=10; Review.at('town',5,6,'up'); setTimeout(()=>UI.shop(),500); }},
     {id:'talk-fix', group:'v0.9.7 试玩修正', title:'种田台词清理', check:'依次播放改过的台词：云游子讲筑基丹（不再提朱果种）、钱掌柜的订单、阿禾的芦花鸡奖励。点屏幕任意处都能翻页。',
       run(){ Review.base({quest:'q8', L:5}); Review.at('town',12,9,'up'); setTimeout(()=>UI.say([...SCRIPTS.q6_start, ...SIDES.find(q=>q.id==='order').start, ...SIDES.find(q=>q.id==='chick').done, ...SIDES.find(q=>q.id==='dan').done]),500); }},
+    {id:'beasts', group:'成长', title:'新妖兽：狸力、鵸鵌、朱厌', check:'直接挑一只打：每种都有自己的弹幕。当康（冲撞）、狌狌（扔果子）也改成躲弹幕了。',
+      run(){ Review.base({quest:'q8', L:7, inv:{huichun:3}, kills:3}); Review.at('forest',20,20,'down');
+        setTimeout(()=>UI.say([{choice:'和谁打一场？', options:['lili','qitu','zhuyan','dangkang','xingxing'].map(k=>({text:BEASTS[k].name, fn:()=>Battle.start(k,()=>{})}))}]),500); }},
+    {id:'guide', group:'成长', title:'新手引导（手机）', check:'用手机打开：会依次弹出走路、任务、互动、行囊的提示；左上角任务栏只显示正在追踪的一条，点「展开」看全部。',
+      run(){ Review.base({quest:'q1', L:0}); S.tips={}; Review.at('home',11,6,'down'); }},
     {id:'fx-enter', group:'风穴副本', title:'风穴入口 → 风谷', check:'站在山林东北角的风穴洞口前，按 E 进去。风谷里每隔几秒起风，会把你往下吹；躲在岩石正下方（头上是石头）就不会被吹走，头顶会显示「避风」。收集 3 片穷奇羽打开谷口。路上有蛊雕和狌狌，蛊雕也要躲弹幕。',
       run(){ Review.base({quest:'q6', L:6, inv:{huichun:3}, kills:3}); S.exp=expNeed(6); Review.at('forest',26,2,'up'); }},
     {id:'fx-grove', group:'风穴副本', title:'枯骨林（迷雾、幻影、点灯）', check:'只看得清身边一小圈。找到三个幻影（樵夫、恶霸、小姑娘），选项会改变善恶，并给风眼之战加成。读石碑，按「来路 → 亡者 → 己身」点亮三盏石灯，点错会灭灯并遇到伏击。',
@@ -101,6 +106,8 @@ const Review = {
     S.L=o.L||0; if(o.full) S.exp=expNeed(S.L); S.sect=o.sect===undefined?(S.L>=10&&o.quest!=='sect'?'jian':null):o.sect;
     if(S.quest>QUESTS.findIndex(q=>q.id==='q3')) S.flags.met_ahe=true;
     Object.assign(S.flags, o.flags||{}); Object.assign(S.side, o.side||{}); if(o.kills) S.st.kills=o.kills;
+    // review characters have already picked their techniques and seen the tips, so nothing pops up over what is being checked
+    S.tips={move:1,quest:1,talk:1,bag:1,med:1,dodge:1};
     const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min=S.min||9*60; Dev.god=false;
   },
   at(map,x,y,dir){

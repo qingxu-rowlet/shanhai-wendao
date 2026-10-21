@@ -209,6 +209,16 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #dlg .dtext.gain p{color:#7a4a00!important;font-weight:bold;font-size:1.15em}
 #dlg .dtext.gain .who{color:#b8862d!important;font-size:15px}
 .med-len{font-size:16px}
+.tip{position:fixed;left:50%;bottom:max(180px,calc(env(safe-area-inset-bottom,0px) + 180px));transform:translate(-50%,20px);opacity:0;transition:all .25s;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 12px;width:min(92vw,460px);font-size:15px;line-height:1.5}
+.tip.on{opacity:1;transform:translate(-50%,0)}.tip p{margin:0;flex:1}.tip-i{font-size:22px}
+#hQuest.compact .qrow:not(.on){display:none}
+.qfold{margin-left:auto;margin-right:6px;font:inherit;font-size:12px;padding:2px 8px;border-radius:4px;border:1px solid #b89a6a;background:#fbf3e4;color:#5a4630}
+.gf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.gfcard{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px;border-radius:6px;border:2px solid #c8a870;background:#fbf3e4;font:inherit;cursor:pointer}
+.gfcard small{font-size:12px;color:#8a6a4a}.gfcard b{font-family:var(--f-head);font-weight:400;font-size:20px}.gfcard span{font-size:13px;line-height:1.5}
+.gfcard.s-剑修{border-color:#7a9ac8}.gfcard.s-体修{border-color:#c8784a}.gfcard.s-灵修{border-color:#8b5bc5}.gfcard.s-身法{border-color:#3f8f6a}
+.gfcard:hover{transform:translateY(-2px);box-shadow:0 4px 0 rgba(90,60,30,.2)}
+.gflist{margin-top:10px}.gflist h4{margin:0 0 4px;font-family:var(--f-head);font-weight:400}.gflist p{margin:2px 0;font-size:14px}
 .med-full{background:#fff0d0;border:2px solid #e8b84a;border-radius:6px;padding:8px 10px;line-height:1.6;margin:0 0 8px}
 .med-out{background:#fbf3e4;border:2px solid #c8a870;border-radius:6px;padding:10px 12px;line-height:1.8}
 .med-out .up{margin-left:8px;color:#c8413b;font-weight:bold}

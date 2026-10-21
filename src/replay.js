@@ -9,7 +9,7 @@ const Replay = {
     {id:'qiongqi', title:'讨伐穷奇',      unlock:s=>!!s.flags.qiongqi_done,  desc:'狐祠前，与穷奇的第一战。（以炼气五层、三颗回春丹重温）'},
     {id:'zhuji',   title:'筑基 · 心魔与天劫', unlock:s=>s.L>=10,            desc:'服下筑基丹，直面心魔，渡过天劫。'},
     {id:'sect',    title:'拜师大典',      unlock:s=>!!s.sect,                desc:'四大宗门齐聚桃源镇。（可以试试选别的宗门，回忆结束后不会改变）'},
-    {id:'huli',    title:'青丘狐影',      unlock:s=>!!s.flags.chapter1_done, desc:'九尾狐与饕餮苏醒。（可以试试另一个选择）'},
+    {id:'huli',    title:'青丘狐影',      unlock:s=>!!s.flags.chapter1_done, desc:'九尾狐道谢，饕餮苏醒。（可以试试另一个问题）'},
   ],
   start(id){
     if(Replay.active) return;
