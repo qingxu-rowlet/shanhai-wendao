@@ -111,6 +111,15 @@ const Review = {
         UI.toast(`退还后灵石：${before} → ${S.stones}`); }},
     {id:'end', group:'剧情', title:'第一章结束后的自由时间', check:'第一章完成后能否继续逛、做支线、钓鱼、重温往事。',
       run(){ Review.base({quest:'end', L:10, sect:'dan', flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{rod:1}}); Review.at('home',11,6,'down'); }},
+    // 第二章 第一幕
+    {id:'c2-depart', group:'第二章', title:'拜别桃源镇', check:'第一章已完成、已拜入青云剑宗，站在桃源镇广场的师尊面前。点师尊：可以选「再等等」或「跟师尊走」。跟走后有送行、传送，到宗门后见到大师兄、大师姐、二师兄。',
+      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{hu_wei:1}}); Review.at('town',8,9,'up'); }},
+    ...['jian','dan','shou','tianji'].map(k=>({id:'c2-'+k, group:'第二章', title:'宗门第一天（'+SECTS[k].name+'）', check:'四个宗门布局一样，屋顶颜色、地面和摆设不一样'+(k==='dan'?'；苏小棠也在药王谷，药圃旁边能找到她':'')+'。左上角是三位师兄师姐今天的吩咐：先找他们说话接任务，做完回去交差。三件都做完后回房间睡觉，第二天有新的吩咐。山门旁的传送阵能去桃源镇、洞府、风眼。',
+      run(){ Review.base({quest:'c2b', L:10, sect:k, side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_'+k,12,15,'up'); }})),
+    {id:'c2-day3', group:'第二章', title:'宗门第三天（界碑抓痕、二师兄的房间）', check:'第三天的吩咐：大师兄让你看三块界碑（第三块底下有狼爪痕），大师姐要两颗朱果，二师兄请你收拾房间（发霉的点心，两种选择）。三件都交差后，师尊会传召。',
+      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1, zhuguo:2}}); S.c2=C2.fresh(); S.c2.n=2; S.c2.days=2; S.c2.counted=1; Review.at('zong_jian',12,15,'up'); }},
+    {id:'c2-portal', group:'第二章', title:'传送阵（直达风眼打狂暴穷奇）', check:'桃源镇广场东边的传送阵：已经筑基、拜师、打过穷奇，就能直接传送到风眼打狂暴穷奇；风眼里也有传送阵可以回来。到了第二章，还能去宗门。',
+      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{huichun:4, hu_wei:1}}); Review.at('town',21,7,'up'); }},
   ],
   // a fresh test character in save slot 3 with the given story state
   base(o){

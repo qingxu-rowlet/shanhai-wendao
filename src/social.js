@@ -165,7 +165,7 @@ const Social = {
   giftPick(id){
     const r=Social.rel(id), n=NPCS[id];
     if(r.gifted===S.day) return UI.say([[n.name,'今天已经收过你的礼物啦。']]);
-    const ids=Object.keys(S.inv).filter(k=>S.inv[k]>0&&!ITEMS[k].tool&&k!=='slip');
+    const ids=Object.keys(S.inv).filter(k=>S.inv[k]>0&&!ITEMS[k].tool&&!ITEMS[k].keep&&k!=='slip');
     UI.panel(`送礼给 ${n.name}`, ids.length?`<p class="muted">每人每天可以送一份礼物。送过的礼物，会记下对方的喜好。</p><div class="grid">${ids.map(k=>`<button class="cell" data-g="${k}" aria-label="${ITEMS[k].name}">${itemIcon(k)}<b>${S.inv[k]}</b>${r.known[k]?`<i class="pref ${r.known[k]}">${{love:'最爱',like:'喜欢',neutral:'一般',hate:'讨厌'}[r.known[k]]}</i>`:''}</button>`).join('')}</div>`:'<p class="muted">行囊里没有可以送的东西。</p>', b=>{
       b.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>{ UI.closePanel(); Social.give(id,x.dataset.g); }); });
   },

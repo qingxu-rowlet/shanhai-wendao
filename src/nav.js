@@ -204,8 +204,11 @@ UI.title=()=>{
 
 /* ---------- boot ---------- */
 // iPhone/Safari only start audio inside a tap: unlock on every early gesture until it is running
-{ let started=false; const go=()=>{ Music.unlock(); Sound.unlock(); if(!started&&Music._want){ started=true; Music.play(Music._want,true); } };
-  for(const ev of ['pointerdown','touchend','keydown']) addEventListener(ev, go, {passive:true}); }
+// coming back from another app: iOS suspends the audio, so the next tap restarts the current tune
+{ let started=false, away=false; const go=()=>{ Music.unlock(); Sound.unlock(); if((!started||away)&&Music._want){ started=true; away=false; Music.play(Music._want,true); } };
+  for(const ev of ['pointerdown','touchend','keydown']) addEventListener(ev, go, {passive:true});
+  addEventListener('visibilitychange', ()=>{ if(document.hidden){ away=true; return; } try{ Music.unlock(); if(Music._want) Music.play(Music._want,true); }catch(e){} });   // Android resumes here; iOS waits for the tap (away stays set)
+  addEventListener('pageshow', e=>{ if(e.persisted) away=true; }); }
 resize();
 requestAnimationFrame(frame);
 UI.title();

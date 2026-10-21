@@ -39,7 +39,7 @@ const Story = {
   },
   talk(id){
     const q=Story.quest()?.id;
-    if(id==='qian'){ if(Story.side('qian', ()=>UI.shop())) return; return Social.menu('qian'); }
+    if(id==='qian'){ if(Story.side('qian', ()=>Social.menu('qian'))) return; return Social.menu('qian'); }   // the shop is one of his options, not where every talk ends
     if(id==='tang'||id==='ge'){ if(Story.side(id)) return; return Social.menu(id); }
     if(id==='ahe'){
       if(q==='q3'&&!S.flags.met_ahe) return UI.say(SCRIPTS.ahe_q3);
