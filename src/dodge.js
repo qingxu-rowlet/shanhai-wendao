@@ -57,7 +57,8 @@ const Dodge = {
       if(b.k==='ring'){ const d=Math.hypot(P.me.x-b.cx,P.me.y-b.cy); if(Math.abs(d-b.R)>b.th+R*.6) return false;
         let ang=Math.atan2(P.me.y-b.cy,P.me.x-b.cx)-b.gap; ang=Math.atan2(Math.sin(ang),Math.cos(ang)); return Math.abs(ang)>b.gw/2; }
       return false; };
-    const step=now=>{
+    const step=now=>{ try{ stepIn(now); }catch(e){ console.error('dodge',e); if(!ended){ P.hits=0; finish(); } } };
+    const stepIn=now=>{
       if(ended) return; const dt=Math.min(.05,(now-last)/1000); last=now; t+=dt; P.dt=dt;
       if(Battle.s!==s){ finish(); return; }
       // move
@@ -100,6 +101,7 @@ const Dodge = {
     };
     const finish=()=>{ if(ended) return; ended=true; removeEventListener('keydown',kd,true); removeEventListener('keyup',ku); ov.classList.add('out'); setTimeout(()=>ov.remove(),250); done(P.hits); };
     draw(); requestAnimationFrame(step);
+    setTimeout(()=>{ if(!ended) finish(); }, (pat.dur+3)*1000);
   },
 };
 // the enemy's turn: dodge if this beast has a pattern for its move, otherwise the classic resolution

@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="0e280f61c5"><script>(function(){var B="0e280f61c5";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="0053d1d3fc"><script>(function(){var B="0053d1d3fc";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3362,7 +3362,8 @@ const Dodge = {
       if(b.k==='ring'){ const d=Math.hypot(P.me.x-b.cx,P.me.y-b.cy); if(Math.abs(d-b.R)>b.th+R*.6) return false;
         let ang=Math.atan2(P.me.y-b.cy,P.me.x-b.cx)-b.gap; ang=Math.atan2(Math.sin(ang),Math.cos(ang)); return Math.abs(ang)>b.gw/2; }
       return false; };
-    const step=now=>{
+    const step=now=>{ try{ stepIn(now); }catch(e){ console.error('dodge',e); if(!ended){ P.hits=0; finish(); } } };
+    const stepIn=now=>{
       if(ended) return; const dt=Math.min(.05,(now-last)/1000); last=now; t+=dt; P.dt=dt;
       if(Battle.s!==s){ finish(); return; }
       // move
@@ -3405,6 +3406,7 @@ const Dodge = {
     };
     const finish=()=>{ if(ended) return; ended=true; removeEventListener('keydown',kd,true); removeEventListener('keyup',ku); ov.classList.add('out'); setTimeout(()=>ov.remove(),250); done(P.hits); };
     draw(); requestAnimationFrame(step);
+    setTimeout(()=>{ if(!ended) finish(); }, (pat.dur+3)*1000);
   },
 };
 // the enemy's turn: dodge if this beast has a pattern for its move, otherwise the classic resolution
@@ -5545,7 +5547,7 @@ MAPS.fx2 = { name:'风穴 · 枯骨林', w:24, h:16, ground:[
     {type:'lamp', x:4, y:3, act:'lamp', lamp:'来路', spr:'lamp_off'},
     {type:'lamp', x:19, y:2, act:'lamp', lamp:'亡者', spr:'lamp_off'},
     {type:'lamp', x:13, y:13, act:'lamp', lamp:'己身', spr:'lamp_off'},
-    {type:'sign', x:11, y:8, act:'tablet', spr:'sign'},
+    {type:'tablet', x:11, y:8, act:'tablet', spr:'sign'},
     {type:'phantom', x:4, y:11, act:'phantom', ph:'woodcutter', ghost:true, look:{g:'m',skin:2,hair:1,hairColor:1,style:'jin',cloth:5}, cond:s=>!s.flags.ph_woodcutter},
     {type:'phantom', x:19, y:11, act:'phantom', ph:'bandit', ghost:true, look:{g:'m',skin:3,hair:1,hairColor:0,style:'jin',cloth:2}, cond:s=>!s.flags.ph_bandit},
     {type:'phantom', x:15, y:5, act:'phantom', ph:'girl', ghost:true, look:{g:'f',skin:0,hair:3,hairColor:1,style:'qun',cloth:6}, cond:s=>!s.flags.ph_girl},
@@ -5712,7 +5714,7 @@ DODGE.guidiao={atk:{...DODGE.qiongqi.atk, name:'蛊雕俯冲', dur:3.4}, double:
       if(s2.hp<=0&&!s2.dead){ s2.busy=true; s2.dead=true; setTimeout(()=>Battle.end('win'),700); } }
     return r; }; }
 // 清心 slows the bullets; 看破 explains the moves
-{ const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) pat={...pat, spawn:(P,t,dt,m)=>pat.spawn(P,t,dt,m*.88)}; return _run.call(Dodge,pat,s,done); }; }
+{ const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) { const orig=pat.spawn; pat={...pat, spawn:(P,t,dt,m)=>orig(P,t,dt,m*.88)}; } return _run.call(Dodge,pat,s,done); }; }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles

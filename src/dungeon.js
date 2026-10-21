@@ -61,7 +61,7 @@ MAPS.fx2 = { name:'风穴 · 枯骨林', w:24, h:16, ground:[
     {type:'lamp', x:4, y:3, act:'lamp', lamp:'来路', spr:'lamp_off'},
     {type:'lamp', x:19, y:2, act:'lamp', lamp:'亡者', spr:'lamp_off'},
     {type:'lamp', x:13, y:13, act:'lamp', lamp:'己身', spr:'lamp_off'},
-    {type:'sign', x:11, y:8, act:'tablet', spr:'sign'},
+    {type:'tablet', x:11, y:8, act:'tablet', spr:'sign'},
     {type:'phantom', x:4, y:11, act:'phantom', ph:'woodcutter', ghost:true, look:{g:'m',skin:2,hair:1,hairColor:1,style:'jin',cloth:5}, cond:s=>!s.flags.ph_woodcutter},
     {type:'phantom', x:19, y:11, act:'phantom', ph:'bandit', ghost:true, look:{g:'m',skin:3,hair:1,hairColor:0,style:'jin',cloth:2}, cond:s=>!s.flags.ph_bandit},
     {type:'phantom', x:15, y:5, act:'phantom', ph:'girl', ghost:true, look:{g:'f',skin:0,hair:3,hairColor:1,style:'qun',cloth:6}, cond:s=>!s.flags.ph_girl},
@@ -228,4 +228,4 @@ DODGE.guidiao={atk:{...DODGE.qiongqi.atk, name:'蛊雕俯冲', dur:3.4}, double:
       if(s2.hp<=0&&!s2.dead){ s2.busy=true; s2.dead=true; setTimeout(()=>Battle.end('win'),700); } }
     return r; }; }
 // 清心 slows the bullets; 看破 explains the moves
-{ const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) pat={...pat, spawn:(P,t,dt,m)=>pat.spawn(P,t,dt,m*.88)}; return _run.call(Dodge,pat,s,done); }; }
+{ const _run=Dodge.run; Dodge.run=function(pat,s,done){ if(S.flags.fx_clear_heart&&s.kind==='qiongqi'&&Dungeon.inside()) { const orig=pat.spawn; pat={...pat, spawn:(P,t,dt,m)=>orig(P,t,dt,m*.88)}; } return _run.call(Dodge,pat,s,done); }; }
