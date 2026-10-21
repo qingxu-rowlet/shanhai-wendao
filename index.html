@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="build" data-build="6f34841337"><script>(function(){var B="6f34841337";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="build" data-build="3ae1e5dbac"><script>(function(){var B="3ae1e5dbac";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -120,12 +120,13 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* ---------- panels ---------- */
 #panel{position:fixed;inset:0;z-index:22;background:rgba(10,10,20,.45);display:grid;place-items:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
-.pwin{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;box-sizing:border-box}
+.pwin{width:min(560px,100%);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;box-sizing:border-box}
 .ptitle{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:3px solid var(--parch-d)}
 .ptitle h2{margin:0;font-family:var(--f-head);font-weight:400;font-size:22px}
 .ptitle .x{width:36px;height:36px;font-size:24px;border-radius:6px;background:var(--parch-d)}
-.pbody{padding:12px;overflow:auto;display:flex;flex-direction:column;gap:10px;min-height:0}
+.pbody{padding:12px;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;display:flex;flex-direction:column;gap:10px;min-height:0}
 .tabs{display:flex;gap:4px;flex-wrap:wrap}
+.barpick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px}.barpick span{font-size:14px;color:var(--ink-soft)}.barpick .btn.on{background:var(--wood);color:#fff3dc}
 .tabs button{padding:6px 12px;border-radius:6px 6px 0 0;background:var(--parch-d);font-family:var(--f-head);font-size:16px}
 .tabs button.on{background:var(--wood);color:#fff3dc}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px}
@@ -1883,7 +1884,7 @@ function setPath(path){ if(!path) return false; if(Math.hypot(RT.fx-S.x,RT.fy-S.
 function tapWorld(tx,ty){
   if(RT.paused) return; RT.autoNav=false;
   const o=entAt(tx,ty), isFarm=tileAt(tx,ty)==='F';
-  if(S.sel==='rod' && tileAt(tx,ty)==='~'){ goAndDo((x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1, ()=>{ face(tx,ty); Mini.fish(tx,ty); }); return; }
+  if(isRod(S.sel) && tileAt(tx,ty)==='~'){ goAndDo((x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1, ()=>{ face(tx,ty); Mini.fish(tx,ty); }); return; }
   if(o && (o.act||o.type==='npc'||o.type==='gather'||o.type==='sign'||o.type==='building')){
     const reach=o.type==='building' ? (x,y)=>o.door&&x===o.door[0]&&y===o.door[1] : (x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1;
     goAndDo(reach, ()=>{ face(tx, o.type==='building'?y0(o):ty); interact(o); });
@@ -1903,7 +1904,7 @@ function interactFacing(){
   if(RT.prompt){ const p=RT.prompt; if(p.o){ face(p.x,p.y); return interact(p.o); } if(p.fish){ face(p.x,p.y); return Mini.fish(p.x,p.y); } }
   const [x,y]=facedTile(); const o=entAt(x,y);
   if(o){ interact(o); return; }
-  if(S.sel==='rod' && tileAt(x,y)==='~'){ Mini.fish(x,y); return; }
+  if(isRod(S.sel) && tileAt(x,y)==='~'){ Mini.fish(x,y); return; }
   if(tileAt(x,y)==='F') farmAct(x,y); else if(tileAt(S.x,S.y)==='F') farmAct(S.x,S.y);
 }
 function interact(o){
@@ -2131,7 +2132,7 @@ function drawPlayer(x,y,Z){
   const c=lookSprite(S.look,d,f), w=c.width*Z, h=c.height*Z, bob=(f===1||f===3)?-Z:0;
   const dx=Math.round(x+(TILE*Z-w)/2), dy=Math.round(y+TILE*Z-c.bottom*Z+bob);
   if(RT.dir==='left'){ ctx.save(); ctx.translate(dx+w,dy); ctx.scale(-1,1); ctx.drawImage(c,0,0,w,h); ctx.restore(); } else ctx.drawImage(c,dx,dy,w,h);
-  if(S.sel==='rod' && S.inv.rod) drawRod(dx, dy, w, Z);
+  if(isRod(S.sel) && S.inv[S.sel]) drawRod(dx, dy, w, Z);
 }
 // the fishing rod in hand; while fishing it reaches out over the water with a line and a bobber
 function drawRod(dx, dy, w, Z){
@@ -2160,7 +2161,7 @@ function findPrompt(){
   }
   const [fx,fy]=facedTile(); near.sort((a,b)=>((a.x===fx&&a.y===fy)?-1:0)-((b.x===fx&&b.y===fy)?-1:0)||a.d-b.d);
   if(near.length) return near[0];
-  if(S.sel==='rod'&&S.inv.rod){ for(const [dx,dy] of [[fx-S.x,fy-S.y],[0,1],[1,0],[0,-1],[-1,0]]){ const x=S.x+dx,y=S.y+dy; if(tileAt(x,y)==='~') return {fish:true,x,y}; } }
+  if(isRod(S.sel)&&S.inv[S.sel]){ for(const [dx,dy] of [[fx-S.x,fy-S.y],[0,1],[1,0],[0,-1],[-1,0]]){ const x=S.x+dx,y=S.y+dy; if(tileAt(x,y)==='~') return {fish:true,x,y}; } }
   return null;
 }
 function drawPrompt(g, ox, oy, T, Z){
@@ -2207,10 +2208,16 @@ cv.addEventListener('pointerdown', e=>{
   setTimeout(()=>{ if(Stick.id===e.pointerId&&!Stick.on&&!RT.paused){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); Stick.knob(0,0); } },260);
 });
 cv.addEventListener('pointermove', e=>{
-  if(e.pointerId!==Stick.id) return; const dx=e.clientX-Stick.x, dy=e.clientY-Stick.y, d=Math.hypot(dx,dy);
-  if(!Stick.on&&d>10){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); }
-  if(!Stick.on) return; const R=44, k=Math.min(d,R)/(d||1); Stick.knob(dx*k,dy*k);
-  RT.stick = d<8 ? null : [dx/d*Math.min(1,.45+d/R*.55), dy/d*Math.min(1,.45+d/R*.55)];
+  if(e.pointerId!==Stick.id) return; let dx=e.clientX-Stick.x, dy=e.clientY-Stick.y, d=Math.hypot(dx,dy);
+  if(!Stick.on&&d>6){ Stick.on=true; RT.path=[]; RT.pending=null; RT.autoNav=false; Stick.show(); }
+  if(!Stick.on) return; const R=44;
+  // the ring follows a finger that runs past its edge, so turning back is instant
+  if(d>R){ Stick.x+=dx/d*(d-R); Stick.y+=dy/d*(d-R); dx=e.clientX-Stick.x; dy=e.clientY-Stick.y; d=R; Stick.el.style.left=Stick.x+'px'; Stick.el.style.top=Stick.y+'px'; }
+  Stick.knob(dx,dy);
+  if(d<5){ RT.stick=null; return; }
+  // eight directions (doorways and gaps between trees are easier to hit); full speed from a short drag
+  const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*(Math.PI/4), sp=Math.min(1,.6+d/26*.4);
+  RT.stick=[Math.round(Math.cos(a)*1e3)/1e3*sp, Math.round(Math.sin(a)*1e3)/1e3*sp];
 });
 const stickUp=e=>{ if(e.pointerId!==Stick.id) return; const tap=!Stick.on&&performance.now()-Stick.t<400; Stick.end(); if(tap&&!RT.paused) tapAt(e.clientX,e.clientY); };
 cv.addEventListener('pointerup', stickUp); cv.addEventListener('pointercancel', e=>{ if(e.pointerId===Stick.id) Stick.end(); });
@@ -2405,6 +2412,7 @@ function drawAtmosphere(g, Z){
 /* ============================================================
    山海问道 · UI: HUD, dialogue, menus, shop, alchemy, battle, story, sound
    ============================================================ */
+const isRod=id=>id==='rod'||id==='rod_bamboo';   // the plain rod or the 青竹钓竿
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ICONC={};
@@ -2611,8 +2619,14 @@ const UI = {
   },
   clock(){ if(!S) return; const st=stats(); $('#hHp').style.width=Math.max(0,S.hp/st.hp*100)+'%'; $('#hMp').style.width=Math.max(0,S.mp/st.mp*100)+'%'; $('#hHpT').textContent=`${Math.ceil(S.hp)}/${st.hp}`; $('#hMpT').textContent=`${S.mp}/${st.mp}`; $('#hDay').textContent=`第 ${S.day} 天`; $('#hTime').textContent=fmtTime(S.min);
     const h=S.min/60; $('#hSun').className='sun '+(h>=18||h<6?'moon':''); },
-  hotbarItems(){ const ids=[]; if(S.inv.rod) ids.push('rod');
-    for(const id of ['huichun','juqi']) if(S.inv[id]) ids.push(id); return ids; },
+  // three quick slots: what you put there stays; a slot whose item ran out is refilled with the next default (best rod, then pills)
+  hotbarItems(){ const has=id=>id&&S.inv[id]>0;
+    if(!Array.isArray(S.bar)) S.bar=[null,null,null];
+    const defs=[S.inv.rod_bamboo?'rod_bamboo':'rod','huichun','juqi',S.inv.rod_bamboo?'rod':null].filter(has);
+    for(let i=0;i<3;i++){ if(has(S.bar[i])) continue; const d=defs.find(id=>!S.bar.includes(id)&&!(isRod(id)&&S.bar.some(isRod))); S.bar[i]=d||null; }
+    return S.bar.filter(has); },
+  barable(id){ const it=ITEMS[id]; return !!(it&&(it.tool||it.use)); },
+  putInBar(id,i){ if(!Array.isArray(S.bar)) UI.hotbarItems(); const j=S.bar.indexOf(id); if(j>=0) S.bar[j]=S.bar[i]; S.bar[i]=id; if(isRod(S.sel)&&isRod(id)) S.sel=id; UI.hotbar(); save&&save(); },
   hotbar(){
     const ids=UI.hotbarItems(); if(!ids.includes(S.sel)) S.sel=ids[0]||'';
     $('#hotbar').hidden=!ids.length;
@@ -2622,7 +2636,7 @@ const UI = {
   pickSlot(i){ const id=UI.hotbarItems()[i]; if(id) UI.selectItem(id); },
   selectItem(id){ Sound.tick(); const it=ITEMS[id];
     if(it.use){ if(S.sel===id){ UI.useItem(id); return; } S.sel=id; UI.hotbar(); UI.toast(it.name+'：再点一次服用'); return; }
-    S.sel=S.sel===id&&id==='rod'?'':id; UI.hotbar(); UI.toast(S.sel?it.name+(id==='rod'?'：靠近水边，点水面或按 E 钓鱼':''):'收起了'+it.name); },
+    S.sel=S.sel===id&&isRod(id)?'':id; UI.hotbar(); UI.toast(S.sel?it.name+(isRod(id)?'：靠近水边，点水面或按 E 钓鱼':''):'收起了'+it.name); },
   useItem(id){ const it=ITEMS[id]; if(!S.inv[id]) return; addItem(id,-1); Sound.magic();
     if(it.use==='exp'){ gainExp(it.amount); UI.toast(`服下${it.name}，修为 +${it.amount}`); }
     if(it.use==='heal'){ const st=stats(); S.hp=Math.min(st.hp,S.hp+it.amount*(S.sect==='dan'?1.5:1)); UI.toast(`服下${it.name}，生命恢复`); }
@@ -2727,12 +2741,15 @@ const UI = {
     if(tab==='people'){ body=`<div class="people">${UI.people()}</div><p class="muted">每天和大家聊聊天、送一份礼物，好感就会慢慢上升。好感各自独立，不会吃醋，可以和每个人都到 8 心。</p>`; }
     if(tab==='replay'){ body=Replay.html(); }
     if(tab==='set'){ body=`<div class="set"><button class="btn" id="sMute">声音：${S.mute?'关':'开'}</button><button class="btn" id="sMusic">音乐：${S.music===false?'关':'开'}</button><button class="btn" id="sDodge">首领战：${S.dodgeOff?'经典回合制':'回合 + 躲弹幕'}</button><button class="btn" id="sSave">保存游戏</button><button class="btn" id="sSlots">存档 / 读档</button>
-      <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），E/空格 互动（靠近时头顶会出现 E），鼠标滚轮或 1–6 选道具，Esc 行囊，M 地图，J 任务。<br>手机：点哪里就走到哪里，点人物或物体即可互动；点左上角任务的「寻路」自动前往。<br>iPhone 若听不到音乐，请关闭侧边的静音开关。</p></div>`; }
+      <button class="btn" id="sTitle">回到标题</button><p class="muted">每晚睡觉时会自动存档。<br>电脑：WASD 移动（可斜走），E/空格 互动（靠近时头顶会出现 E），鼠标滚轮或 1–6 选道具，Esc 行囊，M 地图，J 任务。<br>手机：按住屏幕拖动出现摇杆，往哪拖就往哪走；轻点人物或物体会走过去互动；行囊里点道具可以「放进快捷栏」；点左上角任务的「寻路」自动前往。<br>iPhone 若听不到音乐，请关闭侧边的静音开关。</p></div>`; }
     UI.panel('行囊', head+body, b=>{
       b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); if(t.dataset.t==='quest'){ $('#panel').hidden=true; UI._panelKind=''; return UI.tasks(); } if(t.dataset.t==='mail'){ $('#panel').hidden=true; UI._panelKind=''; return Mail.open(); } if(t.dataset.t==='save'){ $('#panel').hidden=true; return SaveSys.panel(); } UI._tab=t.dataset.t; $('#panel').hidden=true; UI.menu(t.dataset.t); });
       b.querySelectorAll('.cell').forEach(c=>c.onclick=()=>{ const id=c.dataset.id, it=ITEMS[id];
-        $('#idesc').innerHTML=`<b>${it.name}</b> ${esc(it.desc||'')} ${it.use?`<button class="btn mini" id="iUse">服用</button>`:''}`;
-        const u=$('#iUse'); if(u) u.onclick=()=>{ UI.useItem(id); $('#panel').hidden=true; UI.menu('bag'); }; });
+        const bar=UI.barable(id)?(UI.hotbarItems(), S.bar):null;
+        $('#idesc').innerHTML=`<b>${it.name}</b> ${esc(it.desc||'')} ${it.use?`<button class="btn mini" id="iUse">服用</button>`:''}
+          ${bar?`<div class="barpick"><span>放进快捷栏：</span>${bar.map((b,i)=>`<button class="btn mini${b===id?' on':''}" data-slot="${i}">${i+1}号 · ${b?esc(ITEMS[b].name):'空'}</button>`).join('')}</div>`:''}`;
+        const u=$('#iUse'); if(u) u.onclick=()=>{ UI.useItem(id); $('#panel').hidden=true; UI.menu('bag'); };
+        $('#idesc').querySelectorAll('[data-slot]').forEach(x=>x.onclick=()=>{ Sound.tick(); const i=+x.dataset.slot; if(S.bar[i]===id) return; const old=S.bar[i]; UI.putInBar(id,i); UI.toast(`${it.name}放进了快捷栏 ${i+1} 号${old&&old!==id?'，换下了'+ITEMS[old].name:''}`); c.click(); }); });
       b.querySelectorAll('[data-replay]').forEach(x=>x.onclick=()=>{ Sound.tick(); Replay.start(x.dataset.replay); });
       b.querySelectorAll('[data-bk]').forEach(x=>x.onclick=()=>{ Sound.tick(); UI._bookTab=x.dataset.bk; $('#panel').hidden=true; UI.menu('book'); });
       b.querySelectorAll('[data-cg]').forEach(x=>x.onclick=()=>{ const [id,lv]=x.dataset.cg.split(':'); CG.replaying=true; CG.replay(id,+lv); });
@@ -3860,10 +3877,11 @@ const Hooks = {
 Object.assign(ITEMS, {
   peiyuan: {name:'培元丹', icon:'i_pill', color:'#e86a5a', sell:90, use:'exp', amount:150, desc:'服下增加 150 修为。丹香里带着一丝暖意。'},
   xueshen: {name:'雪参',   icon:'i_lingcao', color:'#f1ece2', sell:120, use:'heal', amount:200, desc:'雪线上才长的老参。恢复 200 生命。'},
-  rod_bamboo:{name:'青竹钓竿', icon:'i_rod', color:'#5fa35a', price:400, sell:0, desc:'老竹子做的好钓竿。放在行囊里，钓鱼时自动换用：收线框更大，鱼也游得慢一些。'},
+  rod_bamboo:{name:'青竹钓竿', icon:'i_rod_bamboo', tool:true, price:400, sell:0, desc:'老竹子做的好钓竿：收线框更大，鱼也游得慢一些。在行囊里点它，选「放进快捷栏」换掉普通钓竿。'},
   wuse:    {name:'五色石', icon:'i_feather', color:'#8b5bc5', sell:260, desc:'传说是女娲补天剩下的碎石，五色流转。值不少灵石。'},
 });
 SHOP.sell.push('rod_bamboo');
+SPR.i_rod_bamboo=['............','.........g..','........G...','.......g....','......g...e.','.....G....e.','....g.....e.','...g......e.','..G.......e.','.GG......eue','............','............'];
 // lasting gifts from encounters: {hp, mp, atk, def, med}
 { const _stats=stats; stats=function(){ const s=_stats(), b=S.bonus||{}; return {...s, hp:s.hp+(b.hp||0), mp:s.mp+(b.mp||0), atk:s.atk+(b.atk||0), def:s.def+(b.def||0)}; }; }
 { const _med=Sect.medMul; Sect.medMul=function(){ return +(_med.call(Sect)*(1+((S.bonus||{}).med||0))).toFixed(2); }; }
@@ -4167,7 +4185,7 @@ const Life = {
     return _farm(x,y);
   };
 }
-{ const _fish=Mini.fish; Mini.fish=function(tx,ty){ if(!S.inv.rod) return UI.toast('需要钓竿（钱掌柜那里有卖）'); if(tx==null){ const p=findPrompt(); if(p&&p.fish){ tx=p.x; ty=p.y; } } Mini._spot=(tx!=null)?Life.glowAt(RT.mapId,tx,ty):null; S.sel='rod'; RT.fishing=tx!=null?{x:tx,y:ty,bite:false}:null; _fish.call(Mini); $('#minigame').classList.add('sheet'); }; }
+{ const _fish=Mini.fish; Mini.fish=function(tx,ty){ if(!S.inv.rod&&!S.inv.rod_bamboo) return UI.toast('需要钓竿（钱掌柜那里有卖）'); if(tx==null){ const p=findPrompt(); if(p&&p.fish){ tx=p.x; ty=p.y; } } Mini._spot=(tx!=null)?Life.glowAt(RT.mapId,tx,ty):null; if(!isRod(S.sel)||!S.inv[S.sel]) S.sel=S.inv.rod_bamboo?'rod_bamboo':'rod'; RT.fishing=tx!=null?{x:tx,y:ty,bite:false}:null; _fish.call(Mini); $('#minigame').classList.add('sheet'); }; }
 { const _close=Mini.close; Mini.close=function(){ RT.fishing=null; $('#minigame').classList.remove('sheet'); return _close.apply(Mini,arguments); }; }
 Mini.fishPick=()=>Life.pick(Mini._spot);
 Mini.reel=function(fish){
@@ -4175,7 +4193,7 @@ Mini.reel=function(fish){
   el.innerHTML=`<div class="mg wood fishg ${king?'kingfish':''}"><h3>${king?'鱼王上钩了！！':'收线！'}</h3><div class="reel-wrap"><div class="reel"><div class="catch" id="rcBox"></div><div class="fishi" id="rcFish"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""></div></div>
     <div class="rprog"><i id="rcProg"></i></div></div><p class="mg-tip">${king?'它的力气大得惊人——稳住！':'按住「提竿」让绿框上升，把鱼框住！'}</p><button class="btn main big" id="rcBtn">提竿（按住）</button></div>`;
   if(king){ Music.stinger('boss'); }
-  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const tier=S.flags.goldrod?2:S.inv.rod_bamboo?1:0, box=[.26,.32,.38][tier]*(king?.9:1), slow=[1,.85,.75][tier]; const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
+  let b=.1, bv=0, f=.5, fTarget=.5, p=.3, holding=false, t=0; const tier=S.flags.goldrod?2:S.sel==='rod_bamboo'?1:0, box=[.26,.32,.38][tier]*(king?.9:1), slow=[1,.85,.75][tier]; const unbind=Mini.hold($('#rcBtn'), x=>holding=x);
   Mini.run(dt=>{
     t+=dt; bv+=(holding?1.8:-1.6)*dt; bv*=.93; b=Math.max(0,Math.min(1-box,b+bv*dt*2)); if(b===0||b===1-box) bv=0;
     if(Math.random()<dt*fish.jumpy) fTarget=Math.random(); f+=(fTarget-f)*Math.min(1,dt*fish.speed*2*slow);
@@ -6610,6 +6628,8 @@ const Review = {
         setTimeout(()=>UI.say([{choice:'和谁打一场？', options:['lili','qitu','zhuyan','dangkang','xingxing'].map(k=>({text:BEASTS[k].name, fn:()=>Battle.start(k,()=>{})}))}]),500); }},
     {id:'stick', group:'成长', title:'手机摇杆 · 地图边缘不被挡住', check:'用手机打开，站在青丘山林最上面。按住屏幕任意处拖动会出现摇杆，松手就停；轻点地面或人物仍然会自己走过去。往上走能从顶上的路口回洞府——地图最上面一排不再被任务栏挡住，最下面一排也不被血条和物品栏挡住。',
       run(){ Review.base({quest:'q6', L:7}); Review.at('forest',14,2,'up'); }},
+    {id:'hotbar', group:'成长', title:'快捷栏换道具 · 行囊下拉', check:'用手机打开。行囊里有普通钓竿和青竹钓竿（绿色的）。点青竹钓竿，下面会出现「放进快捷栏：1号 / 2号 / 3号」，点一个就换上去。再看「人物」和「图鉴」两页，内容长的时候能上下滑动。',
+      run(){ Review.base({quest:'q8', L:10, sect:'jian', inv:{rod:1, rod_bamboo:1, huichun:3, juqi:2}, flags:{qiongqi_done:true, tang_sect:true, met_ahe:true}}); S.bar=null; Review.at('town',12,12,'down'); setTimeout(()=>{ UI._tab='bag'; UI.menu('bag'); },500); }},
     {id:'guide', group:'成长', title:'新手引导（手机）', check:'用手机打开：会依次弹出走路、任务、互动、行囊的提示；左上角任务栏只显示正在追踪的一条，点「展开」看全部。',
       run(){ Review.base({quest:'q1', L:0}); S.tips={}; Review.at('home',11,6,'down'); }},
     {id:'fx-enter', group:'风穴副本', title:'风穴入口 → 风谷', check:'站在山林东北角的风穴洞口前，按 E 进去。风谷里每隔几秒起风，会把你往下吹；躲在岩石正下方（头上是石头）就不会被吹走，头顶会显示「避风」。收集 3 片穷奇羽打开谷口。路上有蛊雕和狌狌，蛊雕也要躲弹幕。',
