@@ -163,6 +163,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
   padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 #battle.boss{background:radial-gradient(ellipse at 50% 38%,#6a3f3f 0%,#3a2222 55%,#1a1010 100%)}
 #battle.shake{animation:shk .3s}
+#battle>.skillfx{position:absolute!important;inset:0;margin:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:6;transition:opacity .25s}
+#battle>.skillfx.out{opacity:0}
+#fxPick{position:fixed;left:50%;transform:translateX(-50%);top:max(64px,env(safe-area-inset-top,0px));z-index:40;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+#battle.fxing .b-acts{pointer-events:none;opacity:.55}
 @keyframes shk{25%{transform:translate(-6px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,2px)}}
 .b-top{max-width:520px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:6px}
 .b-name{font-family:var(--f-head);font-size:24px;color:#fff3dc;text-shadow:0 2px 0 #000}

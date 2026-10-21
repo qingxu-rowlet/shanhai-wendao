@@ -125,6 +125,7 @@ const SIDES = [
 function sideCountNow(s,c){ s.st.kb=s.st.kb||{}; s.st.crafted=s.st.crafted||{};
   return c.type==='meditated'?s.st.meditated:c.type==='kill'?(s.st.kb[c.key]||0):c.type==='killall'?s.st.kills:c.type==='grade'?(s.st.topGrade||0):c.type==='pet'?(s.pet?1:0):(s.st.crafted[c.key]||0); }
 function sideProgress(s,q){
+  if(q.progress) return q.progress(s);
   if(q.need) return Object.entries(q.need).map(([k,n])=>`${ITEMS[k].name} ${Math.min(count(s,k),n)}/${n}`).join(' · ');
   if(q.count){ const c=q.count, done=sideCountNow(s,c)-(s.side[q.id+'_base']||0);
     const label={meditated:'打坐',killall:'击败妖兽',grade:'上品丹',pet:'收服灵宠'}[c.type]||(c.type==='kill'?'击败'+BEASTS[c.key].name:'炼成'+ITEMS[c.key].name);

@@ -257,7 +257,7 @@ Object.assign(SCRIPTS, {
     {battle:'qiongqi2', win:'fx_rematch_win', lose:'fx_boss_lose'}],
   fx_rematch_win:[
     ['旁白','狂暴穷奇的血色羽毛一片片剥落，它嘶吼着撞进风壁，再一次逃进了云里。'],
-    {run:()=>{ S.fxRematchDay=S.day; if(!S.flags.fx_rematch){ S.flags.fx_rematch=true; S.stones+=300; perk('hp',30,'镇风：生命上限 +30'); UI.toast('获得称号「镇风」，灵石 +300'); } else { S.stones+=100; UI.toast('灵石 +100'); } UI.hud(); }},
+    {run:()=>{ S.fxRematchDay=S.day; if(S.side.zhenfeng!=='done') S.side.zhenfeng='done'; if(S.track==='zhenfeng') S.track='main'; if(!S.flags.fx_rematch){ S.flags.fx_rematch=true; S.stones+=300; perk('hp',30,'镇风：生命上限 +30'); UI.toast('获得称号「镇风」，灵石 +300'); } else { S.stones+=100; UI.toast('灵石 +100'); } UI.hud(); }},
     ['旁白','风眼里的风渐渐平息。（狂暴穷奇明天还会再来，可以再次挑战。）']],
 });
 // the rematch ignores the first-fight rules: no ally joins in phase 3
@@ -266,3 +266,22 @@ Object.assign(SCRIPTS, {
 { const _act=Dungeon.act; Dungeon.act=function(o){ if(o.act==='fxboss2'){ if(S.fxRematchDay===S.day) return UI.say([['旁白','风眼里只剩下乱风。狂暴穷奇今天被你打跑了，过一天再来吧。']]), true; UI.say(SCRIPTS.fx_rematch_meet); return true; } return _act.call(Dungeon,o); }; }
 // a rumour on the morning card once you can take it on
 { const _dc=UI.dayCard; UI.dayCard=function(){ const r=_dc.apply(UI,arguments); if(S.flags.qiongqi_done&&S.sect&&!S.flags.fx_rematch){ const d=$('#daycard div'); if(d){ const sp=document.createElement('span'); sp.textContent='听说风穴里的风又起来了……'; d.appendChild(sp); } } return r; }; }
+
+// 镇风: once you are 筑基 and in a sect with 穷奇 beaten, your master sends word that it is back — a side task you can track and path to
+SIDES.push({id:'zhenfeng', get giver(){ return S&&S.sect?SECTS[S.sect].master.id:'yunyou'; }, title:'镇风', desc:'风穴里的穷奇伤好了，变得更加狂暴。师父让你用本门绝学去风眼里会会它。这次没有顾长歌帮忙。',
+  unlock:s=>!!s.sect&&!!s.flags.qiongqi_done&&s.L>=10, reward:{},
+  progress:s=>'去风穴第三层「风眼」打败狂暴穷奇',
+  get start(){ const m=S&&S.sect?SECTS[S.sect].master.name:'云游子'; return [[m,'{称}，风穴里的穷奇伤好了，又出来作乱——比上回还凶。'],[m,'这回没人替你挡着了。用本门绝学，去风眼里会会它。']]; },
+  done:[],
+  target:s=>Dungeon.inside()?(RT.mapId==='fx3'?['fx3',8,6,'狂暴穷奇']:RT.mapId==='fx2'?['fx2',23,7,'通往风眼']:['fx1',6,0,'通往枯骨林']):['forest',26,2,'风穴洞口']});
+const ZHENFENG_CALL=()=>{ const sc=SECTS[S.sect], m=sc.master.name;
+  return [['旁白','一张传音符忽然飘到你面前，化作一道熟悉的声音——是师父'+m+'。'],
+    [m,'{称}，风穴里的穷奇伤好了，又出来作乱，比上回凶得多。'],
+    [m,'这回没有旁人替你挡着。你已入我'+sc.name+'，学了「'+sc.skill.name+'」——正好去风眼里会会它，替镇上镇一镇这股风。'],
+    {run:()=>{ S.side.zhenfeng='active'; S.track='zhenfeng'; UI.hud(); UI.toast('新支线：镇风（已追踪，点「寻路」）'); }},
+    ['旁白','（左上角的任务栏里多了一条支线「镇风」。点「寻路」就会带你去风穴洞口。打赢狂暴穷奇，能得到称号「镇风」、300 灵石和生命上限 +30。）']]; };
+setInterval(()=>{ try{
+  if(!S||!RT.map||RT.paused||UI.busy()||Dodge.auto||$('.tip')||Dungeon.inside()) return;
+  if(!S.sect||!S.flags.qiongqi_done||S.L<10||S.side.zhenfeng||S.flags.fx_rematch) return;
+  Sound.magic(); UI.say(ZHENFENG_CALL());
+}catch(e){} },1500);

@@ -74,6 +74,14 @@ const Review = {
       run(){ Review.base({quest:'q6', L:7, inv:{huichun:3}, kills:3, flags:{fx_valley:true, fx_gate:true, fx_lit:true, fx_clear_heart:true}}); Review.at('fx3',8,8,'up'); }},
     {id:'fx-rematch', group:'风穴副本', title:'狂暴穷奇（入宗门后再战）', check:'已拜入剑宗、筑基。风眼里有狂暴穷奇，按 E 挑战：血更厚、出手更狠、弹幕更快，这次没有顾长歌帮忙，要靠宗门绝学。每回合只被打中一两下、该护体时护体，带的回春丹够用就能赢。第一次赢得称号「镇风」、300 灵石、生命上限 +30；之后每天能再打一次，给 100 灵石。',
       run(){ Review.base({quest:'q8', L:10, sect:'jian', inv:{huichun:4, juqi:2}, flags:{qiongqi_done:true, tang_sect:true, fx_valley:true, fx_gate:true, fx_lit:true}}); Review.at('fx3',8,8,'up'); }},
+    {id:'zhenfeng', group:'风穴副本', title:'师父传音：镇风支线', check:'已拜剑宗、筑基、打败过穷奇，站在洞府里。一两秒后会飘来师父的传音符，提醒你狂暴穷奇回来了；左上角任务栏会多出支线「镇风」并自动追踪，点「寻路」会走到风穴洞口。',
+      run(){ Review.base({quest:'q8', L:10, sect:'jian', inv:{huichun:4}, flags:{qiongqi_done:true, tang_sect:true, fx_valley:true, fx_gate:true, fx_lit:true}}); S.side.zhenfeng=undefined; Review.at('home',11,8,'down'); }},
+    {id:'skillfx', group:'成长', title:'宗门绝学动画', check:'直接进入和狂暴穷奇的战斗，灵力无限。点宗门绝学看动画；点上方的门派按钮换一个宗门再看：剑宗万剑归宗（剑雨 + 巨剑）、药王谷丹火（火球 + 烈焰）、万兽谷兽魂共鸣（灵宠虚影冲锋 + 三道爪痕）、天机阁定身符（符纸 + 八卦阵 + 光链）。',
+      run(){ Review.base({quest:'q8', L:10, sect:'jian', flags:{qiongqi_done:true, tang_sect:true}}); S.pet={kind:'dangkang',lv:3,xp:0}; Review.at('fx3',8,8,'up');
+        const bar=document.createElement('div'); bar.id='fxPick'; bar.innerHTML=Object.entries(SECTS).map(([k,s])=>`<button class="btn mini" data-k="${k}">${s.name}</button>`).join('');
+        document.body.appendChild(bar); bar.querySelectorAll('button').forEach(b=>b.onclick=()=>{ Sound.tick(); if(Battle.s) Battle.close(); S.sect=b.dataset.k; start(); });
+        const start=()=>{ S.mp=999; Battle._begin('qiongqi2',()=>{}); const keep=setInterval(()=>{ if(!Battle.s){ clearInterval(keep); return; } S.mp=999; if(Battle.s.hp<300) Battle.s.hp=1250; S.hp=stats().hp; Battle.ui(); },500); };
+        setTimeout(start,600); }},
     {id:'neck', group:'风穴副本', title:'修炼瓶颈', check:'炼气六层修为已满，打坐面板会提示「炼气六层瓶颈：穿过风穴的风谷」，闭关也不会再涨修为。',
       run(){ Review.base({quest:'q6', L:6, kills:3}); S.exp=expNeed(6); S.min=10*60; Review.at('home',16,5,'up'); setTimeout(()=>meditate(),500); }},
     // 配乐
