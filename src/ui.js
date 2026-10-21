@@ -266,7 +266,7 @@ const UI = {
       if(st.roottest){ $('#dlg').hidden=true; Sect.rootTest(()=>{ $('#dlg').hidden=false; UI.sync(); UI.next(); }); return; }
       if(st.cine){ $('#dlg').hidden=true; Cine.play(st.cine, ()=>{ $('#dlg').hidden=false; UI.sync(); UI.next(); }); return; }
       if(st.choice) return UI.choice(st);
-      if(st.battle){ const after=st; $('#dlg').hidden=true; UI.dlgQ=null; Battle.start(st.battle, r=>{ const id=r==='win'?after.win:after.lose; const fin=()=>{ if(r==='lose') sleep(true); q.cb&&q.cb(); }; if(id) UI.say(SCRIPTS[id], fin); else fin(); }); return; }
+      if(st.battle){ const after=st; $('#dlg').hidden=true; UI.dlgQ=null; Battle.start(st.battle, r=>{ const id=r==='win'?after.win:after.lose; const fin=()=>{ if(r==='lose') sleep(true); q.cb&&q.cb(); }; if(id) UI.say(r==='win'?UI.commit(SCRIPTS[id]):SCRIPTS[id], fin); else fin(); }); return; }
     }
     UI.closeDlg(true);
   },
@@ -292,6 +292,18 @@ const UI = {
       if(o.go){ UI.dlgQ.steps=[...SCRIPTS[o.go]]; UI.dlgQ.i=0; } UI.next(); });
     d.querySelectorAll('p').forEach(p=>p.textContent=p.textContent.replace(/\{名\}/g,S.name||''));
   },
+  // a won battle counts the moment it is won: its flags and rewards are applied and saved now, and the lines that follow only show them
+  // (on a phone the page can reload while the player is still reading the victory scene)
+  commit(steps){ const out=[]; let got=[]; const fx=UI.fx; UI.fx=true;   // quest checks wait until the scene has been read
+    const flush=()=>{ if(got.length){ out.push(['获得','✦ '+got.join('　✦ ')]); got=[]; } };
+    for(const st of steps){
+      if(Array.isArray(st)||!(st.flag||st.give||st.stones||st.exp)){ flush(); out.push(st); continue; }
+      if(st.flag) S.flags[st.flag]=true;
+      if(st.give) for(const k in st.give){ addItem(k,st.give[k]); got.push(`${ITEMS[k].name} ×${st.give[k]}`); }
+      if(st.stones){ S.stones+=st.stones; got.push(`灵石 ×${st.stones}`); }
+      if(st.exp){ gainExp(st.exp); got.push(`修为 +${st.exp}`); }
+    }
+    UI.fx=fx; flush(); UI.hud(); save(); return out; },
   confirm(text, yes){ UI.say([{choice:text, options:[{text:'好', go:'__yes'},{text:'算了', go:'__no'}]}], null);
     SCRIPTS.__yes=[{end:true}]; SCRIPTS.__no=[{end:true}];
     const btns=$('#dlg').querySelectorAll('[data-i]');

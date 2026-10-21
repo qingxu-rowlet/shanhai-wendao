@@ -109,6 +109,8 @@ const Review = {
         S.inv={slip:1,hoe:1,can:1,seed_lc:4,seed_zg:2,sprinkler:1,huichun:1}; S.puppet=true; S.farm={'home:4,7':{tilled:1,crop:'lingcao',stage:1,days:1},'home:5,8':{tilled:1,sprinkler:1}};
         const before=S.stones; localStorage.setItem(slotKey(RT.slot),JSON.stringify(S)); S=loadSave(RT.slot); Sect.migrate(); $('#title').hidden=true; enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); SaveSys.resume();
         UI.toast(`退还后灵石：${before} → ${S.stones}`); }},
+    {id:'carry', group:'存档', title:'带走存档（导出 / 导入）', check:'打开的是「存档」页。最下面有「导出存档文件」「复制存档码」「导入存档」。在另一个浏览器（比如微信里打开）的标题画面点「导入存档」，粘贴存档码或选存档文件，选一个存档位导入。iPhone 用 Safari 打开时，标题画面会提示「添加到主屏幕」。',
+      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_jian',12,15,'up'); setTimeout(()=>SaveSys.panel(),500); }},
     {id:'end', group:'剧情', title:'第一章结束后的自由时间', check:'第一章完成后能否继续逛、做支线、钓鱼、重温往事。',
       run(){ Review.base({quest:'end', L:10, sect:'dan', flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{rod:1}}); Review.at('home',11,6,'down'); }},
     // 第二章 第一幕

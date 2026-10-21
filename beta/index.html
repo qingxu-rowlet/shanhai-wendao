@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="6ac355e82f"><script>(function(){var B="6ac355e82f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="1c2991576e"><script>(function(){var B="1c2991576e";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -126,6 +126,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .ptitle .x{width:36px;height:36px;font-size:24px;border-radius:6px;background:var(--parch-d)}
 .pbody{padding:12px;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;display:flex;flex-direction:column;gap:10px;min-height:0}
 .tabs{display:flex;gap:4px;flex-wrap:wrap}
+.carry{padding:10px;display:flex;flex-direction:column;gap:8px;text-align:left}.carry p{margin:0;font-size:14px}
+.carry-btns{display:flex;flex-wrap:wrap;gap:6px}.carry-code{width:100%;box-sizing:border-box;min-height:70px;font-size:12px;border-radius:6px;border:2px solid var(--parch-d);padding:6px;background:#fffaf0;color:var(--ink);-webkit-user-select:text;user-select:text}
+.carry-slots{display:flex;flex-direction:column;gap:4px;font-size:14px}.carry input[type=file]{font-size:14px;max-width:100%}
+.title-carry{margin:8px 0}#title .carry{max-width:420px;margin:0 auto;color:var(--ink)}#title .tnote.hs{font-size:13px;opacity:.85;max-width:420px;margin:6px auto}
 .barpick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px}.barpick span{font-size:14px;color:var(--ink-soft)}.barpick .btn.on{background:var(--wood);color:#fff3dc}
 .tabs button{padding:6px 12px;border-radius:6px 6px 0 0;background:var(--parch-d);font-family:var(--f-head);font-size:16px}
 .tabs button.on{background:var(--wood);color:#fff3dc}
@@ -2677,7 +2681,7 @@ const UI = {
       if(st.roottest){ $('#dlg').hidden=true; Sect.rootTest(()=>{ $('#dlg').hidden=false; UI.sync(); UI.next(); }); return; }
       if(st.cine){ $('#dlg').hidden=true; Cine.play(st.cine, ()=>{ $('#dlg').hidden=false; UI.sync(); UI.next(); }); return; }
       if(st.choice) return UI.choice(st);
-      if(st.battle){ const after=st; $('#dlg').hidden=true; UI.dlgQ=null; Battle.start(st.battle, r=>{ const id=r==='win'?after.win:after.lose; const fin=()=>{ if(r==='lose') sleep(true); q.cb&&q.cb(); }; if(id) UI.say(SCRIPTS[id], fin); else fin(); }); return; }
+      if(st.battle){ const after=st; $('#dlg').hidden=true; UI.dlgQ=null; Battle.start(st.battle, r=>{ const id=r==='win'?after.win:after.lose; const fin=()=>{ if(r==='lose') sleep(true); q.cb&&q.cb(); }; if(id) UI.say(r==='win'?UI.commit(SCRIPTS[id]):SCRIPTS[id], fin); else fin(); }); return; }
     }
     UI.closeDlg(true);
   },
@@ -2703,6 +2707,18 @@ const UI = {
       if(o.go){ UI.dlgQ.steps=[...SCRIPTS[o.go]]; UI.dlgQ.i=0; } UI.next(); });
     d.querySelectorAll('p').forEach(p=>p.textContent=p.textContent.replace(/\{名\}/g,S.name||''));
   },
+  // a won battle counts the moment it is won: its flags and rewards are applied and saved now, and the lines that follow only show them
+  // (on a phone the page can reload while the player is still reading the victory scene)
+  commit(steps){ const out=[]; let got=[]; const fx=UI.fx; UI.fx=true;   // quest checks wait until the scene has been read
+    const flush=()=>{ if(got.length){ out.push(['获得','✦ '+got.join('　✦ ')]); got=[]; } };
+    for(const st of steps){
+      if(Array.isArray(st)||!(st.flag||st.give||st.stones||st.exp)){ flush(); out.push(st); continue; }
+      if(st.flag) S.flags[st.flag]=true;
+      if(st.give) for(const k in st.give){ addItem(k,st.give[k]); got.push(`${ITEMS[k].name} ×${st.give[k]}`); }
+      if(st.stones){ S.stones+=st.stones; got.push(`灵石 ×${st.stones}`); }
+      if(st.exp){ gainExp(st.exp); got.push(`修为 +${st.exp}`); }
+    }
+    UI.fx=fx; flush(); UI.hud(); save(); return out; },
   confirm(text, yes){ UI.say([{choice:text, options:[{text:'好', go:'__yes'},{text:'算了', go:'__no'}]}], null);
     SCRIPTS.__yes=[{end:true}]; SCRIPTS.__no=[{end:true}];
     const btns=$('#dlg').querySelectorAll('[data-i]');
@@ -6563,7 +6579,7 @@ UI.title=()=>{
   const slots=[...Array(SLOTS)].map((_,i)=>readSlot(i));
   t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">修仙 · 降妖 · 奇遇　——　青丘篇</p>
     <div class="slots">${slots.map((s,i)=>s?`<div class="slot-card wood"><canvas class="px" data-pv="${i}" width="18" height="22"></canvas>
-        <div class="sc-info"><b>${esc(s.name||'无名')}</b><span>${realmName(s.L)} · 第 ${s.day} 天</span><span class="muted">${esc(MAPS[s.map].name)}</span></div>
+        <div class="sc-info"><b>${esc(s.name||'无名')}</b><span>${realmName(s.L)} · 第 ${s.day} 天</span><span class="muted">${esc((MAPS[s.map]||MAPS.home).name)}</span></div>
         <div class="sc-btns"><button class="btn main mini" data-play="${i}">继续</button><button class="btn mini" data-saves="${i}">读档</button><button class="btn mini" data-del="${i}">删除</button></div></div>`
       :`<button class="slot-card empty wood" data-new="${i}"><span class="plus">＋</span><span>新的修行</span><span class="muted">存档 ${i+1}</span></button>`).join('')}</div>
     <div class="title-saves" id="tSaves"></div><p class="tnote">每个存档是一位独立的修士。点任意处开启音乐（iPhone 请关闭静音开关）。</p><p class="copyright">© 2026 qingxu-rowlet · 山海问道 · CC BY-NC-SA 4.0 · 禁止商用</p></div>`;
@@ -6677,6 +6693,62 @@ function loadFromObject(s){ s.side=s.side||{}; s.track=s.track||'main'; s.look=s
 addEventListener('visibilitychange', ()=>{ if(document.hidden && SaveSys.canSave()) save(); });
 addEventListener('pagehide', ()=>{ if(SaveSys.canSave()) save(); });
 setInterval(()=>{ if(S && RT.map && !RT.paused && SaveSys.canSave()){ const half=Math.floor(S.min/30); if(half!==SaveSys.autoTick){ SaveSys.autoTick=half; save(); } } }, 2000);
+
+/* ---------- carry a save to another browser or phone: a file, or a code to paste ----------
+   Each browser keeps its own saves (Safari, WeChat, the app you tapped the link in…), so a save can be taken along by hand. */
+const Carry = {
+  PREFIX:'山海问道存档:',
+  enc(s){ return btoa(unescape(encodeURIComponent(JSON.stringify({game:'shanhai-wendao', v:1, at:Date.now(), save:s})))); },
+  code(s){ return Carry.PREFIX+Carry.enc(s); },
+  // accepts a code (with or without the prefix) or the text of a save file
+  parse(text){ text=String(text||'').trim(); let o=null;
+    try{ if(text.startsWith('{')) o=JSON.parse(text); else o=JSON.parse(decodeURIComponent(escape(atob(text.replace(Carry.PREFIX,'').replace(/\s+/g,''))))); }catch(e){ return null; }
+    const s=o&&o.save?o.save:o; if(!s||typeof s!=='object'||s.L==null||s.quest==null||!s.flags||!s.inv) return null;
+    if(!MAPS[s.map]){ s.map='home'; s.x=11; s.y=6; } return s; },
+  fileName(s){ return `山海问道-${s.name||'存档'}-第${s.day}天.json`; },
+  download(s){ const blob=new Blob([JSON.stringify({game:'shanhai-wendao', v:1, at:Date.now(), save:s})],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=Carry.fileName(s); document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500); },
+  async copy(text){ try{ await navigator.clipboard.writeText(text); return true; }catch(e){ return false; } },
+  // the export block (存档 page)
+  exportHTML(){ return `<div class="carry wood"><b>带走存档（换浏览器、换手机）</b>
+      <p class="muted">每个浏览器的存档是分开的：Safari、微信里打开、从聊天窗口点开，都各存各的。想在别处接着玩，就把存档带过去。</p>
+      <div class="carry-btns"><button class="btn mini main" id="cxFile">导出存档文件</button><button class="btn mini" id="cxCode">复制存档码</button><button class="btn mini" id="cxIn">导入存档</button></div>
+      <textarea id="cxOut" class="carry-code" readonly hidden></textarea></div>`; },
+  bindExport(b){
+    $('#cxFile',b).onclick=()=>{ save(); Carry.download(S); Sound.coin(); UI.toast('已导出。iPhone 可以选「存储到“文件”」'); };
+    $('#cxCode',b).onclick=async()=>{ save(); const c=Carry.code(S), ok=await Carry.copy(c), t=$('#cxOut',b); t.hidden=false; t.value=c; t.select();
+      UI.toast(ok?'存档码已复制，可以发到微信，在另一处「导入存档」时粘贴':'请长按下面的存档码全选、复制'); };
+    $('#cxIn',b).onclick=()=>{ Sound.tick(); UI.closePanel(); UI.panel('导入存档', `<div id="cxForm"></div>`, p=>Carry.form($('#cxForm',p), RT.slot, true)); };
+  },
+  // the import form; on the title screen you pick which of the three profiles it goes into
+  form(host, slot, inGame){
+    const slots=[...Array(SLOTS)].map((_,i)=>readSlot(i));
+    host.innerHTML=`<div class="carry wood"><b>导入存档</b>
+      <p class="muted">选一个存档文件，或者把存档码粘贴到下面。</p>
+      <input type="file" id="ciFile" accept=".json,.txt,application/json,text/plain">
+      <textarea id="ciCode" class="carry-code" placeholder="粘贴存档码（以「山海问道存档:」开头）"></textarea>
+      ${inGame?`<p class="muted">导入后会替换当前这个存档（${esc(S.name||'')}）。</p>`:`<div class="carry-slots">${slots.map((s,i)=>`<label><input type="radio" name="ciSlot" value="${i}" ${i===slot?'checked':''}> 存档 ${i+1}${s?'（'+esc(s.name||'无名')+'，会被替换）':'（空）'}</label>`).join('')}</div>`}
+      <div class="carry-btns"><button class="btn mini main" id="ciGo">导入</button><button class="btn mini" id="ciX">取消</button></div><p class="muted" id="ciMsg"></p></div>`;
+    let fileText='';
+    $('#ciFile',host).onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ fileText=String(r.result); $('#ciMsg',host).textContent='已选择：'+f.name; }; r.readAsText(f); };
+    $('#ciX',host).onclick=()=>{ Sound.tick(); if(inGame) UI.closePanel(); else host.innerHTML=''; };
+    $('#ciGo',host).onclick=()=>{
+      const s=Carry.parse(fileText||$('#ciCode',host).value); if(!s){ $('#ciMsg',host).textContent='没认出这个存档，请检查文件或存档码是否完整。'; Sound.hurt(); return; }
+      const i=inGame?RT.slot:+((host.querySelector('[name=ciSlot]:checked')||{}).value||0);
+      try{ localStorage.setItem(slotKey(i), JSON.stringify(s)); }catch(e){ $('#ciMsg',host).textContent='保存失败（浏览器存储已满或被禁用）。'; return; }
+      Sound.levelup(); UI.toast(`导入成功：${s.name||'无名'} · ${realmName(s.L)} · 第 ${s.day} 天`);
+      if(inGame){ UI.closePanel(); S=loadSave(i); Sect.migrate(); enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); Story.check(); } else UI.title(); };
+  },
+};
+// the 存档 page gets the export block
+{ const _p=SaveSys.panel; SaveSys.panel=function(){ _p.apply(SaveSys,arguments); const body=$('#panel .pbody'); if(!body||!S) return;
+    const d=document.createElement('div'); d.innerHTML=Carry.exportHTML(); body.appendChild(d); Carry.bindExport(d); }; }
+// the title screen gets 导入存档 and, on an iPhone outside the home-screen app, a tip about where saves live
+{ const _t=UI.title; UI.title=function(){ _t.apply(UI,arguments); const t=$('#title'), note=t&&t.querySelector('.tnote'); if(!note) return;
+    const b=document.createElement('div'); b.className='title-carry'; b.innerHTML='<button class="btn mini" id="tImport">导入存档</button>'; note.before(b);
+    $('#tImport').onclick=()=>{ Sound.tick(); Carry.form($('#tSaves'), [...Array(SLOTS)].findIndex((_,i)=>!readSlot(i))>=0?[...Array(SLOTS)].findIndex((_,i)=>!readSlot(i)):0, false); };
+    const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(ios&&!navigator.standalone){ const p=document.createElement('p'); p.className='tnote hs'; p.textContent='提示：在 Safari 里点「分享 → 添加到主屏幕」，以后从桌面图标进入。存档只存在当前浏览器里，Safari 长时间不打开时可能会清掉网页数据；从桌面图标进入就不会。也可以在「行囊 → 存档」里导出存档备份。'; note.after(p); } }; }
 
 /* ============================================================
    山海问道 · 往事回廊 — replay key story moments in a sandbox.
@@ -7009,6 +7081,8 @@ const Review = {
         S.inv={slip:1,hoe:1,can:1,seed_lc:4,seed_zg:2,sprinkler:1,huichun:1}; S.puppet=true; S.farm={'home:4,7':{tilled:1,crop:'lingcao',stage:1,days:1},'home:5,8':{tilled:1,sprinkler:1}};
         const before=S.stones; localStorage.setItem(slotKey(RT.slot),JSON.stringify(S)); S=loadSave(RT.slot); Sect.migrate(); $('#title').hidden=true; enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); SaveSys.resume();
         UI.toast(`退还后灵石：${before} → ${S.stones}`); }},
+    {id:'carry', group:'存档', title:'带走存档（导出 / 导入）', check:'打开的是「存档」页。最下面有「导出存档文件」「复制存档码」「导入存档」。在另一个浏览器（比如微信里打开）的标题画面点「导入存档」，粘贴存档码或选存档文件，选一个存档位导入。iPhone 用 Safari 打开时，标题画面会提示「添加到主屏幕」。',
+      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_jian',12,15,'up'); setTimeout(()=>SaveSys.panel(),500); }},
     {id:'end', group:'剧情', title:'第一章结束后的自由时间', check:'第一章完成后能否继续逛、做支线、钓鱼、重温往事。',
       run(){ Review.base({quest:'end', L:10, sect:'dan', flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{rod:1}}); Review.at('home',11,6,'down'); }},
     // 第二章 第一幕

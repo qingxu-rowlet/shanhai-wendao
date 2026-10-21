@@ -189,7 +189,7 @@ UI.title=()=>{
   const slots=[...Array(SLOTS)].map((_,i)=>readSlot(i));
   t.innerHTML=`<div class="title-in"><h1>山海问道</h1><p class="sub">修仙 · 降妖 · 奇遇　——　青丘篇</p>
     <div class="slots">${slots.map((s,i)=>s?`<div class="slot-card wood"><canvas class="px" data-pv="${i}" width="18" height="22"></canvas>
-        <div class="sc-info"><b>${esc(s.name||'无名')}</b><span>${realmName(s.L)} · 第 ${s.day} 天</span><span class="muted">${esc(MAPS[s.map].name)}</span></div>
+        <div class="sc-info"><b>${esc(s.name||'无名')}</b><span>${realmName(s.L)} · 第 ${s.day} 天</span><span class="muted">${esc((MAPS[s.map]||MAPS.home).name)}</span></div>
         <div class="sc-btns"><button class="btn main mini" data-play="${i}">继续</button><button class="btn mini" data-saves="${i}">读档</button><button class="btn mini" data-del="${i}">删除</button></div></div>`
       :`<button class="slot-card empty wood" data-new="${i}"><span class="plus">＋</span><span>新的修行</span><span class="muted">存档 ${i+1}</span></button>`).join('')}</div>
     <div class="title-saves" id="tSaves"></div><p class="tnote">每个存档是一位独立的修士。点任意处开启音乐（iPhone 请关闭静音开关）。</p><p class="copyright">© 2026 qingxu-rowlet · 山海问道 · CC BY-NC-SA 4.0 · 禁止商用</p></div>`;

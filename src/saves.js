@@ -69,3 +69,59 @@ function loadFromObject(s){ s.side=s.side||{}; s.track=s.track||'main'; s.look=s
 addEventListener('visibilitychange', ()=>{ if(document.hidden && SaveSys.canSave()) save(); });
 addEventListener('pagehide', ()=>{ if(SaveSys.canSave()) save(); });
 setInterval(()=>{ if(S && RT.map && !RT.paused && SaveSys.canSave()){ const half=Math.floor(S.min/30); if(half!==SaveSys.autoTick){ SaveSys.autoTick=half; save(); } } }, 2000);
+
+/* ---------- carry a save to another browser or phone: a file, or a code to paste ----------
+   Each browser keeps its own saves (Safari, WeChat, the app you tapped the link in…), so a save can be taken along by hand. */
+const Carry = {
+  PREFIX:'山海问道存档:',
+  enc(s){ return btoa(unescape(encodeURIComponent(JSON.stringify({game:'shanhai-wendao', v:1, at:Date.now(), save:s})))); },
+  code(s){ return Carry.PREFIX+Carry.enc(s); },
+  // accepts a code (with or without the prefix) or the text of a save file
+  parse(text){ text=String(text||'').trim(); let o=null;
+    try{ if(text.startsWith('{')) o=JSON.parse(text); else o=JSON.parse(decodeURIComponent(escape(atob(text.replace(Carry.PREFIX,'').replace(/\s+/g,''))))); }catch(e){ return null; }
+    const s=o&&o.save?o.save:o; if(!s||typeof s!=='object'||s.L==null||s.quest==null||!s.flags||!s.inv) return null;
+    if(!MAPS[s.map]){ s.map='home'; s.x=11; s.y=6; } return s; },
+  fileName(s){ return `山海问道-${s.name||'存档'}-第${s.day}天.json`; },
+  download(s){ const blob=new Blob([JSON.stringify({game:'shanhai-wendao', v:1, at:Date.now(), save:s})],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=Carry.fileName(s); document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500); },
+  async copy(text){ try{ await navigator.clipboard.writeText(text); return true; }catch(e){ return false; } },
+  // the export block (存档 page)
+  exportHTML(){ return `<div class="carry wood"><b>带走存档（换浏览器、换手机）</b>
+      <p class="muted">每个浏览器的存档是分开的：Safari、微信里打开、从聊天窗口点开，都各存各的。想在别处接着玩，就把存档带过去。</p>
+      <div class="carry-btns"><button class="btn mini main" id="cxFile">导出存档文件</button><button class="btn mini" id="cxCode">复制存档码</button><button class="btn mini" id="cxIn">导入存档</button></div>
+      <textarea id="cxOut" class="carry-code" readonly hidden></textarea></div>`; },
+  bindExport(b){
+    $('#cxFile',b).onclick=()=>{ save(); Carry.download(S); Sound.coin(); UI.toast('已导出。iPhone 可以选「存储到“文件”」'); };
+    $('#cxCode',b).onclick=async()=>{ save(); const c=Carry.code(S), ok=await Carry.copy(c), t=$('#cxOut',b); t.hidden=false; t.value=c; t.select();
+      UI.toast(ok?'存档码已复制，可以发到微信，在另一处「导入存档」时粘贴':'请长按下面的存档码全选、复制'); };
+    $('#cxIn',b).onclick=()=>{ Sound.tick(); UI.closePanel(); UI.panel('导入存档', `<div id="cxForm"></div>`, p=>Carry.form($('#cxForm',p), RT.slot, true)); };
+  },
+  // the import form; on the title screen you pick which of the three profiles it goes into
+  form(host, slot, inGame){
+    const slots=[...Array(SLOTS)].map((_,i)=>readSlot(i));
+    host.innerHTML=`<div class="carry wood"><b>导入存档</b>
+      <p class="muted">选一个存档文件，或者把存档码粘贴到下面。</p>
+      <input type="file" id="ciFile" accept=".json,.txt,application/json,text/plain">
+      <textarea id="ciCode" class="carry-code" placeholder="粘贴存档码（以「山海问道存档:」开头）"></textarea>
+      ${inGame?`<p class="muted">导入后会替换当前这个存档（${esc(S.name||'')}）。</p>`:`<div class="carry-slots">${slots.map((s,i)=>`<label><input type="radio" name="ciSlot" value="${i}" ${i===slot?'checked':''}> 存档 ${i+1}${s?'（'+esc(s.name||'无名')+'，会被替换）':'（空）'}</label>`).join('')}</div>`}
+      <div class="carry-btns"><button class="btn mini main" id="ciGo">导入</button><button class="btn mini" id="ciX">取消</button></div><p class="muted" id="ciMsg"></p></div>`;
+    let fileText='';
+    $('#ciFile',host).onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ fileText=String(r.result); $('#ciMsg',host).textContent='已选择：'+f.name; }; r.readAsText(f); };
+    $('#ciX',host).onclick=()=>{ Sound.tick(); if(inGame) UI.closePanel(); else host.innerHTML=''; };
+    $('#ciGo',host).onclick=()=>{
+      const s=Carry.parse(fileText||$('#ciCode',host).value); if(!s){ $('#ciMsg',host).textContent='没认出这个存档，请检查文件或存档码是否完整。'; Sound.hurt(); return; }
+      const i=inGame?RT.slot:+((host.querySelector('[name=ciSlot]:checked')||{}).value||0);
+      try{ localStorage.setItem(slotKey(i), JSON.stringify(s)); }catch(e){ $('#ciMsg',host).textContent='保存失败（浏览器存储已满或被禁用）。'; return; }
+      Sound.levelup(); UI.toast(`导入成功：${s.name||'无名'} · ${realmName(s.L)} · 第 ${s.day} 天`);
+      if(inGame){ UI.closePanel(); S=loadSave(i); Sect.migrate(); enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); Story.check(); } else UI.title(); };
+  },
+};
+// the 存档 page gets the export block
+{ const _p=SaveSys.panel; SaveSys.panel=function(){ _p.apply(SaveSys,arguments); const body=$('#panel .pbody'); if(!body||!S) return;
+    const d=document.createElement('div'); d.innerHTML=Carry.exportHTML(); body.appendChild(d); Carry.bindExport(d); }; }
+// the title screen gets 导入存档 and, on an iPhone outside the home-screen app, a tip about where saves live
+{ const _t=UI.title; UI.title=function(){ _t.apply(UI,arguments); const t=$('#title'), note=t&&t.querySelector('.tnote'); if(!note) return;
+    const b=document.createElement('div'); b.className='title-carry'; b.innerHTML='<button class="btn mini" id="tImport">导入存档</button>'; note.before(b);
+    $('#tImport').onclick=()=>{ Sound.tick(); Carry.form($('#tSaves'), [...Array(SLOTS)].findIndex((_,i)=>!readSlot(i))>=0?[...Array(SLOTS)].findIndex((_,i)=>!readSlot(i)):0, false); };
+    const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(ios&&!navigator.standalone){ const p=document.createElement('p'); p.className='tnote hs'; p.textContent='提示：在 Safari 里点「分享 → 添加到主屏幕」，以后从桌面图标进入。存档只存在当前浏览器里，Safari 长时间不打开时可能会清掉网页数据；从桌面图标进入就不会。也可以在「行囊 → 存档」里导出存档备份。'; note.after(p); } }; }
