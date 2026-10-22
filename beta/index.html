@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="feeac7535f"><script>(function(){var B="feeac7535f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="16b6dc79a9"><script>(function(){var B="16b6dc79a9";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2794,13 +2794,14 @@ const UI = {
       const tt=$('#sTitle'); if(tt) tt.onclick=()=>{ save(); UI.closePanel(); UI.title(); };
     });
   },
-  shop(){
+  shop(who){
+    const head=who==='zhishi'?['宗门小卖部','许执事：「要点什么？宗门弟子，不加价。」']:['钱记杂货','钱掌柜：「客官，看看有什么需要的？」'];
     const render=(tab)=>{
       let body=`<div class="tabs"><button data-t="buy" class="${tab==='buy'?'on':''}">买</button><button data-t="sell" class="${tab==='sell'?'on':''}">卖</button></div><p class="muted">灵石：<b id="shStones">${S.stones}</b></p>`;
       if(tab==='buy') body+=SHOP.sell.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" ${S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])?'disabled':''}>${ITEMS[id].sell===0&&S.inv[id]?'已拥有':ITEMS[id].price+' 灵石'}</button></div>`).join('');
       else { const ids=Object.keys(S.inv).filter(k=>ITEMS[k].sell&&S.inv[k]>0);
         body+=ids.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name} ×${S.inv[id]}</b><small>每个 ${ITEMS[id].sell} 灵石</small></div><button class="btn mini" data-sell="${id}">卖 1</button><button class="btn mini" data-sellall="${id}">全卖</button></div>`).join('')||'<p class="muted">没有可以卖的东西。灵草、灵菇、兽皮和丹药都能卖。</p>'; }
-      UI.panel('钱记杂货', `<p class="greet">钱掌柜：「客官，看看有什么需要的？」</p>`+body, b=>{
+      UI.panel(head[0], `<p class="greet">${head[1]}</p>`+body, b=>{
         b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); render(t.dataset.t); });
         b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy; if(S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])) return; S.stones-=ITEMS[id].price; addItem(id); Sound.coin(); render('buy'); });
         b.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{ const id=x.dataset.sell; addItem(id,-1); S.stones+=ITEMS[id].sell; Sound.coin(); render('sell'); });
@@ -2995,7 +2996,7 @@ const Social = {
   menu(id){
     const n=NPCS[id]; if(!n) return;
     const opts=[];
-    if(id==='qian') opts.push({text:'买卖', fn:()=>UI.shop()});
+    if(id==='qian'||NPCS[id].shop) opts.push({text:'买卖', fn:()=>UI.shop(id)});
     if(id==='yunyou') opts.push({text:'请教', fn:()=>{ const q=Story.quest(); UI.say(q&&q.id!=='end'?[['云游子','眼下要做的事——'+q.title+'：'+q.desc]]:SCRIPTS.talk_yunyou); }});
     opts.push({text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}});
     UI.say([{choice:`${n.name}　${'♥'.repeat(Social.hearts(id))}${'♡'.repeat(Math.max(0,(n.romance?10:8)-Social.hearts(id)))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:opts}]);
@@ -4570,7 +4571,7 @@ const Mail = {
     UI.hud();
   },
   drawFlag(g, ox, oy, T, Z){
-    if(RT.mapId!=='home'||!Mail.unread()) return; const o=MAPS.home.objects.find(x=>x.type==='mailbox');
+    if(!Mail.unread()) return; const o=RT.ents.find(x=>x.type==='mailbox'); if(!o) return;   // the mailbox at home, or the one in the sect
     const cx=ox+(o.x+.5)*T, cy=oy+o.y*T-6*Z+Math.sin(RT.t*5)*1.5*Z;
     g.fillStyle='#c8413b'; g.beginPath(); g.arc(cx,cy,5*Z,0,7); g.fill(); g.strokeStyle='#fff3dc'; g.lineWidth=Z*.8; g.stroke();
     g.fillStyle='#fff3dc'; g.font=`bold ${Math.round(8*Z)}px system-ui,Arial,sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('!',cx,cy+Z*.4);
@@ -6175,10 +6176,12 @@ Object.assign(ITEMS.hu_wei, {keep:true, sell:0, desc:'九尾狐留下的一缕�
 const LOOK_LU ={g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:5};
 const LOOK_XIE={g:'f',skin:0,hair:4,hairColor:0,style:'qun',cloth:1};
 const LOOK_MAN={g:'m',skin:2,hair:1,hairColor:1,style:'jin',cloth:7};
+const LOOK_ZHISHI={g:'m',skin:2,hair:0,hairColor:2,style:'robe',cloth:3};   // 许执事 keeps the sect's little shop
 Object.assign(NPCS, {
   lu: {name:'陆正衡', loves:['juqi'], likes:['huichun','hide','lingcao'], hates:['flower','wine']},
   xie:{name:'谢霁月', loves:['flower','wine'], likes:['lingcao','huichun','zhuguo'], hates:['hide','qq_yu']},
   man:{name:'何满仓', loves:['zhuguo','lingmo'], likes:['wine','huichun','juqi','lingcao'], hates:['flower']},
+  zhishi:{name:'许执事', shop:true, loves:['wine'], likes:['lingcao','hide','zhuguo'], hates:['flower']},
 });
 Object.assign(TALK, {
   lu:[['门规第一条：不得懈怠。','练功不可一日荒废。'],
@@ -6193,6 +6196,10 @@ Object.assign(TALK, {
        ['我小时候住的村子，叫丰年村。名字很好听吧？','师尊说我吃得多，是长身体。可我怎么一直不长呢……'],
        ['{称}，你知道吗，饭要趁热吃，凉了就……就没了。','我有时候会做梦，梦里怎么吃都吃不饱。'],
        ['有你在，膳堂都热闹了。……这块饼，分你一半。']],
+  zhishi:[['要点什么？宗门弟子，不加价。','钓竿、丹药、杂货，桃源镇有的我这儿大多也有。'],
+          ['你师兄满仓？他是我这儿的老主顾，干粮一买就是一大包。','山下的钱掌柜？我们是老相识了，他进货，我转手。'],
+          ['给你留了几样好货，别告诉别人。','修行再忙，也别忘了吃饭。'],
+          ['{称}，以后缺什么，说一声就行。']],
 });
 
 /* ---------- the sect: one layout, four looks ---------- */
@@ -6235,6 +6242,9 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
       {type:'npc', id:'lu',  x:5, y:8,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:mine},
       {type:'npc', id:'xie', x:24, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:mine},
       {type:'npc', id:'man', x:17, y:15, look:LOOK_MAN, name:'何满仓', act:'talk', cond:mine},
+      {type:'npc', id:'zhishi', x:16, y:12, look:LOOK_ZHISHI, name:'许执事', act:'talk', cond:mine},
+      {type:'sign', x:16, y:10, text:'小卖部　——　许执事。钓竿、丹药、杂货，宗门弟子不加价。'},
+      {type:'mailbox', x:5, y:15, act:'mail', spr:'mailbox'},
       ...(k==='dan'?[{type:'npc', id:'tang', x:23, y:9, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>s.sect==='dan'&&!!s.flags.c2_arrive}]:[]),
       {type:'c2_dummy', x:3, y:6, spr:'c2_dummy', act:'dummy'},{type:'c2_dummy', x:6, y:6, spr:'c2_dummy', act:'dummy'},
       {type:'furnace', x:22, y:6, act:'alchemy'},

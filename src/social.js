@@ -129,7 +129,7 @@ const Social = {
   menu(id){
     const n=NPCS[id]; if(!n) return;
     const opts=[];
-    if(id==='qian') opts.push({text:'买卖', fn:()=>UI.shop()});
+    if(id==='qian'||NPCS[id].shop) opts.push({text:'买卖', fn:()=>UI.shop(id)});
     if(id==='yunyou') opts.push({text:'请教', fn:()=>{ const q=Story.quest(); UI.say(q&&q.id!=='end'?[['云游子','眼下要做的事——'+q.title+'：'+q.desc]]:SCRIPTS.talk_yunyou); }});
     opts.push({text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}});
     UI.say([{choice:`${n.name}　${'♥'.repeat(Social.hearts(id))}${'♡'.repeat(Math.max(0,(n.romance?10:8)-Social.hearts(id)))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:opts}]);

@@ -23,10 +23,12 @@ Object.assign(ITEMS.hu_wei, {keep:true, sell:0, desc:'九尾狐留下的一缕�
 const LOOK_LU ={g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:5};
 const LOOK_XIE={g:'f',skin:0,hair:4,hairColor:0,style:'qun',cloth:1};
 const LOOK_MAN={g:'m',skin:2,hair:1,hairColor:1,style:'jin',cloth:7};
+const LOOK_ZHISHI={g:'m',skin:2,hair:0,hairColor:2,style:'robe',cloth:3};   // 许执事 keeps the sect's little shop
 Object.assign(NPCS, {
   lu: {name:'陆正衡', loves:['juqi'], likes:['huichun','hide','lingcao'], hates:['flower','wine']},
   xie:{name:'谢霁月', loves:['flower','wine'], likes:['lingcao','huichun','zhuguo'], hates:['hide','qq_yu']},
   man:{name:'何满仓', loves:['zhuguo','lingmo'], likes:['wine','huichun','juqi','lingcao'], hates:['flower']},
+  zhishi:{name:'许执事', shop:true, loves:['wine'], likes:['lingcao','hide','zhuguo'], hates:['flower']},
 });
 Object.assign(TALK, {
   lu:[['门规第一条：不得懈怠。','练功不可一日荒废。'],
@@ -41,6 +43,10 @@ Object.assign(TALK, {
        ['我小时候住的村子，叫丰年村。名字很好听吧？','师尊说我吃得多，是长身体。可我怎么一直不长呢……'],
        ['{称}，你知道吗，饭要趁热吃，凉了就……就没了。','我有时候会做梦，梦里怎么吃都吃不饱。'],
        ['有你在，膳堂都热闹了。……这块饼，分你一半。']],
+  zhishi:[['要点什么？宗门弟子，不加价。','钓竿、丹药、杂货，桃源镇有的我这儿大多也有。'],
+          ['你师兄满仓？他是我这儿的老主顾，干粮一买就是一大包。','山下的钱掌柜？我们是老相识了，他进货，我转手。'],
+          ['给你留了几样好货，别告诉别人。','修行再忙，也别忘了吃饭。'],
+          ['{称}，以后缺什么，说一声就行。']],
 });
 
 /* ---------- the sect: one layout, four looks ---------- */
@@ -83,6 +89,9 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
       {type:'npc', id:'lu',  x:5, y:8,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:mine},
       {type:'npc', id:'xie', x:24, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:mine},
       {type:'npc', id:'man', x:17, y:15, look:LOOK_MAN, name:'何满仓', act:'talk', cond:mine},
+      {type:'npc', id:'zhishi', x:16, y:12, look:LOOK_ZHISHI, name:'许执事', act:'talk', cond:mine},
+      {type:'sign', x:16, y:10, text:'小卖部　——　许执事。钓竿、丹药、杂货，宗门弟子不加价。'},
+      {type:'mailbox', x:5, y:15, act:'mail', spr:'mailbox'},
       ...(k==='dan'?[{type:'npc', id:'tang', x:23, y:9, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>s.sect==='dan'&&!!s.flags.c2_arrive}]:[]),
       {type:'c2_dummy', x:3, y:6, spr:'c2_dummy', act:'dummy'},{type:'c2_dummy', x:6, y:6, spr:'c2_dummy', act:'dummy'},
       {type:'furnace', x:22, y:6, act:'alchemy'},

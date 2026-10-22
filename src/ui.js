@@ -363,13 +363,14 @@ const UI = {
       const tt=$('#sTitle'); if(tt) tt.onclick=()=>{ save(); UI.closePanel(); UI.title(); };
     });
   },
-  shop(){
+  shop(who){
+    const head=who==='zhishi'?['宗门小卖部','许执事：「要点什么？宗门弟子，不加价。」']:['钱记杂货','钱掌柜：「客官，看看有什么需要的？」'];
     const render=(tab)=>{
       let body=`<div class="tabs"><button data-t="buy" class="${tab==='buy'?'on':''}">买</button><button data-t="sell" class="${tab==='sell'?'on':''}">卖</button></div><p class="muted">灵石：<b id="shStones">${S.stones}</b></p>`;
       if(tab==='buy') body+=SHOP.sell.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" ${S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])?'disabled':''}>${ITEMS[id].sell===0&&S.inv[id]?'已拥有':ITEMS[id].price+' 灵石'}</button></div>`).join('');
       else { const ids=Object.keys(S.inv).filter(k=>ITEMS[k].sell&&S.inv[k]>0);
         body+=ids.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name} ×${S.inv[id]}</b><small>每个 ${ITEMS[id].sell} 灵石</small></div><button class="btn mini" data-sell="${id}">卖 1</button><button class="btn mini" data-sellall="${id}">全卖</button></div>`).join('')||'<p class="muted">没有可以卖的东西。灵草、灵菇、兽皮和丹药都能卖。</p>'; }
-      UI.panel('钱记杂货', `<p class="greet">钱掌柜：「客官，看看有什么需要的？」</p>`+body, b=>{
+      UI.panel(head[0], `<p class="greet">${head[1]}</p>`+body, b=>{
         b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); render(t.dataset.t); });
         b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy; if(S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])) return; S.stones-=ITEMS[id].price; addItem(id); Sound.coin(); render('buy'); });
         b.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{ const id=x.dataset.sell; addItem(id,-1); S.stones+=ITEMS[id].sell; Sound.coin(); render('sell'); });

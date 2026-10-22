@@ -70,7 +70,7 @@ const Mail = {
     UI.hud();
   },
   drawFlag(g, ox, oy, T, Z){
-    if(RT.mapId!=='home'||!Mail.unread()) return; const o=MAPS.home.objects.find(x=>x.type==='mailbox');
+    if(!Mail.unread()) return; const o=RT.ents.find(x=>x.type==='mailbox'); if(!o) return;   // the mailbox at home, or the one in the sect
     const cx=ox+(o.x+.5)*T, cy=oy+o.y*T-6*Z+Math.sin(RT.t*5)*1.5*Z;
     g.fillStyle='#c8413b'; g.beginPath(); g.arc(cx,cy,5*Z,0,7); g.fill(); g.strokeStyle='#fff3dc'; g.lineWidth=Z*.8; g.stroke();
     g.fillStyle='#fff3dc'; g.font=`bold ${Math.round(8*Z)}px system-ui,Arial,sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('!',cx,cy+Z*.4);
