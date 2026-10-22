@@ -26,15 +26,18 @@ function addItem(id,n=1){ S.inv[id]=(S.inv[id]||0)+n; if(S.inv[id]<=0) delete S.
 
 /* ---------- sprite & tile caches ---------- */
 const SPRC = {};
+const SOFT_EDGE=new Set(['yunyou','qian','ahe','pl_down','pl_up','pl_side']);
 function sprite(key, color){
   const ck = key+(color||''); if(SPRC[ck]) return SPRC[ck];
   const rows = SPR[key]; const h=rows.length, w=Math.max(...rows.map(r=>r.length));
   const c=document.createElement('canvas'); c.width=w+2; c.height=h+2; const g=c.getContext('2d');
   const filled=(x,y)=>y>=0&&y<h&&x>=0&&x<w&&rows[y][x]&&rows[y][x]!=='.';
-  // outline first, then pixels
+  // outline first, then pixels (people get a soft outline in the shade of what it borders, like the player)
+  const soft=SOFT_EDGE.has(key);
   g.fillStyle=PAL.k;
   for(let y=-1;y<=h;y++) for(let x=-1;x<=w;x++){ if(filled(x,y)) continue;
-    if(filled(x-1,y)||filled(x+1,y)||filled(x,y-1)||filled(x,y+1)) g.fillRect(x+1,y+1,1,1); }
+    const nb=[[x,y+1],[x,y-1],[x-1,y],[x+1,y]].find(([a,b])=>filled(a,b)); if(!nb) continue;
+    if(soft){ const ch=rows[nb[1]][nb[0]]; g.fillStyle=softEdge(ch==='X'?color:PAL[ch]); } g.fillRect(x+1,y+1,1,1); }
   for(let y=0;y<h;y++) for(let x=0;x<w;x++){ const ch=rows[y][x]; if(!ch||ch==='.') continue;
     g.fillStyle = ch==='X' ? (color||'#fff') : (PAL[ch]||'#f0f'); g.fillRect(x+1,y+1,1,1); }
   // anchor: last row with pixels (so a tall sprite stands on its tile)

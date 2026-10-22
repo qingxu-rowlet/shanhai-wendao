@@ -200,9 +200,9 @@ function lookPalette(look){
   const light=parseInt(hair.slice(1,3),16)>150;
   const lower = look.style==='jin' ? '#3a3048' : look.style==='qun' ? shade(cloth,.18) : cloth;
   const sash = look.style==='jin' ? '#5e3a20' : look.style==='qun' ? (look.cloth===1?'#d9708a':'#fbf3e4') : (look.cloth===7?'#c8413b':'#e0aa3e');
-  return { S:skin, s:shade(skin,-.13), E:'#2b2533', e:'#ffffff', L:look.g==='f'?'#2b2533':skin, M:mix(skin,'#ff7a8a',.35), m:'#b5534a',
+  return { S:skin, s:shade(skin,-.13), E:'#2b2533', e:'#ffffff', L:look.g==='f'?'#2b2533':skin, M:mix(skin,'#ff6f86',.42), m:'#e06a78',
     W:look.cloth===1?'#c9b48a':'#fbf3e4', C:cloth, c:shade(cloth,-.25), A:sash, P:lower, p:shade(lower,-.22), F:'#4a2a1a',
-    H:hair, h:light?shade(hair,-.12):shade(hair,.12), Y:'#e8b84a', R:'#d84a4a' };
+    H:hair, h:light?shade(hair,-.12):shade(hair,.12), Y:'#e8b84a', R:'#d84a4a', X:mix(hair,'#ffffff',.38), Z:mix(cloth,'#ffffff',.28) };
 }
 function composeRows(dir, look, frame){
   const rows=BODY[dir].map(r=>r.split(''));
@@ -213,16 +213,23 @@ function composeRows(dir, look, frame){
   const put=(y,line)=>{ if(y>=rows.length) return; for(let x=0;x<16;x++){ const ch=line[x]; if(ch&&ch!=='.') rows[y][x]=ch; } };
   if(dir==='down') HAIR_CAP.down[st].forEach((l,y)=>put(y,l));
   else { HAIR_CAP[dir].base.forEach((l,y)=>put(y,l)); const ex=HAIR_CAP[dir][st]; for(const y in ex) put(+y,ex[y]); }
+  // a touch more charm: blush right under the eyes, a shine on the hair, light on the left of the clothes
+  if(dir==='down'){ for(const x of [4,5,10,11]) if('SsM'.includes(rows[9][x])) rows[9][x]='M'; }
+  for(const y of [2,3]){ const xs=[]; for(let x=0;x<16;x++) if(rows[y][x]==='H') xs.push(x); if(xs.length>3){ rows[y][xs[1]]='X'; rows[y][xs[2]]='X'; } }
+  for(let y=12;y<16;y++){ const x=rows[y].indexOf('C'); if(x>=0) rows[y][x]='Z'; }
+  for(let x=1;x<16;x++) if(rows[12][x]==='C'&&rows[12][x-1]!=='C'&&rows[12][x-1]!=='Z') rows[12][x]='Z';
   return rows.map(r=>r.join(''));
 }
 const LOOKC={};
+// the outline takes a deep shade of the colour it borders instead of flat black: softer, warmer people
+function softEdge(base){ return mix(shade(base||'#2a1e1a',-.55),'#2a1e1a',.35); }
 function lookSprite(look, dir, frame){
   const key=JSON.stringify(look)+dir+frame; if(LOOKC[key]) return LOOKC[key];
   const rows=composeRows(dir,look,frame), pal=lookPalette(look), h=rows.length, w=16;
   const c=document.createElement('canvas'); c.width=w+2; c.height=h+2; const g=c.getContext('2d');
   const filled=(x,y)=>y>=0&&y<h&&x>=0&&x<w&&rows[y][x]!=='.';
-  g.fillStyle='#2a1e1a';
-  for(let y=-1;y<=h;y++) for(let x=-1;x<=w;x++){ if(filled(x,y)) continue; if(filled(x-1,y)||filled(x+1,y)||filled(x,y-1)||filled(x,y+1)) g.fillRect(x+1,y+1,1,1); }
+  for(let y=-1;y<=h;y++) for(let x=-1;x<=w;x++){ if(filled(x,y)) continue; const nb=[[x,y+1],[x,y-1],[x-1,y],[x+1,y]].find(([a,b])=>filled(a,b)); if(!nb) continue;
+    g.fillStyle=softEdge(pal[rows[nb[1]][nb[0]]]); g.fillRect(x+1,y+1,1,1); }
   for(let y=0;y<h;y++) for(let x=0;x<w;x++){ const ch=rows[y][x]; if(ch==='.') continue; g.fillStyle=pal[ch]||'#f0f'; g.fillRect(x+1,y+1,1,1); }
   c.bottom=h+1; return LOOKC[key]=c;
 }
