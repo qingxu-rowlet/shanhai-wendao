@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="373a3ae21c"><script>(function(){var B="373a3ae21c";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="feeac7535f"><script>(function(){var B="feeac7535f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6480,6 +6480,18 @@ for(const k in SECTS) MAPS['zong_'+k].objects.push({type:'qiyu', x:0, y:0, act:'
     const o=(MAPS[S.qiyu.map]||{objects:[]}).objects.find(o=>o.type==='qiyu'); if(o) [o.x,o.y]=QIYU_SPOTS_ZONG[S.qiyu.spot%QIYU_SPOTS_ZONG.length]; }; }
 { const _h=Qiyu.hint; Qiyu.hint=function(){ const t=_h.apply(Qiyu,arguments); const m=S&&S.qiyu&&S.qiyu.map; return m&&m!=='forest'?t.replace(/青丘山林|山林/g, MAPS[m].name):t; }; }
 
+/* ---------- the live site: saves that went to the sect while chapter 2 was briefly public go back to the end of chapter 1 ----------
+   Level, items, stones and friendships stay; only the chapter 2 progress is undone. When chapter 2 opens, the master takes them again. */
+C2.rollback=function(s){ if(!C2_LOCKED||!s||!s.flags||!s.flags.c2_arrive) return s;
+  for(const k of ['c2_arrive','c2_order','c2_mold']) delete s.flags[k]; delete s.c2;
+  if(s.inv) delete s.inv.c2_soup;
+  s.quest=QUESTS.findIndex(q=>q.id==='end'); s.questStarted=s.quest; s.track='main';
+  if(String(s.map).startsWith('zong')){ s.map='town'; s.x=12; s.y=10; }
+  if(s.qiyu&&s.qiyu.map&&s.qiyu.map!=='forest') s.qiyu=null;
+  setTimeout(()=>UI.toast('第二章还在制作中：存档回到了第一章结束（等级、物品、灵石都保留）'),1200);
+  return s; };
+{ const _ls=loadSave; loadSave=function(i){ return C2.rollback(_ls(i)); }; }
+
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
    ============================================================ */
@@ -6732,7 +6744,7 @@ const SaveSys = {
   // load a snapshot into this profile's slot and step into it
   load(slot, snap){
     const rec=SaveSys.read(slot,snap); if(!rec) return false;
-    RT.slot=slot; S=JSON.parse(JSON.stringify(rec.state)); S=loadFromObject(S);
+    RT.slot=slot; S=JSON.parse(JSON.stringify(rec.state)); S=C2.rollback(loadFromObject(S));
     Sect.migrate(); Hooks.placeQiyu(); save();
     Battle.s&&Battle.close(); Mini.close(); $('#dlg').hidden=true; UI.dlgQ=null; $('#panel').hidden=true; $('#title').hidden=true; clearInterval(Creator.timer);
     enterMap(S.map,S.x,S.y); RT.dir='down'; UI.hud(); UI.sync();

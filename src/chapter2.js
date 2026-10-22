@@ -327,3 +327,15 @@ for(const k in SECTS) MAPS['zong_'+k].objects.push({type:'qiyu', x:0, y:0, act:'
 { const _pq=Hooks.placeQiyu; Hooks.placeQiyu=function(){ _pq.apply(Hooks,arguments); if(!S||!S.qiyu||!S.qiyu.map||S.qiyu.map==='forest') return;
     const o=(MAPS[S.qiyu.map]||{objects:[]}).objects.find(o=>o.type==='qiyu'); if(o) [o.x,o.y]=QIYU_SPOTS_ZONG[S.qiyu.spot%QIYU_SPOTS_ZONG.length]; }; }
 { const _h=Qiyu.hint; Qiyu.hint=function(){ const t=_h.apply(Qiyu,arguments); const m=S&&S.qiyu&&S.qiyu.map; return m&&m!=='forest'?t.replace(/青丘山林|山林/g, MAPS[m].name):t; }; }
+
+/* ---------- the live site: saves that went to the sect while chapter 2 was briefly public go back to the end of chapter 1 ----------
+   Level, items, stones and friendships stay; only the chapter 2 progress is undone. When chapter 2 opens, the master takes them again. */
+C2.rollback=function(s){ if(!C2_LOCKED||!s||!s.flags||!s.flags.c2_arrive) return s;
+  for(const k of ['c2_arrive','c2_order','c2_mold']) delete s.flags[k]; delete s.c2;
+  if(s.inv) delete s.inv.c2_soup;
+  s.quest=QUESTS.findIndex(q=>q.id==='end'); s.questStarted=s.quest; s.track='main';
+  if(String(s.map).startsWith('zong')){ s.map='town'; s.x=12; s.y=10; }
+  if(s.qiyu&&s.qiyu.map&&s.qiyu.map!=='forest') s.qiyu=null;
+  setTimeout(()=>UI.toast('第二章还在制作中：存档回到了第一章结束（等级、物品、灵石都保留）'),1200);
+  return s; };
+{ const _ls=loadSave; loadSave=function(i){ return C2.rollback(_ls(i)); }; }

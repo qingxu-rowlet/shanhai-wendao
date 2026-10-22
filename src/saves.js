@@ -16,7 +16,7 @@ const SaveSys = {
   // load a snapshot into this profile's slot and step into it
   load(slot, snap){
     const rec=SaveSys.read(slot,snap); if(!rec) return false;
-    RT.slot=slot; S=JSON.parse(JSON.stringify(rec.state)); S=loadFromObject(S);
+    RT.slot=slot; S=JSON.parse(JSON.stringify(rec.state)); S=C2.rollback(loadFromObject(S));
     Sect.migrate(); Hooks.placeQiyu(); save();
     Battle.s&&Battle.close(); Mini.close(); $('#dlg').hidden=true; UI.dlgQ=null; $('#panel').hidden=true; $('#title').hidden=true; clearInterval(Creator.timer);
     enterMap(S.map,S.x,S.y); RT.dir='down'; UI.hud(); UI.sync();
