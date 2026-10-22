@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="build" data-build="1c2991576e"><script>(function(){var B="1c2991576e";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="build" data-build="a241a160b1"><script>(function(){var B="a241a160b1";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script><script>window.CH2_LOCKED=true</script></head><body><title>山海问道</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,7 +115,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .more{position:absolute;right:12px;bottom:6px;font-style:normal;color:var(--wood);animation:bob 1s infinite}
 @keyframes bob{50%{transform:translateY(3px)}}
 .choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.choices button{text-align:left;padding:10px 12px;border-radius:8px;background:#f3d49a;box-shadow:inset 0 0 0 2px var(--parch-d);font-size:16px}
+.choices button{text-align:left;padding:12px 14px;min-height:48px;border-radius:8px;background:#f3d49a;box-shadow:inset 0 0 0 2px var(--parch-d);font-size:17px}
+#actB{position:absolute;right:max(14px,env(safe-area-inset-right,0px));width:78px;height:78px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-family:var(--f-head);font-size:16px;touch-action:none;animation:actIn .18s ease-out}
+#actB i{font-style:normal;font-size:24px;line-height:1}#actB:active{transform:scale(.92)}
+@keyframes actIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 .choices button:hover,.choices button:focus-visible{background:#fff2c8;box-shadow:inset 0 0 0 3px var(--cinnabar)}
 
 /* ---------- panels ---------- */
@@ -1688,9 +1691,9 @@ const Creator = {
     $('#crGo').onclick=()=>{ Sound.unlock(); clearInterval(Creator.timer); const name=(Creator.name||'').trim()||'无名';
       RT.slot=Creator.slot; S=newState(); S.look={...Creator.look}; S.name=name; t.hidden=true;
       enterMap('home',11,6); UI.hud(); save(); UI.say(SCRIPTS.intro, ()=>{ S.questStarted=0; Story.check(); }); };
-    clearInterval(Creator.timer); let i=0; const dirs=['down','down','side','up','side'];
-    const draw=()=>{ const c=$('#crPrev'); if(!c){ clearInterval(Creator.timer); return; } const d=dirs[Math.floor(i/8)%dirs.length], f=Math.floor(i/2)%4, sp=lookSprite(L,d,f);
-      const g=c.getContext('2d'); g.clearRect(0,0,c.width,c.height); if(d==='side'&&Math.floor(i/8)%dirs.length===4){ g.save(); g.translate(18,0); g.scale(-1,1); g.drawImage(sp,0,0); g.restore(); } else g.drawImage(sp,0,0); i++; };
+    clearInterval(Creator.timer); let i=0; const turns=[{},{},{walk:1},{flip:1},{back:1}];
+    const draw=()=>{ const c=$('#crPrev'); if(!c){ clearInterval(Creator.timer); return; } const k=turns[Math.floor(i/10)%turns.length], f=Math.floor(i/2)%2;
+      const blink=!k.walk&&!k.back&&i%23===0; drawCard(c, L, 'full', {pose:k.walk&&f?'walk':'stand', back:k.back, flip:k.flip, mood:blink?'blink':'normal'}); i++; };
     draw(); Creator.timer=setInterval(draw,120);
   }
 };
@@ -2099,7 +2102,7 @@ function render(){
   const list=[];
   for(const o of m.objects===undefined?[]:RT.ents){
     if(o.type==='building') list.push({y:o.y+o.h, draw:()=>{ const c=building(o); g.fillStyle='rgba(20,40,20,.25)'; g.beginPath(); g.ellipse(ox+(o.x+o.w/2)*T, oy+(o.y+o.h)*T-Z, o.w*T*.52, 3*Z, 0, 0, 7); g.fill(); g.drawImage(c, ox+o.x*T, oy+(o.y+o.h)*T-c.height*Z, c.width*Z, c.height*Z); }});
-    else if(o.look){ list.push({y:o.y+0.99, draw:()=>{ if(o.ghost){ g.save(); g.globalAlpha=.5+.12*Math.sin(RT.t*2+o.x); } drawObjShadow(g, {type:'npc',x:o.x,y:o.y}, ox, oy, T, Z); const c=lookSprite(o.look,'down',Math.floor(RT.t*1.5+o.x)%2?0:2); const w=c.width*Z,h=c.height*Z; g.drawImage(c, Math.round(ox+o.x*T+(T-w)/2), Math.round(oy+o.y*T+T-c.bottom*Z), w, h);  if(o.ghost) g.restore();}}); }
+    else if(o.look){ list.push({y:o.y+0.99, draw:()=>{ if(o.ghost){ g.save(); g.globalAlpha=.5+.12*Math.sin(RT.t*2+o.x); } drawObjShadow(g, {type:'npc',x:o.x,y:o.y}, ox, oy, T, Z); drawLookNpc(g, o, ox, oy, T, Z); if(o.ghost) g.restore();}}); }
     else { const key=objSprite(o); if(!SPR[key]) continue;
       list.push({y:o.y+0.99, draw:()=>(drawObjShadow(g, o, ox, oy, T, Z), drawSprite(key, ox+o.x*T, oy+o.y*T, Z, o.type==='npc'?Math.sin(RT.t*2+o.x)*0.4:0))}); }
   }
@@ -2123,6 +2126,7 @@ function render(){
   Nav.drawArrow(g, ox, oy, T, Z);
   if(RT.fade>0){ g.fillStyle=`rgba(10,8,6,${RT.fade})`; g.fillRect(0,0,cv.width,cv.height); }
 }
+function drawLookNpc(g, o, ox, oy, T, Z){ const c=lookSprite(o.look,'down',Math.floor(RT.t*1.5+o.x)%2?0:2); const w=c.width*Z,h=c.height*Z; g.drawImage(c, Math.round(ox+o.x*T+(T-w)/2), Math.round(oy+o.y*T+T-c.bottom*Z), w, h); }
 function drawShadow(x,y,Z){ ctx.fillStyle='rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(x+8*Z, y+15*Z, 6*Z, 2*Z, 0, 0, 7); ctx.fill(); }
 function drawSprite(key, x, y, Z, bob, flip){
   const c=sprite(key); const w=c.width*Z, h=c.height*Z;
@@ -2204,6 +2208,8 @@ const Stick={ el:null, id:null, x:0, y:0, t:0, on:false,
   end(){ Stick.id=null; Stick.on=false; RT.stick=null; if(Stick.el) Stick.el.classList.remove('on'); } };
 cv.addEventListener('pointerdown', e=>{
   Sound.unlock();
+  // while someone is talking, a tap anywhere turns the page (choices still need their own buttons)
+  const dlg=document.getElementById('dlg'); if(dlg&&!dlg.hidden&&!dlg.querySelector('.choices')){ dlg.click(); return; }
   if(RT.paused||!RT.map) return;
   if(e.pointerType==='mouse') return tapAt(e.clientX,e.clientY);
   if(Stick.id!==null) return; Stick.id=e.pointerId; Stick.x=e.clientX; Stick.y=e.clientY; Stick.t=performance.now(); Stick.on=false;
@@ -2769,7 +2775,7 @@ const UI = {
       b.querySelectorAll('[data-replay]').forEach(x=>x.onclick=()=>{ Sound.tick(); Replay.start(x.dataset.replay); });
       b.querySelectorAll('[data-bk]').forEach(x=>x.onclick=()=>{ Sound.tick(); UI._bookTab=x.dataset.bk; $('#panel').hidden=true; UI.menu('book'); });
       b.querySelectorAll('[data-cg]').forEach(x=>x.onclick=()=>{ const [id,lv]=x.dataset.cg.split(':'); CG.replaying=true; CG.replay(id,+lv); });
-      b.querySelectorAll('[data-npc]').forEach(c=>{ const sp=npcSprite(c.dataset.npc); if(sp) c.getContext('2d').drawImage(sp,0,0); });
+      b.querySelectorAll('[data-npc]').forEach(c=>{ const sp=npcSprite(c.dataset.npc); if(sp){ c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0); } });
       const m=$('#sMute'); if(m) m.onclick=()=>{ S.mute=!S.mute; m.textContent='声音：'+(S.mute?'关':'开'); };
       const dg=$('#sDodge'); if(dg) dg.onclick=()=>{ S.dodgeOff=!S.dodgeOff; dg.textContent='首领战：'+(S.dodgeOff?'经典回合制':'回合 + 躲弹幕'); save(); };
       const mu=$('#sMusic'); if(mu) mu.onclick=()=>{ S.music=S.music===false; mu.textContent='音乐：'+(S.music===false?'关':'开'); if(S.music===false) Music.stop(); else Music.play(areaTheme(),true); };
@@ -2936,26 +2942,7 @@ const SIDES = [
     start:[['阿禾','呜呜，{名}，我家的芦花鸡不见了！'],['阿禾','有人说看见它往山林南边跑了，在狐祠东边那一带……你能帮我找找吗？']],
     done:[['阿禾','芦花！你回来啦！'],['旁白','芦花鸡咯咯叫着扑进阿禾怀里。'],['阿禾','谢谢你，{名}！这两颗朱果是我从奶奶那里求来的，给你！']],
     target:s=>count(s,'chicken')?npcAt('ahe'):['forest',26,22,'芦花鸡']},
-  {id:'order', giver:'qian', title:'钱掌柜的订单', desc:'钱掌柜要收 5 株灵草，送去城里的药铺。', need:{lingcao:5},
-    unlock:s=>s.quest>=3, reward:{stones:90, heart:{qian:40}},
-    start:[['钱掌柜','{名}啊，城里药铺跟我订了一批灵草，5 株，价钱好说！'],['钱掌柜','山林里就采得到，灵草在洞府前和山林北边最多。']],
-    done:[['钱掌柜','好好好，这成色！说好的，90 灵石，童叟无欺。']],
-    target:s=>count(s,'lingcao')>=5?npcAt('qian'):['forest',4,2,'灵草（山林采集）']},
-  {id:'hides', giver:'qian', title:'兽皮生意', desc:'钱掌柜想收 4 张兽皮，做成冬天的皮袄。', need:{hide:4},
-    unlock:s=>s.quest>=4, reward:{stones:120, heart:{qian:40}},
-    start:[['钱掌柜','山里的野兽多了，兽皮也多了——这可是好生意！'],['钱掌柜','帮我弄 4 张兽皮来，打败当康、蛊雕都可能掉。']],
-    done:[['钱掌柜','啧啧，这毛色！今年冬天镇上的人不愁冷了。']],
-    target:s=>count(s,'hide')>=4?npcAt('qian'):['forest',8,8,'山林里的野兽']},
-  {id:'daily', giver:'yunyou', title:'勤修不辍', desc:'云游子让你在蒲团上打坐 3 次，稳固根基。', count:{type:'meditated', n:3},
-    unlock:s=>s.L>=1, reward:{give:{juqi:2}, heart:{yunyou:40}},
-    start:[['云游子','修行最忌一曝十寒。从今日起，你在蒲团上打坐三次，老道看看你的心性。']],
-    done:[['云游子','根基扎实了不少。这两颗聚气丹，拿去吧。']],
-    target:s=>sideReady(s,SIDES.find(q=>q.id==='daily'))?npcAt('yunyou'):['home',16,4,'蒲团']},
-  {id:'dan', giver:'yunyou', title:'初窥丹道', desc:'在洞府的丹炉里炼成一颗聚气丹（2 株灵草）。', count:{type:'craft', key:'juqi', n:1},
-    unlock:s=>s.quest>=4, reward:{give:{zhuguo:3}, heart:{yunyou:40}},
-    start:[['云游子','修仙者，丹药为辅。你洞府旁那只丹炉，是老道年轻时用过的。'],['云游子','先试着炼一颗聚气丹吧，两株灵草便够。']],
-    done:[['云游子','火候虽然欠一点，但丹成了。好！'],['云游子','这三颗朱果，以后炼筑基丹用得上。']],
-    target:s=>sideReady(s,SIDES.find(q=>q.id==='dan'))?npcAt('yunyou'):['home',18,4,'丹炉']},
+  // (钱掌柜's herb and hide orders and 云游子's meditate-three-times / first-pill chores were cut: they felt like busywork)
   {id:'letters', giver:'tang', title:'小棠的花笺', desc:'苏小棠想用野山茶做花笺，需要 3 朵野山茶。', need:{flower:3},
     unlock:s=>(s.rel&&s.rel.tang&&s.rel.tang.pts>0), reward:{give:{huichun:2}, heart:{tang:100}},
     start:[['苏小棠','你知道吗，野山茶的花瓣压干了，可以做成花笺写字。'],['苏小棠','洞府附近和山林里都有……你能帮我采 3 朵吗？']],
@@ -3648,7 +3635,7 @@ const Sect = {
     el.innerHTML=`<div class="mg wood sects"><h3>选择门派</h3><p class="mg-tip">你的灵根：${Sect.rootName()}</p><div class="sect-list">${Object.entries(SECTS).map(([k,s])=>`<button class="sect-card" data-s="${k}">
       <canvas class="px" data-m="${k}" width="18" height="22"></canvas><div><b>${s.name}</b><i>${s.motto}</i><p>${s.desc}</p>
       <small>绝学：${s.skill.name}——${s.skill.desc}<br>天赋：${s.passive}</small></div></button>`).join('')}</div></div>`;
-    el.querySelectorAll('[data-m]').forEach(c=>c.getContext('2d').drawImage(lookSprite(SECTS[c.dataset.m].master.look,'down',0),0,0));
+    el.querySelectorAll('[data-m]').forEach(c=>drawCard(c, SECTS[c.dataset.m].master.look, 'bust'));
     el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ Sound.tick(); Sect.confirm(b.dataset.s); });
   },
   confirm(k){
@@ -4606,7 +4593,7 @@ const BOUNTY_KINDS = [
     const [id,n,why,who,pay]=pool[Math.random()*pool.length|0]; return {key:id, n, who, text:`${why}——交 ${n} 个${ITEMS[id].name}`, pay, rep:1}; }},
   {kind:'gift', make:()=>{ const pool=['ahe','qian','yunyou','tang','ge'].filter(k=>NPCS[k]); const k=pool[Math.random()*pool.length|0];
     return {key:k, n:1, who:'镇上的热心人', text:`${NPCS[k].name}最近闷闷不乐——今天之内送份礼物，哄哄开心`, pay:25, rep:1}; }},
-  {kind:'qiyu', make:()=>S.qiyu&&!S.qiyu.done ? {key:S.qiyu.ev, n:1, who:'云游子', text:'听说青丘山林里今天有异象——去看看是什么（找到奇遇）', pay:40, rep:2} : null},
+  {kind:'qiyu', make:()=>S.qiyu&&!S.qiyu.done ? {key:S.qiyu.ev, n:1, who:'云游子', text:'听说'+MAPS[S.qiyu.map||'forest'].name+'里今天有异象——去看看是什么（找到奇遇）', pay:40, rep:2} : null},
 ];
 const Bounty = {
   rep(){ return S.rep||0; },
@@ -5499,6 +5486,57 @@ function cgChibi(look, pose, mood, prop, wear, back){
   return CHIBIC[key]=c;
 }
 
+
+// switched off after the first try: big shiny eyes on everyone (elders, 钱掌柜) looked silly. Faces by age come first.
+const CHIBI_MAP=false;
+/* ---------- people on the map are chibis too ----------
+   The 16-pixel sprites were too coarse to be cute; the CG chibi has twice the detail, so on the map each of its pixels is half a map pixel
+   (crisp on a phone's 2× screen). Three-quarter view, mirrored for left; the back view walking up. People stand facing you and blink. */
+const MapChibi = {
+  box:new Map(),
+  // the opaque part of a chibi canvas (for feet and portrait crops)
+  bounds(c){ if(MapChibi.box.has(c)) return MapChibi.box.get(c); const g=c.getContext('2d'), d=g.getImageData(0,0,c.width,c.height).data; let x0=c.width,y0=c.height,x1=0,y1=0;
+    for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++) if(d[(y*c.width+x)*4+3]>0){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    const b={x0,y0,x1,y1}; MapChibi.box.set(c,b); return b; },
+  draw(g,c,flip,x,y,Z,lift){ const k=Z/2, b=MapChibi.bounds(c), w=c.width*k, h=c.height*k;
+    const cx=(b.x0+b.x1+1)/2*k, dx=Math.round(x+TILE*Z/2-(flip?w-cx:cx)), dy=Math.round(y+TILE*Z-1*Z-(b.y1+1)*k-(lift||0));
+    g.imageSmoothingEnabled=false; if(flip){ g.save(); g.translate(dx+w,dy); g.scale(-1,1); g.drawImage(c,0,0,w,h); g.restore(); } else g.drawImage(c,dx,dy,w,h); },
+  blink(seed){ return (Math.floor(RT.t*10+seed*37)%46)===0; },
+};
+if(CHIBI_MAP) drawPlayer=function(x,y,Z){
+  drawShadow(x,y,Z);
+  if(RT.dir==='left'||RT.dir==='right') RT.lastH=RT.dir;
+  const f=RT.moving?Math.floor(RT.walk*3.2)%4:0, pose=RT.moving&&f%2?'walk':'stand';
+  const c=cgChibi(S.look, pose, MapChibi.blink(1)&&!RT.moving?'blink':'normal', null, null, RT.dir==='up');
+  MapChibi.draw(ctx, c, RT.dir==='left'||(RT.dir==='down'&&RT.lastH==='left'), x, y, Z, RT.moving&&f%2?Z*.5:0);
+  if(isRod(S.sel)&&S.inv[S.sel]){ const o=lookSprite(S.look,'down',0), w=o.width*Z; drawRod(Math.round(x+(TILE*Z-w)/2), Math.round(y+TILE*Z-o.bottom*Z), w, Z); }
+};
+if(CHIBI_MAP) drawLookNpc=function(g,o,ox,oy,T,Z){
+  const c=cgChibi(o.look, 'stand', MapChibi.blink(o.x*3+o.y)?'blink':'normal', null, null, false);
+  MapChibi.draw(g, c, RT.fx<o.x-.3, ox+o.x*T, oy+o.y*T, Z, Math.sin(RT.t*2+o.x)>.85?Z*.5:0);
+};
+// dialogue portraits: the chibi's head and shoulders
+if(CHIBI_MAP){ const _line=UI.line; UI.line=function(who,text){ const r=_line.apply(UI,arguments); const cv=$('#dPort'); if(!cv) return r;
+    let look=null; if(who==='我'||who===S.name) look=S.look; else { for(const m in MAPS){ const o=MAPS[m].objects.find(o=>o.name===who&&o.look); if(o){ look=o.look; break; } } }
+    if(!look) return r;
+    const c=cgChibi(look,'stand','normal',null,null,false), b=MapChibi.bounds(c), side=Math.min(b.x1-b.x0+9, b.y1-b.y0+1), sx=Math.round((b.x0+b.x1+1)/2-side/2), sy=b.y0-2;
+    cv.width=side; cv.height=side; const g=cv.getContext('2d'); g.imageSmoothingEnabled=false; g.clearRect(0,0,side,side); g.drawImage(c, sx, sy, side, side, 0, 0, side, side); return r; }; }
+
+// the town folk get looks too, so everyone on the map shares the chibi style
+const LOOK_YUNYOU={g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:1}, LOOK_QIAN={g:'m',skin:2,hair:0,hairColor:0,style:'robe',cloth:7}, LOOK_AHE={g:'f',skin:1,hair:3,hairColor:0,style:'qun',cloth:2};
+if(CHIBI_MAP) for(const [id,look] of [['yunyou',LOOK_YUNYOU],['qian',LOOK_QIAN],['ahe',LOOK_AHE]]) for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id) o.look=look;
+// a chibi fitted into a card canvas (the 18:22 slots on the title screen, sect cards, the 人物 page, the creator): 'full' body or 'bust'
+function chibiCard(look, mode, opt){ opt=opt||{};
+  if(!CHIBI_MAP){ const sp=lookSprite(look, opt.back?'up':opt.pose==='walk'||opt.flip?'side':'down', opt.pose==='walk'?1:0); if(!opt.flip) return sp;
+    const o=document.createElement('canvas'); o.width=sp.width; o.height=sp.height; const g=o.getContext('2d'); g.translate(o.width,0); g.scale(-1,1); g.drawImage(sp,0,0); return o; }
+  const c=cgChibi(look, opt.pose||'stand', opt.mood||'normal', null, null, !!opt.back), b=MapChibi.bounds(c), bw=b.x1-b.x0+1, bh=b.y1-b.y0+1;
+  let H,W,sx,sy; if(mode==='full'){ H=bh+6; W=Math.round(H*18/22); sx=Math.round((b.x0+b.x1+1)/2-W/2); sy=b.y0-3; }
+  else { W=Math.min(bw+8, Math.round(bh*.62)); H=Math.round(W*22/18); sx=Math.round((b.x0+b.x1+1)/2-W/2); sy=b.y0-2; }
+  const out=document.createElement('canvas'); out.width=W; out.height=H; const g=out.getContext('2d'); g.imageSmoothingEnabled=false;
+  if(opt.flip){ g.translate(W,0); g.scale(-1,1); } g.drawImage(c, sx, sy, W, H, 0, 0, W, H); return out; }
+function drawCard(canvas, look, mode, opt){ const sp=chibiCard(look, mode, opt); canvas.width=sp.width; canvas.height=sp.height; canvas.getContext('2d').drawImage(sp,0,0); }
+if(CHIBI_MAP) npcSprite=function(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id) return o.look?chibiCard(o.look,'bust'):sprite(o.spr); return null; };
+
 /* ============================================================
    山海问道 · 闭关 — choose how long to meditate (two hours up to a month), see which realm you will reach,
    then watch a progress bar. Long sessions pass whole days (letters, 奇遇 and fortunes still roll each morning).
@@ -5992,7 +6030,7 @@ SkillFx.tianji={ dur:1.7, hit:.5,
 const TIPS = {
   move:  {touch:'按住屏幕任意处拖动就能走路（会出现一个摇杆）；轻点地面或人物，角色会自己走过去。', key:'用 WASD 或方向键走路，也可以用鼠标点地面。'},
   quest: {touch:'左上角是任务。点「寻路」，角色会自动走到目的地。', key:'左上角是任务。点「寻路」自动走过去，按 J 看全部任务。'},
-  talk:  {touch:'靠近人或东西时，头顶会出现「聊 / 采 / 点」——点一下它就能互动。', key:'靠近人或东西时头顶会出现 E，按 E 互动。'},
+  talk:  {touch:'靠近人或东西时，右下角会出现一个大按钮（对话 / 采集 / 查看……），点它就能互动。', key:'靠近人或东西时头顶会出现 E，按 E 互动。'},
   bag:   {touch:'左下角「囊」是行囊：物品、修炼、人物、图鉴、存档都在里面。', key:'左下角「囊」是行囊（Esc 打开）：物品、修炼、人物、图鉴、存档都在里面。'},
   med:   {touch:'在蒲团上打坐可以选择打坐多久，修为会一点点涨上去。', key:'在蒲团上打坐可以选择打坐多久，修为会一点点涨上去。'},
   dodge: {touch:'敌人的回合要躲弹幕：手指按住屏幕任意处拖动，绿色灵珠会跟着移动。被打中会掉血。', key:'敌人的回合要躲弹幕：用 WASD / 方向键移动绿色灵珠。被打中会掉血。'},
@@ -6025,6 +6063,34 @@ setInterval(()=>{ try{ Guide.tick(); }catch(e){} },1000);
     if(small){ const head=q.querySelector('.qhead'); if(head&&!head.querySelector('.qfold')){ const b=document.createElement('button'); b.className='qfold'; b.textContent=RT.hudOpen?'收起':'展开';
         b.onclick=e=>{ e.stopPropagation(); Sound.tick(); RT.hudOpen=!RT.hudOpen; UI.hud(); }; head.insertBefore(b, head.querySelector('.qall')); } } }; }
 addEventListener('resize',()=>{ if(S) UI.hud(); });
+
+/* ---------- phones: one big action button under the right thumb ----------
+   Whatever you are standing next to (a person, a herb, the water, a door, the portal…) shows up on it — tap it instead of
+   reaching for the little bubble on the map. Stays put while you walk, so the joystick and the button can be used together. */
+const ActBtn = {
+  el:null, p:null,
+  label(p){ if(p.fish) return ['钓鱼','🎣']; const o=p.o||{};
+    if(o.type==='npc') return ['对话','💬']; if(o.type==='gather') return ['采集','🌿'];
+    const a=o.act; const L={portal:['传送','✦'], dummy:['练功','⚔'], leaf:['打扫','🍂'], stele:['查看','📜'], stove:['做饭','🍲'], alchemy:['炼丹','🔥'], meditate:['打坐','🧘'],
+      sleep:['休息','🌙'], c2bed:['休息','🌙'], c2room:['进屋','🚪'], c2kitchen:['进屋','🚪'], shop:['买卖','🪙'], board:['悬赏','📜'], mail:['信箱','✉'], altar:['测灵','✦'],
+      shrine:['上香','🏮'], qiyu:['探查','✨'], dungeon:['进入','🕳'], chest:['打开','📦'], fxboss:['挑战','⚔'], fxboss2:['挑战','⚔']}[a];
+    if(L) return L; if(o.type==='sign'||o.type==='tablet') return ['查看','📜']; if(o.type==='building') return ['进入','🚪']; return ['互动','✋']; },
+  // what is in reach, even mid-step (findPrompt only answers once you stop)
+  near(){ if(!RT.map||RT.paused) return null; const m=RT.moving; RT.moving=false; let p=null; try{ p=findPrompt(); }finally{ RT.moving=m; } return p; },
+  tick(){
+    if(FINE_POINTER) return; if(!ActBtn.el){ const b=document.createElement('button'); b.id='actB'; b.className='wood'; b.hidden=true; b.innerHTML='<i></i><span></span>';
+      b.addEventListener('pointerdown', e=>{ e.stopPropagation(); e.preventDefault(); ActBtn.go(); }); $('#hud').appendChild(b); ActBtn.el=b; }
+    const b=ActBtn.el, p=(S&&!UI.busy())?ActBtn.near():null; ActBtn.p=p;
+    if(!p){ b.hidden=true; return; }
+    const [t,ic]=ActBtn.label(p); b.querySelector('span').textContent=t; b.querySelector('i').textContent=ic; b.hidden=false;
+    const v=$('.vitals'); if(v){ const r=v.getBoundingClientRect(); b.style.bottom=(innerHeight-r.top+12)+'px'; } },
+  go(){ const p=ActBtn.p; if(!p||UI.busy()) return; Sound.tick(); Sound.unlock();
+    RT.path=[]; RT.pending=null; RT.autoNav=false; if(typeof Stick!=='undefined') Stick.end(); RT.moving=false;
+    face(p.x,p.y); if(p.fish) return Mini.fish(p.x,p.y); if(p.o) interact(p.o); },
+};
+setInterval(()=>{ try{ ActBtn.tick(); }catch(e){} },120);
+// in a CG the picture fills the top of the screen: tapping it turns the page too
+{ const cg=document.getElementById('cg'); if(cg) cg.addEventListener('click', e=>{ const d=$('#dlg'); if(d&&!d.hidden&&!d.querySelector('.choices')&&!e.target.closest('#dlg')) d.click(); }); }
 
 /* ============================================================
    山海问道 · 山林妖兽 — three more beasts of the 山海经 in 青丘山林, and bullet patterns for every common beast.
@@ -6195,11 +6261,14 @@ npcAt=function(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id
 /* ---------- 传送阵 ---------- */
 MAPS.town.objects.push({type:'c2_portal', x:21, y:5, spr:'c2_portal', act:'portal', cond:s=>!!s.flags.c2_arrive||Portal.fx(s)});
 MAPS.fx3.objects.push({type:'c2_portal', x:12, y:2, spr:'c2_portal', act:'portal', cond:s=>Portal.fx(s)});
+MAPS.home.objects.push({type:'c2_portal', x:14, y:6, spr:'c2_portal', act:'portal', cond:s=>!!s.flags.c2_arrive||Portal.fx(s)});
+MAPS.forest.objects.push({type:'c2_portal', x:12, y:2, spr:'c2_portal', act:'portal', cond:s=>!!s.flags.c2_arrive||Portal.fx(s)});
 const Portal={
   fx:s=>!!s.flags.qiongqi_done&&!!s.sect&&s.L>=10,
   dests(){ return [
     {name:'桃源镇', map:'town', x:21, y:6},
-    {name:'洞府', map:'home', x:11, y:6},
+    {name:'洞府', map:'home', x:14, y:7},
+    {name:'青丘山林（钓鱼、打妖兽）', map:'forest', x:12, y:3},
     ...(S.flags.c2_arrive?[{name:SECTS[S.sect].name, map:zongId(), x:11, y:17}]:[]),
     ...(Portal.fx(S)?[{name:'风眼 · 狂暴穷奇', map:'fx3', x:12, y:3}]:[]),
   ].filter(d=>d.map!==RT.mapId); },
@@ -6209,8 +6278,10 @@ const Portal={
 };
 
 /* ---------- quests ---------- */
+const C2_LOCKED=!!window.CH2_LOCKED;   // the live site: no way into chapter 2 yet
 { const e=QUESTS.find(q=>q.id==='end');
-  Object.assign(e, {title:'拜别桃源镇', desc:'第一章完。师尊在桃源镇广场等你——准备好了就去找师尊，随他回宗门（之后随时能用传送阵回来）。',
+  if(C2_LOCKED) e.check=s=>!!s.flags.c2_arrive;   // only saves already in the sect move on
+  else Object.assign(e, {title:'拜别桃源镇', desc:'第一章完。师尊在桃源镇广场等你——准备好了就去找师尊，随他回宗门（之后随时能用传送阵回来）。',
     check:s=>!!s.flags.c2_arrive, target:s=>s.sect?npcAt(SECTS[s.sect].master.id):['town',12,7,'测灵石']}); }
 QUESTS.push(
   {id:'c2b', title:'宗门日常', desc:'大师兄、大师姐、二师兄每天会各派给你一件事。做完三天的功课，熟悉宗门。', check:s=>(s.c2&&s.c2.days||0)>=3,
@@ -6383,10 +6454,21 @@ const C2_ROOM=()=>[
 /* ---------- hooks ---------- */
 { const _t=Story.talk; Story.talk=function(id){
     const q=Story.quest()?.id;
-    if(q==='end'&&S.sect&&id===SECTS[S.sect].master.id&&!S.flags.c2_arrive){ UI.say(C2S.depart()); return; }
+    if(!C2_LOCKED&&q==='end'&&S.sect&&id===SECTS[S.sect].master.id&&!S.flags.c2_arrive){ UI.say(C2S.depart()); return; }
     if(C2.talk(id)) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ return C2.act(o)||_a.call(Dungeon,o); }; }
 { const _c=Story.check; Story.check=function(){ if(S&&S.c2) C2.refresh(); return _c.call(Story); }; }
+
+/* ---------- 奇遇 wander: once you live in the sect, a day's encounter may turn up there instead of in 青丘山林 ---------- */
+const QIYU_SPOTS_ZONG=[[4,10],[15,11],[23,10],[7,16],[19,18],[2,4]];
+const qyCond=map=>s=>{ if(!s.qiyu||s.qiyu.done||(s.qiyu.map||'forest')!==map) return false; const q=QIYU.find(x=>x.id===s.qiyu.ev); return !q||!q.night||night(); };
+for(const k in SECTS) MAPS['zong_'+k].objects.push({type:'qiyu', x:0, y:0, act:'qiyu', spr:'sparkle', dyn:true, cond:qyCond('zong_'+k)});
+{ const o=MAPS.forest.objects.find(o=>o.type==='qiyu'); o.cond=qyCond('forest'); }
+{ const _nd=Hooks.newDay; Hooks.newDay=function(){ _nd.apply(Hooks,arguments);
+    if(S.qiyu&&S.flags.c2_arrive&&S.sect&&Math.random()<.5){ S.qiyu.map='zong_'+S.sect; S.qiyu.spot=Math.floor(Math.random()*QIYU_SPOTS_ZONG.length); } Hooks.placeQiyu(); }; }
+{ const _pq=Hooks.placeQiyu; Hooks.placeQiyu=function(){ _pq.apply(Hooks,arguments); if(!S||!S.qiyu||!S.qiyu.map||S.qiyu.map==='forest') return;
+    const o=(MAPS[S.qiyu.map]||{objects:[]}).objects.find(o=>o.type==='qiyu'); if(o) [o.x,o.y]=QIYU_SPOTS_ZONG[S.qiyu.spot%QIYU_SPOTS_ZONG.length]; }; }
+{ const _h=Qiyu.hint; Qiyu.hint=function(){ const t=_h.apply(Qiyu,arguments); const m=S&&S.qiyu&&S.qiyu.map; return m&&m!=='forest'?t.replace(/青丘山林|山林/g, MAPS[m].name):t; }; }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -6583,7 +6665,7 @@ UI.title=()=>{
         <div class="sc-btns"><button class="btn main mini" data-play="${i}">继续</button><button class="btn mini" data-saves="${i}">读档</button><button class="btn mini" data-del="${i}">删除</button></div></div>`
       :`<button class="slot-card empty wood" data-new="${i}"><span class="plus">＋</span><span>新的修行</span><span class="muted">存档 ${i+1}</span></button>`).join('')}</div>
     <div class="title-saves" id="tSaves"></div><p class="tnote">每个存档是一位独立的修士。点任意处开启音乐（iPhone 请关闭静音开关）。</p><p class="copyright">© 2026 qingxu-rowlet · 山海问道 · CC BY-NC-SA 4.0 · 禁止商用</p></div>`;
-  t.querySelectorAll('[data-pv]').forEach(c=>{ const s=slots[+c.dataset.pv]; c.getContext('2d').drawImage(lookSprite(s.look||defaultLook('m'),'down',0),0,0); });
+  t.querySelectorAll('[data-pv]').forEach(c=>{ const s=slots[+c.dataset.pv]; drawCard(c, s.look||defaultLook('m'), 'bust'); });
   t.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{ Sound.unlock(); const i=+b.dataset.play; RT.slot=i; S=loadSave(i); Sect.migrate(); Hooks.placeQiyu(); t.hidden=true; enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); SaveSys.resume(); });
   t.querySelectorAll('[data-saves]').forEach(b=>b.onclick=()=>{ Sound.tick(); SaveSys.titleList(+b.dataset.saves, $('#tSaves')); });
   t.querySelectorAll('[data-new]').forEach(b=>b.onclick=()=>{ Sound.unlock(); Sound.tick(); Creator.open(+b.dataset.new); });
@@ -7029,8 +7111,6 @@ const Review = {
       run(){ Review.base({quest:'q8', L:8}); S.min=10*60; Review.at('home',16,5,'up'); setTimeout(()=>meditate(),500); }},
     {id:'rod', group:'v0.9.7 试玩修正', title:'青竹钓竿', check:'钱掌柜的店里能买青竹钓竿（400 灵石，你有 600）。买了以后去池塘边钓几条鱼，收线框应该更大、鱼更慢。悬赏榜也能用 8 声望换。',
       run(){ Review.base({quest:'q8', L:5, inv:{rod:1}}); S.stones=600; S.rep=10; Review.at('town',5,6,'up'); setTimeout(()=>UI.shop(),500); }},
-    {id:'talk-fix', group:'v0.9.7 试玩修正', title:'种田台词清理', check:'依次播放改过的台词：云游子讲筑基丹（不再提朱果种）、钱掌柜的订单、阿禾的芦花鸡奖励。点屏幕任意处都能翻页。',
-      run(){ Review.base({quest:'q8', L:5}); Review.at('town',12,9,'up'); setTimeout(()=>UI.say([...SCRIPTS.q6_start, ...SIDES.find(q=>q.id==='order').start, ...SIDES.find(q=>q.id==='chick').done, ...SIDES.find(q=>q.id==='dan').done]),500); }},
     {id:'beasts', group:'成长', title:'新妖兽：狸力、鵸鵌、朱厌', check:'直接挑一只打：每种都有自己的弹幕。当康（冲撞）、狌狌（扔果子）也改成躲弹幕了。',
       run(){ Review.base({quest:'q8', L:7, inv:{huichun:3}, kills:3}); Review.at('forest',20,20,'down');
         setTimeout(()=>UI.say([{choice:'和谁打一场？', options:['lili','qitu','zhuyan','dangkang','xingxing'].map(k=>({text:BEASTS[k].name, fn:()=>Battle.start(k,()=>{})}))}]),500); }},

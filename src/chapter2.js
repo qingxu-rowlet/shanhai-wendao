@@ -136,8 +136,10 @@ const Portal={
 };
 
 /* ---------- quests ---------- */
+const C2_LOCKED=!!window.CH2_LOCKED;   // the live site: no way into chapter 2 yet
 { const e=QUESTS.find(q=>q.id==='end');
-  Object.assign(e, {title:'拜别桃源镇', desc:'第一章完。师尊在桃源镇广场等你——准备好了就去找师尊，随他回宗门（之后随时能用传送阵回来）。',
+  if(C2_LOCKED) e.check=s=>!!s.flags.c2_arrive;   // only saves already in the sect move on
+  else Object.assign(e, {title:'拜别桃源镇', desc:'第一章完。师尊在桃源镇广场等你——准备好了就去找师尊，随他回宗门（之后随时能用传送阵回来）。',
     check:s=>!!s.flags.c2_arrive, target:s=>s.sect?npcAt(SECTS[s.sect].master.id):['town',12,7,'测灵石']}); }
 QUESTS.push(
   {id:'c2b', title:'宗门日常', desc:'大师兄、大师姐、二师兄每天会各派给你一件事。做完三天的功课，熟悉宗门。', check:s=>(s.c2&&s.c2.days||0)>=3,
@@ -310,7 +312,7 @@ const C2_ROOM=()=>[
 /* ---------- hooks ---------- */
 { const _t=Story.talk; Story.talk=function(id){
     const q=Story.quest()?.id;
-    if(q==='end'&&S.sect&&id===SECTS[S.sect].master.id&&!S.flags.c2_arrive){ UI.say(C2S.depart()); return; }
+    if(!C2_LOCKED&&q==='end'&&S.sect&&id===SECTS[S.sect].master.id&&!S.flags.c2_arrive){ UI.say(C2S.depart()); return; }
     if(C2.talk(id)) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ return C2.act(o)||_a.call(Dungeon,o); }; }
 { const _c=Story.check; Story.check=function(){ if(S&&S.c2) C2.refresh(); return _c.call(Story); }; }

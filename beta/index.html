@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="3188ba9e12"><script>(function(){var B="3188ba9e12";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a241a160b1"><script>(function(){var B="a241a160b1";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6278,8 +6278,10 @@ const Portal={
 };
 
 /* ---------- quests ---------- */
+const C2_LOCKED=!!window.CH2_LOCKED;   // the live site: no way into chapter 2 yet
 { const e=QUESTS.find(q=>q.id==='end');
-  Object.assign(e, {title:'拜别桃源镇', desc:'第一章完。师尊在桃源镇广场等你——准备好了就去找师尊，随他回宗门（之后随时能用传送阵回来）。',
+  if(C2_LOCKED) e.check=s=>!!s.flags.c2_arrive;   // only saves already in the sect move on
+  else Object.assign(e, {title:'拜别桃源镇', desc:'第一章完。师尊在桃源镇广场等你——准备好了就去找师尊，随他回宗门（之后随时能用传送阵回来）。',
     check:s=>!!s.flags.c2_arrive, target:s=>s.sect?npcAt(SECTS[s.sect].master.id):['town',12,7,'测灵石']}); }
 QUESTS.push(
   {id:'c2b', title:'宗门日常', desc:'大师兄、大师姐、二师兄每天会各派给你一件事。做完三天的功课，熟悉宗门。', check:s=>(s.c2&&s.c2.days||0)>=3,
@@ -6452,7 +6454,7 @@ const C2_ROOM=()=>[
 /* ---------- hooks ---------- */
 { const _t=Story.talk; Story.talk=function(id){
     const q=Story.quest()?.id;
-    if(q==='end'&&S.sect&&id===SECTS[S.sect].master.id&&!S.flags.c2_arrive){ UI.say(C2S.depart()); return; }
+    if(!C2_LOCKED&&q==='end'&&S.sect&&id===SECTS[S.sect].master.id&&!S.flags.c2_arrive){ UI.say(C2S.depart()); return; }
     if(C2.talk(id)) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ return C2.act(o)||_a.call(Dungeon,o); }; }
 { const _c=Story.check; Story.check=function(){ if(S&&S.c2) C2.refresh(); return _c.call(Story); }; }
