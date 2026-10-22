@@ -189,6 +189,8 @@ function cgChibi(look, pose, mood, prop, wear, back){
 }
 
 
+// switched off after the first try: big shiny eyes on everyone (elders, 钱掌柜) looked silly. Faces by age come first.
+const CHIBI_MAP=false;
 /* ---------- people on the map are chibis too ----------
    The 16-pixel sprites were too coarse to be cute; the CG chibi has twice the detail, so on the map each of its pixels is half a map pixel
    (crisp on a phone's 2× screen). Three-quarter view, mirrored for left; the back view walking up. People stand facing you and blink. */
@@ -203,7 +205,7 @@ const MapChibi = {
     g.imageSmoothingEnabled=false; if(flip){ g.save(); g.translate(dx+w,dy); g.scale(-1,1); g.drawImage(c,0,0,w,h); g.restore(); } else g.drawImage(c,dx,dy,w,h); },
   blink(seed){ return (Math.floor(RT.t*10+seed*37)%46)===0; },
 };
-drawPlayer=function(x,y,Z){
+if(CHIBI_MAP) drawPlayer=function(x,y,Z){
   drawShadow(x,y,Z);
   if(RT.dir==='left'||RT.dir==='right') RT.lastH=RT.dir;
   const f=RT.moving?Math.floor(RT.walk*3.2)%4:0, pose=RT.moving&&f%2?'walk':'stand';
@@ -211,12 +213,12 @@ drawPlayer=function(x,y,Z){
   MapChibi.draw(ctx, c, RT.dir==='left'||(RT.dir==='down'&&RT.lastH==='left'), x, y, Z, RT.moving&&f%2?Z*.5:0);
   if(isRod(S.sel)&&S.inv[S.sel]){ const o=lookSprite(S.look,'down',0), w=o.width*Z; drawRod(Math.round(x+(TILE*Z-w)/2), Math.round(y+TILE*Z-o.bottom*Z), w, Z); }
 };
-drawLookNpc=function(g,o,ox,oy,T,Z){
+if(CHIBI_MAP) drawLookNpc=function(g,o,ox,oy,T,Z){
   const c=cgChibi(o.look, 'stand', MapChibi.blink(o.x*3+o.y)?'blink':'normal', null, null, false);
   MapChibi.draw(g, c, RT.fx<o.x-.3, ox+o.x*T, oy+o.y*T, Z, Math.sin(RT.t*2+o.x)>.85?Z*.5:0);
 };
 // dialogue portraits: the chibi's head and shoulders
-{ const _line=UI.line; UI.line=function(who,text){ const r=_line.apply(UI,arguments); const cv=$('#dPort'); if(!cv) return r;
+if(CHIBI_MAP){ const _line=UI.line; UI.line=function(who,text){ const r=_line.apply(UI,arguments); const cv=$('#dPort'); if(!cv) return r;
     let look=null; if(who==='我'||who===S.name) look=S.look; else { for(const m in MAPS){ const o=MAPS[m].objects.find(o=>o.name===who&&o.look); if(o){ look=o.look; break; } } }
     if(!look) return r;
     const c=cgChibi(look,'stand','normal',null,null,false), b=MapChibi.bounds(c), side=Math.min(b.x1-b.x0+9, b.y1-b.y0+1), sx=Math.round((b.x0+b.x1+1)/2-side/2), sy=b.y0-2;
@@ -224,13 +226,15 @@ drawLookNpc=function(g,o,ox,oy,T,Z){
 
 // the town folk get looks too, so everyone on the map shares the chibi style
 const LOOK_YUNYOU={g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:1}, LOOK_QIAN={g:'m',skin:2,hair:0,hairColor:0,style:'robe',cloth:7}, LOOK_AHE={g:'f',skin:1,hair:3,hairColor:0,style:'qun',cloth:2};
-for(const [id,look] of [['yunyou',LOOK_YUNYOU],['qian',LOOK_QIAN],['ahe',LOOK_AHE]]) for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id) o.look=look;
+if(CHIBI_MAP) for(const [id,look] of [['yunyou',LOOK_YUNYOU],['qian',LOOK_QIAN],['ahe',LOOK_AHE]]) for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id) o.look=look;
 // a chibi fitted into a card canvas (the 18:22 slots on the title screen, sect cards, the 人物 page, the creator): 'full' body or 'bust'
 function chibiCard(look, mode, opt){ opt=opt||{};
+  if(!CHIBI_MAP){ const sp=lookSprite(look, opt.back?'up':opt.pose==='walk'||opt.flip?'side':'down', opt.pose==='walk'?1:0); if(!opt.flip) return sp;
+    const o=document.createElement('canvas'); o.width=sp.width; o.height=sp.height; const g=o.getContext('2d'); g.translate(o.width,0); g.scale(-1,1); g.drawImage(sp,0,0); return o; }
   const c=cgChibi(look, opt.pose||'stand', opt.mood||'normal', null, null, !!opt.back), b=MapChibi.bounds(c), bw=b.x1-b.x0+1, bh=b.y1-b.y0+1;
   let H,W,sx,sy; if(mode==='full'){ H=bh+6; W=Math.round(H*18/22); sx=Math.round((b.x0+b.x1+1)/2-W/2); sy=b.y0-3; }
   else { W=Math.min(bw+8, Math.round(bh*.62)); H=Math.round(W*22/18); sx=Math.round((b.x0+b.x1+1)/2-W/2); sy=b.y0-2; }
   const out=document.createElement('canvas'); out.width=W; out.height=H; const g=out.getContext('2d'); g.imageSmoothingEnabled=false;
   if(opt.flip){ g.translate(W,0); g.scale(-1,1); } g.drawImage(c, sx, sy, W, H, 0, 0, W, H); return out; }
 function drawCard(canvas, look, mode, opt){ const sp=chibiCard(look, mode, opt); canvas.width=sp.width; canvas.height=sp.height; canvas.getContext('2d').drawImage(sp,0,0); }
-npcSprite=function(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id) return o.look?chibiCard(o.look,'bust'):sprite(o.spr); return null; };
+if(CHIBI_MAP) npcSprite=function(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id) return o.look?chibiCard(o.look,'bust'):sprite(o.spr); return null; };
