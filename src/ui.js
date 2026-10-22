@@ -354,7 +354,7 @@ const UI = {
       b.querySelectorAll('[data-replay]').forEach(x=>x.onclick=()=>{ Sound.tick(); Replay.start(x.dataset.replay); });
       b.querySelectorAll('[data-bk]').forEach(x=>x.onclick=()=>{ Sound.tick(); UI._bookTab=x.dataset.bk; $('#panel').hidden=true; UI.menu('book'); });
       b.querySelectorAll('[data-cg]').forEach(x=>x.onclick=()=>{ const [id,lv]=x.dataset.cg.split(':'); CG.replaying=true; CG.replay(id,+lv); });
-      b.querySelectorAll('[data-npc]').forEach(c=>{ const sp=npcSprite(c.dataset.npc); if(sp) c.getContext('2d').drawImage(sp,0,0); });
+      b.querySelectorAll('[data-npc]').forEach(c=>{ const sp=npcSprite(c.dataset.npc); if(sp){ c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0); } });
       const m=$('#sMute'); if(m) m.onclick=()=>{ S.mute=!S.mute; m.textContent='声音：'+(S.mute?'关':'开'); };
       const dg=$('#sDodge'); if(dg) dg.onclick=()=>{ S.dodgeOff=!S.dodgeOff; dg.textContent='首领战：'+(S.dodgeOff?'经典回合制':'回合 + 躲弹幕'); save(); };
       const mu=$('#sMusic'); if(mu) mu.onclick=()=>{ S.music=S.music===false; mu.textContent='音乐：'+(S.music===false?'关':'开'); if(S.music===false) Music.stop(); else Music.play(areaTheme(),true); };

@@ -23,7 +23,7 @@ const BOUNTY_KINDS = [
     const [id,n,why,who,pay]=pool[Math.random()*pool.length|0]; return {key:id, n, who, text:`${why}——交 ${n} 个${ITEMS[id].name}`, pay, rep:1}; }},
   {kind:'gift', make:()=>{ const pool=['ahe','qian','yunyou','tang','ge'].filter(k=>NPCS[k]); const k=pool[Math.random()*pool.length|0];
     return {key:k, n:1, who:'镇上的热心人', text:`${NPCS[k].name}最近闷闷不乐——今天之内送份礼物，哄哄开心`, pay:25, rep:1}; }},
-  {kind:'qiyu', make:()=>S.qiyu&&!S.qiyu.done ? {key:S.qiyu.ev, n:1, who:'云游子', text:'听说青丘山林里今天有异象——去看看是什么（找到奇遇）', pay:40, rep:2} : null},
+  {kind:'qiyu', make:()=>S.qiyu&&!S.qiyu.done ? {key:S.qiyu.ev, n:1, who:'云游子', text:'听说'+MAPS[S.qiyu.map||'forest'].name+'里今天有异象——去看看是什么（找到奇遇）', pay:40, rep:2} : null},
 ];
 const Bounty = {
   rep(){ return S.rep||0; },

@@ -119,11 +119,14 @@ npcAt=function(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id
 /* ---------- 传送阵 ---------- */
 MAPS.town.objects.push({type:'c2_portal', x:21, y:5, spr:'c2_portal', act:'portal', cond:s=>!!s.flags.c2_arrive||Portal.fx(s)});
 MAPS.fx3.objects.push({type:'c2_portal', x:12, y:2, spr:'c2_portal', act:'portal', cond:s=>Portal.fx(s)});
+MAPS.home.objects.push({type:'c2_portal', x:14, y:6, spr:'c2_portal', act:'portal', cond:s=>!!s.flags.c2_arrive||Portal.fx(s)});
+MAPS.forest.objects.push({type:'c2_portal', x:12, y:2, spr:'c2_portal', act:'portal', cond:s=>!!s.flags.c2_arrive||Portal.fx(s)});
 const Portal={
   fx:s=>!!s.flags.qiongqi_done&&!!s.sect&&s.L>=10,
   dests(){ return [
     {name:'桃源镇', map:'town', x:21, y:6},
-    {name:'洞府', map:'home', x:11, y:6},
+    {name:'洞府', map:'home', x:14, y:7},
+    {name:'青丘山林（钓鱼、打妖兽）', map:'forest', x:12, y:3},
     ...(S.flags.c2_arrive?[{name:SECTS[S.sect].name, map:zongId(), x:11, y:17}]:[]),
     ...(Portal.fx(S)?[{name:'风眼 · 狂暴穷奇', map:'fx3', x:12, y:3}]:[]),
   ].filter(d=>d.map!==RT.mapId); },
@@ -311,3 +314,14 @@ const C2_ROOM=()=>[
     if(C2.talk(id)) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ return C2.act(o)||_a.call(Dungeon,o); }; }
 { const _c=Story.check; Story.check=function(){ if(S&&S.c2) C2.refresh(); return _c.call(Story); }; }
+
+/* ---------- 奇遇 wander: once you live in the sect, a day's encounter may turn up there instead of in 青丘山林 ---------- */
+const QIYU_SPOTS_ZONG=[[4,10],[15,11],[23,10],[7,16],[19,18],[2,4]];
+const qyCond=map=>s=>{ if(!s.qiyu||s.qiyu.done||(s.qiyu.map||'forest')!==map) return false; const q=QIYU.find(x=>x.id===s.qiyu.ev); return !q||!q.night||night(); };
+for(const k in SECTS) MAPS['zong_'+k].objects.push({type:'qiyu', x:0, y:0, act:'qiyu', spr:'sparkle', dyn:true, cond:qyCond('zong_'+k)});
+{ const o=MAPS.forest.objects.find(o=>o.type==='qiyu'); o.cond=qyCond('forest'); }
+{ const _nd=Hooks.newDay; Hooks.newDay=function(){ _nd.apply(Hooks,arguments);
+    if(S.qiyu&&S.flags.c2_arrive&&S.sect&&Math.random()<.5){ S.qiyu.map='zong_'+S.sect; S.qiyu.spot=Math.floor(Math.random()*QIYU_SPOTS_ZONG.length); } Hooks.placeQiyu(); }; }
+{ const _pq=Hooks.placeQiyu; Hooks.placeQiyu=function(){ _pq.apply(Hooks,arguments); if(!S||!S.qiyu||!S.qiyu.map||S.qiyu.map==='forest') return;
+    const o=(MAPS[S.qiyu.map]||{objects:[]}).objects.find(o=>o.type==='qiyu'); if(o) [o.x,o.y]=QIYU_SPOTS_ZONG[S.qiyu.spot%QIYU_SPOTS_ZONG.length]; }; }
+{ const _h=Qiyu.hint; Qiyu.hint=function(){ const t=_h.apply(Qiyu,arguments); const m=S&&S.qiyu&&S.qiyu.map; return m&&m!=='forest'?t.replace(/青丘山林|山林/g, MAPS[m].name):t; }; }

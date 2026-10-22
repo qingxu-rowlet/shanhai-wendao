@@ -57,8 +57,6 @@ const Review = {
       run(){ Review.base({quest:'q8', L:8}); S.min=10*60; Review.at('home',16,5,'up'); setTimeout(()=>meditate(),500); }},
     {id:'rod', group:'v0.9.7 试玩修正', title:'青竹钓竿', check:'钱掌柜的店里能买青竹钓竿（400 灵石，你有 600）。买了以后去池塘边钓几条鱼，收线框应该更大、鱼更慢。悬赏榜也能用 8 声望换。',
       run(){ Review.base({quest:'q8', L:5, inv:{rod:1}}); S.stones=600; S.rep=10; Review.at('town',5,6,'up'); setTimeout(()=>UI.shop(),500); }},
-    {id:'talk-fix', group:'v0.9.7 试玩修正', title:'种田台词清理', check:'依次播放改过的台词：云游子讲筑基丹（不再提朱果种）、钱掌柜的订单、阿禾的芦花鸡奖励。点屏幕任意处都能翻页。',
-      run(){ Review.base({quest:'q8', L:5}); Review.at('town',12,9,'up'); setTimeout(()=>UI.say([...SCRIPTS.q6_start, ...SIDES.find(q=>q.id==='order').start, ...SIDES.find(q=>q.id==='chick').done, ...SIDES.find(q=>q.id==='dan').done]),500); }},
     {id:'beasts', group:'成长', title:'新妖兽：狸力、鵸鵌、朱厌', check:'直接挑一只打：每种都有自己的弹幕。当康（冲撞）、狌狌（扔果子）也改成躲弹幕了。',
       run(){ Review.base({quest:'q8', L:7, inv:{huichun:3}, kills:3}); Review.at('forest',20,20,'down');
         setTimeout(()=>UI.say([{choice:'和谁打一场？', options:['lili','qitu','zhuyan','dangkang','xingxing'].map(k=>({text:BEASTS[k].name, fn:()=>Battle.start(k,()=>{})}))}]),500); }},

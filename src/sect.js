@@ -120,7 +120,7 @@ const Sect = {
     el.innerHTML=`<div class="mg wood sects"><h3>选择门派</h3><p class="mg-tip">你的灵根：${Sect.rootName()}</p><div class="sect-list">${Object.entries(SECTS).map(([k,s])=>`<button class="sect-card" data-s="${k}">
       <canvas class="px" data-m="${k}" width="18" height="22"></canvas><div><b>${s.name}</b><i>${s.motto}</i><p>${s.desc}</p>
       <small>绝学：${s.skill.name}——${s.skill.desc}<br>天赋：${s.passive}</small></div></button>`).join('')}</div></div>`;
-    el.querySelectorAll('[data-m]').forEach(c=>c.getContext('2d').drawImage(lookSprite(SECTS[c.dataset.m].master.look,'down',0),0,0));
+    el.querySelectorAll('[data-m]').forEach(c=>drawCard(c, SECTS[c.dataset.m].master.look, 'bust'));
     el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ Sound.tick(); Sect.confirm(b.dataset.s); });
   },
   confirm(k){

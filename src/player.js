@@ -268,9 +268,9 @@ const Creator = {
     $('#crGo').onclick=()=>{ Sound.unlock(); clearInterval(Creator.timer); const name=(Creator.name||'').trim()||'无名';
       RT.slot=Creator.slot; S=newState(); S.look={...Creator.look}; S.name=name; t.hidden=true;
       enterMap('home',11,6); UI.hud(); save(); UI.say(SCRIPTS.intro, ()=>{ S.questStarted=0; Story.check(); }); };
-    clearInterval(Creator.timer); let i=0; const dirs=['down','down','side','up','side'];
-    const draw=()=>{ const c=$('#crPrev'); if(!c){ clearInterval(Creator.timer); return; } const d=dirs[Math.floor(i/8)%dirs.length], f=Math.floor(i/2)%4, sp=lookSprite(L,d,f);
-      const g=c.getContext('2d'); g.clearRect(0,0,c.width,c.height); if(d==='side'&&Math.floor(i/8)%dirs.length===4){ g.save(); g.translate(18,0); g.scale(-1,1); g.drawImage(sp,0,0); g.restore(); } else g.drawImage(sp,0,0); i++; };
+    clearInterval(Creator.timer); let i=0; const turns=[{},{},{walk:1},{flip:1},{back:1}];
+    const draw=()=>{ const c=$('#crPrev'); if(!c){ clearInterval(Creator.timer); return; } const k=turns[Math.floor(i/10)%turns.length], f=Math.floor(i/2)%2;
+      const blink=!k.walk&&!k.back&&i%23===0; drawCard(c, L, 'full', {pose:k.walk&&f?'walk':'stand', back:k.back, flip:k.flip, mood:blink?'blink':'normal'}); i++; };
     draw(); Creator.timer=setInterval(draw,120);
   }
 };
