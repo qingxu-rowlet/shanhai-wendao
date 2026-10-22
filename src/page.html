@@ -173,6 +173,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #battle.shake{animation:shk .3s}
 #battle>.skillfx{position:absolute!important;inset:0;margin:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:6;transition:opacity .25s}
 #battle>.skillfx.out{opacity:0}
+#mjDark{position:fixed;inset:0;z-index:24;background:#05060a;opacity:0;pointer-events:none;transition:opacity 1.2s}
+#mjDark.on{opacity:.9}
+body.mjshake #cv{animation:mjshake 1.2s ease-out}
+@keyframes mjshake{0%,100%{transform:none}10%{transform:translate(-4px,2px)}25%{transform:translate(5px,-3px)}40%{transform:translate(-3px,-2px)}60%{transform:translate(3px,3px)}80%{transform:translate(-2px,1px)}}
 #fxPick{position:fixed;left:50%;transform:translateX(-50%);top:max(64px,env(safe-area-inset-top,0px));z-index:40;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 #battle.fxing .b-acts{pointer-events:none;opacity:.55}
 @keyframes shk{25%{transform:translate(-6px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,2px)}}

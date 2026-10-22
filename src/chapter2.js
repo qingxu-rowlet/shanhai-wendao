@@ -86,9 +86,9 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
       {type:'building', x:6, y:11, w:5, h:3, style:'house', roof:L.roof, label:'二师兄的房间', door:[8,14], act:'c2room'},
       {type:'building', x:17, y:11, w:6, h:3, style:'shop', label:'膳堂', door:[19,14], act:'c2kitchen'},
       {type:'npc', id:m.id, x:15, y:5, look:m.look, name:m.name, act:'talk', cond:mine},
-      {type:'npc', id:'lu',  x:5, y:8,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:mine},
-      {type:'npc', id:'xie', x:24, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:mine},
-      {type:'npc', id:'man', x:17, y:15, look:LOOK_MAN, name:'何满仓', act:'talk', cond:mine},
+      {type:'npc', id:'lu',  x:5, y:8,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:s=>mine(s)&&!s.flags.c2_depart},
+      {type:'npc', id:'xie', x:24, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>mine(s)&&!s.flags.c2_depart},
+      {type:'npc', id:'man', x:17, y:15, look:LOOK_MAN, name:'何满仓', act:'talk', cond:s=>mine(s)&&!s.flags.c2_depart},
       {type:'npc', id:'zhishi', x:16, y:12, look:LOOK_ZHISHI, name:'许执事', act:'talk', cond:mine},
       {type:'sign', x:16, y:10, text:'小卖部　——　许执事。钓竿、丹药、杂货，宗门弟子不加价。'},
       {type:'mailbox', x:5, y:15, act:'mail', spr:'mailbox'},
@@ -154,7 +154,7 @@ QUESTS.push(
   {id:'c2b', title:'宗门日常', desc:'大师兄、大师姐、二师兄每天会各派给你一件事。做完三天的功课，熟悉宗门。', check:s=>(s.c2&&s.c2.days||0)>=3,
     progress:s=>`第 ${Math.min(3,(s.c2&&s.c2.days||0)+1)} 天 · 已完成 ${s.c2&&s.c2.days||0}/3 天`, target:s=>['zong_'+s.sect,15,5,'宗门']},
   {id:'c2c', title:'师尊召见', desc:'三天的功课做完了。师尊在主殿前等你们。', start:'c2_summon', check:s=>!!s.flags.c2_order, target:s=>npcAt(SECTS[s.sect].master.id)},
-  {id:'c2d', title:'第二幕 · 秘境（制作中）', desc:'四人一同前往秘境历练。第二幕正在制作中，敬请期待。可以继续做宗门日常以外的事：钓鱼、悬赏、奇遇、狂暴穷奇。', check:s=>false});
+  {id:'c2d', title:'山门集合', desc:'师尊命你们四人去秘境历练。明日一早，到山门找大师兄集合。', check:s=>!!s.flags.c2_depart, target:s=>['zong_'+s.sect,12,16,'山门（找大师兄）']});
 
 const sectName=()=>SECTS[S.sect].name, master=()=>SECTS[S.sect].master.name;
 const C2S={
@@ -198,8 +198,8 @@ const C2_ORDER=()=>{ const m=master(); return [
   ['何满仓','秘境里……有好吃的吗？'],
   ['谢霁月','……'],
   ['陆正衡','明日一早，山门集合。'],
-  {flag:'c2_order'},
-  ['旁白','（第二章 第一幕「入门」完。第二幕「秘境」正在制作中，敬请期待。）']]; };
+  {flag:'c2_order'}, {run:()=>{ S.c2.orderDay=S.day; }},
+  ['旁白','（第一幕「入门」完。明天一早，去山门找大师兄。）']]; };
 
 /* ---------- the daily chores ---------- */
 const C2_TASKS={
@@ -234,16 +234,19 @@ const C2_TASKS={
 const WHO={lu:'陆正衡', xie:'谢霁月', man:'何满仓'};
 const C2={
   fresh:()=>({n:0, got:{lu:0,xie:0,man:0}, p:{dummy:0, leaves:[], steles:[], room:false}, doneDay:-1, days:0, counted:-1}),
-  on:()=>!!(S&&S.flags.c2_arrive&&S.c2&&Story.quest()&&Story.quest().id==='c2b'),
+  on:()=>!!(S&&S.flags.c2_arrive&&S.c2&&Story.quest()&&['c2b','c2e'].includes(Story.quest().id)),
+  inMJ:()=>!!(Story.quest()&&Story.quest().id==='c2e'),
   task(who){ return S&&S.c2?C2_TASKS[who][S.c2.n].id:null; },
   def(who){ return C2_TASKS[who][S.c2.n]; },
   fish(s){ return Object.keys(s.inv).find(k=>k.startsWith('fish_')&&s.inv[k]>0); },
   allDone(){ return ['lu','xie','man'].every(k=>S.c2.got[k]===2); },
   // a new morning brings the next set of chores, once the last set is done
-  refresh(){ if(!C2.on()) return; const c=S.c2; if(C2.allDone()&&c.counted===c.n&&c.days<3&&S.day>c.doneDay){ c.n=c.days; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false}; UI.hud(); } },
+  // (in the 秘境 a new day's chores come with the morning scene instead)
+  refresh(){ if(!C2.on()||C2.inMJ()) return; const c=S.c2; if(C2.allDone()&&c.counted===c.n&&c.days<3&&S.day>c.doneDay){ c.n=c.days; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false}; UI.hud(); } },
   where(t){ return t&&t[0]==='c2'?[zongId(),t[1],t[2],t[3]]:t; },
   items(){ if(!C2.on()) return []; C2.refresh(); const c=S.c2, out=[];
-    if(C2.allDone()) return [{key:'c2_rest', kind:'side', title:'今天的功课做完了', progress:'回房间睡一觉，明天还有新的吩咐', target:[zongId(),3,14,'你的房间']}];
+    if(C2.allDone()) return [C2.inMJ()?{key:'c2_rest', kind:'side', title:'今天的事做完了', progress:'回帐篷休息，明天还有新的吩咐', target:['mj_camp',4,11,'你的帐篷']}
+      :{key:'c2_rest', kind:'side', title:'今天的功课做完了', progress:'回房间睡一觉，明天还有新的吩咐', target:[zongId(),3,14,'你的房间']}];
     for(const w of ['lu','xie','man']){ const d=C2.def(w), g=c.got[w]; if(g===2) continue;
       const pos=npcAt(w);
       if(g===0) out.push({key:'c2_'+w, kind:'side', title:d.title, progress:'去找'+WHO[w], target:pos});
@@ -258,7 +261,7 @@ const C2={
     if(SECTS[S.sect]&&id===SECTS[S.sect].master.id){ return C2.master(); }
     if(!WHO[id]||!C2.on()) return false; C2.refresh();
     const c=S.c2, d=C2.def(id), g=c.got[id];
-    if(g===0){ c.got[id]=1; C2.sync(); UI.hud(); UI.say([...d.ask.map(t=>[WHO[id],t]), ['旁白','（任务：'+d.goal+'。）']]); return true; }
+    if(g===0){ c.got[id]=1; d.accept&&d.accept(S); C2.sync(); UI.hud(); UI.say([...d.ask.map(t=>[WHO[id],t]), ['旁白','（任务：'+d.goal+'。）']]); return true; }
     if(g===1){
       if(!d.need(S)){ UI.say([[WHO[id], {lu:'还没做完？',xie:'……还没好。',man:'不急不急，慢慢来～'}[id]], ['旁白','（'+d.goal+'：'+d.prog(S)+'）']]); return true; }
       if(d.take) for(const k in d.take) addItem(k,-d.take[k]);
@@ -269,7 +272,8 @@ const C2={
   },
   check(){ const c=S.c2; if(!C2.allDone()||c.counted===c.n) return;   // each set of three chores counts once
     c.counted=c.n; c.days++; c.doneDay=S.day; save();
-    if(c.days<3) UI.say([['旁白','今天的功课都做完了。回房间睡一觉，明天还有新的吩咐。']]); else Story.check(); },
+    if(C2.inMJ()) UI.say([['旁白','今天的事都做完了。天色暗下来，营地里只剩篝火的噼啪声。回帐篷休息吧。']]);
+    else if(c.days<3) UI.say([['旁白','今天的功课都做完了。回房间睡一觉，明天还有新的吩咐。']]); else Story.check(); },
   master(){ const m=master(), q=Story.quest()?.id;
     if(q==='c2c'&&!S.flags.c2_order){ UI.say(C2_ORDER(), ()=>{ UI.hud(); Story.check(); }); return true; }
     if(Story.side(SECTS[S.sect].master.id)) return true;
