@@ -248,7 +248,7 @@ const C2={
     if(C2.allDone()) return [C2.inMJ()?{key:'c2_rest', kind:'side', title:'今天的事做完了', progress:'回帐篷休息，明天还有新的吩咐', target:['mj_camp',4,11,'你的帐篷']}
       :{key:'c2_rest', kind:'side', title:'今天的功课做完了', progress:'回房间睡一觉，明天还有新的吩咐', target:[zongId(),3,14,'你的房间']}];
     for(const w of ['lu','xie','man']){ const d=C2.def(w), g=c.got[w]; if(g===2) continue;
-      const pos=npcAt(w);
+      const pos=npcAt(w)||(w==='lu'&&C2.inMJ()?['mj_camp',7,4,'大师兄的帐篷']:null);   // 大师兄 may be inside his tent
       if(g===0) out.push({key:'c2_'+w, kind:'side', title:d.title, progress:'去找'+WHO[w], target:pos});
       else { const ok=d.need(S); out.push({key:'c2_'+w, kind:'side', title:d.title, progress:ok?'回去找'+WHO[w]+'交差':d.prog(S), target:ok?pos:(C2.where(d.tgt(S))||pos)}); } }
     return out; },
