@@ -43,12 +43,12 @@ const mjOn=s=>!!s.flags.c2_depart;
 MAPS.mj_camp={ name:'秘境 · 营地', w:22, h:16, ground:MJ_CAMP,
   objects:[
     {type:'mj_tent', x:4, y:11, spr:'mj_tent', act:'mjtent', label:'你的帐篷'},
-    {type:'mj_tent', x:7, y:4, spr:'mj_tent', act:'mjtent2', label:'大师兄和二师兄的帐篷'},
+    {type:'mj_tent', x:7, y:4, act:'mjtent2', label:'大师兄和二师兄的帐篷', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_tent_torn':'mj_tent'; }},   // claw marks in the cloth from the third day
     {type:'mj_tent', x:15, y:4, spr:'mj_tent', act:'mjtent3', label:'大师姐的帐篷'},
-    {type:'mj_fire', x:10, y:8, spr:'mj_fire', act:'mjfire'},
+    {type:'mj_fire', x:10, y:8, act:'mjfire', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_fire_low':'mj_fire'; }},   // the fire burns lower each night
     {type:'mj_pot', x:12, y:9, spr:'mj_pot', act:'mjpot'},
     {type:'c2_portal', x:2, y:14, spr:'c2_portal', act:'portal'},
-    ...[[3,2],[18,3],[6,14]].map(([x,y],i)=>({type:'mj_stake', x, y, act:'mjflag', fi:i, get spr(){ const m=S&&S.c2&&S.c2.p&&S.c2.p.mj; return (S&&S.c2&&S.c2.n>3)||(m&&(m.flags||[]).includes(i))?'mj_flag':'mj_stake'; }})),
+    ...[[3,2],[18,3],[6,14]].map(([x,y],i)=>({type:'mj_stake', x, y, act:'mjflag', fi:i, get spr(){ const m=S&&S.c2&&S.c2.p&&S.c2.p.mj; if(i===1&&(S&&S.c2&&S.c2.night||0)>=2) return 'mj_flagtorn'; return (S&&S.c2&&S.c2.n>3)||(m&&(m.flags||[]).includes(i))?'mj_flag':'mj_stake'; }})),
     {type:'npc', id:'lu',  x:9, y:6,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:s=>mjOn(s)&&!s.flags.lu_gone&&!(s.c2&&s.c2.night>=2)},   // from the third morning he keeps to his tent
     {type:'npc', id:'xie', x:13, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:mjOn},
     {type:'npc', id:'man', x:11, y:10, look:LOOK_MAN, name:'何满仓', act:'talk', cond:mjOn},
@@ -144,7 +144,8 @@ const MJ={
   night:[
     [['旁白','夜深了。你躺在帐篷里，听见隔壁传来二师兄的梦话——'],['何满仓','（梦话）饿……好饿……'],['旁白','你翻了个身，很快也睡着了。']],
     [['旁白','半夜，你忽然醒了。'],{run:()=>MJ.wings()},['旁白','帐篷外传来翅膀扇动的声音。很大，很近，像有什么巨大的东西从营地上空掠过。'],['旁白','篝火「呼」地暗了一下。'],['旁白','……然后，什么声音都没有了。']],
-    [['旁白','这一夜，你睡得很浅。'],['旁白','快天亮的时候，你听见有人从帐篷里走出去。脚步声很轻，一直往北边去了。'],['旁白','……大概是大师兄去巡夜了吧。你这样想着，又闭上了眼睛。']],
+    [['旁白','这一夜，你睡得很浅。'],['旁白','快天亮的时候，你听见有人从帐篷里走出去。脚步声很轻，一步，一步，往北边去了。'],
+      {choice:'外面的脚步声越来越远……', options:[{text:'掀开帐篷看看', go:'mj_peek'},{text:'继续睡', go:'mj_sleepon'}]}],
   ],
   morning:[
     // day 2: half the food gone
@@ -173,6 +174,7 @@ const MJ={
       ['旁白','天刚亮，二师兄的喊声就把所有人都叫醒了。'],
       ['旁白','大师兄的帐篷是空的。被褥叠得整整齐齐，像是没有人睡过。'],
       ['旁白','枕边，放着一根白色的羽毛。羽根上，沾着已经发黑的血。'],
+      ...(S.flags.mj_peeked?[['我','我昨晚……看见他往北边走了。赤着脚，头歪着。他没有回头。'],['何满仓','你、你怎么不叫住他！'],['谢霁月','……别怪{称}。换了谁，都不敢叫。']]:[]),
       {give:{mj_feather:1}},
       ['谢霁月','（握紧了剑）这羽毛……'],
       {choice:'这根白羽，你在哪里见过——', options:[
@@ -200,6 +202,16 @@ const MJ={
         setTimeout(()=>UI.say(MJ.morning[Math.min(k,2)](), ()=>{ UI.hud(); Story.check(); }),400); }); }); },
 };
 
+// night three: look out, or don't
+SCRIPTS.mj_peek=[
+  ['旁白','你轻轻掀开帐篷的一角。'],
+  ['旁白','雾里，一个人影赤着脚，一步一步往北走。月光照在他的背上——是大师兄。'],
+  ['我','（小声）……大师兄？'],
+  ['旁白','他没有回头。'],
+  ['旁白','他走路的样子很奇怪。头歪向一边，像是有什么东西，在雾的那一头，拽着他的脖子。'],
+  ['旁白','一眨眼，人影就被雾吞没了。你在帐篷口站了很久，才敢躺回去。'],
+  {flag:'mj_peeked'}];
+SCRIPTS.mj_sleepon=[['旁白','……大概是大师兄去巡夜了吧。你这样想着，又闭上了眼睛。']];
 /* ---------- quests ---------- */
 QUESTS.push(
   {id:'c2e', title:'秘境', desc:'在秘境营地历练。每天三位师兄师姐各派一件事，做完回帐篷休息。雾，好像一天比一天浓。', check:s=>!!s.flags.lu_gone,
@@ -253,7 +265,7 @@ for(const k in SECTS) MAPS['zong_'+k].objects.unshift({type:'npc', id:'lu', x:12
 { const _r=render; render=function(){ _r(); if(!RT.map||!RT.mapId.startsWith('mj_')) return;
     const g=ctx, Z=RT.scale*RT.dpr, T=TILE*Z, ox=Math.round(-RT.cam.x*Z), oy=Math.round(-RT.cam.y*Z), n=S.c2&&S.c2.night||0;
     if(RT.mapId==='mj_camp'){ g.fillStyle=`rgba(215,222,228,${.10+.08*n})`; g.fillRect(0,0,cv.width,cv.height);
-      const f=RT.ents.find(e=>e.act==='mjfire'); if(f){ const fx=ox+(f.x+.5)*T, fy=oy+(f.y+.5)*T, r=T*(2.2+.15*Math.sin(RT.t*6)); const gr=g.createRadialGradient(fx,fy,0,fx,fy,r); gr.addColorStop(0,'rgba(255,170,70,.32)'); gr.addColorStop(1,'rgba(255,170,70,0)'); g.fillStyle=gr; g.fillRect(fx-r,fy-r,r*2,r*2); } }
+      const f=RT.ents.find(e=>e.act==='mjfire'); if(f){ const fx=ox+(f.x+.5)*T, fy=oy+(f.y+.5)*T, r=T*(Math.max(.9,2.2-.55*n)+.15*Math.sin(RT.t*6)); const gr=g.createRadialGradient(fx,fy,0,fx,fy,r); gr.addColorStop(0,`rgba(255,170,70,${Math.max(.12,.32-.07*n)})`); gr.addColorStop(1,'rgba(255,170,70,0)'); g.fillStyle=gr; g.fillRect(fx-r,fy-r,r*2,r*2); } }
     if(RT.mapId==='mj_wood'){ const c=MJ.fogC||(MJ.fogC=document.createElement('canvas')); c.width=cv.width; c.height=cv.height; const f=c.getContext('2d');
       f.fillStyle=`rgba(212,218,224,${Math.min(.95,.78+.06*n)})`; f.fillRect(0,0,c.width,c.height); f.globalCompositeOperation='destination-out';
       const px=ox+(RT.fx+.5)*T, py=oy+(RT.fy+.5)*T, r=T*(Math.max(2.6,5.2-.9*n)+(count(S,'migu')?1.4:0)),   /* 迷穀花: 佩之不迷 */ gr=f.createRadialGradient(px,py,r*.35,px,py,r); gr.addColorStop(0,'rgba(0,0,0,1)'); gr.addColorStop(1,'rgba(0,0,0,0)'); f.fillStyle=gr; f.fillRect(px-r,py-r,r*2,r*2);

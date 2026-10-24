@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="539cfb7a81"><script>(function(){var B="539cfb7a81";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="cb53cdcc81"><script>(function(){var B="cb53cdcc81";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6088,7 +6088,7 @@ const ActBtn = {
     if(o.type==='npc') return ['对话','💬']; if(o.type==='gather') return ['采集','🌿'];
     const a=o.act; const L={portal:['传送','✦'], dummy:['练功','⚔'], leaf:['打扫','🍂'], stele:['查看','📜'], stove:['做饭','🍲'], alchemy:['炼丹','🔥'], meditate:['打坐','🧘'],
       sleep:['休息','🌙'], c2bed:['休息','🌙'], c2room:['进屋','🚪'], c2kitchen:['进屋','🚪'], shop:['买卖','🪙'], board:['悬赏','📜'], mail:['信箱','✉'], altar:['测灵','✦'],
-      shrine:['上香','🏮'], qiyu:['探查','✨'], dungeon:['进入','🕳'], chest:['打开','📦'], fxboss:['挑战','⚔'], fxboss2:['挑战','⚔']}[a];
+      shrine:['上香','🏮'], qiyu:['探查','✨'], dungeon:['进入','🕳'], chest:['打开','📦'], fxboss:['挑战','⚔'], fxboss2:['挑战','⚔'], mjtent:['休息','🌙'], mjtent2:['帐篷','⛺'], mjtent3:['帐篷','⛺'], mjfire:['篝火','🔥'], mjpot:['铁锅','🍲'], mjflag:['阵旗','🚩'], mjstele:['查看','📜'], mjbag:['查看','👀'], mail:['信箱','✉']}[a];
     if(L) return L; if(o.type==='sign'||o.type==='tablet') return ['查看','📜']; if(o.type==='building') return ['进入','🚪']; return ['互动','✋']; },
   // what is in reach, even mid-step (findPrompt only answers once you stop)
   near(){ if(!RT.map||RT.paused) return null; const m=RT.moving; RT.moving=false; let p=null; try{ p=findPrompt(); }finally{ RT.moving=m; } return p; },
@@ -6555,12 +6555,12 @@ const mjOn=s=>!!s.flags.c2_depart;
 MAPS.mj_camp={ name:'秘境 · 营地', w:22, h:16, ground:MJ_CAMP,
   objects:[
     {type:'mj_tent', x:4, y:11, spr:'mj_tent', act:'mjtent', label:'你的帐篷'},
-    {type:'mj_tent', x:7, y:4, spr:'mj_tent', act:'mjtent2', label:'大师兄和二师兄的帐篷'},
+    {type:'mj_tent', x:7, y:4, act:'mjtent2', label:'大师兄和二师兄的帐篷', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_tent_torn':'mj_tent'; }},   // claw marks in the cloth from the third day
     {type:'mj_tent', x:15, y:4, spr:'mj_tent', act:'mjtent3', label:'大师姐的帐篷'},
-    {type:'mj_fire', x:10, y:8, spr:'mj_fire', act:'mjfire'},
+    {type:'mj_fire', x:10, y:8, act:'mjfire', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_fire_low':'mj_fire'; }},   // the fire burns lower each night
     {type:'mj_pot', x:12, y:9, spr:'mj_pot', act:'mjpot'},
     {type:'c2_portal', x:2, y:14, spr:'c2_portal', act:'portal'},
-    ...[[3,2],[18,3],[6,14]].map(([x,y],i)=>({type:'mj_stake', x, y, act:'mjflag', fi:i, get spr(){ const m=S&&S.c2&&S.c2.p&&S.c2.p.mj; return (S&&S.c2&&S.c2.n>3)||(m&&(m.flags||[]).includes(i))?'mj_flag':'mj_stake'; }})),
+    ...[[3,2],[18,3],[6,14]].map(([x,y],i)=>({type:'mj_stake', x, y, act:'mjflag', fi:i, get spr(){ const m=S&&S.c2&&S.c2.p&&S.c2.p.mj; if(i===1&&(S&&S.c2&&S.c2.night||0)>=2) return 'mj_flagtorn'; return (S&&S.c2&&S.c2.n>3)||(m&&(m.flags||[]).includes(i))?'mj_flag':'mj_stake'; }})),
     {type:'npc', id:'lu',  x:9, y:6,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:s=>mjOn(s)&&!s.flags.lu_gone&&!(s.c2&&s.c2.night>=2)},   // from the third morning he keeps to his tent
     {type:'npc', id:'xie', x:13, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:mjOn},
     {type:'npc', id:'man', x:11, y:10, look:LOOK_MAN, name:'何满仓', act:'talk', cond:mjOn},
@@ -6656,7 +6656,8 @@ const MJ={
   night:[
     [['旁白','夜深了。你躺在帐篷里，听见隔壁传来二师兄的梦话——'],['何满仓','（梦话）饿……好饿……'],['旁白','你翻了个身，很快也睡着了。']],
     [['旁白','半夜，你忽然醒了。'],{run:()=>MJ.wings()},['旁白','帐篷外传来翅膀扇动的声音。很大，很近，像有什么巨大的东西从营地上空掠过。'],['旁白','篝火「呼」地暗了一下。'],['旁白','……然后，什么声音都没有了。']],
-    [['旁白','这一夜，你睡得很浅。'],['旁白','快天亮的时候，你听见有人从帐篷里走出去。脚步声很轻，一直往北边去了。'],['旁白','……大概是大师兄去巡夜了吧。你这样想着，又闭上了眼睛。']],
+    [['旁白','这一夜，你睡得很浅。'],['旁白','快天亮的时候，你听见有人从帐篷里走出去。脚步声很轻，一步，一步，往北边去了。'],
+      {choice:'外面的脚步声越来越远……', options:[{text:'掀开帐篷看看', go:'mj_peek'},{text:'继续睡', go:'mj_sleepon'}]}],
   ],
   morning:[
     // day 2: half the food gone
@@ -6685,6 +6686,7 @@ const MJ={
       ['旁白','天刚亮，二师兄的喊声就把所有人都叫醒了。'],
       ['旁白','大师兄的帐篷是空的。被褥叠得整整齐齐，像是没有人睡过。'],
       ['旁白','枕边，放着一根白色的羽毛。羽根上，沾着已经发黑的血。'],
+      ...(S.flags.mj_peeked?[['我','我昨晚……看见他往北边走了。赤着脚，头歪着。他没有回头。'],['何满仓','你、你怎么不叫住他！'],['谢霁月','……别怪{称}。换了谁，都不敢叫。']]:[]),
       {give:{mj_feather:1}},
       ['谢霁月','（握紧了剑）这羽毛……'],
       {choice:'这根白羽，你在哪里见过——', options:[
@@ -6712,6 +6714,16 @@ const MJ={
         setTimeout(()=>UI.say(MJ.morning[Math.min(k,2)](), ()=>{ UI.hud(); Story.check(); }),400); }); }); },
 };
 
+// night three: look out, or don't
+SCRIPTS.mj_peek=[
+  ['旁白','你轻轻掀开帐篷的一角。'],
+  ['旁白','雾里，一个人影赤着脚，一步一步往北走。月光照在他的背上——是大师兄。'],
+  ['我','（小声）……大师兄？'],
+  ['旁白','他没有回头。'],
+  ['旁白','他走路的样子很奇怪。头歪向一边，像是有什么东西，在雾的那一头，拽着他的脖子。'],
+  ['旁白','一眨眼，人影就被雾吞没了。你在帐篷口站了很久，才敢躺回去。'],
+  {flag:'mj_peeked'}];
+SCRIPTS.mj_sleepon=[['旁白','……大概是大师兄去巡夜了吧。你这样想着，又闭上了眼睛。']];
 /* ---------- quests ---------- */
 QUESTS.push(
   {id:'c2e', title:'秘境', desc:'在秘境营地历练。每天三位师兄师姐各派一件事，做完回帐篷休息。雾，好像一天比一天浓。', check:s=>!!s.flags.lu_gone,
@@ -6765,7 +6777,7 @@ for(const k in SECTS) MAPS['zong_'+k].objects.unshift({type:'npc', id:'lu', x:12
 { const _r=render; render=function(){ _r(); if(!RT.map||!RT.mapId.startsWith('mj_')) return;
     const g=ctx, Z=RT.scale*RT.dpr, T=TILE*Z, ox=Math.round(-RT.cam.x*Z), oy=Math.round(-RT.cam.y*Z), n=S.c2&&S.c2.night||0;
     if(RT.mapId==='mj_camp'){ g.fillStyle=`rgba(215,222,228,${.10+.08*n})`; g.fillRect(0,0,cv.width,cv.height);
-      const f=RT.ents.find(e=>e.act==='mjfire'); if(f){ const fx=ox+(f.x+.5)*T, fy=oy+(f.y+.5)*T, r=T*(2.2+.15*Math.sin(RT.t*6)); const gr=g.createRadialGradient(fx,fy,0,fx,fy,r); gr.addColorStop(0,'rgba(255,170,70,.32)'); gr.addColorStop(1,'rgba(255,170,70,0)'); g.fillStyle=gr; g.fillRect(fx-r,fy-r,r*2,r*2); } }
+      const f=RT.ents.find(e=>e.act==='mjfire'); if(f){ const fx=ox+(f.x+.5)*T, fy=oy+(f.y+.5)*T, r=T*(Math.max(.9,2.2-.55*n)+.15*Math.sin(RT.t*6)); const gr=g.createRadialGradient(fx,fy,0,fx,fy,r); gr.addColorStop(0,`rgba(255,170,70,${Math.max(.12,.32-.07*n)})`); gr.addColorStop(1,'rgba(255,170,70,0)'); g.fillStyle=gr; g.fillRect(fx-r,fy-r,r*2,r*2); } }
     if(RT.mapId==='mj_wood'){ const c=MJ.fogC||(MJ.fogC=document.createElement('canvas')); c.width=cv.width; c.height=cv.height; const f=c.getContext('2d');
       f.fillStyle=`rgba(212,218,224,${Math.min(.95,.78+.06*n)})`; f.fillRect(0,0,c.width,c.height); f.globalCompositeOperation='destination-out';
       const px=ox+(RT.fx+.5)*T, py=oy+(RT.fy+.5)*T, r=T*(Math.max(2.6,5.2-.9*n)+(count(S,'migu')?1.4:0)),   /* 迷穀花: 佩之不迷 */ gr=f.createRadialGradient(px,py,r*.35,px,py,r); gr.addColorStop(0,'rgba(0,0,0,1)'); gr.addColorStop(1,'rgba(0,0,0,0)'); f.fillStyle=gr; f.fillRect(px-r,py-r,r*2,r*2);
@@ -6852,6 +6864,52 @@ const Critters = {
     if(RT.map&&RT.mapId.startsWith('mj_')&&!RT.paused) Critters.tick(dt); _r(); }; }
 // draw the creatures before the 秘境 overlay: hook the y-sorted world by drawing them right after the ground pass
 { const _dg=Life.drawGround; Life.drawGround=function(g,ox,oy,T,Z){ _dg.call(Life,g,ox,oy,T,Z); if(RT.mapId&&RT.mapId.startsWith('mj_')) Critters.draw(g,ox,oy,T,Z); }; }
+
+/* ============================================================
+   山海问道 · 秘境的不安 — small things that pile up, night after night:
+   claw prints in the mud by the tents (from the second day), a torn flag and slashed tent cloth (third day),
+   the campfire burning lower, a vast winged shadow sliding once across the fog, whispers in the 雾林,
+   and a lamp in 大师兄's tent throwing his seated shadow on the cloth — its neck now and then bending wrong.
+   ============================================================ */
+Object.assign(SPR, {
+  mj_tent_torn:['..........NN..........','.........NttN.........','........NtkkTN........','.......NttkkTTN.......','......NtttttkkTN......','.....NttktttkTTTN.....','....NttttktkkkTTN.....','...NttttttkkkTTTTN....','..NtttttttttkkkkTTTN..','.NttttttttttkkkkkTTTN.','NNNNNNNNNNNNNNNNNNNNNN'],
+  mj_fire_low:['................','................','................','................','......o.........','.....oro........','....orRro.......','..nNnnnnnNnnn...','.NnnNnnnNnnnN...','..NNNNNNNNNN....'],
+  mj_flagtorn:['.nrr.r....','.nrR......','.nr.r.....','.n........','.n........','.n........','.n........','.n........','.n........','.N........','eeee......'],
+  mj_claw:['N...N...N.','.N...N...N','..N...N..N','..N...N...','...N...N..'],
+});
+const MJH = {
+  n:()=>S&&S.c2?S.c2.night||0:0,
+  live:()=>!!(RT.map&&RT.mapId&&RT.mapId.startsWith('mj_')&&S&&S.c2&&!S.flags.lu_gone),
+  // claw prints: drawn into the ground pass so people walk over them
+  CLAWS:[[6,6],[8,6],[9,7],[11,7],[13,6],[14,5],[16,6],[5,10]],
+  // a whisper drifting near you in the 雾林 on the third day
+  WHISPERS:['……好香……','……善人……','……再近一点……','……饿……','……你也行善么……','……血……'],
+  wh:null, whT:6, shadow:null,
+};
+{ const _dg=Life.drawGround; Life.drawGround=function(g,ox,oy,T,Z){ _dg.call(Life,g,ox,oy,T,Z);
+    if(RT.mapId==='mj_camp'&&MJH.n()>=1){ const sp=sprite('mj_claw'); g.globalAlpha=.55; for(const [x,y] of MJH.CLAWS){ g.drawImage(sp, ox+x*T+3*Z, oy+y*T+8*Z, sp.width*Z, sp.height*Z); } g.globalAlpha=1; } }; }
+{ const _r=render; let last=performance.now(); render=function(){ _r(); const now=performance.now(), dt=Math.min(.05,(now-last)/1000); last=now;
+    if(!MJH.live()) return;
+    const g=ctx, Z=RT.scale*RT.dpr, T=TILE*Z, ox=Math.round(-RT.cam.x*Z), oy=Math.round(-RT.cam.y*Z), n=MJH.n(), p=S.c2.p&&S.c2.p.mj;
+    // 大师兄's tent on the third day: a lamp inside, and his shadow sitting very still
+    if(RT.mapId==='mj_camp'&&n>=2){ const tx=ox+7.5*T, ty=oy+4.6*T;
+      const gr=g.createRadialGradient(tx,ty,0,tx,ty,T*.9); gr.addColorStop(0,'rgba(255,190,110,.35)'); gr.addColorStop(1,'rgba(255,190,110,0)'); g.fillStyle=gr; g.fillRect(tx-T,ty-T,T*2,T*2);
+      const tilt=(RT.t%7)>6.2?Math.sin((RT.t%7-6.2)/.8*Math.PI)*.9:0;   // every few seconds the neck bends — too far
+      g.save(); g.translate(tx,ty+T*.25); g.fillStyle='rgba(20,14,12,.55)'; g.beginPath(); g.ellipse(0,0,T*.22,T*.28,0,0,7); g.fill();
+      g.translate(0,-T*.3); g.rotate(tilt); g.beginPath(); g.arc(0,-T*.12,T*.13,0,7); g.fill(); g.restore(); }
+    // whispers in the 雾林 on the third day
+    if(RT.mapId==='mj_wood'&&n>=2&&!UI.busy()){ MJH.whT-=dt; if(!MJH.wh&&MJH.whT<=0){ const a=Math.random()*Math.PI*2; MJH.wh={text:MJH.WHISPERS[Math.random()*MJH.WHISPERS.length|0], dx:Math.cos(a)*1.6, dy:Math.sin(a)*1.1-.6, t:0}; MJH.whT=8+Math.random()*7; }
+      if(MJH.wh){ const w=MJH.wh; w.t+=dt; const a=w.t<.8?w.t/.8:w.t>2.4?Math.max(0,1-(w.t-2.4)/.8):1; if(w.t>3.2) MJH.wh=null; else {
+        g.font=`${Math.round(7*Z)}px "STKaiti","KaiTi",serif`; g.textAlign='center'; g.fillStyle=`rgba(60,40,40,${a*.6})`; g.fillText(w.text, ox+(RT.fx+.5+w.dx)*T, oy+(RT.fy+w.dy)*T-w.t*Z*3); } } }
+    // a vast winged shadow slides once across the fog on the third day (camp or wood)
+    if(n>=2&&p&&!p.shadow&&!UI.busy()&&!RT.paused){ p.stay=(p.stay||0)+dt; if(p.stay>7){ p.shadow=true; MJH.shadow={t:0}; for(let i=0;i<6;i++) setTimeout(()=>Sound.dig(),i*160); } }
+    if(MJH.shadow){ const s=MJH.shadow; s.t+=dt; const u=s.t/2.6; if(u>=1) MJH.shadow=null; else {
+      const W=cv.width, H=cv.height, x=-W*.6+u*W*2.2, y=-H*.15+u*H*.9, span=W*.9, flap=Math.sin(s.t*5)*.12;
+      g.save(); g.translate(x,y); g.rotate(.5); g.fillStyle='rgba(8,8,16,.42)';
+      g.beginPath(); g.moveTo(0,0); g.quadraticCurveTo(-span*.3,-span*(.18+flap),-span*.55,-span*.05); g.quadraticCurveTo(-span*.3,span*.02,0,span*.06);
+      g.quadraticCurveTo(span*.3,span*.02,span*.55,-span*.05); g.quadraticCurveTo(span*.3,-span*(.18+flap),0,0); g.fill();
+      g.beginPath(); g.ellipse(0,span*.03,span*.06,span*.14,0,0,7); g.fill(); g.restore(); } }
+  }; }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
