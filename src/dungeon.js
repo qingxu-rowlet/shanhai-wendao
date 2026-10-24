@@ -221,15 +221,16 @@ DODGE.qiongqi.featherrain={name:'羽雨', hit:.5, dur:4.8, spawn(P,t,dt,m){ P.ev
 // minions in the dungeon dodge too
 DODGE.guidiao={atk:{...DODGE.qiongqi.atk, name:'蛊雕俯冲', dur:3.4}, double:{...DODGE.qiongqi.double, name:'利爪', dur:3.4}, big:{...DODGE.qiongqi.big, name:'蛊雕扑击', dur:3.6}};
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ _pc.call(Battle); const s=Battle.s, p=s&&s.B.phase3;
-    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally=p.ally===false?null:'顾长歌'; s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); Ally.arrive(s); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
+    if(p&&s.phase2&&!s.phase3&&s.hp>0&&s.hp<=s.max*p.at){ s.phase3=true; s.ally=p.ally===false?null:(p.ally||'顾长歌'); s.moves=p.moves; s.i=0; BossBg.flash('rgba(255,255,255,.85)'); Music.stinger('boss'); Ally.arrive(s); setTimeout(()=>{ if(Battle.s===s) Battle.log(p.line); },500); } }; }
 const Ally = {
+  look(s){ return s.ally==='谢霁月'&&typeof LOOK_XIE!=='undefined'?LOOK_XIE:LOOK_GE; },
   arrive(s){ const host=$('#battle'); if(!host) return;
-    const el=document.createElement('div'); el.className='ally-in'; el.innerHTML='<canvas></canvas><b>顾长歌 赶来助战！</b>'; const c=el.querySelector('canvas'), sp=cgChibi(LOOK_GE,'guard','normal','swordup',null,false);
+    const el=document.createElement('div'); el.className='ally-in'; el.innerHTML=`<canvas></canvas><b>${s.ally} 赶来助战！</b>`; const c=el.querySelector('canvas'), sp=cgChibi(Ally.look(s),'guard','normal','swordup',null,false);
     c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0); host.appendChild(el); setTimeout(()=>el.remove(),2400);
     let st=$('#allyStand'); if(!st){ st=document.createElement('canvas'); st.id='allyStand'; host.querySelector('.b-stage').appendChild(st); }
-    const sp2=cgChibi(LOOK_GE,'stand','normal','sword',null,false); st.width=sp2.width; st.height=sp2.height; st.getContext('2d').drawImage(sp2,0,0); },
-  strike(s){ const d=Math.round(12+Math.random()*8); s.hp-=d; const st=$('#allyStand'); if(st){ st.classList.remove('hit'); void st.offsetWidth; st.classList.add('hit'); }
-    setTimeout(()=>{ if(Battle.s===s){ BossBg.flash('rgba(220,235,255,.45)'); Battle.float('顾长歌 -'+d,'pet'); Battle.hitFx(); Battle.ui(); } },220);
+    const sp2=cgChibi(Ally.look(s),'stand','normal','sword',null,false); st.width=sp2.width; st.height=sp2.height; st.getContext('2d').drawImage(sp2,0,0); },
+  strike(s){ const d=Math.round((s.ally==='谢霁月'?24:12)+Math.random()*8); s.hp-=d; const st=$('#allyStand'); if(st){ st.classList.remove('hit'); void st.offsetWidth; st.classList.add('hit'); }
+    setTimeout(()=>{ if(Battle.s===s){ BossBg.flash('rgba(220,235,255,.45)'); Battle.float(s.ally+' -'+d,'pet'); Battle.hitFx(); Battle.ui(); } },220);
     if(s.hp<=0&&!s.dead){ s.busy=true; s.dead=true; setTimeout(()=>Battle.end('win'),800); } },
 };
 // 顾长歌 strikes after each of your turns once he has joined; 戾气 hits harder but bleeds you

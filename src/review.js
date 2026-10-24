@@ -122,6 +122,20 @@ const Review = {
       run(){ Review.base({quest:'c2d', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3; S.c2.n=2; S.c2.counted=2; S.c2.got={lu:2,xie:2,man:2}; S.c2.orderDay=S.day-1; Review.at('zong_jian',12,13,'down'); }},
     ...[[1,'秘境第一天（插阵旗、采灵草、煮晚饭）',3],[2,'秘境第二天（饭少了一半、打妖兽、摘朱果、钓鱼）',4],[3,'秘境第三天（翅膀声之后：鸟兽全无、大师兄的纸条、干粮袋）',5]].map(([d,t,n])=>({id:'c2-mj'+d, group:'第二章', title:t, check:'在秘境营地，这一天的吩咐都还没接。做完三件事后回左下的帐篷休息，会有夜里的怪事和第二天早上的剧情。'+(d===3?'这一天做完再睡，第二天早上大师兄就不见了（第二幕结尾）。':''),
       run(){ Review.base({quest:'c2e', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3+d-1; S.c2.counted=n-1; S.c2.night=d-1; C2.nextSet(n); Review.at('mj_camp',10,12,'up'); }})),
+    ...(()=>{ const F={qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:5, juqi:2};
+      const go=(flags,map,x,y,dir)=>{ Review.base({quest:'c2f', L:11, sect:'jian', side:{zhenfeng:'active'}, flags:{...F,...flags}, inv:{...I}}); S.c2=C2.fresh(); S.c2.days=6; S.c2.night=3; S.c2.counted=5; Review.at(map,x,y,dir); };
+      return [
+      {id:'c2-cliff', group:'第二章', title:'第三幕：顺着白羽去白羽崖', check:'大师兄刚失踪，你在秘境营地。地上有一串白羽毛：穿过雾林，最北边的荆棘丛已经被撕开（寻路会带路）。上到白羽崖时有一段对话，山道边能捡到大师兄的「正」字玉牌。',
+        run(){ go({},'mj_camp',10,8,'up'); }},
+      {id:'c2-mirror', group:'第二章', title:'第三幕：八卦镜里的往事（安平村）', check:'站在白羽崖顶的石台前。点石台拿起八卦镜：三段往事插画（村民庆功 → 后山真相 → 夜里的狼孩，最后定格），然后选一句话，穷奇落下，开打。',
+        run(){ go({c2_cliff_in:true, c2_token:true},'mj_cliff',10,5,'up'); }},
+      {id:'c2-boss1', group:'第二章', title:'第三幕 Boss：穷奇 · 陆正衡', check:'直接开打。三个阶段：穷奇单打 → 70% 血时大师兄的头从穷奇头顶冒出来（明正典刑光柱、清誉护体护盾，护盾时用「八卦镜」按钮照破）→ 35% 血时两个头吵架、身子被左右拉扯，大师姐加入助战。头上会冒出对话气泡。',
+        run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(C2C.again),400); }},
+      {id:'c2-seal', group:'第二章', title:'第三幕结尾：封印穷奇', check:'打赢穷奇之后的剧情：插画「封」，八卦镜锁链把穷奇（和大师兄）拖回风穴，两个吵个不停；最后大师姐和二师兄各有一个伏笔。',
+        run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2c_win),()=>Story.check()),400); }},
+      {id:'c2-rematch', group:'第二章', title:'第二章之后的狂暴穷奇（两个头）', check:'封印穷奇之后再去风眼打狂暴穷奇：穷奇头顶多了大师兄的头，打的时候两个头互相拆台。',
+        run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true},'fx3',8,8,'up'); }},
+      ]; })(),
     {id:'c2-portal', group:'第二章', title:'传送阵（直达风眼打狂暴穷奇）', check:'桃源镇广场东边的传送阵：已经筑基、拜师、打过穷奇，就能直接传送到风眼打狂暴穷奇；风眼里也有传送阵可以回来。到了第二章，还能去宗门。',
       run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{huichun:4, hu_wei:1}}); Review.at('town',21,7,'up'); }},
   ],

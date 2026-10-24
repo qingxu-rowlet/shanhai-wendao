@@ -361,6 +361,15 @@ body.mjshake #cv{animation:mjshake 1.2s ease-out}
 .b-float.perfect{color:#9ff0c8;font-size:30px}
 .b-float.pet{left:62%;color:#bff2a8;font-size:26px} .b-float.burn{left:40%;color:#ffc070;font-size:24px} .b-float.crit{color:#ffe070;font-size:42px}
 #bEnemy.self{filter:invert(.85) hue-rotate(180deg) drop-shadow(0 0 12px #a050ff)}
+.b-acts button.mirrorb{background:#fff0c4;box-shadow:inset 0 0 0 2px #c8962a,0 3px 0 var(--wood-d)}
+.b-acts button.mirrorb:not(:disabled){animation:mirrorGlow 1.2s ease-in-out infinite}
+@keyframes mirrorGlow{50%{box-shadow:inset 0 0 0 2px #c8962a,0 3px 0 var(--wood-d),0 0 14px 2px rgba(255,214,110,.9)}}
+#bEnemy.shielded{filter:drop-shadow(0 0 6px rgba(255,214,110,.95)) drop-shadow(0 0 16px rgba(255,200,90,.7))}
+.b-float.shield{color:#ffe08a;font-size:15px}
+.b-say{position:absolute;top:4%;max-width:46%;padding:6px 10px 7px;border-radius:10px;background:#fffaf0;color:#2a1e1a;font-family:var(--f-body);font-size:15px;line-height:1.3;box-shadow:0 2px 0 #2a1e1a,0 0 0 2px #2a1e1a;animation:sayIn .25s ease-out both;z-index:4;pointer-events:none}
+.b-say small{display:block;font-size:11px;color:#8a5a36}
+.b-say.l{left:4%}.b-say.r{right:4%;background:#fff3d6}
+@keyframes sayIn{from{opacity:0;transform:translateY(6px) scale(.9)}}
 .b-acts button.sectb{background:#ffe2b0;box-shadow:inset 0 0 0 2px var(--cinnabar),0 3px 0 var(--wood-d)}
 /* mini-games */
 #minigame.sheet{background:rgba(10,10,20,.12);align-items:end;place-items:end center}
