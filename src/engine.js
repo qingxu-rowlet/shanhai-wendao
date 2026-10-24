@@ -449,10 +449,11 @@ function drawPlayer(x,y,Z){
 function drawRod(dx, dy, w, Z){
   const g=ctx, F=RT.fishing, T=TILE*Z;
   let hx, hy, tx, ty;
-  if(RT.dir==='left'){ hx=dx+3*Z; hy=dy+14*Z; tx=hx-9*Z; ty=hy-12*Z; }
-  else if(RT.dir==='right'){ hx=dx+w-3*Z; hy=dy+14*Z; tx=hx+9*Z; ty=hy-12*Z; }
-  else if(RT.dir==='up'){ hx=dx+w-4*Z; hy=dy+13*Z; tx=hx+3*Z; ty=hy-15*Z; }
-  else { hx=dx+w-3*Z; hy=dy+15*Z; tx=hx+5*Z; ty=hy-13*Z; }
+  // the rod starts in the hand pixel of each view (side: the one hand in front; front and back: the right hand)
+  if(RT.dir==='left'){ hx=dx+7.5*Z; hy=dy+15.5*Z; tx=hx-10*Z; ty=hy-12*Z; }
+  else if(RT.dir==='right'){ hx=dx+10.5*Z; hy=dy+15.5*Z; tx=hx+10*Z; ty=hy-12*Z; }
+  else if(RT.dir==='up'){ hx=dx+14.5*Z; hy=dy+15.5*Z; tx=hx+3*Z; ty=hy-15*Z; }
+  else { hx=dx+14.5*Z; hy=dy+15.5*Z; tx=hx+5*Z; ty=hy-13*Z; }
   if(F){ const bx=Math.round(-RT.cam.x*RT.scale*RT.dpr+(F.x+.5)*T), by=Math.round(-RT.cam.y*RT.scale*RT.dpr+(F.y+.5)*T)+(F.bite?Math.sin(RT.t*30)*2*Z:Math.sin(RT.t*3)*Z);
     tx=hx+(bx-hx)*.45; ty=Math.min(hy,by)-10*Z;
     g.strokeStyle='rgba(240,240,240,.85)'; g.lineWidth=Math.max(1,Z*.5); g.beginPath(); g.moveTo(tx,ty); g.quadraticCurveTo((tx+bx)/2,(ty+by)/2+8*Z,bx,by); g.stroke();
@@ -460,6 +461,9 @@ function drawRod(dx, dy, w, Z){
     if(F.bite){ g.strokeStyle='rgba(255,255,255,.6)'; g.lineWidth=Z*.6; g.beginPath(); g.ellipse(bx,by,5*Z+Math.sin(RT.t*20)*Z,2*Z,0,0,7); g.stroke(); } }
   g.strokeStyle='#6a4022'; g.lineWidth=Math.max(1.5,Z*.9); g.lineCap='round'; g.beginPath(); g.moveTo(hx,hy); g.lineTo(tx,ty); g.stroke();
   g.strokeStyle='#a8743f'; g.lineWidth=Math.max(1,Z*.45); g.beginPath(); g.moveTo(hx,hy); g.lineTo(hx+(tx-hx)*.4,hy+(ty-hy)*.4); g.stroke();
+  // a fist wrapped round the grip, drawn over the rod
+  const sk=lookPalette(S.look); g.fillStyle=softEdge(sk.S); g.fillRect(Math.round(hx-1.5*Z),Math.round(hy-1.5*Z),Math.round(3*Z),Math.round(3*Z));
+  g.fillStyle=sk.S; g.fillRect(Math.round(hx-1*Z),Math.round(hy-1*Z),Math.round(2*Z),Math.round(2*Z)); g.fillStyle=sk.s; g.fillRect(Math.round(hx-1*Z),Math.round(hy),Math.round(2*Z),Math.round(Z));
 }
 // "E" (or "点") above whatever you can interact with right now
 const FINE_POINTER=matchMedia('(pointer:fine)').matches;

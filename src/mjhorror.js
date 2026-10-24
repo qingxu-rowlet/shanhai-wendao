@@ -90,3 +90,39 @@ const MJH = {
       g.save(); g.translate(x,y); g.rotate(Math.atan2(H*1.1,W*2)+Math.PI/2); g.globalAlpha=.42*fade; g.imageSmoothingEnabled=true;
       g.drawImage(img,-130*sc,-74*sc,260*sc,170*sc); g.restore(); } }
   }; }
+
+/* ---------- CG: lifting the tent flap on the third night ----------
+   Ink-wash night seen through the tent's opening: pines in the fog, a moon behind it, the camp fire nearly out.
+   大师兄, from behind, barefoot and leaning wrong, walks away north and is swallowed by the fog. */
+MJH.peekCG=function(){
+  MJ.dark(false); MJH.peekLine=0; MJH.peekU=0; MJH.peekOn=true;
+  PixCG.open({ ink:(g,W,H,R)=>{
+      Land.paper(g,W,H,R,'#c9ccd0'); Land.sky(g,W,H,['rgba(8,12,26,.94)','rgba(22,28,48,.86)','rgba(44,50,66,.7)']);
+      Land.orb(g,W*.64,H*.17,Math.min(W,H)*.06,'#e6e4d6',4);
+      Land.mist(g,W,H,H*.3,H*.16,.22);
+      for(let i=0;i<9;i++){ const x=W*(.04+i*.12)+(R()-.5)*W*.05; Land.pine(g,x,H*(.6+R()*.05),H*(.32+R()*.14),R,.42+R()*.2); }
+      Land.mist(g,W,H,H*.55,H*.2,.35);
+      Land.ground(g,W,H,H*.62,.75,'#141820');
+      for(let i=0;i<14;i++) Land.grass(g,W*R(),H*(.86+R()*.1),H*.05,3,R,.5,'#1c222a');
+      Land.orb(g,W*.12,H*.9,Math.min(W,H)*.012,'#ff9a4a',5);                       // the fire, almost out
+    }, cast:[], title:'雾中背影', small:'第二章 · 秘境', seed:313 });
+  const c=PixCG.cur; let last=0; c.front=(g,W,H,fp,t)=>{
+    // he walks as the story is told: each line takes him a little further; on the last he is gone
+    const goal=[0,.08,.26,.4,.52,.68,1][Math.min(6,MJH.peekLine)], dt=Math.max(0,t-last); last=t; MJH.peekU+=(goal-MJH.peekU)*Math.min(1,dt*1.2);
+    const u=MJH.peekU, ease=u, bend=MJH.peekLine>=5?-.34:-.12;
+    // bare footprints, fresh in the mud, leading away
+    g.fillStyle='rgba(10,8,8,.55)'; for(let k=0;k<7;k++){ const v=k/7; if(v>ease) break; const x=W*(.48+v*.07)+(k%2?fp*3:-fp*3), y=H*(.97-v*.32); g.beginPath(); g.ellipse(x,y,fp*(2.4-v*1.4),fp*(1.2-v*.6),0,0,7); g.fill(); }
+    // 大师兄 from behind: walking, smaller and fainter the further he goes; his body leans and his head hangs to one side
+    const sp=cgChibi(LOOK_LU, Math.floor(t*2.2)%2?'walk':'stand', 'normal', null, null, true), sc=fp*(1.15-ease*.72), w=sp.width*sc, h=sp.height*sc;
+    const x=W*(.5+ease*.06), y=H*(.86-ease*.26), a=1-Math.max(0,(u-.7)/.3);
+    if(a>0){ g.save(); g.globalAlpha=a*.92; g.translate(x,y); g.rotate(bend+Math.sin(t*1.3)*.03); g.imageSmoothingEnabled=false; g.drawImage(sp,-w/2,-h,w,h); g.restore(); }
+    // the fog closes in front of him
+    for(let k=0;k<4;k++){ const yy=H*(.55+k*.08), al=(.12+ease*.4)*(1-k*.18), drift=Math.sin(t*.4+k)*W*.06; const gr=g.createRadialGradient(W*.55+drift,yy,0,W*.55+drift,yy,W*.6); gr.addColorStop(0,`rgba(214,218,224,${al})`); gr.addColorStop(1,'rgba(214,218,224,0)'); g.fillStyle=gr; g.fillRect(0,yy-H*.2,W,H*.4); }
+    // the tent flap you are holding open: dark cloth framing the view
+    for(const s of [-1,1]){ const x0=s<0?0:W, gr=g.createLinearGradient(x0,0,W/2,0); gr.addColorStop(0,'rgba(30,22,16,.98)'); gr.addColorStop(.6,'rgba(70,54,36,.9)'); gr.addColorStop(1,'rgba(70,54,36,0)');
+      g.fillStyle=gr; g.beginPath(); g.moveTo(x0,0); g.lineTo(W/2+s*W*.22,0); g.quadraticCurveTo(W/2+s*W*.3,H*.5, W/2+s*W*.38,H); g.lineTo(x0,H); g.closePath(); g.fill(); }
+    const vg=g.createRadialGradient(W/2,H*.55,Math.min(W,H)*.25,W/2,H*.55,Math.max(W,H)*.75); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.6)'); g.fillStyle=vg; g.fillRect(0,0,W,H); };
+};
+// the night-three peek opens the CG and closes it again before the dark returns
+{ const s=SCRIPTS.mj_peek; s.unshift({run:()=>MJH.peekCG()}); s.push({run:()=>{ MJH.peekOn=false; PixCG.close(); MJ.dark(true); }}); }
+{ const _l=UI.line; UI.line=function(){ if(MJH.peekOn) MJH.peekLine++; return _l.apply(UI,arguments); }; }

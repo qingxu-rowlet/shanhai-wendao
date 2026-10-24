@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="9927e36df5"><script>(function(){var B="9927e36df5";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="71a2ff6c11"><script>(function(){var B="71a2ff6c11";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2160,10 +2160,11 @@ function drawPlayer(x,y,Z){
 function drawRod(dx, dy, w, Z){
   const g=ctx, F=RT.fishing, T=TILE*Z;
   let hx, hy, tx, ty;
-  if(RT.dir==='left'){ hx=dx+3*Z; hy=dy+14*Z; tx=hx-9*Z; ty=hy-12*Z; }
-  else if(RT.dir==='right'){ hx=dx+w-3*Z; hy=dy+14*Z; tx=hx+9*Z; ty=hy-12*Z; }
-  else if(RT.dir==='up'){ hx=dx+w-4*Z; hy=dy+13*Z; tx=hx+3*Z; ty=hy-15*Z; }
-  else { hx=dx+w-3*Z; hy=dy+15*Z; tx=hx+5*Z; ty=hy-13*Z; }
+  // the rod starts in the hand pixel of each view (side: the one hand in front; front and back: the right hand)
+  if(RT.dir==='left'){ hx=dx+7.5*Z; hy=dy+15.5*Z; tx=hx-10*Z; ty=hy-12*Z; }
+  else if(RT.dir==='right'){ hx=dx+10.5*Z; hy=dy+15.5*Z; tx=hx+10*Z; ty=hy-12*Z; }
+  else if(RT.dir==='up'){ hx=dx+14.5*Z; hy=dy+15.5*Z; tx=hx+3*Z; ty=hy-15*Z; }
+  else { hx=dx+14.5*Z; hy=dy+15.5*Z; tx=hx+5*Z; ty=hy-13*Z; }
   if(F){ const bx=Math.round(-RT.cam.x*RT.scale*RT.dpr+(F.x+.5)*T), by=Math.round(-RT.cam.y*RT.scale*RT.dpr+(F.y+.5)*T)+(F.bite?Math.sin(RT.t*30)*2*Z:Math.sin(RT.t*3)*Z);
     tx=hx+(bx-hx)*.45; ty=Math.min(hy,by)-10*Z;
     g.strokeStyle='rgba(240,240,240,.85)'; g.lineWidth=Math.max(1,Z*.5); g.beginPath(); g.moveTo(tx,ty); g.quadraticCurveTo((tx+bx)/2,(ty+by)/2+8*Z,bx,by); g.stroke();
@@ -2171,6 +2172,9 @@ function drawRod(dx, dy, w, Z){
     if(F.bite){ g.strokeStyle='rgba(255,255,255,.6)'; g.lineWidth=Z*.6; g.beginPath(); g.ellipse(bx,by,5*Z+Math.sin(RT.t*20)*Z,2*Z,0,0,7); g.stroke(); } }
   g.strokeStyle='#6a4022'; g.lineWidth=Math.max(1.5,Z*.9); g.lineCap='round'; g.beginPath(); g.moveTo(hx,hy); g.lineTo(tx,ty); g.stroke();
   g.strokeStyle='#a8743f'; g.lineWidth=Math.max(1,Z*.45); g.beginPath(); g.moveTo(hx,hy); g.lineTo(hx+(tx-hx)*.4,hy+(ty-hy)*.4); g.stroke();
+  // a fist wrapped round the grip, drawn over the rod
+  const sk=lookPalette(S.look); g.fillStyle=softEdge(sk.S); g.fillRect(Math.round(hx-1.5*Z),Math.round(hy-1.5*Z),Math.round(3*Z),Math.round(3*Z));
+  g.fillStyle=sk.S; g.fillRect(Math.round(hx-1*Z),Math.round(hy-1*Z),Math.round(2*Z),Math.round(2*Z)); g.fillStyle=sk.s; g.fillRect(Math.round(hx-1*Z),Math.round(hy),Math.round(2*Z),Math.round(Z));
 }
 // "E" (or "点") above whatever you can interact with right now
 const FINE_POINTER=matchMedia('(pointer:fine)').matches;
@@ -6959,6 +6963,42 @@ const MJH = {
       g.save(); g.translate(x,y); g.rotate(Math.atan2(H*1.1,W*2)+Math.PI/2); g.globalAlpha=.42*fade; g.imageSmoothingEnabled=true;
       g.drawImage(img,-130*sc,-74*sc,260*sc,170*sc); g.restore(); } }
   }; }
+
+/* ---------- CG: lifting the tent flap on the third night ----------
+   Ink-wash night seen through the tent's opening: pines in the fog, a moon behind it, the camp fire nearly out.
+   大师兄, from behind, barefoot and leaning wrong, walks away north and is swallowed by the fog. */
+MJH.peekCG=function(){
+  MJ.dark(false); MJH.peekLine=0; MJH.peekU=0; MJH.peekOn=true;
+  PixCG.open({ ink:(g,W,H,R)=>{
+      Land.paper(g,W,H,R,'#c9ccd0'); Land.sky(g,W,H,['rgba(8,12,26,.94)','rgba(22,28,48,.86)','rgba(44,50,66,.7)']);
+      Land.orb(g,W*.64,H*.17,Math.min(W,H)*.06,'#e6e4d6',4);
+      Land.mist(g,W,H,H*.3,H*.16,.22);
+      for(let i=0;i<9;i++){ const x=W*(.04+i*.12)+(R()-.5)*W*.05; Land.pine(g,x,H*(.6+R()*.05),H*(.32+R()*.14),R,.42+R()*.2); }
+      Land.mist(g,W,H,H*.55,H*.2,.35);
+      Land.ground(g,W,H,H*.62,.75,'#141820');
+      for(let i=0;i<14;i++) Land.grass(g,W*R(),H*(.86+R()*.1),H*.05,3,R,.5,'#1c222a');
+      Land.orb(g,W*.12,H*.9,Math.min(W,H)*.012,'#ff9a4a',5);                       // the fire, almost out
+    }, cast:[], title:'雾中背影', small:'第二章 · 秘境', seed:313 });
+  const c=PixCG.cur; let last=0; c.front=(g,W,H,fp,t)=>{
+    // he walks as the story is told: each line takes him a little further; on the last he is gone
+    const goal=[0,.08,.26,.4,.52,.68,1][Math.min(6,MJH.peekLine)], dt=Math.max(0,t-last); last=t; MJH.peekU+=(goal-MJH.peekU)*Math.min(1,dt*1.2);
+    const u=MJH.peekU, ease=u, bend=MJH.peekLine>=5?-.34:-.12;
+    // bare footprints, fresh in the mud, leading away
+    g.fillStyle='rgba(10,8,8,.55)'; for(let k=0;k<7;k++){ const v=k/7; if(v>ease) break; const x=W*(.48+v*.07)+(k%2?fp*3:-fp*3), y=H*(.97-v*.32); g.beginPath(); g.ellipse(x,y,fp*(2.4-v*1.4),fp*(1.2-v*.6),0,0,7); g.fill(); }
+    // 大师兄 from behind: walking, smaller and fainter the further he goes; his body leans and his head hangs to one side
+    const sp=cgChibi(LOOK_LU, Math.floor(t*2.2)%2?'walk':'stand', 'normal', null, null, true), sc=fp*(1.15-ease*.72), w=sp.width*sc, h=sp.height*sc;
+    const x=W*(.5+ease*.06), y=H*(.86-ease*.26), a=1-Math.max(0,(u-.7)/.3);
+    if(a>0){ g.save(); g.globalAlpha=a*.92; g.translate(x,y); g.rotate(bend+Math.sin(t*1.3)*.03); g.imageSmoothingEnabled=false; g.drawImage(sp,-w/2,-h,w,h); g.restore(); }
+    // the fog closes in front of him
+    for(let k=0;k<4;k++){ const yy=H*(.55+k*.08), al=(.12+ease*.4)*(1-k*.18), drift=Math.sin(t*.4+k)*W*.06; const gr=g.createRadialGradient(W*.55+drift,yy,0,W*.55+drift,yy,W*.6); gr.addColorStop(0,`rgba(214,218,224,${al})`); gr.addColorStop(1,'rgba(214,218,224,0)'); g.fillStyle=gr; g.fillRect(0,yy-H*.2,W,H*.4); }
+    // the tent flap you are holding open: dark cloth framing the view
+    for(const s of [-1,1]){ const x0=s<0?0:W, gr=g.createLinearGradient(x0,0,W/2,0); gr.addColorStop(0,'rgba(30,22,16,.98)'); gr.addColorStop(.6,'rgba(70,54,36,.9)'); gr.addColorStop(1,'rgba(70,54,36,0)');
+      g.fillStyle=gr; g.beginPath(); g.moveTo(x0,0); g.lineTo(W/2+s*W*.22,0); g.quadraticCurveTo(W/2+s*W*.3,H*.5, W/2+s*W*.38,H); g.lineTo(x0,H); g.closePath(); g.fill(); }
+    const vg=g.createRadialGradient(W/2,H*.55,Math.min(W,H)*.25,W/2,H*.55,Math.max(W,H)*.75); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.6)'); g.fillStyle=vg; g.fillRect(0,0,W,H); };
+};
+// the night-three peek opens the CG and closes it again before the dark returns
+{ const s=SCRIPTS.mj_peek; s.unshift({run:()=>MJH.peekCG()}); s.push({run:()=>{ MJH.peekOn=false; PixCG.close(); MJ.dark(true); }}); }
+{ const _l=UI.line; UI.line=function(){ if(MJH.peekOn) MJH.peekLine++; return _l.apply(UI,arguments); }; }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
