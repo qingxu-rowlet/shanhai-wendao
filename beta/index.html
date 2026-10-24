@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="e49bfce1e2"><script>(function(){var B="e49bfce1e2";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="bc49b1f417"><script>(function(){var B="bc49b1f417";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6275,8 +6275,8 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
       {type:'c2_dummy', x:3, y:6, spr:'c2_dummy', act:'dummy'},{type:'c2_dummy', x:6, y:6, spr:'c2_dummy', act:'dummy'},
       {type:'furnace', x:22, y:6, act:'alchemy'},
       {type:'gather', x:20, y:8, item:'lingcao', spr:'herbspot'},{type:'gather', x:22, y:8, item:'lingcao', spr:'herbspot'},{type:'gather', x:24, y:8, item:'lingcao', spr:'herbspot'},{type:'gather', x:21, y:9, item:'lingcao', spr:'herbspot'},
-      {type:'gather', x:16, y:16, item:'lingmo', spr:'mushspot'},{type:'gather', x:17, y:18, item:'lingmo', spr:'mushspot'},{type:'gather', x:8, y:9, item:'lingmo', spr:'mushspot'},
-      {type:'gather', x:20, y:16, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:22, y:17, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:24, y:16, item:'zhuguo', spr:'fruitspot'},
+      {type:'gather', x:8, y:9, item:'lingmo', spr:'mushspot'},
+      {type:'sign', x:21, y:3, text:'往上是后山　——　灵菇、朱果，还有一口池塘。'},
       {type:'c2_stove', x:21, y:15, spr:'c2_stove', act:'stove'},
       {type:'c2_portal', x:10, y:17, spr:'c2_portal', act:'portal'},
       {type:'sign', x:14, y:17, text:sc.name+'　——　山门。旁边的传送阵通往桃源镇。'},
@@ -6286,8 +6286,24 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
       {type:'pine', x:1, y:9},{type:'pine', x:24, y:11},{type:'pine', x:24, y:18},{type:'tree', x:4, y:2},{type:'tree', x:21, y:2},
       ...L.props.map(([spr,x,y])=>spr==='herb'?{type:'gather', x, y, item:'lingcao', spr:'herbspot'}:spr==='furnace'?{type:'furnace', x, y}:{type:'deco', x, y, spr}),
     ],
-    exits:[]};
+    exits:[{x:19,y:0,to:'c2_houshan',tx:10,ty:14},{x:20,y:0,to:'c2_houshan',tx:11,ty:14}]};
+  // the mountain path behind the hall: east of it along the front, then up to the 后山
+  const G=MAPS['zong_'+k].ground.map(r=>r.split('')); for(let x=14;x<=20;x++) G[4][x]='='; for(let y=0;y<4;y++){ G[y][19]='='; G[y][20]='='; } MAPS['zong_'+k].ground=G.map(r=>r.join(''));
 }
+// 后山: one hill behind every sect (each sect's own path leads up to it, and back down to it)
+{ const W=22, H=16, R=rng(2024), G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>(x===0||y===0||x===W-1||y===H-1)?'W':'.'));
+  for(let y=2;y<H;y++){ G[y][10]='='; G[y][11]='='; } for(let x=6;x<=16;x++) G[8][x]='=';
+  for(let y=3;y<=5;y++) for(let x=2;x<=7;x++) if(!(y===5&&(x===2||x===7))) G[y][x]='~';
+  for(const [x,y] of [[3,10],[4,10],[15,3],[16,3],[18,11],[19,11],[5,13],[14,13],[8,2],[13,2]]) G[y][x]=R()<.5?',':':';
+  const objects=[
+    {type:'gather', x:15, y:11, item:'lingmo', spr:'mushspot'},{type:'gather', x:17, y:13, item:'lingmo', spr:'mushspot'},{type:'gather', x:6, y:11, item:'lingmo', spr:'mushspot'},
+    {type:'gather', x:14, y:5, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:17, y:5, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:19, y:8, item:'zhuguo', spr:'fruitspot'},
+    {type:'sign', x:12, y:13, text:'后山　——　往下回宗门。'},
+    {type:'pine', x:2, y:8},{type:'pine', x:4, y:1},{type:'pine', x:19, y:2},{type:'pine', x:20, y:12},{type:'pine', x:1, y:13},{type:'tree', x:8, y:5},{type:'tree', x:15, y:8},{type:'tree', x:3, y:13},{type:'tree', x:18, y:3},{type:'pine', x:8, y:12},
+  ];
+  const back=(x,tx)=>{ const e={x, y:H-1, tx, ty:1}; Object.defineProperty(e,'to',{enumerable:true, get:()=>zongId()}); return e; };
+  G[H-1][10]='='; G[H-1][11]='=';
+  MAPS.c2_houshan={ name:'后山', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[back(10,19),back(11,20)] }; }
 // roofs in the sect's colour
 { const _b=building; building=function(o){ if(!o.roof) return _b(o); const k=o.style+o.w+'x'+o.h+o.roof.join(''); if(BLDC[k]) return BLDC[k];
     const sv=o.style;
@@ -6398,14 +6414,14 @@ const C2_TASKS={
     {id:'pill', title:'大师姐：炼丹', ask:['丹房的丹炉空着。炼一颗回春丹给我看看。'], goal:'交给大师姐 1 颗回春丹', need:s=>count(s,'huichun')>=1, prog:s=>`回春丹 ${Math.min(1,count(s,'huichun'))}/1`, take:{huichun:1},
       tgt:s=>count(s,'huichun')>=1?null:['c2',22,6,'丹房的丹炉'], done:[['谢霁月','火候还行。'],['谢霁月','……以后受了伤，自己会治，就不必求人。']]},
     {id:'fruit', title:'大师姐：摘朱果', ask:['后山的朱果。两颗。'], goal:'摘 2 颗朱果交给大师姐', need:s=>count(s,'zhuguo')>=2, prog:s=>`朱果 ${Math.min(2,count(s,'zhuguo'))}/2`, take:{zhuguo:2},
-      tgt:s=>count(s,'zhuguo')>=2?null:['c2',22,17,'后山的朱果'], done:[['谢霁月','嗯。'],['旁白','她把其中一颗朱果放回你手里。'],['谢霁月','这颗，你自己吃。……别告诉满仓。']], give:{zhuguo:1}},
+      tgt:s=>count(s,'zhuguo')>=2?null:['c2_houshan',14,5,'后山的朱果'], done:[['谢霁月','嗯。'],['旁白','她把其中一颗朱果放回你手里。'],['谢霁月','这颗，你自己吃。……别告诉满仓。']], give:{zhuguo:1}},
   ],
   man:[
     {id:'cook', title:'二师兄：做饭', ask:['{称}！今晚轮到我做饭，可我一个人忙不过来……','后山有灵菇，采两朵来，到膳堂门口的灶台煮一锅汤！'], goal:'采 2 朵灵菇，在灶台煮一锅汤', need:s=>count(s,'c2_soup')>=1, prog:s=>count(s,'c2_soup')?'汤煮好了':`灵菇 ${Math.min(2,count(s,'lingmo'))}/2`, take:{c2_soup:1},
-      tgt:s=>count(s,'c2_soup')?null:count(s,'lingmo')>=2?['c2',21,15,'膳堂门口的灶台']:['c2',16,16,'后山的灵菇'],
+      tgt:s=>count(s,'c2_soup')?null:count(s,'lingmo')>=2?['c2',21,15,'膳堂门口的灶台']:['c2_houshan',15,11,'后山的灵菇'],
       done:[['何满仓','好香好香！'],['旁白','他一口气喝了三碗，又盯着锅底看了好久。'],['何满仓','……{称}，你做得真好。'],['何满仓','我……我好像还是有点饿。']]},
     {id:'fish', title:'二师兄：钓鱼', ask:['听说后山池塘里有鱼！钓一条来，我们烤着吃！','（没有钓竿的话，桃源镇的钱掌柜那里有卖。）'], goal:'在池塘钓一条鱼交给二师兄', need:s=>!!C2.fish(s), prog:s=>C2.fish(s)?'钓到了':'还没钓到',
-      tgt:s=>C2.fish(s)?null:['c2',6,17,'池塘（选中钓竿，点水面）'], done:[['何满仓','哇——！'],['旁白','鱼还没烤熟，他就已经咽了好几次口水。'],['何满仓','{称}，鱼头给你，鱼身给我……不对不对，鱼身给你！']]},
+      tgt:s=>C2.fish(s)?null:['c2_houshan',5,6,'后山的池塘（选中钓竿，点水面）'], done:[['何满仓','哇——！'],['旁白','鱼还没烤熟，他就已经咽了好几次口水。'],['何满仓','{称}，鱼头给你，鱼身给我……不对不对，鱼身给你！']]},
     {id:'room', title:'二师兄：收拾房间', ask:['{称}……能不能帮我收拾一下房间？','大师兄说今天要查房，我、我那屋有点乱……'], goal:'帮二师兄收拾房间', need:s=>!!s.c2.p.room, prog:s=>s.c2.p.room?'收拾好了':'还没收拾',
       tgt:s=>['c2',8,14,'二师兄的房间'], done:[['何满仓','谢谢你，{称}。'],['旁白','他朝你笑了笑。笑容和平时一样，只是眼睛有点红。']]},
   ],
