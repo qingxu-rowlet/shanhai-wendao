@@ -48,7 +48,7 @@ const ActBtn = {
     if(o.type==='npc') return ['对话','💬']; if(o.type==='gather') return ['采集','🌿'];
     const a=o.act; const L={portal:['传送','✦'], dummy:['练功','⚔'], leaf:['打扫','🍂'], stele:['查看','📜'], stove:['做饭','🍲'], alchemy:['炼丹','🔥'], meditate:['打坐','🧘'],
       sleep:['休息','🌙'], c2bed:['休息','🌙'], c2room:['进屋','🚪'], c2kitchen:['进屋','🚪'], shop:['买卖','🪙'], board:['悬赏','📜'], mail:['信箱','✉'], altar:['测灵','✦'],
-      shrine:['上香','🏮'], qiyu:['探查','✨'], dungeon:['进入','🕳'], chest:['打开','📦'], fxboss:['挑战','⚔'], fxboss2:['挑战','⚔'], mjtent:['休息','🌙'], mjtent2:['帐篷','⛺'], mjtent3:['帐篷','⛺'], mjfire:['篝火','🔥'], mjpot:['铁锅','🍲'], mjflag:['阵旗','🚩'], mjstele:['查看','📜'], mjbag:['查看','👀'], mail:['信箱','✉']}[a];
+      shrine:['上香','🏮'], qiyu:['探查','✨'], dungeon:['进入','🕳'], chest:['打开','📦'], fxboss:['挑战','⚔'], fxboss2:['挑战','⚔'], mjtent:['休息','🌙'], mjtent2:['帐篷','⛺'], mjtent3:['帐篷','⛺'], mjtent4:['帐篷','⛺'], mjfire:['篝火','🔥'], mjpot:['铁锅','🍲'], mjflag:['阵旗','🚩'], mjstele:['查看','📜'], mjbag:['查看','👀'], mail:['信箱','✉']}[a];
     if(L) return L; if(o.type==='sign'||o.type==='tablet') return ['查看','📜']; if(o.type==='building') return ['进入','🚪']; return ['互动','✋']; },
   // what is in reach, even mid-step (findPrompt only answers once you stop)
   near(){ if(!RT.map||RT.paused) return null; const m=RT.moving; RT.moving=false; let p=null; try{ p=findPrompt(); }finally{ RT.moving=m; } return p; },

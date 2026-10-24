@@ -43,7 +43,8 @@ const mjOn=s=>!!s.flags.c2_depart;
 MAPS.mj_camp={ name:'秘境 · 营地', w:22, h:16, ground:MJ_CAMP,
   objects:[
     {type:'mj_tent', x:4, y:11, spr:'mj_tent', act:'mjtent', label:'你的帐篷'},
-    {type:'mj_tent', x:7, y:4, act:'mjtent2', label:'大师兄和二师兄的帐篷', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_tent_torn':'mj_tent'; }},   // claw marks in the cloth from the third day
+    {type:'mj_tent', x:12, y:3, spr:'mj_tent', act:'mjtent4', label:'二师兄的帐篷'},
+    {type:'mj_tent', x:7, y:4, act:'mjtent2', label:'大师兄的帐篷', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_tent_torn':'mj_tent'; }},   // claw marks in the cloth from the third day
     {type:'mj_tent', x:15, y:4, spr:'mj_tent', act:'mjtent3', label:'大师姐的帐篷'},
     {type:'mj_fire', x:10, y:8, act:'mjfire', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_fire_low':'mj_fire'; }},   // the fire burns lower each night
     {type:'mj_pot', x:12, y:9, spr:'mj_pot', act:'mjpot'},
@@ -232,8 +233,9 @@ for(const k in SECTS) MAPS['zong_'+k].objects.unshift({type:'npc', id:'lu', x:12
       case 'mjtent': MJ.tent(); return true;
       case 'mjtent2':
         if(!S.flags.lu_gone&&C2.inMJ()&&S.c2&&S.c2.night>=2&&S.c2.got.lu<2){ Story.talk('lu'); return true; }   // the note, and the report, both through the tent flap
-        UI.say([['旁白', S.flags.lu_gone?'大师兄的被褥叠得整整齐齐。':S.c2&&S.c2.night>=2?'帐篷里很安静。你知道大师兄在里面——可他一点声音都没有。':'大师兄和二师兄的帐篷。门帘系得很紧。']]); return true;
+        UI.say([['旁白', S.flags.lu_gone?'大师兄的被褥叠得整整齐齐。':S.c2&&S.c2.night>=2?'帐篷里很安静。你知道大师兄在里面——可他一点声音都没有。':'大师兄的帐篷。门帘系得很紧。']]); return true;
       case 'mjtent3': UI.say([['旁白','大师姐的帐篷。门口插着她的剑鞘。']]); return true;
+      case 'mjtent4': UI.say([['旁白', (S.c2&&S.c2.night||0)>=1?'二师兄的帐篷。门口堆着几个空了的干粮袋，叠得整整齐齐。':'二师兄的帐篷。门口挂着一串晒干的果子。']]); return true;
       case 'mjfire': UI.say([['旁白', (S.c2&&S.c2.night||0)>=2?'篝火烧得很旺，可你总觉得背后发凉。':'篝火噼啪作响，暖烘烘的。']]); return true;
       case 'mjpot':
         if(C2.on()&&C2.task('man')==='mjcook'&&S.c2.got.man===1&&!p.cooked){
