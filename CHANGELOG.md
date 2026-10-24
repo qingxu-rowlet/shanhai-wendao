@@ -3,6 +3,22 @@
 每个版本先发布到**测试版** https://qingxu-rowlet.github.io/shanhai-wendao/beta/ ，审查通过后再更新到正式版 https://qingxu-rowlet.github.io/shanhai-wendao/ 。
 每个审查点都有直达链接（见下方清单，或打开 `#review`）。发布前都会跑一遍自检：在链接后加 `#selftest`，游戏会自动玩完第一章并给出 ✓/✗ 报告（使用第 3 个存档位，结束后恢复）。
 
+## v0.16.1（测试版）· 第二章审查节点可以换宗门
+
+- 第二章的每个审查节点都能用四个宗门的弟子来进：链接后面加 `@jian` / `@dan` / `@shou` / `@tianji`（青云剑宗 / 药王谷 / 万兽谷 / 天机阁），宗门地图、师尊、绝学都会跟着换。不加就是原来的青云剑宗。
+- 审查说明框下面多了一排「宗门」按钮，点一下就换成那个宗门重进当前节点，点「下一个」也会保持同一个宗门。`#review` 总表顶上也能先选宗门，下面第二章的链接都会带上它。
+- 万兽谷的测试角色自带一只 3 级当康灵宠，「兽魂共鸣」才有灵宠可用。
+
+### 万兽谷弟子走一遍第二章
+1. 拜别桃源镇：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-depart@shou
+2. 宗门第三天：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-day3@shou
+3. 山门集合 → 秘境：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-mjgo@shou
+4. 秘境第一、二、三天：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-mj1@shou 、 #t-c2-mj2@shou 、 #t-c2-mj3@shou
+5. 白羽崖：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-cliff@shou
+6. 八卦镜：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-mirror@shou
+7. Boss：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-boss1@shou
+8. 封印：https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-seal@shou
+
 ## v0.16.0（测试版）· 第二章第三幕「白羽崖」
 
 - **顺着白羽往北**：大师兄失踪后，雾林最北边那丛过不去的荆棘被撕开了，地上一路都是白羽，偶尔沾着血。穿过去是新地图**白羽崖**：光秃秃的石崖，两边是望不见底的雾，风一直在吹。寻路会从营地一路带到崖顶。

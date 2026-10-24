@@ -145,6 +145,8 @@ const Review = {
     S.flags.intro_done=true; S.flags.chest=true; S.inv={slip:1, ...(o.inv||{})};
     const qi=QUESTS.findIndex(q=>q.id===o.quest); S.quest=qi; S.questStarted=qi;
     S.L=o.L||0; if(o.full) S.exp=expNeed(S.L); S.sect=o.sect===undefined?(S.L>=10&&o.quest!=='sect'?'jian':null):o.sect;
+    if(Review.sect&&S.sect) S.sect=Review.sect;                                   // …#t-<id>@shou: the same node as another sect's disciple
+    if(S.sect==='shou'&&!S.pet) S.pet={kind:'dangkang',lv:3,xp:0};                 // 万兽谷 disciples fight with a companion
     if(S.quest>QUESTS.findIndex(q=>q.id==='q3')) S.flags.met_ahe=true;
     Object.assign(S.flags, o.flags||{}); Object.assign(S.side, o.side||{}); if(o.kills) S.st.kills=o.kills;
     // review characters have already picked their techniques and seen the tips, so nothing pops up over what is being checked
@@ -152,10 +154,13 @@ const Review = {
     const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min=S.min||9*60; Dev.god=false;
   },
   at(map,x,y,dir){
+    if(Review.sect&&/^zong_/.test(map)) map='zong_'+Review.sect;
     $('#title').hidden=true; clearInterval(Creator.timer); Mini.close&&Mini.close(); Battle.s&&Battle.close(); UI.dlgQ=null; $('#dlg').hidden=true; $('#panel').hidden=true; $('#cg').hidden=true;
     enterMap(map,x,y); RT.dir=dir||'down'; UI.hud(); UI.sync(); save(); Music.play(areaTheme());
   },
+  sect:null,
   go(id){
+    const [nid,sk]=id.split('@'); id=nid; Review.sect=SECTS[sk]?sk:null;
     const n=Review.NODES.find(x=>x.id===id); if(!n) return Review.missing(id);
     $('#reviewHub')&&$('#reviewHub').remove(); n.run(); Review.note(n);
   },
@@ -174,16 +179,21 @@ const Review = {
     const i=Review.NODES.indexOf(n), next=Review.NODES[i+1];
     el.innerHTML=`<b>审查 · ${esc(n.title)}</b><p>${esc(n.check)}</p><div class="rn-btns"><button class="btn mini" id="rnHub">全部节点</button>${next?`<button class="btn mini" id="rnNext">下一个：${esc(next.title)}</button>`:''}<button class="btn mini" id="rnX">收起</button></div>`;
     $('#reviewPill')&&$('#reviewPill').remove();
-    $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>{ el.remove(); const p=document.createElement('button'); p.id='reviewPill'; p.className='wood'; p.textContent='审查：'+n.title+' ▾'; p.onclick=()=>{ p.remove(); Review.note(n); }; document.body.appendChild(p); }; if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id; };
+    $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>{ el.remove(); const p=document.createElement('button'); p.id='reviewPill'; p.className='wood'; p.textContent='审查：'+n.title+' ▾'; p.onclick=()=>{ p.remove(); Review.note(n); }; document.body.appendChild(p); }; if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id+(Review.sect?'@'+Review.sect:''); };
+    // chapter 2 nodes can be replayed as a disciple of any of the four sects
+    if(n.id.startsWith('c2-')){ const row=document.createElement('div'); row.className='rn-btns rn-sect'; row.innerHTML='<span>宗门：</span>'+Object.keys(SECTS).map(k=>`<button class="btn mini${(Review.sect||S.sect)===k?' main':''}" data-sk="${k}">${SECTS[k].name}</button>`).join('');
+      el.appendChild(row); row.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{ location.hash='t-'+n.id+'@'+b.dataset.sk; }); }
   },
   hub(){
     $('#reviewHub')&&$('#reviewHub').remove();
     const groups=[...new Set(Review.NODES.map(n=>n.group))], base=location.href.split('#')[0];
     const el=document.createElement('div'); el.id='reviewHub';
-    el.innerHTML=`<div class="rh-box wood"><h3>审查节点</h3><p class="muted">点任何一项，直接进入那个场景（测试角色用第 3 个存档位，不影响你自己的存档）。每一项也可以单独分享：链接后面加 <code>#t-名字</code>。</p>
-      ${groups.map(g=>`<h4>${g}</h4><div class="rh-list">${Review.NODES.filter(n=>n.group===g).map(n=>`<a class="rh-item" href="${base}#t-${n.id}"><b>${esc(n.title)}</b><span>${esc(n.check)}</span><code>#t-${n.id}</code></a>`).join('')}</div>`).join('')}
+    const sk=Review.sect?'@'+Review.sect:'';
+    el.innerHTML=`<div class="rh-box wood"><h3>审查节点</h3><div class="rn-btns rn-sect"><span>第二章用哪个宗门的弟子：</span>${Object.keys(SECTS).map(k=>`<button class="btn mini${(Review.sect||'jian')===k?' main':''}" data-sk="${k}">${SECTS[k].name}</button>`).join('')}</div><p class="muted">点任何一项，直接进入那个场景（测试角色用第 3 个存档位，不影响你自己的存档）。每一项也可以单独分享：链接后面加 <code>#t-名字</code>。</p>
+      ${groups.map(g=>`<h4>${g}</h4><div class="rh-list">${Review.NODES.filter(n=>n.group===g).map(n=>`<a class="rh-item" href="${base}#t-${n.id}${n.id.startsWith('c2-')?sk:''}"><b>${esc(n.title)}</b><span>${esc(n.check)}</span><code>#t-${n.id}</code></a>`).join('')}</div>`).join('')}
       <div class="rn-btns"><a class="btn mini main" href="${base}#selftest">跑一遍自检 #selftest</a><button class="btn mini" id="rhX">关闭</button></div></div>`;
     document.body.appendChild(el); $('#rhX').onclick=()=>el.remove();
+    el.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{ Review.sect=b.dataset.sk==='jian'?null:b.dataset.sk; Review.hub(); });
   },
   route(){
     const h=location.hash.replace('#','');
