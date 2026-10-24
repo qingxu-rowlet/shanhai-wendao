@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="build" data-build="feeac7535f"><script>(function(){var B="feeac7535f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script><script>window.CH2_LOCKED=true</script></head><body><title>山海问道</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="build" data-build="71a2ff6c11"><script>(function(){var B="71a2ff6c11";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script><script>window.CH2_LOCKED=true</script></head><body><title>山海问道</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -173,6 +173,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #battle.shake{animation:shk .3s}
 #battle>.skillfx{position:absolute!important;inset:0;margin:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:6;transition:opacity .25s}
 #battle>.skillfx.out{opacity:0}
+#mjDark{position:fixed;inset:0;z-index:24;background:#05060a;opacity:0;pointer-events:none;transition:opacity 1.2s}
+#mjDark.on{opacity:.9}
+body.mjshake #cv{animation:mjshake 1.2s ease-out}
+@keyframes mjshake{0%,100%{transform:none}10%{transform:translate(-4px,2px)}25%{transform:translate(5px,-3px)}40%{transform:translate(-3px,-2px)}60%{transform:translate(3px,3px)}80%{transform:translate(-2px,1px)}}
 #fxPick{position:fixed;left:50%;transform:translateX(-50%);top:max(64px,env(safe-area-inset-top,0px));z-index:40;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 #battle.fxing .b-acts{pointer-events:none;opacity:.55}
 @keyframes shk{25%{transform:translate(-6px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,2px)}}
@@ -2156,10 +2160,11 @@ function drawPlayer(x,y,Z){
 function drawRod(dx, dy, w, Z){
   const g=ctx, F=RT.fishing, T=TILE*Z;
   let hx, hy, tx, ty;
-  if(RT.dir==='left'){ hx=dx+3*Z; hy=dy+14*Z; tx=hx-9*Z; ty=hy-12*Z; }
-  else if(RT.dir==='right'){ hx=dx+w-3*Z; hy=dy+14*Z; tx=hx+9*Z; ty=hy-12*Z; }
-  else if(RT.dir==='up'){ hx=dx+w-4*Z; hy=dy+13*Z; tx=hx+3*Z; ty=hy-15*Z; }
-  else { hx=dx+w-3*Z; hy=dy+15*Z; tx=hx+5*Z; ty=hy-13*Z; }
+  // the rod starts in the hand pixel of each view (side: the one hand in front; front and back: the right hand)
+  if(RT.dir==='left'){ hx=dx+7.5*Z; hy=dy+15.5*Z; tx=hx-10*Z; ty=hy-12*Z; }
+  else if(RT.dir==='right'){ hx=dx+10.5*Z; hy=dy+15.5*Z; tx=hx+10*Z; ty=hy-12*Z; }
+  else if(RT.dir==='up'){ hx=dx+14.5*Z; hy=dy+15.5*Z; tx=hx+3*Z; ty=hy-15*Z; }
+  else { hx=dx+14.5*Z; hy=dy+15.5*Z; tx=hx+5*Z; ty=hy-13*Z; }
   if(F){ const bx=Math.round(-RT.cam.x*RT.scale*RT.dpr+(F.x+.5)*T), by=Math.round(-RT.cam.y*RT.scale*RT.dpr+(F.y+.5)*T)+(F.bite?Math.sin(RT.t*30)*2*Z:Math.sin(RT.t*3)*Z);
     tx=hx+(bx-hx)*.45; ty=Math.min(hy,by)-10*Z;
     g.strokeStyle='rgba(240,240,240,.85)'; g.lineWidth=Math.max(1,Z*.5); g.beginPath(); g.moveTo(tx,ty); g.quadraticCurveTo((tx+bx)/2,(ty+by)/2+8*Z,bx,by); g.stroke();
@@ -2167,6 +2172,9 @@ function drawRod(dx, dy, w, Z){
     if(F.bite){ g.strokeStyle='rgba(255,255,255,.6)'; g.lineWidth=Z*.6; g.beginPath(); g.ellipse(bx,by,5*Z+Math.sin(RT.t*20)*Z,2*Z,0,0,7); g.stroke(); } }
   g.strokeStyle='#6a4022'; g.lineWidth=Math.max(1.5,Z*.9); g.lineCap='round'; g.beginPath(); g.moveTo(hx,hy); g.lineTo(tx,ty); g.stroke();
   g.strokeStyle='#a8743f'; g.lineWidth=Math.max(1,Z*.45); g.beginPath(); g.moveTo(hx,hy); g.lineTo(hx+(tx-hx)*.4,hy+(ty-hy)*.4); g.stroke();
+  // a fist wrapped round the grip, drawn over the rod
+  const sk=lookPalette(S.look); g.fillStyle=softEdge(sk.S); g.fillRect(Math.round(hx-1.5*Z),Math.round(hy-1.5*Z),Math.round(3*Z),Math.round(3*Z));
+  g.fillStyle=sk.S; g.fillRect(Math.round(hx-1*Z),Math.round(hy-1*Z),Math.round(2*Z),Math.round(2*Z)); g.fillStyle=sk.s; g.fillRect(Math.round(hx-1*Z),Math.round(hy),Math.round(2*Z),Math.round(Z));
 }
 // "E" (or "点") above whatever you can interact with right now
 const FINE_POINTER=matchMedia('(pointer:fine)').matches;
@@ -2794,13 +2802,14 @@ const UI = {
       const tt=$('#sTitle'); if(tt) tt.onclick=()=>{ save(); UI.closePanel(); UI.title(); };
     });
   },
-  shop(){
+  shop(who){
+    const head=who==='zhishi'?['宗门小卖部','许执事：「要点什么？宗门弟子，不加价。」']:['钱记杂货','钱掌柜：「客官，看看有什么需要的？」'];
     const render=(tab)=>{
       let body=`<div class="tabs"><button data-t="buy" class="${tab==='buy'?'on':''}">买</button><button data-t="sell" class="${tab==='sell'?'on':''}">卖</button></div><p class="muted">灵石：<b id="shStones">${S.stones}</b></p>`;
       if(tab==='buy') body+=SHOP.sell.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" ${S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])?'disabled':''}>${ITEMS[id].sell===0&&S.inv[id]?'已拥有':ITEMS[id].price+' 灵石'}</button></div>`).join('');
       else { const ids=Object.keys(S.inv).filter(k=>ITEMS[k].sell&&S.inv[k]>0);
         body+=ids.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name} ×${S.inv[id]}</b><small>每个 ${ITEMS[id].sell} 灵石</small></div><button class="btn mini" data-sell="${id}">卖 1</button><button class="btn mini" data-sellall="${id}">全卖</button></div>`).join('')||'<p class="muted">没有可以卖的东西。灵草、灵菇、兽皮和丹药都能卖。</p>'; }
-      UI.panel('钱记杂货', `<p class="greet">钱掌柜：「客官，看看有什么需要的？」</p>`+body, b=>{
+      UI.panel(head[0], `<p class="greet">${head[1]}</p>`+body, b=>{
         b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); render(t.dataset.t); });
         b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy; if(S.stones<ITEMS[id].price||(ITEMS[id].sell===0&&S.inv[id])) return; S.stones-=ITEMS[id].price; addItem(id); Sound.coin(); render('buy'); });
         b.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{ const id=x.dataset.sell; addItem(id,-1); S.stones+=ITEMS[id].sell; Sound.coin(); render('sell'); });
@@ -2995,7 +3004,7 @@ const Social = {
   menu(id){
     const n=NPCS[id]; if(!n) return;
     const opts=[];
-    if(id==='qian') opts.push({text:'买卖', fn:()=>UI.shop()});
+    if(id==='qian'||NPCS[id].shop) opts.push({text:'买卖', fn:()=>UI.shop(id)});
     if(id==='yunyou') opts.push({text:'请教', fn:()=>{ const q=Story.quest(); UI.say(q&&q.id!=='end'?[['云游子','眼下要做的事——'+q.title+'：'+q.desc]]:SCRIPTS.talk_yunyou); }});
     opts.push({text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}});
     UI.say([{choice:`${n.name}　${'♥'.repeat(Social.hearts(id))}${'♡'.repeat(Math.max(0,(n.romance?10:8)-Social.hearts(id)))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:opts}]);
@@ -4570,7 +4579,7 @@ const Mail = {
     UI.hud();
   },
   drawFlag(g, ox, oy, T, Z){
-    if(RT.mapId!=='home'||!Mail.unread()) return; const o=MAPS.home.objects.find(x=>x.type==='mailbox');
+    if(!Mail.unread()) return; const o=RT.ents.find(x=>x.type==='mailbox'); if(!o) return;   // the mailbox at home, or the one in the sect
     const cx=ox+(o.x+.5)*T, cy=oy+o.y*T-6*Z+Math.sin(RT.t*5)*1.5*Z;
     g.fillStyle='#c8413b'; g.beginPath(); g.arc(cx,cy,5*Z,0,7); g.fill(); g.strokeStyle='#fff3dc'; g.lineWidth=Z*.8; g.stroke();
     g.fillStyle='#fff3dc'; g.font=`bold ${Math.round(8*Z)}px system-ui,Arial,sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('!',cx,cy+Z*.4);
@@ -6083,7 +6092,7 @@ const ActBtn = {
     if(o.type==='npc') return ['对话','💬']; if(o.type==='gather') return ['采集','🌿'];
     const a=o.act; const L={portal:['传送','✦'], dummy:['练功','⚔'], leaf:['打扫','🍂'], stele:['查看','📜'], stove:['做饭','🍲'], alchemy:['炼丹','🔥'], meditate:['打坐','🧘'],
       sleep:['休息','🌙'], c2bed:['休息','🌙'], c2room:['进屋','🚪'], c2kitchen:['进屋','🚪'], shop:['买卖','🪙'], board:['悬赏','📜'], mail:['信箱','✉'], altar:['测灵','✦'],
-      shrine:['上香','🏮'], qiyu:['探查','✨'], dungeon:['进入','🕳'], chest:['打开','📦'], fxboss:['挑战','⚔'], fxboss2:['挑战','⚔']}[a];
+      shrine:['上香','🏮'], qiyu:['探查','✨'], dungeon:['进入','🕳'], chest:['打开','📦'], fxboss:['挑战','⚔'], fxboss2:['挑战','⚔'], mjtent:['休息','🌙'], mjtent2:['帐篷','⛺'], mjtent3:['帐篷','⛺'], mjtent4:['帐篷','⛺'], mjfire:['篝火','🔥'], mjpot:['铁锅','🍲'], mjflag:['阵旗','🚩'], mjstele:['查看','📜'], mjbag:['查看','👀'], mail:['信箱','✉']}[a];
     if(L) return L; if(o.type==='sign'||o.type==='tablet') return ['查看','📜']; if(o.type==='building') return ['进入','🚪']; return ['互动','✋']; },
   // what is in reach, even mid-step (findPrompt only answers once you stop)
   near(){ if(!RT.map||RT.paused) return null; const m=RT.moving; RT.moving=false; let p=null; try{ p=findPrompt(); }finally{ RT.moving=m; } return p; },
@@ -6175,10 +6184,12 @@ Object.assign(ITEMS.hu_wei, {keep:true, sell:0, desc:'九尾狐留下的一缕�
 const LOOK_LU ={g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:5};
 const LOOK_XIE={g:'f',skin:0,hair:4,hairColor:0,style:'qun',cloth:1};
 const LOOK_MAN={g:'m',skin:2,hair:1,hairColor:1,style:'jin',cloth:7};
+const LOOK_ZHISHI={g:'m',skin:2,hair:0,hairColor:2,style:'robe',cloth:3};   // 许执事 keeps the sect's little shop
 Object.assign(NPCS, {
   lu: {name:'陆正衡', loves:['juqi'], likes:['huichun','hide','lingcao'], hates:['flower','wine']},
   xie:{name:'谢霁月', loves:['flower','wine'], likes:['lingcao','huichun','zhuguo'], hates:['hide','qq_yu']},
   man:{name:'何满仓', loves:['zhuguo','lingmo'], likes:['wine','huichun','juqi','lingcao'], hates:['flower']},
+  zhishi:{name:'许执事', shop:true, loves:['wine'], likes:['lingcao','hide','zhuguo'], hates:['flower']},
 });
 Object.assign(TALK, {
   lu:[['门规第一条：不得懈怠。','练功不可一日荒废。'],
@@ -6193,6 +6204,10 @@ Object.assign(TALK, {
        ['我小时候住的村子，叫丰年村。名字很好听吧？','师尊说我吃得多，是长身体。可我怎么一直不长呢……'],
        ['{称}，你知道吗，饭要趁热吃，凉了就……就没了。','我有时候会做梦，梦里怎么吃都吃不饱。'],
        ['有你在，膳堂都热闹了。……这块饼，分你一半。']],
+  zhishi:[['要点什么？宗门弟子，不加价。','钓竿、丹药、杂货，桃源镇有的我这儿大多也有。'],
+          ['你师兄满仓？他是我这儿的老主顾，干粮一买就是一大包。','山下的钱掌柜？我们是老相识了，他进货，我转手。'],
+          ['给你留了几样好货，别告诉别人。','修行再忙，也别忘了吃饭。'],
+          ['{称}，以后缺什么，说一声就行。']],
 });
 
 /* ---------- the sect: one layout, four looks ---------- */
@@ -6232,9 +6247,12 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
       {type:'building', x:6, y:11, w:5, h:3, style:'house', roof:L.roof, label:'二师兄的房间', door:[8,14], act:'c2room'},
       {type:'building', x:17, y:11, w:6, h:3, style:'shop', label:'膳堂', door:[19,14], act:'c2kitchen'},
       {type:'npc', id:m.id, x:15, y:5, look:m.look, name:m.name, act:'talk', cond:mine},
-      {type:'npc', id:'lu',  x:5, y:8,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:mine},
-      {type:'npc', id:'xie', x:24, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:mine},
-      {type:'npc', id:'man', x:17, y:15, look:LOOK_MAN, name:'何满仓', act:'talk', cond:mine},
+      {type:'npc', id:'lu',  x:5, y:8,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:s=>mine(s)&&!s.flags.c2_depart},
+      {type:'npc', id:'xie', x:24, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>mine(s)&&!s.flags.c2_depart},
+      {type:'npc', id:'man', x:17, y:15, look:LOOK_MAN, name:'何满仓', act:'talk', cond:s=>mine(s)&&!s.flags.c2_depart},
+      {type:'npc', id:'zhishi', x:16, y:12, look:LOOK_ZHISHI, name:'许执事', act:'talk', cond:mine},
+      {type:'sign', x:16, y:10, text:'小卖部　——　许执事。钓竿、丹药、杂货，宗门弟子不加价。'},
+      {type:'mailbox', x:5, y:15, act:'mail', spr:'mailbox'},
       ...(k==='dan'?[{type:'npc', id:'tang', x:23, y:9, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>s.sect==='dan'&&!!s.flags.c2_arrive}]:[]),
       {type:'c2_dummy', x:3, y:6, spr:'c2_dummy', act:'dummy'},{type:'c2_dummy', x:6, y:6, spr:'c2_dummy', act:'dummy'},
       {type:'furnace', x:22, y:6, act:'alchemy'},
@@ -6297,7 +6315,7 @@ QUESTS.push(
   {id:'c2b', title:'宗门日常', desc:'大师兄、大师姐、二师兄每天会各派给你一件事。做完三天的功课，熟悉宗门。', check:s=>(s.c2&&s.c2.days||0)>=3,
     progress:s=>`第 ${Math.min(3,(s.c2&&s.c2.days||0)+1)} 天 · 已完成 ${s.c2&&s.c2.days||0}/3 天`, target:s=>['zong_'+s.sect,15,5,'宗门']},
   {id:'c2c', title:'师尊召见', desc:'三天的功课做完了。师尊在主殿前等你们。', start:'c2_summon', check:s=>!!s.flags.c2_order, target:s=>npcAt(SECTS[s.sect].master.id)},
-  {id:'c2d', title:'第二幕 · 秘境（制作中）', desc:'四人一同前往秘境历练。第二幕正在制作中，敬请期待。可以继续做宗门日常以外的事：钓鱼、悬赏、奇遇、狂暴穷奇。', check:s=>false});
+  {id:'c2d', title:'山门集合', desc:'师尊命你们四人去秘境历练。明日一早，到山门找大师兄集合。', check:s=>!!s.flags.c2_depart, target:s=>['zong_'+s.sect,12,16,'山门（找大师兄）']});
 
 const sectName=()=>SECTS[S.sect].name, master=()=>SECTS[S.sect].master.name;
 const C2S={
@@ -6341,8 +6359,8 @@ const C2_ORDER=()=>{ const m=master(); return [
   ['何满仓','秘境里……有好吃的吗？'],
   ['谢霁月','……'],
   ['陆正衡','明日一早，山门集合。'],
-  {flag:'c2_order'},
-  ['旁白','（第二章 第一幕「入门」完。第二幕「秘境」正在制作中，敬请期待。）']]; };
+  {flag:'c2_order'}, {run:()=>{ S.c2.orderDay=S.day; }},
+  ['旁白','（第一幕「入门」完。明天一早，去山门找大师兄。）']]; };
 
 /* ---------- the daily chores ---------- */
 const C2_TASKS={
@@ -6377,18 +6395,21 @@ const C2_TASKS={
 const WHO={lu:'陆正衡', xie:'谢霁月', man:'何满仓'};
 const C2={
   fresh:()=>({n:0, got:{lu:0,xie:0,man:0}, p:{dummy:0, leaves:[], steles:[], room:false}, doneDay:-1, days:0, counted:-1}),
-  on:()=>!!(S&&S.flags.c2_arrive&&S.c2&&Story.quest()&&Story.quest().id==='c2b'),
+  on:()=>!!(S&&S.flags.c2_arrive&&S.c2&&Story.quest()&&['c2b','c2e'].includes(Story.quest().id)),
+  inMJ:()=>!!(Story.quest()&&Story.quest().id==='c2e'),
   task(who){ return S&&S.c2?C2_TASKS[who][S.c2.n].id:null; },
   def(who){ return C2_TASKS[who][S.c2.n]; },
   fish(s){ return Object.keys(s.inv).find(k=>k.startsWith('fish_')&&s.inv[k]>0); },
   allDone(){ return ['lu','xie','man'].every(k=>S.c2.got[k]===2); },
   // a new morning brings the next set of chores, once the last set is done
-  refresh(){ if(!C2.on()) return; const c=S.c2; if(C2.allDone()&&c.counted===c.n&&c.days<3&&S.day>c.doneDay){ c.n=c.days; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false}; UI.hud(); } },
+  // (in the 秘境 a new day's chores come with the morning scene instead)
+  refresh(){ if(!C2.on()||C2.inMJ()) return; const c=S.c2; if(C2.allDone()&&c.counted===c.n&&c.days<3&&S.day>c.doneDay){ c.n=c.days; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false}; UI.hud(); } },
   where(t){ return t&&t[0]==='c2'?[zongId(),t[1],t[2],t[3]]:t; },
   items(){ if(!C2.on()) return []; C2.refresh(); const c=S.c2, out=[];
-    if(C2.allDone()) return [{key:'c2_rest', kind:'side', title:'今天的功课做完了', progress:'回房间睡一觉，明天还有新的吩咐', target:[zongId(),3,14,'你的房间']}];
+    if(C2.allDone()) return [C2.inMJ()?{key:'c2_rest', kind:'side', title:'今天的事做完了', progress:'回帐篷休息，明天还有新的吩咐', target:['mj_camp',4,11,'你的帐篷']}
+      :{key:'c2_rest', kind:'side', title:'今天的功课做完了', progress:'回房间睡一觉，明天还有新的吩咐', target:[zongId(),3,14,'你的房间']}];
     for(const w of ['lu','xie','man']){ const d=C2.def(w), g=c.got[w]; if(g===2) continue;
-      const pos=npcAt(w);
+      const pos=npcAt(w)||(w==='lu'&&C2.inMJ()?['mj_camp',7,4,'大师兄的帐篷']:null);   // 大师兄 may be inside his tent
       if(g===0) out.push({key:'c2_'+w, kind:'side', title:d.title, progress:'去找'+WHO[w], target:pos});
       else { const ok=d.need(S); out.push({key:'c2_'+w, kind:'side', title:d.title, progress:ok?'回去找'+WHO[w]+'交差':d.prog(S), target:ok?pos:(C2.where(d.tgt(S))||pos)}); } }
     return out; },
@@ -6401,7 +6422,7 @@ const C2={
     if(SECTS[S.sect]&&id===SECTS[S.sect].master.id){ return C2.master(); }
     if(!WHO[id]||!C2.on()) return false; C2.refresh();
     const c=S.c2, d=C2.def(id), g=c.got[id];
-    if(g===0){ c.got[id]=1; C2.sync(); UI.hud(); UI.say([...d.ask.map(t=>[WHO[id],t]), ['旁白','（任务：'+d.goal+'。）']]); return true; }
+    if(g===0){ c.got[id]=1; d.accept&&d.accept(S); C2.sync(); UI.hud(); UI.say([...d.ask.map(t=>[WHO[id],t]), ['旁白','（任务：'+d.goal+'。）']]); return true; }
     if(g===1){
       if(!d.need(S)){ UI.say([[WHO[id], {lu:'还没做完？',xie:'……还没好。',man:'不急不急，慢慢来～'}[id]], ['旁白','（'+d.goal+'：'+d.prog(S)+'）']]); return true; }
       if(d.take) for(const k in d.take) addItem(k,-d.take[k]);
@@ -6412,7 +6433,8 @@ const C2={
   },
   check(){ const c=S.c2; if(!C2.allDone()||c.counted===c.n) return;   // each set of three chores counts once
     c.counted=c.n; c.days++; c.doneDay=S.day; save();
-    if(c.days<3) UI.say([['旁白','今天的功课都做完了。回房间睡一觉，明天还有新的吩咐。']]); else Story.check(); },
+    if(C2.inMJ()) UI.say([['旁白','今天的事都做完了。天色暗下来，营地里只剩篝火的噼啪声。回帐篷休息吧。']]);
+    else if(c.days<3) UI.say([['旁白','今天的功课都做完了。回房间睡一觉，明天还有新的吩咐。']]); else Story.check(); },
   master(){ const m=master(), q=Story.quest()?.id;
     if(q==='c2c'&&!S.flags.c2_order){ UI.say(C2_ORDER(), ()=>{ UI.hud(); Story.check(); }); return true; }
     if(Story.side(SECTS[S.sect].master.id)) return true;
@@ -6491,6 +6513,492 @@ C2.rollback=function(s){ if(!C2_LOCKED||!s||!s.flags||!s.flags.c2_arrive) return
   setTimeout(()=>UI.toast('第二章还在制作中：存档回到了第一章结束（等级、物品、灵石都保留）'),1200);
   return s; };
 { const _ls=loadSave; loadSave=function(i){ return C2.rollback(_ls(i)); }; }
+
+/* ============================================================
+   山海问道 · 第二章 第二幕「秘境」 — the four of them camp in the 秘境. Three days of chores at the camp and in the 雾林,
+   and each night something is a little more wrong: half the food gone, wings beating outside the tents, 大师兄's handwriting
+   going crooked, footsteps leaving in the dark. On the fourth morning 大师兄 is gone; a bloodied white feather lies in his tent.
+   The fog thickens every day.
+   ============================================================ */
+Object.assign(SPR, {
+  mj_log:['................','................','................','................','..NNNNNNNNNNNN..','.NnnnnnnnnnnnnN.','NtTnnnnnnnnnnnnN','NTtnnNnnnnnNnnnN','.NnnnnnnnnnnnnN.','..NNNNNNNNNNNN..'],
+  mj_woodpile:['................','................','................','.....NN.NN......','....NtTNtTN.....','...NNNNNNNNN....','..NtTNtTNtTN....','..NNNNNNNNNNN...','.NtTNtTNtTNtTN..','.NNNNNNNNNNNNN..'],
+  mj_stump:['................','................','................','................','................','.....NNNNN......','....NtTtTtN.....','....NnnnnnN.....','....NnnnnnN.....','...NNnnnnnNN....'],
+  mj_shroom:['................','................','................','................','................','................','...rr...........','..rwrr....rr....','..rrrr...rwrr...','...cc....rrrr...','...cc.....cc....'],
+  mj_tent:['..........NN..........','.........NttN.........','........NtttTN........','.......NttttTTN.......','......NtttttTTTN......','.....NttttttkTTTN.....','....NtttttttkkTTTN....','...NttttttttkkkTTTN...','..NtttttttttkkkkTTTN..','.NttttttttttkkkkkTTTN.','NNNNNNNNNNNNNNNNNNNNNN'],
+  mj_fire:['................','......y.........','.....yoy..y.....','....yoOoy.oy....','....oOrOo.oo....','...yorrroyo.....','....orrRro......','..nNnnnnnNnnn...','.NnnNnnnNnnnN...','..NNNNNNNNNN....'],
+  mj_pot:['.....N....N.....','....N......N....','...N........N...','..N..EEEEEE..N..','..N.EeeeeeeE.N..','..N.EEEEEEEE.N..','.N..EEEEEEEE..N.','.N...EEEEEE...N.','N.....oyo......N','N....yorry.....N'],
+  mj_stake:['..........','..........','....nn....','....nn....','..eeeeee..','..eEEEEe..','..eeeeee..'],
+  mj_flag:['.nrrrrrr..','.nrRRrrr..','.nrrrrrr..','.nrrrr....','.n........','.n........','.n........','.n........','.n........','.N........','eeee......'],
+  mj_bag:['................','.....TTT........','....TtttT.......','...TtttttT..www.','..TtttkttT.wwwwe','..TttkkktT..wwe.','...TtttttT......','....TTTTT.r.....'],
+  mj_feather:['......w.','.....wwe','....wwe.','...wwe..','..wwe...','.wwe....','we.r....','.r......'],
+});
+Object.assign(ITEMS, {
+  mj_feather:{name:'带血的白羽', icon:'i_feather', quest:true, keep:true, desc:'大师兄帐篷里留下的一根白羽，羽根上沾着血。'},
+});
+
+/* ---------- maps: the camp, and the 雾林 above it ---------- */
+const MJ_CAMP=[
+'WWWWWWWWWW==WWWWWWWWWW',
+'W.........==.........W',
+'W..::.....==......:..W',
+'W.........==.........W',
+'W....................W',
+'W....................W',
+'W....................W',
+'W....................W',
+'W....................W',
+'W...................~W',
+'W..................~~W',
+'W.................~~~W',
+'W..................~~W',
+'W...................~W',
+'W....................W',
+'WWWWWWWWWWWWWWWWWWWWWW'];
+const mjOn=s=>!!s.flags.c2_depart;
+MAPS.mj_camp={ name:'秘境 · 营地', w:22, h:16, ground:MJ_CAMP,
+  objects:[
+    {type:'mj_tent', x:4, y:11, spr:'mj_tent', act:'mjtent', label:'你的帐篷'},
+    {type:'mj_tent', x:12, y:3, spr:'mj_tent', act:'mjtent4', label:'二师兄的帐篷'},
+    {type:'mj_tent', x:7, y:4, act:'mjtent2', label:'大师兄的帐篷', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_tent_torn':'mj_tent'; }},   // claw marks in the cloth from the third day
+    {type:'mj_tent', x:15, y:4, spr:'mj_tent', act:'mjtent3', label:'大师姐的帐篷'},
+    {type:'mj_fire', x:10, y:8, act:'mjfire', get spr(){ return (S&&S.c2&&S.c2.night||0)>=2?'mj_fire_low':'mj_fire'; }},   // the fire burns lower each night
+    {type:'mj_pot', x:12, y:9, spr:'mj_pot', act:'mjpot'},
+    {type:'c2_portal', x:2, y:14, spr:'c2_portal', act:'portal'},
+    ...[[3,2],[18,3],[6,14]].map(([x,y],i)=>({type:'mj_stake', x, y, act:'mjflag', fi:i, get spr(){ const m=S&&S.c2&&S.c2.p&&S.c2.p.mj; if(i===1&&(S&&S.c2&&S.c2.night||0)>=2) return 'mj_flagtorn'; return (S&&S.c2&&S.c2.n>3)||(m&&(m.flags||[]).includes(i))?'mj_flag':'mj_stake'; }})),
+    {type:'npc', id:'lu',  x:9, y:6,  look:LOOK_LU,  name:'陆正衡', act:'talk', cond:s=>mjOn(s)&&!s.flags.lu_gone&&!(s.c2&&s.c2.night>=2)},   // from the third morning he keeps to his tent
+    {type:'npc', id:'xie', x:13, y:6, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:mjOn},
+    {type:'npc', id:'man', x:11, y:10, look:LOOK_MAN, name:'何满仓', act:'talk', cond:mjOn},
+    {type:'mj_log', x:13, y:11, spr:'mj_log'},{type:'mj_wood', x:6, y:9, spr:'mj_woodpile'},{type:'mj_stump', x:15, y:9, spr:'mj_stump'},{type:'mj_stump', x:8, y:12, spr:'mj_stump'},
+    {type:'rock', x:16, y:13},{type:'bush', x:5, y:7},{type:'bush', x:15, y:7},{type:'mj_shroom', x:3, y:8, spr:'mj_shroom'},{type:'mj_shroom', x:17, y:6, spr:'mj_shroom'},
+  ],
+  exits:[{x:10,y:0,to:'mj_wood',tx:13,ty:20},{x:11,y:0,to:'mj_wood',tx:14,ty:20}]};
+// the camp sits in a clearing: a thick wood all round its edges, flowers and long grass inside
+{ const m=MAPS.mj_camp, G=m.ground.map(r=>r.split('')), R=rng(777);
+  const keep=new Set(); const k=(x,y)=>keep.add(x+','+y);
+  for(const o of m.objects){ k(o.x,o.y); for(const [dx,dy] of [[0,1],[1,0],[-1,0],[0,-1]]) k(o.x+dx,o.y+dy); }
+  for(let y=0;y<4;y++){ k(10,y); k(11,y); k(9,y); k(12,y); }                          // the path north
+  for(let y=8;y<=14;y++) for(let x=15;x<=18;x++) k(x,y);                            // the bank of the stream
+  for(const [x,y] of [[10,12],[4,12],[3,14],[2,13],[10,9],[11,9]]) k(x,y);
+  for(let y=1;y<m.h-1;y++) for(let x=1;x<m.w-1;x++){ if(keep.has(x+','+y)||G[y][x]!=='.'&&G[y][x]!==':') continue;
+    const edge=Math.min(x-1,m.w-2-x,y-1,m.h-2-y);
+    if(edge===0&&R()<.85||edge===1&&R()<.45) m.objects.push({type:R()<.55?'pine':'tree', x, y});
+    else if(edge>=2&&R()<.12) G[y][x]=R()<.5?',':':'; }
+  m.ground=G.map(r=>r.join('')); }
+// the 雾林: drawn by code so the rows stay square
+{ const W=26, H=22, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>(x===0||y===0||x===W-1||y===H-1)?'W':'.'));
+  for(let y=6;y<=20;y++) G[y][14]='=';
+  for(let x=12;x<=15;x++){ G[2][x]='='; G[5][x]='='; } for(let y=2;y<=5;y++){ G[y][12]='='; G[y][15]='='; }
+  G[21][13]='='; G[21][14]='='; G[20][13]='=';
+  for(const [x0,y0] of [[5,1],[14,1],[3,5],[21,6],[6,7],[19,9],[19,12],[3,13],[8,15],[20,16],[3,18]]) for(let k=0;k<3;k++) if(G[y0][x0+k]==='.') G[y0][x0+k]=':';
+  for(const [x,y] of [[4,9],[5,9],[6,9],[3,10],[4,10],[5,10],[6,10],[7,10],[4,11],[5,11],[6,11]]) G[y][x]='~';
+  const ground=G.map(r=>r.join(''));
+  const objects=[
+    {type:'c2_stele', x:13, y:3, spr:'c2_stele', act:'mjstele'},
+    {type:'mj_bag', x:21, y:15, spr:'mj_bag', act:'mjbag', cond:s=>C2.task('man')==='mjbag'&&s.c2.got.man===1&&!s.c2.p.mj.bag},
+    {type:'gather', x:9, y:4, item:'lingcao', spr:'herbspot'},{type:'gather', x:18, y:3, item:'lingcao', spr:'herbspot'},{type:'gather', x:10, y:12, item:'lingcao', spr:'herbspot'},{type:'gather', x:17, y:18, item:'lingcao', spr:'herbspot'},
+    {type:'gather', x:22, y:4, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:3, y:16, item:'zhuguo', spr:'fruitspot'},{type:'gather', x:22, y:11, item:'zhuguo', spr:'fruitspot'},
+    {type:'gather', x:8, y:18, item:'lingmo', spr:'mushspot'},{type:'gather', x:17, y:7, item:'lingmo', spr:'mushspot'},{type:'gather', x:2, y:7, item:'lingmo', spr:'mushspot'},
+  ];
+  // a dense wood: trees wherever nothing else stands
+  const R=rng(4242), taken=new Set(objects.map(o=>o.x+','+o.y));
+  for(let i=0;i<70;i++){ const x=1+(R()*(W-2)|0), y=1+(R()*(H-2)|0), k=x+','+y; if(G[y][x]!=='.'||taken.has(k)||Math.abs(x-14)<2||(y<7&&x>10&&x<17)) continue; taken.add(k); objects.push({type:R()<.6?'pine':'tree', x, y}); }
+  MAPS.mj_wood={ name:'秘境 · 雾林', w:W, h:H, ground, objects, exits:[{x:13,y:21,to:'mj_camp',tx:10,ty:1},{x:14,y:21,to:'mj_camp',tx:11,ty:1}] };
+  // after the night of the wings, nothing lives in the 雾林
+  Object.defineProperty(MAPS.mj_wood,'spawns',{configurable:true, get(){ return S&&S.c2&&(S.c2.night||0)>=2?[]:[{kind:'dangkang', n:2, area:[2,8,12,19]},{kind:'xingxing', n:2, area:[16,8,24,19]},{kind:'guidiao', n:1, area:[2,1,10,6]}]; }});
+}
+
+/* ---------- three days of chores in the 秘境 (sets 3, 4, 5 after the sect's 0–2) ---------- */
+const CAMP=(x,y,l)=>['mj_camp',x,y,l], WOOD=(x,y,l)=>['mj_wood',x,y,l];
+C2_TASKS.lu.push(
+  {id:'mjflags', title:'大师兄：插阵旗', ask:['营地四周有三处木桩。每处插一面阵旗，夜里有动静，阵旗会先知道。'], goal:'在营地四周的木桩上插三面阵旗', need:s=>(s.c2.p.mj.flags||[]).length>=3, prog:s=>`阵旗 ${(s.c2.p.mj.flags||[]).length}/3`,
+    tgt:s=>{ const L=[[3,2],[18,3],[6,14]].find((_,i)=>!(s.c2.p.mj.flags||[]).includes(i)); return CAMP(L[0],L[1],'营地四周的木桩'); }, done:[['陆正衡','嗯。阵旗插得很正。'],['陆正衡','秘境不比宗门。夜里不要一个人出营地。']]},
+  {id:'mjhunt', title:'大师兄：清理雾林', ask:['雾林里有妖兽靠近营地。去打退两只。','记住——除恶务尽。'], goal:'在雾林里打败 2 只妖兽', accept:s=>{ s.c2.p.mj.kb=s.st.kills||0; },
+    need:s=>(s.st.kills||0)-(s.c2.p.mj.kb||0)>=2, prog:s=>`雾林妖兽 ${Math.min(2,(s.st.kills||0)-(s.c2.p.mj.kb||0))}/2`, tgt:s=>WOOD(8,14,'雾林里的妖兽'),
+    done:[['陆正衡','……做得好。'],['旁白','他说「除恶务尽」的时候，眼睛望着雾林深处，好像在想别的事。']]},
+  {id:'mjstele', title:'大师兄：去北边', ask:['（大师兄没有出来，只从帐篷里递出一张纸条。）'], note:true, goal:'去雾林北边的石碑看看', need:s=>!!s.c2.p.mj.stele, prog:s=>s.c2.p.mj.stele?'看过了':'还没去',
+    tgt:s=>WOOD(13,3,'雾林北边的石碑'), done:[['旁白','你回到大师兄的帐篷前，隔着帘子把石碑的事说了一遍。'],['陆正衡','（帐篷里）……看过了？'],['我','石碑上写着「白羽」两个字，别的都被抓花了。'],['陆正衡','白羽……'],['旁白','帐篷里传来布料被攥紧的声音。'],['陆正衡','（帐篷里）知道了。……下去吧。']]},
+);
+C2_TASKS.xie.push(
+  {id:'mjherb', title:'大师姐：采灵草', ask:['雾林里的灵草长得比宗门的好。采三株。','雾大，别走太远。'], goal:'在雾林采 3 株灵草交给大师姐', need:s=>count(s,'lingcao')>=3, prog:s=>`灵草 ${Math.min(3,count(s,'lingcao'))}/3`, take:{lingcao:3},
+    tgt:s=>count(s,'lingcao')>=3?null:WOOD(9,4,'雾林里的灵草'), done:[['谢霁月','……嗯。'],['谢霁月','你衣服上沾了露水。去火边烤一烤。']]},
+  {id:'mjfruit', title:'大师姐：摘朱果', ask:['朱果。两颗。','……满仓昨晚说他饿得睡不着。'], goal:'在雾林摘 2 颗朱果交给大师姐', need:s=>count(s,'zhuguo')>=2, prog:s=>`朱果 ${Math.min(2,count(s,'zhuguo'))}/2`, take:{zhuguo:2},
+    tgt:s=>count(s,'zhuguo')>=2?null:WOOD(22,4,'雾林里的朱果'), done:[['谢霁月','我拿去给满仓。'],['旁白','她嘴上没说，却把那两颗朱果洗得干干净净。']]},
+  {id:'mjmush', title:'大师姐：采薰草', ask:['替我采两株薰草。我要配一副安神的药。','……这几天，大家都睡不好。'], goal:'在雾林采 2 株薰草交给大师姐', need:s=>count(s,'xuncao')>=2, prog:s=>`薰草 ${Math.min(2,count(s,'xuncao'))}/2`, take:{xuncao:2},
+    tgt:s=>count(s,'xuncao')>=2?null:WOOD(20,9,'雾林里的薰草'), done:[['谢霁月','……'],['谢霁月','你也觉得大师兄不对劲，对吗？'],['旁白','她没等你回答，转身走开了。']]},
+);
+C2_TASKS.man.push(
+  {id:'mjcook', title:'二师兄：做晚饭', ask:['{称}！营地第一顿饭，得吃顿好的！','我在书上看过，雾林里长着一种叫「祝余」的草——吃了就不会饿！采两株来，到篝火边的锅里煮！'], goal:'在雾林采 2 株祝余，在营地的锅里煮晚饭', need:s=>!!s.c2.p.mj.cooked, prog:s=>s.c2.p.mj.cooked?'煮好了':`祝余 ${Math.min(2,count(s,'zhuyu'))}/2`,
+    tgt:s=>s.c2.p.mj.cooked?null:count(s,'zhuyu')>=2?CAMP(12,9,'篝火边的锅'):WOOD(6,3,'雾林里的祝余'),
+    done:[['何满仓','香！'],['旁白','四个人围着篝火吃饭。二师兄一连喝了三碗祝余汤。'],['何满仓','……奇怪。'],['何满仓','书上说吃了就不饿的……我怎么，还是饿呢。'],['旁白','他笑了笑，把剩下的汤盛进锅里盖好。'],['何满仓','留着明天早上吃！'] ]},
+  {id:'mjfish', title:'二师兄：钓鱼', ask:['营地边上有条小溪，我看见里面有鱼！','钓一条来，我……我给大家烤。'], goal:'在营地的小溪钓一条鱼交给二师兄', need:s=>!!C2.fish(s), prog:s=>C2.fish(s)?'钓到了':'还没钓到',
+    tgt:s=>C2.fish(s)?null:CAMP(17,10,'营地边的小溪（选中钓竿，点水面）'), done:[['何满仓','好、好鱼！'],['旁白','他把鱼烤好，分给每个人，最后自己只啃了鱼尾。'],['何满仓','我不饿。真的。']]},
+  {id:'mjbag', title:'二师兄：干粮袋', ask:['{称}……我的干粮袋不见了。','我明明藏在帐篷里的……会不会掉在雾林里了？东边那块。'], goal:'在雾林东边找到二师兄的干粮袋', need:s=>!!s.c2.p.mj.bag, prog:s=>s.c2.p.mj.bag?'找到了':'还没找到',
+    tgt:s=>s.c2.p.mj.bag?null:WOOD(21,15,'雾林东边'), done:[['何满仓','空、空的？'],['何满仓','谁会偷我的干粮……'],['旁白','他把撕破的袋子叠好，揣进怀里，一句话也没再说。']]},
+);
+// the daily set grows to six, and the morning scene (not the calendar) starts the next one in the 秘境
+C2.nextSet=n=>{ const c=S.c2; c.n=n; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false, mj:{}}; UI.hud(); save(); };
+{ const _f=C2.fresh; C2.fresh=()=>{ const c=_f(); c.p.mj={}; return c; }; }
+
+/* ---------- scenes ---------- */
+const MJ={
+  depart:()=>{ const sn=sectName(); return [
+    ['旁白','天还没亮，山门前已经站着三个人。'],
+    ['陆正衡','都到齐了。'],
+    ['何满仓','（打着哈欠）我带了三天的干粮……不对，是五天的。'],
+    ['谢霁月','……走吧。'],
+    ['旁白','师尊在秘境入口布下一座传送阵，四人踏进青光——'],
+    {run:()=>{ RT.paused=true; RT.fadeTo=()=>{ S.flags.c2_depart=true; C2.nextSet(3); S.c2.night=0; enterMap('mj_camp',10,12); RT.dir='up'; RT.paused=false; UI.sync(); save(); UI.say(MJ.arrive(), ()=>{ UI.hud(); Story.check(); }); }; }}]; },
+  arrive:()=>[
+    ['旁白','秘境里没有风。树很高，雾很白，连鸟叫声都闷闷的。'],
+    ['陆正衡','就在这里扎营。'],
+    ['陆正衡','秘境里的规矩：每天的事，我们三个各派一件给你。做完再歇。'],
+    ['何满仓','我去生火！'],
+    ['谢霁月','……这雾，不太对。'],
+    ['陆正衡','秘境就是这样。不必多想。'],
+    ['旁白','（左上角是三位师兄师姐今天的吩咐。营地北边是雾林，西南角有师尊留下的传送阵。）']],
+  // night n → morning n+1
+  night:[
+    [['旁白','夜深了。你躺在帐篷里，听见隔壁传来二师兄的梦话——'],['何满仓','（梦话）饿……好饿……'],['旁白','你翻了个身，很快也睡着了。']],
+    [['旁白','半夜，你忽然醒了。'],{run:()=>MJ.wings()},['旁白','帐篷外传来翅膀扇动的声音。很大，很近，像有什么巨大的东西从营地上空掠过。'],['旁白','篝火「呼」地暗了一下。'],['旁白','……然后，什么声音都没有了。']],
+    [['旁白','这一夜，你睡得很浅。'],['旁白','快天亮的时候，你听见有人从帐篷里走出去。脚步声很轻，一步，一步，往北边去了。'],
+      {choice:'外面的脚步声越来越远……', options:[{text:'掀开帐篷看看', go:'mj_peek'},{text:'继续睡', go:'mj_sleepon'}]}],
+  ],
+  morning:[
+    // day 2: half the food gone
+    ()=>[
+      ['何满仓','啊——！锅里的饭呢？！'],
+      ['旁白','昨晚留下的半锅饭，只剩锅底一层。'],
+      ['陆正衡','满仓。'],
+      ['何满仓','不是我！……我、我昨晚是饿醒了一次，可我没有起来！'],
+      ['谢霁月','……'],
+      {choice:'大家都看着二师兄……', options:[
+        {text:'我相信二师兄', fn:()=>UI.say([['我','二师兄说不是他，那就不是他。'],['何满仓','{称}……'],['旁白','二师兄眼眶一红，低头扒拉着锅底。'],{love:{man:60}},['陆正衡','……罢了。今日照常。'],{run:()=>C2.nextSet(4)}])},
+        {text:'（什么也不说）', fn:()=>UI.say([['旁白','你没有说话。二师兄看了你一眼，低下头去。'],['陆正衡','……罢了。今日照常。'],{run:()=>C2.nextSet(4)}])}]}],
+    // day 3: the birds are gone; 大师兄's note
+    ()=>[
+      ['旁白','早上起来，营地静得出奇。'],
+      ['谢霁月','雾林里……一声鸟叫都没有了。'],
+      ['何满仓','昨、昨晚你们听见了吗？那个声音……'],
+      ['旁白','没有人回答。大师兄的帐篷帘子垂着，里面伸出一只手，递出三张纸条。'],
+      ['谢霁月','他的字……'],
+      ['旁白','纸条上的字迹歪歪扭扭，一笔一画都在发抖，不像大师兄平时一丝不苟的字。'],
+      ['陆正衡','（帐篷里）……我有些累。今天的事，照纸条做。'],
+      {run:()=>C2.nextSet(5)}],
+    // day 4: he is gone
+    ()=>[
+      ['何满仓','大师兄？大师兄！'],
+      ['旁白','天刚亮，二师兄的喊声就把所有人都叫醒了。'],
+      ['旁白','大师兄的帐篷是空的。被褥叠得整整齐齐，像是没有人睡过。'],
+      ['旁白','枕边，放着一根白色的羽毛。羽根上，沾着已经发黑的血。'],
+      ...(S.flags.mj_peeked?[['我','我昨晚……看见他往北边走了。赤着脚，头歪着。他没有回头。'],['何满仓','你、你怎么不叫住他！'],['谢霁月','……别怪{称}。换了谁，都不敢叫。']]:[]),
+      {give:{mj_feather:1}},
+      ['谢霁月','（握紧了剑）这羽毛……'],
+      {choice:'这根白羽，你在哪里见过——', options:[
+        {text:'是穷奇的羽毛！', fn:()=>UI.say(MJ.end())},
+        {text:'……风穴里，那头凶兽', fn:()=>UI.say(MJ.end())}]}],
+  ],
+  end:()=>[
+    ['我','是穷奇……它又出来作恶了。'],
+    ['何满仓','穷、穷奇？！它把大师兄……'],
+    ['谢霁月','别说了。'],
+    ['谢霁月','血还没干透多久。羽毛是从北边飘过来的。'],
+    ['谢霁月','……我们去找他。'],
+    {flag:'lu_gone'},
+    ['旁白','（第二幕「秘境」完。第三幕「大师兄失踪」正在制作中，敬请期待。）']],
+  // wings at night: a low flutter and a shaking screen
+  wings(){ for(let i=0;i<9;i++) setTimeout(()=>{ Sound.dig(); },i*110); const b=document.body; b.classList.remove('mjshake'); void b.offsetWidth; b.classList.add('mjshake'); setTimeout(()=>b.classList.remove('mjshake'),1300); },
+  // the dark behind a night scene
+  dark(on){ let d=$('#mjDark'); if(on){ if(!d){ d=document.createElement('div'); d.id='mjDark'; document.body.appendChild(d); } d.classList.add('on'); } else if(d){ d.classList.remove('on'); } },
+  // the tent: only once today's chores are done; night scene, sleep, morning scene
+  tent(){
+    if(!C2.on()||!C2.inMJ()){ return UI.confirm('在帐篷里休息，结束今天？', ()=>{ sleep(false); enterMap('mj_camp',4,12); RT.dir='down'; save(); UI.hud(); }); }
+    if(!C2.allDone()) return UI.say([['旁白','今天的事还没做完。大师兄说过：今天的事，今天做完。'],['旁白','（左上角还有没做完的吩咐。）']]);
+    UI.confirm('回帐篷休息，结束今天？', ()=>{ const k=S.c2.night||0; MJ.dark(true); MJ.nightOn=true;
+      UI.say(MJ.night[Math.min(k,2)], ()=>{ MJ.nightOn=false; sleep(false); enterMap('mj_camp',4,12); RT.dir='down'; S.c2.night=k+1; save(); MJ.dark(false); UI.hud();
+        setTimeout(()=>UI.say(MJ.morning[Math.min(k,2)](), ()=>{ UI.hud(); Story.check(); }),400); }); }); },
+};
+
+// night three: look out, or don't
+SCRIPTS.mj_peek=[
+  ['旁白','你轻轻掀开帐篷的一角。'],
+  ['旁白','雾里，一个人影赤着脚，一步一步往北走。月光照在他的背上——是大师兄。'],
+  ['我','（小声）……大师兄？'],
+  ['旁白','他没有回头。'],
+  ['旁白','他走路的样子很奇怪。头歪向一边，像是有什么东西，在雾的那一头，拽着他的脖子。'],
+  ['旁白','一眨眼，人影就被雾吞没了。你在帐篷口站了很久，才敢躺回去。'],
+  {flag:'mj_peeked'}];
+SCRIPTS.mj_sleepon=[['旁白','……大概是大师兄去巡夜了吧。你这样想着，又闭上了眼睛。']];
+/* ---------- quests ---------- */
+QUESTS.push(
+  {id:'c2e', title:'秘境', desc:'在秘境营地历练。每天三位师兄师姐各派一件事，做完回帐篷休息。雾，好像一天比一天浓。', check:s=>!!s.flags.lu_gone,
+    progress:s=>`秘境第 ${(s.c2&&s.c2.night||0)+1} 天`, target:s=>['mj_camp',10,8,'营地']},
+  {id:'c2f', title:'第三幕 · 大师兄失踪（制作中）', desc:'大师兄不见了，帐篷里只剩一根带血的白羽。第三幕正在制作中，敬请期待。', check:s=>false});
+// the order of quests: 山门集合 (c2d) leads into 秘境 (c2e)
+{ const d=QUESTS.findIndex(q=>q.id==='c2d'), e=QUESTS.findIndex(q=>q.id==='c2e'); if(e!==d+1){ const [q]=QUESTS.splice(e,1); QUESTS.splice(d+1,0,q); } }
+
+// 陆正衡 waits at the 山门 the morning after the order
+for(const k in SECTS) MAPS['zong_'+k].objects.unshift({type:'npc', id:'lu', x:12, y:16, look:LOOK_LU, name:'陆正衡', act:'talk', cond:s=>s.sect===k&&!s.flags.c2_depart&&Story.quest()&&Story.quest().id==='c2d'});
+{ const _t=Story.talk; Story.talk=function(id){
+    const q=Story.quest()?.id;
+    if(q==='c2d'&&id==='lu'){ if(S.day<=(S.c2.orderDay||0)) return UI.say([['陆正衡','明日一早出发。今晚早些歇着。']]); return UI.say(MJ.depart()); }
+    return _t.call(Story,id); }; }
+{ const _a=Dungeon.act; Dungeon.act=function(o){
+    const p=S.c2&&S.c2.p&&S.c2.p.mj;
+    switch(o.act){
+      case 'mjtent': MJ.tent(); return true;
+      case 'mjtent2':
+        if(!S.flags.lu_gone&&C2.inMJ()&&S.c2&&S.c2.night>=2&&S.c2.got.lu<2){ Story.talk('lu'); return true; }   // the note, and the report, both through the tent flap
+        UI.say([['旁白', S.flags.lu_gone?'大师兄的被褥叠得整整齐齐。':S.c2&&S.c2.night>=2?'帐篷里很安静。你知道大师兄在里面——可他一点声音都没有。':'大师兄的帐篷。门帘系得很紧。']]); return true;
+      case 'mjtent3': UI.say([['旁白','大师姐的帐篷。门口插着她的剑鞘。']]); return true;
+      case 'mjtent4': UI.say([['旁白', (S.c2&&S.c2.night||0)>=1?'二师兄的帐篷。门口堆着几个空了的干粮袋，叠得整整齐齐。':'二师兄的帐篷。门口挂着一串晒干的果子。']]); return true;
+      case 'mjfire': UI.say([['旁白', (S.c2&&S.c2.night||0)>=2?'篝火烧得很旺，可你总觉得背后发凉。':'篝火噼啪作响，暖烘烘的。']]); return true;
+      case 'mjpot':
+        if(C2.on()&&C2.task('man')==='mjcook'&&S.c2.got.man===1&&!p.cooked){
+          if(count(S,'zhuyu')<2) return UI.say([['旁白','锅里只有清水。还差祝余——雾林里能采到。（祝余 '+count(S,'zhuyu')+'/2）']]), true;
+          addItem('zhuyu',-2); p.cooked=true; UI.hud(); UI.say([['旁白','你把祝余切碎丢进锅里，咕嘟咕嘟——一股青草的清香在雾里散开。'],['旁白','（回去告诉二师兄，饭好了。）']]); return true; }
+        UI.say([['旁白','篝火边的铁锅。']]); return true;
+      case 'mjflag':
+        if(C2.on()&&C2.task('lu')==='mjflags'&&S.c2.got.lu===1){ p.flags=p.flags||[]; if(!p.flags.includes(o.fi)){ p.flags.push(o.fi); Sound.pick(); UI.float(o.x,o.y,`阵旗 ${p.flags.length}/3`); UI.hud(); if(p.flags.length>=3) UI.toast('阵旗插好了，回去找大师兄'); } return true; }
+        UI.say([['旁白', o.spr==='mj_flag'?'阵旗在雾里一动不动。':'一根削尖的木桩。']]); return true;
+      case 'mjstele':
+        if(C2.on()&&C2.task('lu')==='mjstele'&&S.c2.got.lu===1&&!p.stele){ p.stele=true; UI.hud();
+          UI.say([['旁白','一块半埋在土里的石碑。碑面上满是爪痕，深得能塞进手指。'],['旁白','你辨认了好久，只认出两个字——'],['旁白','「白羽」。'],['旁白','（回去告诉大师兄。）']]); return true; }
+        UI.say([['旁白','布满爪痕的石碑。依稀能认出「白羽」两个字。']]); return true;
+      case 'mjbag':
+        if(p&&!p.bag){ p.bag=true; RT.ents=RT.ents.filter(e=>e!==o); RT.solid[o.y][o.x]=false; UI.hud();
+          UI.say([['旁白','草丛里躺着二师兄的干粮袋。袋口被撕开了，里面空空的。'],['旁白','袋子旁边，落着一根白色的羽毛。'],['旁白','你伸手去捡，羽毛却被一阵不知从哪来的风卷走了。'],['旁白','（回去找二师兄。）']]); return true; }
+        return true;
+    }
+    return _a.call(Dungeon,o); }; }
+// the note-giving morning: 大师兄 hands out his chore from inside the tent
+{ const _t=Story.talk; Story.talk=function(id){ if(id==='lu'&&C2.inMJ()&&S.c2&&C2.task('lu')==='mjstele'&&S.c2.got.lu===0){ S.c2.got.lu=1; UI.hud();
+      return UI.say([['旁白','你走到大师兄的帐篷前。帘子没有掀开。'],['我','大师兄？'],['旁白','过了很久，帘子底下伸出一只手。手指冰凉，指甲缝里全是泥。它把一张纸条塞进你手里，又缩了回去。'],['旁白','纸条上歪歪扭扭地写着：「去……北边……石碑……看看……」'],['旁白','（任务：去雾林北边的石碑看看。）']]); }
+    return _t.call(Story,id); }; }
+// losing a fight in the 秘境 wakes you in the camp, not at home
+{ const _s=sleep; sleep=function(passedOut){ const inMJ=RT.mapId&&RT.mapId.startsWith('mj_'); _s(passedOut); if(inMJ&&passedOut){ enterMap('mj_camp',4,12); RT.dir='down'; save(); } }; }
+// the portal knows the camp once you have been there
+{ const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c2_depart&&!C2_LOCKED&&RT.mapId!=='mj_camp') l.splice(3,0,{name:'秘境营地', map:'mj_camp', x:3, y:14}); return l; }; }
+// mood: the fog thickens each night; in the 雾林 you only see a little way
+{ const _r=render; render=function(){ _r(); if(!RT.map||!RT.mapId.startsWith('mj_')) return;
+    const g=ctx, Z=RT.scale*RT.dpr, T=TILE*Z, ox=Math.round(-RT.cam.x*Z), oy=Math.round(-RT.cam.y*Z), n=S.c2&&S.c2.night||0;
+    if(RT.mapId==='mj_camp'){ g.fillStyle=`rgba(215,222,228,${.10+.08*n})`; g.fillRect(0,0,cv.width,cv.height);
+      const f=RT.ents.find(e=>e.act==='mjfire'); if(f){ const fx=ox+(f.x+.5)*T, fy=oy+(f.y+.5)*T, r=T*(Math.max(.9,2.2-.55*n)+.15*Math.sin(RT.t*6)); const gr=g.createRadialGradient(fx,fy,0,fx,fy,r); gr.addColorStop(0,`rgba(255,170,70,${Math.max(.12,.32-.07*n)})`); gr.addColorStop(1,'rgba(255,170,70,0)'); g.fillStyle=gr; g.fillRect(fx-r,fy-r,r*2,r*2); } }
+    if(RT.mapId==='mj_wood'){ const c=MJ.fogC||(MJ.fogC=document.createElement('canvas')); c.width=cv.width; c.height=cv.height; const f=c.getContext('2d');
+      f.fillStyle=`rgba(212,218,224,${Math.min(.95,.78+.06*n)})`; f.fillRect(0,0,c.width,c.height); f.globalCompositeOperation='destination-out';
+      const px=ox+(RT.fx+.5)*T, py=oy+(RT.fy+.5)*T, r=T*(Math.max(2.6,5.2-.9*n)+(count(S,'migu')?1.4:0)),   /* 迷穀花: 佩之不迷 */ gr=f.createRadialGradient(px,py,r*.35,px,py,r); gr.addColorStop(0,'rgba(0,0,0,1)'); gr.addColorStop(1,'rgba(0,0,0,0)'); f.fillStyle=gr; f.fillRect(px-r,py-r,r*2,r*2);
+      f.globalCompositeOperation='source-over'; g.drawImage(c,0,0); }
+  }; }
+{ const _at=areaTheme; areaTheme=function(){ if(RT.mapId&&RT.mapId.startsWith('mj_')) return 'night'; return _at(); }; }
+// the dark of a night scene never outlives it
+{ const _c=UI.closeDlg; UI.closeDlg=function(){ const r=_c.apply(UI,arguments); if(!MJ.nightOn&&$('#mjDark')) MJ.dark(false); return r; }; }
+
+/* ============================================================
+   山海问道 · 秘境的草木与生灵 — new herbs from the 山海经 for the 雾林 (祝余: eat it and never hunger; 迷穀: wear it and never
+   lose your way — it widens what you can see in the fog; 薰草: a calming fragrance), two new beasts (狪狪, a boar with a pearl;
+   数斯, an owl on human feet), and small creatures that wander the camp and the wood (rabbits, birds, 朏朏) — until the night of the
+   wings, after which nothing is left alive in the 秘境.
+   ============================================================ */
+Object.assign(SPR, {
+  zhuyuspot:['................','................','................','......l..l......','.....lgl.lgl....','......g..g......','....g.g.gg.g....','.....gg.g.gg....','....g.gGg.g.....','.....gGgGgg.....','......GgG.......','.......G........'],
+  miguspot:['................','......yxy.......','.....yxxxy......','......yxy.......','.......k........','...yxy.k.yxy....','..yxxxykyxxxy...','...yxy.k.yxy....','.......k........','......kkk.......'],
+  xuncaospot:['................','.....v....v.....','....vVv..vVv....','.....v.g..v.....','......gg.g......','...v..g.gg..v...','..vVv.g.g..vVv..','...v.gg.g...v...','.....g.gg.g.....','....g.g..g......'],
+  i_zhuyu:['............','...l..l.....','..lgl.lgl...','...g..g.....','.g.g.gg.g...','..gg.g.gg...','.g.gGg.g....','..gGgGgg....','...GgG......','....G.......'],
+  i_migu:['............','....yxy.....','...yxxxy....','....yxy.....','.....k......','.yxy.k.yxy..','yxxxykyxxxy.','.yxy.k.yxy..','.....k......','....kkk.....'],
+  i_xuncao:['............','..v....v....','.vVv..vVv...','..v.g..v....','....gg.g....','.v..g.gg..v.','vVv.g.g..vVv','.v.gg.g...v.','...g.gg.g...'],
+  i_tongzhu:['..........','...qqqq...','..qxxqqq..','..qxqqqq..','..qqqqqq..','..qqqqqq..','...qqqq...'],
+  i_owlfeather:['......H.','.....HHh','....HHh.','...HHh..','..HHh...','.HHh....','Hh......','.h......'],
+  tongtong:['................','................','.....qq.........','....qxxq........','...nnqqnnnn.....','..nNNnnnnnnnn...','.nnkNnnnnnnnnn..','.nnnnnnnnnnnnnN.','wnnnnnnnnnnnnnN.','.nnnnnnnnnnnnN..','..NNnnnnnnnnN...','...N.N...N.N....','...N.N...N.N....','..NN.NN.NN.NN...','................','................'],
+  shusi:['................','...H.......H....','...HHHHHHHHH....','..HHyyHHHyyHH...','..HHykHHHkyHH...','..HHHHHoHHHHH...','...HHHHHHHHH....','..HHhHHHHHhHH...','..HhhHHHHHhhH...','...HHHHHHHHH....','....HHHHHHH.....','.....s...s......','.....s...s......','.....s...s......','....ss...ss.....','................'],
+  mj_rabbit:['.e.e....','.e.e....','eeeee...','ekeeeee.','.eeeeeee','..eeeeee','..e..e..'],
+  mj_bird:['...nn...','..nknn..','.ynnnnn.','..nnnnnn','...y.y..'],
+  mj_feifei:['..........ww','.n.n......w.','.nnn.....ww.','nknkn...ww..','nnnnnnnnww..','.nnnnnnnn...','.n.n..n.n...'],
+});
+Object.assign(ITEMS, {
+  zhuyu:  {name:'祝余', icon:'i_zhuyu', sell:18, desc:'《山海经·南山经》：其状如韭而青华，其名曰祝余，食之不饥。'},
+  migu:   {name:'迷穀花', icon:'i_migu', sell:24, desc:'《山海经·南山经》：其状如榖而黑理，其华四照，佩之不迷。带在身上，雾林里能看得更远。'},
+  xuncao: {name:'薰草', icon:'i_xuncao', sell:20, desc:'《山海经·西山经》：麻叶而方茎，赤华而黑实，臭如蘼芜，名曰薰草，佩之可以已疠。'},
+  tongzhu:{name:'狪珠', icon:'i_tongzhu', sell:120, desc:'狪狪身上取下的珠子，温润，夜里会微微发光。'},
+  shusiyu:{name:'数斯羽', icon:'i_owlfeather', sell:45, desc:'数斯的羽毛。摸上去是凉的，像人的皮肤。'},
+});
+Object.assign(BEASTS, {
+  tongtong:{name:'狪狪', spr:'tongtong', hp:150, atk:22, def:9, exp:55, stones:[18,30], drop:['tongzhu',.35],
+    lore:'《山海经·东山经》：有兽焉，其状如豚而有珠，名曰狪狪，其鸣自訆。', moves:['atk','charge','big','atk']},
+  shusi:{name:'数斯', spr:'shusi', hp:120, atk:26, def:6, exp:65, stones:[22,34], drop:['shusiyu',.5],
+    lore:'《山海经·西山经》：有鸟焉，其状如鸱而人足，名曰数斯，食之已瘿。', moves:['atk','double','big','atk']},
+});
+DODGE.tongtong={ atk:{...DODGE.dangkang.atk, name:'狪狪冲撞'}, big:{...DODGE.dangkang.big, name:'珠光乱撞'} };
+DODGE.shusi={ atk:{...DODGE.qitu.atk, name:'人足踏枝'}, double:{...DODGE.qitu.double, name:'怪眼回旋'}, big:{...DODGE.qitu.big, name:'夜啼'} };
+// people's tastes
+NPCS.man.loves.push('zhuyu'); NPCS.xie.loves.push('migu'); NPCS.lu.likes.push('xuncao'); NPCS.tang.likes.push('xuncao');
+
+// the 雾林 grows them, and the two new beasts live there (until the night of the wings)
+MAPS.mj_wood.objects.push(
+  {type:'gather', x:6, y:3, item:'zhuyu', spr:'zhuyuspot'},{type:'gather', x:19, y:5, item:'zhuyu', spr:'zhuyuspot'},{type:'gather', x:11, y:16, item:'zhuyu', spr:'zhuyuspot'},
+  {type:'gather', x:4, y:12, item:'migu', spr:'miguspot'},{type:'gather', x:23, y:18, item:'migu', spr:'miguspot'},
+  {type:'gather', x:20, y:9, item:'xuncao', spr:'xuncaospot'},{type:'gather', x:6, y:19, item:'xuncao', spr:'xuncaospot'});
+// (trees were scattered before these were placed: clear any tree standing on a new spot)
+{ const spots=new Set(MAPS.mj_wood.objects.filter(o=>o.type==='gather').map(o=>o.x+','+o.y)); MAPS.mj_wood.objects=MAPS.mj_wood.objects.filter(o=>!((o.type==='tree'||o.type==='pine')&&spots.has(o.x+','+o.y))); }
+Object.defineProperty(MAPS.mj_wood,'spawns',{get(){ return S&&S.c2&&(S.c2.night||0)>=2?[]:[{kind:'tongtong', n:2, area:[2,8,12,19]},{kind:'shusi', n:2, area:[16,8,24,19]},{kind:'tongtong', n:1, area:[2,1,10,6]}]; }});
+
+// 迷穀花 in your pack: the fog of the 雾林 opens a little
+{ const _g=gather; gather=function(o){ const first=o.item==='migu'&&!count(S,'migu'); _g(o); if(first) setTimeout(()=>UI.toast('迷穀花微微发光——四周的雾好像淡了一些'),300); }; }
+
+/* ---------- small creatures: rabbits, birds and a 朏朏 in the camp and the wood; they run from you, and are gone after the wings ---------- */
+const Critters = {
+  list:[], map:null,
+  spawn(){ Critters.map=RT.mapId; Critters.list=[]; if(!S||!S.c2||(S.c2.night||0)>=2) return;
+    const plan=RT.mapId==='mj_camp'?[['mj_rabbit',2],['mj_bird',3],['mj_feifei',1]]:RT.mapId==='mj_wood'?[['mj_rabbit',2],['mj_bird',3]]:[];
+    const m=RT.map; for(const [k,n] of plan) for(let i=0;i<n;i++) for(let t=0;t<30;t++){ const x=1+Math.random()*(m.w-2), y=1+Math.random()*(m.h-2);
+      if(RT.solid[y|0]&&!RT.solid[y|0][x|0]&&tileAt(x|0,y|0)!=='~'){ Critters.list.push({k, x, y, tx:x, ty:y, t:Math.random()*3, flip:Math.random()<.5, fly:0}); break; } } },
+  tick(dt){ if(Critters.map!==RT.mapId) Critters.spawn(); const px=RT.fx, py=RT.fy;
+    for(const c of Critters.list){ c.t-=dt;
+      const d=Math.hypot(c.x-px,c.y-py);
+      if(c.k==='mj_bird'&&d<2.2&&!c.fly) c.fly=1;                                   // birds take off
+      if(c.fly){ c.y-=dt*6; c.x+=dt*(c.flip?-3:3); c.fly+=dt; continue; }
+      if(d<1.8&&c.t>-1){ const a=Math.atan2(c.y-py,c.x-px); c.tx=c.x+Math.cos(a)*2.5; c.ty=c.y+Math.sin(a)*2.5; c.t=.6; }   // run from you
+      else if(c.t<0){ c.tx=c.x+(Math.random()-.5)*3; c.ty=c.y+(Math.random()-.5)*2; c.t=1.5+Math.random()*3; }
+      const nx=c.x+(c.tx-c.x)*Math.min(1,dt*(c.k==='mj_feifei'?2:3)), ny=c.y+(c.ty-c.y)*Math.min(1,dt*(c.k==='mj_feifei'?2:3));
+      if(nx>1&&ny>1&&nx<RT.map.w-1&&ny<RT.map.h-1&&!RT.solid[ny|0][nx|0]&&tileAt(nx|0,ny|0)!=='~'){ if(Math.abs(nx-c.x)>.002) c.flip=nx<c.x; c.x=nx; c.y=ny; } else { c.tx=c.x; c.ty=c.y; } }
+    Critters.list=Critters.list.filter(c=>c.fly<4); },
+  draw(g,ox,oy,T,Z){ for(const c of Critters.list){ const hop=(c.k==='mj_rabbit'&&Math.hypot(c.tx-c.x,c.ty-c.y)>.05)?-Math.abs(Math.sin(RT.t*12))*2:0;
+      const sp=sprite(c.k), w=sp.width*Z, h=sp.height*Z, x=Math.round(ox+(c.x+.5)*T-w/2), y=Math.round(oy+(c.y+.9)*T-h+hop*Z);
+      if(c.flip){ g.save(); g.translate(x+w,y); g.scale(-1,1); g.drawImage(sp,0,0,w,h); g.restore(); } else g.drawImage(sp,x,y,w,h); } },
+};
+// creatures move while the game runs in the 秘境
+{ const _r=render; let last=performance.now(); render=function(){ const now=performance.now(), dt=Math.min(.05,(now-last)/1000); last=now;
+    if(RT.map&&RT.mapId.startsWith('mj_')&&!RT.paused) Critters.tick(dt); _r(); }; }
+// draw the creatures before the 秘境 overlay: hook the y-sorted world by drawing them right after the ground pass
+{ const _dg=Life.drawGround; Life.drawGround=function(g,ox,oy,T,Z){ _dg.call(Life,g,ox,oy,T,Z); if(RT.mapId&&RT.mapId.startsWith('mj_')) Critters.draw(g,ox,oy,T,Z); }; }
+
+/* ============================================================
+   山海问道 · 秘境的不安 — small things that pile up, night after night:
+   claw prints in the mud by the tents (from the second day), a torn flag and slashed tent cloth (third day),
+   the campfire burning lower, a vast winged shadow sliding once across the fog, whispers in the 雾林,
+   and a lamp in 大师兄's tent throwing his seated shadow on the cloth — its neck now and then bending wrong.
+   ============================================================ */
+// tents: bigger (two tiles wide), a light and a shaded side, a seam and a dark doorway; the torn one has three claw slashes
+function tentRows(torn){ const W=32, H=20, rows=[];
+  for(let y=0;y<H;y++){ const hw=Math.round((y+1)/H*15.5), r=[];
+    for(let x=0;x<W;x++){ const d=x-15.5; let c='.';
+      if(Math.abs(d)<=hw+.5){ c=d<0?'t':'T';
+        if(Math.abs(Math.abs(d)-hw)<1) c='N';                                    // the edges
+        if(y>=8){ const dw=(y-8)/(H-8)*5.5; if(Math.abs(d)<=dw) c='k'; }       // the doorway
+        else if(Math.abs(d)<.6) c='T';                                           // the seam above it
+        if(y===H-1) c='N'; }
+      r.push(c); }
+    rows.push(r); }
+  rows[0][15]='N'; rows[0][16]='N';
+  if(torn) for(let i=0;i<3;i++) for(let k=0;k<8;k++){ const x=6+i*3+Math.floor(k/2), y=6+k; if(rows[y]&&rows[y][x]&&rows[y][x]!=='.'&&rows[y][x]!=='N') rows[y][x]='k'; }
+  return rows.map(r=>r.join('')); }
+Object.assign(SPR, {
+  mj_tent:tentRows(false), mj_tent_torn:tentRows(true),
+  mj_fire_low:['................','................','................','................','......o.........','.....oro........','....orRro.......','..nNnnnnnNnnn...','.NnnNnnnNnnnN...','..NNNNNNNNNN....'],
+  mj_flagtorn:['.nrr.r....','.nrR......','.nr.r.....','.n........','.n........','.n........','.n........','.n........','.n........','.N........','eeee......'],
+  mj_claw:['N...N...N.','.N...N...N','..N...N..N','..N...N...','...N...N..'],
+});
+for(const k of ['mj_tent','mj_tent_torn']) delete SPRC[k];
+// the seated shadow on the tent cloth: a body with slumped shoulders and knees, and a head with a topknot that can tilt on its own
+const SIL_BODY=['...kkkk...','.kkkkkkkk.','kkkkkkkkkk','kkkkkkkkkk','kkkkkkkkkk','.kkkkkkkk.','kkkkkkkkkk'];
+const SIL_HEAD=['..kk..','.kkkk.','..kk..','.kkkk.','kkkkkk','kkkkkk','.kkkk.'];
+function silCanvas(rows){ const c=document.createElement('canvas'); c.width=rows[0].length; c.height=rows.length; const g=c.getContext('2d'); g.fillStyle='#1a0f0c';
+  rows.forEach((r,y)=>[...r].forEach((ch,x)=>{ if(ch!=='.') g.fillRect(x,y,1,1); })); return c; }
+const MJH = {
+  n:()=>S&&S.c2?S.c2.night||0:0,
+  live:()=>!!(RT.map&&RT.mapId&&RT.mapId.startsWith('mj_')&&S&&S.c2&&!S.flags.lu_gone),
+  CLAWS:[[6,6],[8,6],[9,7],[11,7],[13,6],[14,5],[16,6],[5,10]],
+  WHISPERS:['……好香……','……善人……','……再近一点……','……饿……','……你也行善么……','……血……'],
+  wh:null, whT:6, shadow:null,
+  body:silCanvas(SIL_BODY), head:silCanvas(SIL_HEAD),
+  // the shadow of a winged beast seen from below, drawn small and blown up with smoothing so its edges are soft
+  beast(flap){ const c=MJH.bc||(MJH.bc=document.createElement('canvas')); c.width=260; c.height=170; const g=c.getContext('2d'); g.clearRect(0,0,260,170); g.fillStyle='#0a0a12'; g.strokeStyle='#0a0a12'; g.lineCap='round';
+    g.save(); g.translate(130,74); const up=flap*14;
+    for(const s of [-1,1]){
+      const wx=s*98, wy=-26-up;                                                         // the wrist
+      g.beginPath(); g.moveTo(s*8,-16); g.bezierCurveTo(s*38,-34-up*.4, s*70,-40-up*.8, wx,wy);   // the leading edge
+      for(let k=0;k<6;k++){ const u=(k+1)/6, tx=wx-s*u*82, ty=wy+24-u*4+(k%2?3:0); g.quadraticCurveTo(tx+s*6,ty+12, tx,ty+2); }   // the secondaries, scalloped
+      g.quadraticCurveTo(s*14,10, s*8,4); g.closePath(); g.fill();
+      for(let k=0;k<5;k++){ const a=(-.55+k*.28)*s, len=40-k*3, base=Math.atan2(-6,s*1), ang=(s>0?0:Math.PI)+a-.25*s;   // the primaries, spread like fingers
+        const ex=wx+Math.cos(ang)*len, ey=wy+Math.sin(ang)*len-4;
+        g.beginPath(); g.moveTo(wx-s*2,wy-4); g.quadraticCurveTo((wx+ex)/2-s*3,(wy+ey)/2-4, ex,ey); g.quadraticCurveTo((wx+ex)/2+s*2,(wy+ey)/2+5, wx-s*4,wy+8); g.fill(); } }
+    g.beginPath(); g.ellipse(0,8,11,34,0,0,7); g.fill();                                 // a long tiger's body
+    g.beginPath(); g.ellipse(0,-32,9,10,0,0,7); g.fill();                                // the head
+    for(const s of [-1,1]){ g.beginPath(); g.arc(s*6,-40,2.5,0,7); g.fill();              // small round ears
+      g.lineWidth=6; g.beginPath(); g.moveTo(s*8,-12); g.quadraticCurveTo(s*15,-6,s*14,4); g.stroke();      // forelegs tucked under
+      g.lineWidth=2; for(let k=-1;k<=1;k++){ g.beginPath(); g.moveTo(s*14,4); g.lineTo(s*14+k*2.5,9); g.stroke(); }          // claws
+      g.lineWidth=7; g.beginPath(); g.moveTo(s*10,28); g.quadraticCurveTo(s*18,36,s*16,48); g.stroke(); }    // hind legs
+    g.lineWidth=7; g.beginPath(); g.moveTo(0,36); g.bezierCurveTo(16,54,-18,64,6,82); g.stroke();             // a thick tail
+    g.lineWidth=4; g.beginPath(); g.moveTo(6,82); g.lineTo(10,90); g.stroke();
+    g.restore(); return c; },
+};
+{ const _dg=Life.drawGround; Life.drawGround=function(g,ox,oy,T,Z){ _dg.call(Life,g,ox,oy,T,Z);
+    if(RT.mapId==='mj_camp'&&MJH.n()>=1){ const sp=sprite('mj_claw'); g.globalAlpha=.55; for(const [x,y] of MJH.CLAWS){ g.drawImage(sp, ox+x*T+3*Z, oy+y*T+8*Z, sp.width*Z, sp.height*Z); } g.globalAlpha=1; } }; }
+{ const _r=render; let last=performance.now(); render=function(){ _r(); const now=performance.now(), dt=Math.min(.05,(now-last)/1000); last=now;
+    if(!MJH.live()) return;
+    const g=ctx, Z=RT.scale*RT.dpr, T=TILE*Z, ox=Math.round(-RT.cam.x*Z), oy=Math.round(-RT.cam.y*Z), n=MJH.n(), p=S.c2.p&&S.c2.p.mj;
+    // 大师兄's tent on the third day: lamplight on the cloth, and his shadow sitting very still
+    if(RT.mapId==='mj_camp'&&n>=2){ const o=RT.ents.find(e=>e.act==='mjtent2'); if(o){ const sp=sprite(o.spr), w=sp.width*Z, dx=Math.round(ox+o.x*T+(T-w)/2), dy=Math.round(oy+o.y*T+T-sp.bottom*Z);
+      const ax=dx+(1+16)*Z, ay=dy+2*Z, by=dy+19*Z, half=15*Z;
+      g.save(); g.beginPath(); g.moveTo(ax,ay); g.lineTo(ax+half,by); g.lineTo(ax-half,by); g.closePath(); g.clip();
+      const flick=.04*Math.sin(RT.t*11)+.03*Math.sin(RT.t*17);                        // the lamp flickers
+      g.fillStyle=`rgba(236,170,92,${.82+flick})`; g.fillRect(ax-half,ay,half*2,by-ay);   // the flap is shut; the cloth glows
+      const gr=g.createRadialGradient(ax-4*Z,by-7*Z,0,ax-4*Z,by-7*Z,13*Z); gr.addColorStop(0,'rgba(255,236,170,.75)'); gr.addColorStop(1,'rgba(255,200,120,0)'); g.fillStyle=gr; g.fillRect(ax-half,ay,half*2,by-ay);
+      const bx=ax, bw=MJH.body.width*Z, bh=MJH.body.height*Z, top=by-bh;   // under the peak, where the tent is tallest
+      g.globalAlpha=.78; g.imageSmoothingEnabled=false; g.drawImage(MJH.body, bx-bw/2, top, bw, bh);
+      const ph=RT.t%7, tilt=ph>5.9?Math.sin((ph-5.9)/1.1*Math.PI)*.85:0;               // every few seconds the neck bends — too far
+      g.translate(bx, top+1*Z); g.rotate(tilt); const hw=MJH.head.width*Z, hh=MJH.head.height*Z; g.drawImage(MJH.head, -hw/2, -hh+1*Z, hw, hh);
+      g.restore(); } }
+    // whispers in the 雾林 on the third day: crooked brush characters that tremble
+    if(RT.mapId==='mj_wood'&&n>=2&&!UI.busy()){ MJH.whT-=dt; if(!MJH.wh&&MJH.whT<=0){ const a=Math.random()*Math.PI*2; MJH.wh={text:MJH.WHISPERS[Math.random()*MJH.WHISPERS.length|0], dx:Math.cos(a)*1.6, dy:Math.sin(a)*1.1-.6, t:0, seed:Math.random()*9}; MJH.whT=8+Math.random()*7; }
+      if(MJH.wh){ const w=MJH.wh; w.t+=dt; const a=w.t<.8?w.t/.8:w.t>2.6?Math.max(0,1-(w.t-2.6)/.8):1; if(w.t>3.4) MJH.wh=null; else {
+        const chars=[...w.text], size=Math.round(11*Z), step=size*.82, cx=ox+(RT.fx+.5+w.dx)*T, cy=oy+(RT.fy+w.dy)*T-w.t*Z*3;
+        g.font=`bold ${size}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.textAlign='center'; g.textBaseline='middle';
+        chars.forEach((ch,i)=>{ const x=cx+(i-(chars.length-1)/2)*step, y=cy+Math.sin(RT.t*9+i*1.3+w.seed)*1.4*Z+((i*7+w.seed*3)%5-2)*Z, rot=((i*13+w.seed*5)%7-3)*.07+Math.sin(RT.t*6+i)*.06;
+          g.save(); g.translate(x,y); g.rotate(rot); g.fillStyle=`rgba(30,4,4,${a*.35})`; g.fillText(ch,1.5*Z,1.5*Z); g.fillStyle=`rgba(96,22,18,${a*.85})`; g.fillText(ch,0,0); g.restore(); }); } } }
+    // a vast winged shadow slides once across the fog on the third day (camp or wood)
+    if(n>=2&&p&&!p.shadow&&!UI.busy()&&!RT.paused){ p.stay=(p.stay||0)+dt; if(p.stay>7){ p.shadow=true; MJH.shadow={t:0}; for(let i=0;i<6;i++) setTimeout(()=>Sound.dig(),i*160); } }
+    if(MJH.shadow){ const s=MJH.shadow; s.t+=dt; const u=s.t/3; if(u>=1) MJH.shadow=null; else {
+      const W=cv.width, H=cv.height, x=-W*.5+u*W*2, y=-H*.25+u*H*1.1, sc=W*1.3/260, img=MJH.beast(Math.sin(s.t*3.2));
+      const fade=u<.15?u/.15:u>.85?(1-u)/.15:1;
+      g.save(); g.translate(x,y); g.rotate(Math.atan2(H*1.1,W*2)+Math.PI/2); g.globalAlpha=.42*fade; g.imageSmoothingEnabled=true;
+      g.drawImage(img,-130*sc,-74*sc,260*sc,170*sc); g.restore(); } }
+  }; }
+
+/* ---------- CG: lifting the tent flap on the third night ----------
+   Ink-wash night seen through the tent's opening: pines in the fog, a moon behind it, the camp fire nearly out.
+   大师兄, from behind, barefoot and leaning wrong, walks away north and is swallowed by the fog. */
+MJH.peekCG=function(){
+  MJ.dark(false); MJH.peekLine=0; MJH.peekU=0; MJH.peekOn=true;
+  PixCG.open({ ink:(g,W,H,R)=>{
+      Land.paper(g,W,H,R,'#c9ccd0'); Land.sky(g,W,H,['rgba(8,12,26,.94)','rgba(22,28,48,.86)','rgba(44,50,66,.7)']);
+      Land.orb(g,W*.64,H*.17,Math.min(W,H)*.06,'#e6e4d6',4);
+      Land.mist(g,W,H,H*.3,H*.16,.22);
+      for(let i=0;i<9;i++){ const x=W*(.04+i*.12)+(R()-.5)*W*.05; Land.pine(g,x,H*(.6+R()*.05),H*(.32+R()*.14),R,.42+R()*.2); }
+      Land.mist(g,W,H,H*.55,H*.2,.35);
+      Land.ground(g,W,H,H*.62,.75,'#141820');
+      for(let i=0;i<14;i++) Land.grass(g,W*R(),H*(.86+R()*.1),H*.05,3,R,.5,'#1c222a');
+      Land.orb(g,W*.12,H*.9,Math.min(W,H)*.012,'#ff9a4a',5);                       // the fire, almost out
+    }, cast:[], title:'雾中背影', small:'第二章 · 秘境', seed:313 });
+  const c=PixCG.cur; let last=0; c.front=(g,W,H,fp,t)=>{
+    // he walks as the story is told: each line takes him a little further; on the last he is gone
+    const goal=[0,.08,.26,.4,.52,.68,1][Math.min(6,MJH.peekLine)], dt=Math.max(0,t-last); last=t; MJH.peekU+=(goal-MJH.peekU)*Math.min(1,dt*1.2);
+    const u=MJH.peekU, ease=u, bend=MJH.peekLine>=5?-.34:-.12;
+    // bare footprints, fresh in the mud, leading away
+    g.fillStyle='rgba(10,8,8,.55)'; for(let k=0;k<7;k++){ const v=k/7; if(v>ease) break; const x=W*(.48+v*.07)+(k%2?fp*3:-fp*3), y=H*(.97-v*.32); g.beginPath(); g.ellipse(x,y,fp*(2.4-v*1.4),fp*(1.2-v*.6),0,0,7); g.fill(); }
+    // 大师兄 from behind: walking, smaller and fainter the further he goes; his body leans and his head hangs to one side
+    const sp=cgChibi(LOOK_LU, Math.floor(t*2.2)%2?'walk':'stand', 'normal', null, null, true), sc=fp*(1.15-ease*.72), w=sp.width*sc, h=sp.height*sc;
+    const x=W*(.5+ease*.06), y=H*(.86-ease*.26), a=1-Math.max(0,(u-.7)/.3);
+    if(a>0){ g.save(); g.globalAlpha=a*.92; g.translate(x,y); g.rotate(bend+Math.sin(t*1.3)*.03); g.imageSmoothingEnabled=false; g.drawImage(sp,-w/2,-h,w,h); g.restore(); }
+    // the fog closes in front of him
+    for(let k=0;k<4;k++){ const yy=H*(.55+k*.08), al=(.12+ease*.4)*(1-k*.18), drift=Math.sin(t*.4+k)*W*.06; const gr=g.createRadialGradient(W*.55+drift,yy,0,W*.55+drift,yy,W*.6); gr.addColorStop(0,`rgba(214,218,224,${al})`); gr.addColorStop(1,'rgba(214,218,224,0)'); g.fillStyle=gr; g.fillRect(0,yy-H*.2,W,H*.4); }
+    // the tent flap you are holding open: dark cloth framing the view
+    for(const s of [-1,1]){ const x0=s<0?0:W, gr=g.createLinearGradient(x0,0,W/2,0); gr.addColorStop(0,'rgba(30,22,16,.98)'); gr.addColorStop(.6,'rgba(70,54,36,.9)'); gr.addColorStop(1,'rgba(70,54,36,0)');
+      g.fillStyle=gr; g.beginPath(); g.moveTo(x0,0); g.lineTo(W/2+s*W*.22,0); g.quadraticCurveTo(W/2+s*W*.3,H*.5, W/2+s*W*.38,H); g.lineTo(x0,H); g.closePath(); g.fill(); }
+    const vg=g.createRadialGradient(W/2,H*.55,Math.min(W,H)*.25,W/2,H*.55,Math.max(W,H)*.75); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.6)'); g.fillStyle=vg; g.fillRect(0,0,W,H); };
+};
+// the night-three peek opens the CG and closes it again before the dark returns
+{ const s=SCRIPTS.mj_peek; s.unshift({run:()=>MJH.peekCG()}); s.push({run:()=>{ MJH.peekOn=false; PixCG.close(); MJ.dark(true); }}); }
+{ const _l=UI.line; UI.line=function(){ if(MJH.peekOn) MJH.peekLine++; return _l.apply(UI,arguments); }; }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -7194,6 +7702,10 @@ const Review = {
       run(){ Review.base({quest:'c2b', L:10, sect:k, side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_'+k,12,15,'up'); }})),
     {id:'c2-day3', group:'第二章', title:'宗门第三天（界碑抓痕、二师兄的房间）', check:'第三天的吩咐：大师兄让你看三块界碑（第三块底下有狼爪痕），大师姐要两颗朱果，二师兄请你收拾房间（发霉的点心，两种选择）。三件都交差后，师尊会传召。',
       run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1, zhuguo:2}}); S.c2=C2.fresh(); S.c2.n=2; S.c2.days=2; S.c2.counted=1; Review.at('zong_jian',12,15,'up'); }},
+    {id:'c2-mjgo', group:'第二章', title:'山门集合 → 秘境', check:'第一幕已完成，是师尊下令的第二天早上。去山门找大师兄（寻路会带你去），出发去秘境、扎营。',
+      run(){ Review.base({quest:'c2d', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3; S.c2.n=2; S.c2.counted=2; S.c2.got={lu:2,xie:2,man:2}; S.c2.orderDay=S.day-1; Review.at('zong_jian',12,13,'down'); }},
+    ...[[1,'秘境第一天（插阵旗、采灵草、煮晚饭）',3],[2,'秘境第二天（饭少了一半、打妖兽、摘朱果、钓鱼）',4],[3,'秘境第三天（翅膀声之后：鸟兽全无、大师兄的纸条、干粮袋）',5]].map(([d,t,n])=>({id:'c2-mj'+d, group:'第二章', title:t, check:'在秘境营地，这一天的吩咐都还没接。做完三件事后回左下的帐篷休息，会有夜里的怪事和第二天早上的剧情。'+(d===3?'这一天做完再睡，第二天早上大师兄就不见了（第二幕结尾）。':''),
+      run(){ Review.base({quest:'c2e', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3+d-1; S.c2.counted=n-1; S.c2.night=d-1; C2.nextSet(n); Review.at('mj_camp',10,12,'up'); }})),
     {id:'c2-portal', group:'第二章', title:'传送阵（直达风眼打狂暴穷奇）', check:'桃源镇广场东边的传送阵：已经筑基、拜师、打过穷奇，就能直接传送到风眼打狂暴穷奇；风眼里也有传送阵可以回来。到了第二章，还能去宗门。',
       run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{huichun:4, hu_wei:1}}); Review.at('town',21,7,'up'); }},
   ],
