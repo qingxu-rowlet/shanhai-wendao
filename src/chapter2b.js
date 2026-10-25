@@ -70,7 +70,9 @@ MAPS.mj_camp={ name:'秘境 · 营地', w:22, h:16, ground:MJ_CAMP,
     else if(edge>=2&&R()<.12) G[y][x]=R()<.5?',':':'; }
   m.ground=G.map(r=>r.join(''));
   // keep a way open to the 传送阵 in the south-west corner (the edge trees had walled it in)
-  const lane=new Set(['2,13','3,13','4,13','5,13','2,12']); m.objects=m.objects.filter(o=>!((o.type==='pine'||o.type==='tree')&&lane.has(o.x+','+o.y))); }
+  const lane=new Set(['2,13','3,13','4,13','5,13','2,12','1,13','7,13','6,13']); m.objects=m.objects.filter(o=>!((o.type==='pine'||o.type==='tree')&&lane.has(o.x+','+o.y)));
+  // and a trodden dirt path to it, so it reads as a way through
+  { const G2=m.ground.map(r=>r.split('')); for(const [x,y] of [[8,12],[7,12],[6,12],[6,13],[5,13],[4,13],[3,13],[3,14]]) if(!m.objects.some(o=>o.x===x&&o.y===y)) G2[y][x]='='; m.ground=G2.map(r=>r.join('')); } }
 // the 雾林: drawn by code so the rows stay square
 { const W=26, H=22, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>(x===0||y===0||x===W-1||y===H-1)?'W':'.'));
   for(let y=6;y<=20;y++) G[y][14]='=';

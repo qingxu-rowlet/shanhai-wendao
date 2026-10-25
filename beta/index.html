@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5a9bc16505"><script>(function(){var B="5a9bc16505";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="67514c3941"><script>(function(){var B="67514c3941";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6638,7 +6638,9 @@ MAPS.mj_camp={ name:'秘境 · 营地', w:22, h:16, ground:MJ_CAMP,
     else if(edge>=2&&R()<.12) G[y][x]=R()<.5?',':':'; }
   m.ground=G.map(r=>r.join(''));
   // keep a way open to the 传送阵 in the south-west corner (the edge trees had walled it in)
-  const lane=new Set(['2,13','3,13','4,13','5,13','2,12']); m.objects=m.objects.filter(o=>!((o.type==='pine'||o.type==='tree')&&lane.has(o.x+','+o.y))); }
+  const lane=new Set(['2,13','3,13','4,13','5,13','2,12','1,13','7,13','6,13']); m.objects=m.objects.filter(o=>!((o.type==='pine'||o.type==='tree')&&lane.has(o.x+','+o.y)));
+  // and a trodden dirt path to it, so it reads as a way through
+  { const G2=m.ground.map(r=>r.split('')); for(const [x,y] of [[8,12],[7,12],[6,12],[6,13],[5,13],[4,13],[3,13],[3,14]]) if(!m.objects.some(o=>o.x===x&&o.y===y)) G2[y][x]='='; m.ground=G2.map(r=>r.join('')); } }
 // the 雾林: drawn by code so the rows stay square
 { const W=26, H=22, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>(x===0||y===0||x===W-1||y===H-1)?'W':'.'));
   for(let y=6;y<=20;y++) G[y][14]='=';
