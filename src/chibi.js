@@ -94,6 +94,7 @@ function cgChibi(look, pose, mood, prop, wear, back){
   if(!back){ rect(32+sx,30,5,4,SK); set(32+sx,31,SK2); set(32+sx,32,SK2);
     poly([[31.5+sx,33],[37.5+sx,33],[34.5+sx,38.5]],SK); for(let y=33;y<35;y++) set(33+sx,y,SK2);
     line(31+sx,33,34+sx,38,TR); line(32+sx,33,35+sx,38,TR); line(38+sx,33,35+sx,36,TR); line(33+sx,33,35+sx,37,dk(C)); }
+  else { rect(32+sx,28,5,5,SK); rect(32+sx,28,1,5,SK2); rect(36+sx,28,1,5,SK2); rect(31+sx,32,7,1,dk(C)); }   // from behind: the nape of the neck between the hair and the collar
   // sash with a knot and two ribbons
   const sy=41, sa=Math.round(sx*.5); rect(28+sa,sy,13,2,A); rect(28+sa,sy+1,13,1,dk(A));
   if(!back){ const kx=39+sa; rect(kx-1,sy-1,3,3,dk(A)); set(kx,sy-1,lt(A)); if(jin) set(kx,sy,'#e8b84a');
