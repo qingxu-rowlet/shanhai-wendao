@@ -74,7 +74,9 @@ const MJH = {
       g.globalAlpha=.78; g.imageSmoothingEnabled=false; g.drawImage(MJH.body, bx-bw/2, top, bw, bh);
       const ph=RT.t%7, tilt=ph>5.9?Math.sin((ph-5.9)/1.1*Math.PI)*.85:0;               // every few seconds the neck bends — too far
       g.translate(bx, top+1*Z); g.rotate(tilt); const hw=MJH.head.width*Z, hh=MJH.head.height*Z; g.drawImage(MJH.head, -hw/2, -hh+1*Z, hw, hh);
-      g.restore(); } }
+      g.restore();
+      // the glow is painted over the finished scene: if you stand in front of the tent, you go back on top of it (the shadow on the ground is already there)
+      if(RT.fy>=o.y&&Math.abs(RT.fx-o.x)<2.5){ const _sh=drawShadow; drawShadow=()=>{}; try{ drawPlayer(ox+RT.fx*T, oy+RT.fy*T, Z); } finally{ drawShadow=_sh; } } } }
     // whispers in the 雾林 on the third day: crooked brush characters that tremble
     if(RT.mapId==='mj_wood'&&n>=2&&!UI.busy()){ MJH.whT-=dt; if(!MJH.wh&&MJH.whT<=0){ const a=Math.random()*Math.PI*2; MJH.wh={text:MJH.WHISPERS[Math.random()*MJH.WHISPERS.length|0], dx:Math.cos(a)*1.6, dy:Math.sin(a)*1.1-.6, t:0, seed:Math.random()*9}; MJH.whT=8+Math.random()*7; }
       if(MJH.wh){ const w=MJH.wh; w.t+=dt; const a=w.t<.8?w.t/.8:w.t>2.6?Math.max(0,1-(w.t-2.6)/.8):1; if(w.t>3.4) MJH.wh=null; else {
