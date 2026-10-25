@@ -196,10 +196,10 @@ const MJ={
   dark(on){ let d=$('#mjDark'); if(on){ if(!d){ d=document.createElement('div'); d.id='mjDark'; document.body.appendChild(d); } d.classList.add('on'); } else if(d){ d.classList.remove('on'); } },
   // the tent: only once today's chores are done; night scene, sleep, morning scene
   tent(){
-    if(!C2.on()||!C2.inMJ()){ return UI.confirm('在帐篷里休息，结束今天？', ()=>{ sleep(false); enterMap('mj_camp',4,12); RT.dir='down'; save(); UI.hud(); }); }
+    if(!C2.on()||!C2.inMJ()){ return UI.confirm('在帐篷里休息，结束今天？', ()=>{ sleep(false); enterMap('mj_camp',5,11); RT.dir='down'; save(); UI.hud(); }); }
     if(!C2.allDone()) return UI.say([['旁白','今天的事还没做完。大师兄说过：今天的事，今天做完。'],['旁白','（左上角还有没做完的吩咐。）']]);
     UI.confirm('回帐篷休息，结束今天？', ()=>{ const k=S.c2.night||0; MJ.dark(true); MJ.nightOn=true;
-      UI.say(MJ.night[Math.min(k,2)], ()=>{ MJ.nightOn=false; sleep(false); S.c2.night=k+1; enterMap('mj_camp',4,12); RT.dir='down'; save(); MJ.dark(false); UI.hud();
+      UI.say(MJ.night[Math.min(k,2)], ()=>{ MJ.nightOn=false; sleep(false); S.c2.night=k+1; enterMap('mj_camp',5,11); RT.dir='down'; save(); MJ.dark(false); UI.hud();
         setTimeout(()=>UI.say(MJ.morning[Math.min(k,2)](), ()=>{ UI.hud(); Story.check(); }),400); }); }); },
 };
 
@@ -260,7 +260,7 @@ for(const k in SECTS) MAPS['zong_'+k].objects.unshift({type:'npc', id:'lu', x:12
       return UI.say([['旁白','你走到大师兄的帐篷前。帘子没有掀开。'],['我','大师兄？'],['旁白','过了很久，帘子底下伸出一只手。手指冰凉，指甲缝里全是泥。它把一张纸条塞进你手里，又缩了回去。'],['旁白','纸条上歪歪扭扭地写着：「去……北边……石碑……看看……」'],['旁白','（任务：去雾林北边的石碑看看。）']]); }
     return _t.call(Story,id); }; }
 // losing a fight in the 秘境 wakes you in the camp, not at home
-{ const _s=sleep; sleep=function(passedOut){ const inMJ=RT.mapId&&RT.mapId.startsWith('mj_'); _s(passedOut); if(inMJ&&passedOut){ enterMap('mj_camp',4,12); RT.dir='down'; save(); } }; }
+{ const _s=sleep; sleep=function(passedOut){ const inMJ=RT.mapId&&RT.mapId.startsWith('mj_'); _s(passedOut); if(inMJ&&passedOut){ enterMap('mj_camp',5,11); RT.dir='down'; save(); } }; }
 // the portal knows the camp once you have been there
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c2_depart&&!C2_LOCKED&&RT.mapId!=='mj_camp') l.splice(3,0,{name:'秘境营地', map:'mj_camp', x:3, y:14}); return l; }; }
 // mood: the fog thickens each night; in the 雾林 you only see a little way

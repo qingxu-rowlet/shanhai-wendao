@@ -159,6 +159,15 @@ const Review = {
     enterMap(map,x,y); RT.dir=dir||'down'; UI.hud(); UI.sync(); save(); Music.play(areaTheme());
   },
   sect:null,
+  // testers needn't redo the day's three chores: count them all done and stand by the bed (or tent), ready for the night
+  skipChores(){
+    if(!S||!S.c2||typeof C2==='undefined'||!C2.on()) return UI.toast('现在没有日常任务可以跳过');
+    if(C2.allDone()) return UI.toast('今天的日常已经做完了，回去睡觉吧');
+    UI.dlgQ=null; $('#dlg').hidden=true; $('#panel').hidden=true; UI.sync();
+    S.c2.got={lu:2,xie:2,man:2}; S.track='main';
+    if(C2.inMJ()){ enterMap('mj_camp',5,11); RT.dir='left'; } else { enterMap(zongId(),3,15); RT.dir='up'; }
+    UI.hud(); save(); C2.check(); UI.toast('已跳过今天的日常');
+  },
   go(id){
     const [nid,sk]=id.split('@'); id=nid; Review.sect=SECTS[sk]?sk:null;
     const n=Review.NODES.find(x=>x.id===id); if(!n) return Review.missing(id);
@@ -182,7 +191,8 @@ const Review = {
     $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>{ el.remove(); const p=document.createElement('button'); p.id='reviewPill'; p.className='wood'; p.textContent='审查：'+n.title+' ▾'; p.onclick=()=>{ p.remove(); Review.note(n); }; document.body.appendChild(p); }; if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id+(Review.sect?'@'+Review.sect:''); };
     // chapter 2 nodes can be replayed as a disciple of any of the four sects
     if(n.id.startsWith('c2-')){ const row=document.createElement('div'); row.className='rn-btns rn-sect'; row.innerHTML='<span>宗门：</span>'+Object.keys(SECTS).map(k=>`<button class="btn mini${(Review.sect||S.sect)===k?' main':''}" data-sk="${k}">${SECTS[k].name}</button>`).join('');
-      el.appendChild(row); row.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{ location.hash='t-'+n.id+'@'+b.dataset.sk; }); }
+      el.appendChild(row); row.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{ location.hash='t-'+n.id+'@'+b.dataset.sk; });
+      const sk=document.createElement('div'); sk.className='rn-btns'; sk.innerHTML='<button class="btn mini main" id="rnSkip">跳过今天的日常</button>'; el.appendChild(sk); $('#rnSkip').onclick=()=>Review.skipChores(); }
   },
   hub(){
     $('#reviewHub')&&$('#reviewHub').remove();

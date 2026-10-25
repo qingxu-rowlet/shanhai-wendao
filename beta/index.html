@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="2d88dc8d6b"><script>(function(){var B="2d88dc8d6b";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="3ee8afacf0"><script>(function(){var B="3ee8afacf0";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6764,10 +6764,10 @@ const MJ={
   dark(on){ let d=$('#mjDark'); if(on){ if(!d){ d=document.createElement('div'); d.id='mjDark'; document.body.appendChild(d); } d.classList.add('on'); } else if(d){ d.classList.remove('on'); } },
   // the tent: only once today's chores are done; night scene, sleep, morning scene
   tent(){
-    if(!C2.on()||!C2.inMJ()){ return UI.confirm('在帐篷里休息，结束今天？', ()=>{ sleep(false); enterMap('mj_camp',4,12); RT.dir='down'; save(); UI.hud(); }); }
+    if(!C2.on()||!C2.inMJ()){ return UI.confirm('在帐篷里休息，结束今天？', ()=>{ sleep(false); enterMap('mj_camp',5,11); RT.dir='down'; save(); UI.hud(); }); }
     if(!C2.allDone()) return UI.say([['旁白','今天的事还没做完。大师兄说过：今天的事，今天做完。'],['旁白','（左上角还有没做完的吩咐。）']]);
     UI.confirm('回帐篷休息，结束今天？', ()=>{ const k=S.c2.night||0; MJ.dark(true); MJ.nightOn=true;
-      UI.say(MJ.night[Math.min(k,2)], ()=>{ MJ.nightOn=false; sleep(false); S.c2.night=k+1; enterMap('mj_camp',4,12); RT.dir='down'; save(); MJ.dark(false); UI.hud();
+      UI.say(MJ.night[Math.min(k,2)], ()=>{ MJ.nightOn=false; sleep(false); S.c2.night=k+1; enterMap('mj_camp',5,11); RT.dir='down'; save(); MJ.dark(false); UI.hud();
         setTimeout(()=>UI.say(MJ.morning[Math.min(k,2)](), ()=>{ UI.hud(); Story.check(); }),400); }); }); },
 };
 
@@ -6828,7 +6828,7 @@ for(const k in SECTS) MAPS['zong_'+k].objects.unshift({type:'npc', id:'lu', x:12
       return UI.say([['旁白','你走到大师兄的帐篷前。帘子没有掀开。'],['我','大师兄？'],['旁白','过了很久，帘子底下伸出一只手。手指冰凉，指甲缝里全是泥。它把一张纸条塞进你手里，又缩了回去。'],['旁白','纸条上歪歪扭扭地写着：「去……北边……石碑……看看……」'],['旁白','（任务：去雾林北边的石碑看看。）']]); }
     return _t.call(Story,id); }; }
 // losing a fight in the 秘境 wakes you in the camp, not at home
-{ const _s=sleep; sleep=function(passedOut){ const inMJ=RT.mapId&&RT.mapId.startsWith('mj_'); _s(passedOut); if(inMJ&&passedOut){ enterMap('mj_camp',4,12); RT.dir='down'; save(); } }; }
+{ const _s=sleep; sleep=function(passedOut){ const inMJ=RT.mapId&&RT.mapId.startsWith('mj_'); _s(passedOut); if(inMJ&&passedOut){ enterMap('mj_camp',5,11); RT.dir='down'; save(); } }; }
 // the portal knows the camp once you have been there
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c2_depart&&!C2_LOCKED&&RT.mapId!=='mj_camp') l.splice(3,0,{name:'秘境营地', map:'mj_camp', x:3, y:14}); return l; }; }
 // mood: the fog thickens each night; in the 雾林 you only see a little way
@@ -8308,6 +8308,15 @@ const Review = {
     enterMap(map,x,y); RT.dir=dir||'down'; UI.hud(); UI.sync(); save(); Music.play(areaTheme());
   },
   sect:null,
+  // testers needn't redo the day's three chores: count them all done and stand by the bed (or tent), ready for the night
+  skipChores(){
+    if(!S||!S.c2||typeof C2==='undefined'||!C2.on()) return UI.toast('现在没有日常任务可以跳过');
+    if(C2.allDone()) return UI.toast('今天的日常已经做完了，回去睡觉吧');
+    UI.dlgQ=null; $('#dlg').hidden=true; $('#panel').hidden=true; UI.sync();
+    S.c2.got={lu:2,xie:2,man:2}; S.track='main';
+    if(C2.inMJ()){ enterMap('mj_camp',5,11); RT.dir='left'; } else { enterMap(zongId(),3,15); RT.dir='up'; }
+    UI.hud(); save(); C2.check(); UI.toast('已跳过今天的日常');
+  },
   go(id){
     const [nid,sk]=id.split('@'); id=nid; Review.sect=SECTS[sk]?sk:null;
     const n=Review.NODES.find(x=>x.id===id); if(!n) return Review.missing(id);
@@ -8331,7 +8340,8 @@ const Review = {
     $('#rnHub').onclick=()=>Review.hub(); $('#rnX').onclick=()=>{ el.remove(); const p=document.createElement('button'); p.id='reviewPill'; p.className='wood'; p.textContent='审查：'+n.title+' ▾'; p.onclick=()=>{ p.remove(); Review.note(n); }; document.body.appendChild(p); }; if(next) $('#rnNext').onclick=()=>{ location.hash='t-'+next.id+(Review.sect?'@'+Review.sect:''); };
     // chapter 2 nodes can be replayed as a disciple of any of the four sects
     if(n.id.startsWith('c2-')){ const row=document.createElement('div'); row.className='rn-btns rn-sect'; row.innerHTML='<span>宗门：</span>'+Object.keys(SECTS).map(k=>`<button class="btn mini${(Review.sect||S.sect)===k?' main':''}" data-sk="${k}">${SECTS[k].name}</button>`).join('');
-      el.appendChild(row); row.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{ location.hash='t-'+n.id+'@'+b.dataset.sk; }); }
+      el.appendChild(row); row.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{ location.hash='t-'+n.id+'@'+b.dataset.sk; });
+      const sk=document.createElement('div'); sk.className='rn-btns'; sk.innerHTML='<button class="btn mini main" id="rnSkip">跳过今天的日常</button>'; el.appendChild(sk); $('#rnSkip').onclick=()=>Review.skipChores(); }
   },
   hub(){
     $('#reviewHub')&&$('#reviewHub').remove();
