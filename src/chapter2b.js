@@ -199,7 +199,7 @@ const MJ={
     if(!C2.on()||!C2.inMJ()){ return UI.confirm('在帐篷里休息，结束今天？', ()=>{ sleep(false); enterMap('mj_camp',4,12); RT.dir='down'; save(); UI.hud(); }); }
     if(!C2.allDone()) return UI.say([['旁白','今天的事还没做完。大师兄说过：今天的事，今天做完。'],['旁白','（左上角还有没做完的吩咐。）']]);
     UI.confirm('回帐篷休息，结束今天？', ()=>{ const k=S.c2.night||0; MJ.dark(true); MJ.nightOn=true;
-      UI.say(MJ.night[Math.min(k,2)], ()=>{ MJ.nightOn=false; sleep(false); enterMap('mj_camp',4,12); RT.dir='down'; S.c2.night=k+1; save(); MJ.dark(false); UI.hud();
+      UI.say(MJ.night[Math.min(k,2)], ()=>{ MJ.nightOn=false; sleep(false); S.c2.night=k+1; enterMap('mj_camp',4,12); RT.dir='down'; save(); MJ.dark(false); UI.hud();
         setTimeout(()=>UI.say(MJ.morning[Math.min(k,2)](), ()=>{ UI.hud(); Story.check(); }),400); }); }); },
 };
 

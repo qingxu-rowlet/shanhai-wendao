@@ -18,15 +18,78 @@ Object.assign(ITEMS, {
   c2_bagua:{name:'八卦镜', icon:'i_bagua', quest:true, keep:true, desc:'大师兄从不离身的八卦镜。照得出往事，照得出真相——却分不开纠缠在一起的东西。'},
   c2_lutoken:{name:'「正」字玉牌', icon:'i_lutoken', quest:true, keep:true, desc:'大师兄腰间的玉牌，裂了一道缝。背面刻着一行小字：「名正，则言顺。」'},
 });
-// the wolves in the mirror
-Object.assign(PXB, {
-  wolf:['.............x.x..','............xxxx..','x..........xxkxxxk','.x.xxxxxxxxxxxxtt.','..xxxxxxxxxxxxtt..','..xxxxxxxxxxxt....','..xtxxxxxxxxt.....','..x.x.....x.x.....','..k.k.....k.k.....'],
-  wolfdown:['..............x.x.','.............xxxx.','xx..........xxkxxk','.xxxxxxxxxxxxxxxt.','.xtttttttttttxxt..','..x.x.x...x.x.....'],
-  cub:['.......x.x','......xxxk','.x...xxkx.','..xxxxxxt.','..xtxxxt..','..x.x.x.x.'],
-});
+// the wolves in the mirror and the boy in a wolf's pelt: painted on the fine grid, the same pixel size as the CG chibis
+const FineArt = {
+  cache:{},
+  // a small painter: shapes into a pixel list, then one dark outline round everything
+  paint(W,H,fn){ const px=new Array(W*H).fill(null), set=(x,y,c)=>{ x=Math.round(x); y=Math.round(y); if(x>=0&&y>=0&&x<W&&y<H&&c) px[y*W+x]=c; };
+    const P={ set,
+      rect(x,y,w,h,c){ for(let j=0;j<h;j++) for(let i=0;i<w;i++) set(x+i,y+j,c); },
+      ell(cx,cy,rx,ry,c){ for(let y=Math.floor(cy-ry);y<=cy+ry;y++) for(let x=Math.floor(cx-rx);x<=cx+rx;x++) if(((x+.5-cx)/rx)**2+((y+.5-cy)/ry)**2<=1) set(x,y,c); },
+      cap(ax,ay,bx,by,r,c){ for(let y=Math.floor(Math.min(ay,by)-r-1);y<=Math.max(ay,by)+r+1;y++) for(let x=Math.floor(Math.min(ax,bx)-r-1);x<=Math.max(ax,bx)+r+1;x++){ const vx=bx-ax, vy=by-ay, L=vx*vx+vy*vy||1, u=Math.max(0,Math.min(1,((x+.5-ax)*vx+(y+.5-ay)*vy)/L)), dx=x+.5-(ax+u*vx), dy=y+.5-(ay+u*vy); if(dx*dx+dy*dy<=r*r) set(x,y,c); } },
+      poly(pts,c){ const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]); for(let y=Math.floor(Math.min(...ys));y<=Math.max(...ys);y++) for(let x=Math.floor(Math.min(...xs));x<=Math.max(...xs);x++){ let inside=false;
+        for(let i=0,j=pts.length-1;i<pts.length;j=i++){ const [xi,yi]=pts[i],[xj,yj]=pts[j]; if(((yi>y+.5)!==(yj>y+.5))&&(x+.5<(xj-xi)*(y+.5-yi)/(yj-yi)+xi)) inside=!inside; } if(inside) set(x,y,c); } },
+      line(ax,ay,bx,by,c){ const n=Math.max(Math.abs(bx-ax),Math.abs(by-ay))||1; for(let i=0;i<=n;i++) set(ax+(bx-ax)*i/n, ay+(by-ay)*i/n, c); } };
+    fn(P);
+    const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d'), on=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&px[y*W+x];
+    g.fillStyle='#2a1e1a'; for(let y=0;y<H;y++) for(let x=0;x<W;x++){ if(on(x,y)) continue; if(on(x-1,y)||on(x+1,y)||on(x,y-1)||on(x,y+1)) g.fillRect(x,y,1,1); }
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const col=px[y*W+x]; if(col){ g.fillStyle=col; g.fillRect(x,y,1,1); } }
+    let b=H-1; while(b>0&&!px.slice(b*W,b*W+W).some(Boolean)) b--; c.bottom=b+2; c.fine=true; return c; },
+  // grey wolf fur: back, body, belly, legs in shadow
+  F:{back:'#5f5b55', fur:'#8c877e', lit:'#a9a398', belly:'#cfc8ba', dark:'#4a4640', paw:'#3a3632', eye:'#e8b84a', nose:'#2a2220', tooth:'#f6f2e8'},
+  wolf(){ return FineArt.cache.wolf||(FineArt.cache.wolf=FineArt.paint(66,36,P=>{ const F=FineArt.F;
+    // bushy tail, held low
+    P.cap(12,15,4,25,3.2,F.fur); P.cap(6,22,3,27,2.4,F.belly);
+    // far legs (in shadow), then the body, then the near legs
+    P.cap(19,21,17,32,2.3,F.dark); P.cap(41,21,43,32,2.3,F.dark); P.rect(15,32,4,2,F.paw); P.rect(42,32,4,2,F.paw);
+    P.ell(29,17,16,7.5,F.fur); P.ell(28,12.5,15,3.5,F.back); P.ell(31,21.5,12,3,F.belly);
+    for(let x=16;x<42;x+=4) P.set(x,11+(x%3),F.dark);
+    P.cap(23,21,22,33,2.5,F.lit); P.cap(44,20,46,33,2.5,F.lit); P.rect(20,33,5,2,F.paw); P.rect(45,33,5,2,F.paw);
+    // neck ruff, head, snout, ears; teeth bared
+    P.poly([[39,10],[48,6],[52,15],[43,22]],F.fur); P.poly([[42,14],[48,12],[47,22],[43,22]],F.belly);
+    P.ell(51,10,6.5,5.5,F.fur); P.poly([[54,8],[64,11],[64,14],[54,15]],F.lit); P.rect(55,14,8,1,F.belly);
+    P.set(64,11,F.nose); P.set(63,11,F.nose); P.line(56,14,63,14,F.nose); P.set(58,15,F.tooth); P.set(61,15,F.tooth);
+    P.poly([[46,7],[47,0],[51,5]],F.back); P.poly([[51,5],[54,0],[56,7]],F.back); P.set(48,3,F.belly); P.set(54,3,F.belly);
+    P.set(54,9,F.eye); P.set(55,9,F.nose); P.line(52,7,56,8,F.dark); })); },
+  // lying on its side: legs out, head down, eye shut
+  wolfdown(){ return FineArt.cache.down||(FineArt.cache.down=FineArt.paint(68,22,P=>{ const F=FineArt.F;
+    P.cap(12,11,3,15,2.8,F.fur); P.cap(5,14,2,16,2,F.belly);
+    P.cap(22,15,17,20,2,F.dark); P.cap(42,15,47,20,2,F.dark);
+    P.ell(31,11,18,5.5,F.fur); P.ell(31,7.5,17,2.5,F.back); P.ell(32,14.5,13,2.2,F.belly);
+    P.cap(27,15,24,20,2.2,F.lit); P.cap(38,15,40,21,2.2,F.lit);
+    P.ell(53,13,6.5,4.5,F.fur); P.poly([[57,11],[66,13],[66,16],[57,17]],F.lit); P.set(66,13,F.nose);
+    P.poly([[49,9],[50,4],[53,9]],F.back); P.line(54,12,57,12,F.dark); })); },
+  // a cub, sitting
+  cub(){ return FineArt.cache.cub||(FineArt.cache.cub=FineArt.paint(30,22,P=>{ const F=FineArt.F;
+    P.cap(6,16,2,19,2,F.fur); P.ell(13,14,7,5.5,F.lit); P.ell(14,17,5,2.5,F.belly); P.cap(12,17,12,20,1.6,F.fur); P.cap(17,17,18,20,1.6,F.fur);
+    P.ell(20,8,5.5,5,F.lit); P.poly([[23,8],[28,9],[28,11],[23,12]],F.belly); P.set(28,9,F.nose);
+    P.poly([[16,5],[17,0],[19,4]],F.fur); P.poly([[20,4],[22,0],[24,5]],F.fur); P.set(23,7,F.nose); })); },
+  // the boy: small, crouching in the grass, a wolf's pelt over his head and back (the wolf's own head as a hood)
+  wolfboy(){ if(FineArt.cache.boy) return FineArt.cache.boy;
+    const base=cgChibi(LOOK_WOLFBOY,'crouch','dim',null,null,false), W=base.width, H=base.height, d=base.getContext('2d').getImageData(0,0,W,H).data;
+    return FineArt.cache.boy=FineArt.paint(W,H,P=>{ const F=FineArt.F;
+      for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=(y*W+x)*4; if(d[i+3]) P.set(x,y,'#'+[d[i],d[i+1],d[i+2]].map(v=>v.toString(16).padStart(2,'0')).join('')); }
+      const cx=2*(PCX+7), cy=2*PCY+12;
+      // the pelt down his back, its tail trailing behind
+      P.poly([[cx-10,cy-4],[cx-2,cy+8],[cx-4,cy+26],[cx-15,cy+30],[cx-17,cy+12]],F.fur); P.poly([[cx-13,cy+4],[cx-8,cy+9],[cx-9,cy+24],[cx-14,cy+26]],F.back);
+      P.cap(cx-15,cy+28,cx-24,cy+33,2.4,F.fur); P.cap(cx-22,cy+32,cx-26,cy+34,1.8,F.belly);
+      // the hood: the wolf's head over his hair, ears up, its snout over his brow
+      P.ell(cx-1,cy-7,13.5,7,F.fur); P.ell(cx-2,cy-9,11,4,F.back);
+      P.poly([[cx-10,cy-11],[cx-8,cy-19],[cx-4,cy-12]],F.back); P.poly([[cx+1,cy-13],[cx+4,cy-20],[cx+7,cy-11]],F.back); P.set(cx-7,cy-15,F.belly); P.set(cx+4,cy-16,F.belly);
+      P.poly([[cx+6,cy-9],[cx+16,cy-6],[cx+16,cy-3],[cx+6,cy-3]],F.lit); P.set(cx+16,cy-6,F.nose); P.set(cx+9,cy-7,F.dark);
+      for(let x=cx-11;x<cx+10;x+=3) P.set(x,cy-1-(x%2),F.lit);         // ragged edge of the fur over his forehead
+      // a forepaw of the pelt hanging over his shoulder
+      P.cap(cx-4,cy+2,cx-1,cy+10,1.8,F.fur); P.rect(cx-2,cy+10,3,1,F.paw); }); },
+};
 const LOOK_WOLFBOY={g:'m',skin:3,hair:5,hairColor:0,style:'jin',cloth:5};
+// the main cast keep their big eyes; the villagers each have a face of their own
 const LOOK_LU_YOUNG={...LOOK_LU, cloth:1};
-const C2V=[{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:7},{g:'f',skin:1,hair:2,hairColor:1,style:'qun',cloth:2},{g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:1},{g:'m',skin:3,hair:1,hairColor:1,style:'jin',cloth:0}];
+const C2V=[
+  {g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:5,face:'small',beard:'#ece8e0'},   // the old village head: white topknot and beard
+  {g:'f',skin:2,hair:3,hairColor:1,style:'qun',cloth:3,face:'mid'},                       // a farmer's wife, hair in two buns
+  {g:'m',skin:4,hair:1,hairColor:0,style:'jin',cloth:2,face:'mid'},                       // a big dark-skinned hunter
+  {g:'m',skin:1,hair:5,hairColor:1,style:'jin',cloth:7,face:'small'},                     // a thin young man with a bob
+  {g:'f',skin:2,hair:0,hairColor:3,style:'qun',cloth:5,face:'small'}];                    // an old woman, grey hair pinned up
 
 /* ---------- the way north: the brambles at the top of the 雾林 were torn open by something with wings ---------- */
 { const m=MAPS.mj_wood, G=m.ground.map(r=>r.split(''));
@@ -239,16 +302,16 @@ const C2C = {
     const scenes=[
       {ink:village, title:'安平村', cast:[
         {look:LOOK_LU_YOUNG, x:.5, pose:'stand', prop:'sword', face:-1, s:P*1.05},
-        {look:C2V[0], x:.27, pose:'point', face:1, s:P},{look:C2V[1], x:.36, pose:'stand', face:1, s:P},{look:C2V[2], x:.65, pose:'stand', face:-1, s:P},{look:C2V[3], x:.74, pose:'point', face:-1, s:P},
-        {beast:'wolfdown', x:.42, y:.92, face:1, s:.55},{beast:'wolfdown', x:.6, y:.93, face:-1, s:.5}]},
+        {look:C2V[0], x:.27, pose:'point', face:1, s:P},{look:C2V[1], x:.36, pose:'stand', face:1, s:P},{look:C2V[4], x:.65, pose:'stand', face:-1, s:P},{look:C2V[3], x:.74, pose:'point', face:-1, s:P},
+        {cv:FineArt.wolfdown(), x:.42, y:.93, face:1, s:P},{cv:FineArt.wolfdown(), x:.6, y:.94, face:-1, s:P*.9}]},
       {ink:mountain, title:'后山', cast:[
-        {look:C2V[0], x:.62, pose:'hold', prop:'lantern', face:-1, s:P},{look:C2V[3], x:.71, pose:'hold', prop:'wood', face:-1, s:P},{look:C2V[2], x:.8, pose:'stand', face:-1, s:P},
-        {beast:'cub', x:.4, y:.86, face:1, s:.5},{beast:'cub', x:.46, y:.87, face:-1, s:.45},
-        {beast:'wolf', x:.27, y:.85, face:1, s:.6}]},
+        {look:C2V[2], x:.62, pose:'hold', prop:'lantern', face:-1, s:P},{look:C2V[3], x:.71, pose:'hold', prop:'wood', face:-1, s:P},{look:C2V[0], x:.8, pose:'point', face:-1, s:P},
+        {cv:FineArt.cub(), x:.42, y:.87, face:1, s:P},{cv:FineArt.cub(), x:.48, y:.88, face:-1, s:P*.9},
+        {cv:FineArt.wolf(), x:.28, y:.86, face:1, s:P*1.05}]},
       {ink:night, title:'那一夜', cast:[
-        {beast:'wolfdown', x:.6, y:.84, face:-1, s:.7},
-        {look:C2V[0], x:.76, pose:'hold', prop:'lantern', face:-1, alpha:.55, s:P},{look:C2V[3], x:.84, pose:'stand', face:-1, alpha:.5, s:P},
-        {look:LOOK_WOLFBOY, x:.3, y:.9, pose:'crouch', face:1, s:P*1.15}]},
+        {cv:FineArt.wolfdown(), x:.6, y:.85, face:-1, s:P*1.1},
+        {look:C2V[2], x:.76, pose:'hold', prop:'lantern', face:-1, alpha:.55, s:P},{look:C2V[3], x:.84, pose:'stand', face:-1, alpha:.5, s:P},
+        {cv:FineArt.wolfboy(), x:.3, y:.93, face:1, s:P*.8}]},
     ];
     const sc=scenes[n];
     if(n===0){ PixCG.open({ink:sc.ink, cast:sc.cast, title:sc.title, small:'镜中往事', seed:731}); Music.play('night',true); }
@@ -282,9 +345,10 @@ const C2C = {
       if(u>=2) pull=Math.min(1,pull+dt*(u>=3?.5:.08));
       const sp=QQLU.headSprite(), s=fp*2.2*(1-pull*.75), w=sp.width*s, h=sp.height*s, x=W*(.68+pull*.5), y=H*(.8-pull*.45);
       g.save(); g.globalAlpha=1-pull*.6; g.imageSmoothingEnabled=false; g.drawImage(sp,x-w/2,y-h,w,h); g.restore();
-      if(u>=1){ const mx=W*.42, my=H*.55, al=.5+.2*Math.sin(t*5);           // the mirror's beam
-        const gr=g.createLinearGradient(mx,my,x,y-h*.5); gr.addColorStop(0,`rgba(255,236,170,${al})`); gr.addColorStop(1,'rgba(255,236,170,.05)'); g.strokeStyle=gr; g.lineWidth=fp*6; g.beginPath(); g.moveTo(mx,my); g.lineTo(x,y-h*.5); g.stroke();
-        g.fillStyle='#ffe9a8'; g.beginPath(); g.arc(mx,my,fp*3,0,7); g.fill(); }
+      // the 八卦镜, raised between you and 大师姐; from the second line on it shines on the beast
+      const mx=W*.3, my=H*.4+Math.sin(t*1.6)*fp, al=.5+.2*Math.sin(t*5);
+      if(u>=1){ const gr=g.createLinearGradient(mx,my,x,y-h*.5); gr.addColorStop(0,`rgba(255,236,170,${al})`); gr.addColorStop(1,'rgba(255,236,170,.05)'); g.strokeStyle=gr; g.lineWidth=fp*7; g.beginPath(); g.moveTo(mx,my); g.lineTo(x,y-h*.5); g.stroke(); }
+      C2C.bagua(g,mx,my,fp*9,t,u>=1);
       if(u>=2){ const ex=x, ey=y-h*.5, R=Math.max(w,h)*.7, rot=t*1.4;      // a turning ring of the eight trigrams, and the chains
         g.strokeStyle='rgba(255,226,150,.85)'; g.lineWidth=fp; g.beginPath(); g.arc(ex,ey,R,0,7); g.stroke();
         for(let i=0;i<8;i++){ const a=rot+i*Math.PI/4, cx=ex+Math.cos(a)*R, cy=ey+Math.sin(a)*R;
@@ -294,6 +358,28 @@ const C2C = {
       for(let i=0;i<10;i++){ const yy=H*(.1+i*.08), xx=((t*W*.4*(1+i%3*.3)+i*173)%(W*1.3))-W*.15; g.strokeStyle='rgba(245,248,250,.25)'; g.lineWidth=Math.max(1,fp*.6); g.beginPath(); g.moveTo(xx,yy); g.quadraticCurveTo(xx-W*.05,yy-fp*3,xx-W*.1,yy+fp); g.stroke(); } };
   },
 };
+// the 八卦镜 itself: an octagonal bronze frame with the eight trigrams round its rim, a round mirror in the middle, a red tassel
+C2C.bagua=function(g,x,y,r,t,lit){
+  const oct=(R,rot=Math.PI/8)=>{ g.beginPath(); for(let i=0;i<8;i++){ const a=rot+i*Math.PI/4; g[i?'lineTo':'moveTo'](x+Math.cos(a)*R,y+Math.sin(a)*R); } g.closePath(); };
+  if(lit){ const hl=g.createRadialGradient(x,y,r*.3,x,y,r*2.6); hl.addColorStop(0,`rgba(255,236,170,${.55+.15*Math.sin(t*5)})`); hl.addColorStop(1,'rgba(255,236,170,0)'); g.fillStyle=hl; g.fillRect(x-r*2.6,y-r*2.6,r*5.2,r*5.2); }
+  // tassel hanging from the bottom
+  g.strokeStyle='#8a1e18'; g.lineWidth=Math.max(1,r*.08); g.beginPath(); g.moveTo(x,y+r*.95); g.lineTo(x+Math.sin(t*2)*r*.06,y+r*1.35); g.stroke();
+  g.fillStyle='#c8282a'; g.fillRect(x-r*.12,y+r*1.3,r*.24,r*.14); for(let k=-2;k<=2;k++){ g.fillRect(x+k*r*.06-r*.02+Math.sin(t*2+k)*r*.03,y+r*1.42,r*.04,r*.45); }
+  // the bronze frame
+  g.fillStyle='#2a1e1a'; oct(r*1.06); g.fill();
+  const br=g.createLinearGradient(x-r,y-r,x+r,y+r); br.addColorStop(0,'#e0b060'); br.addColorStop(.5,'#b0802c'); br.addColorStop(1,'#6e4a18'); g.fillStyle=br; oct(r); g.fill();
+  g.strokeStyle='#5a3a12'; g.lineWidth=Math.max(1,r*.05); oct(r*.74); g.stroke();
+  // eight trigrams, one on each face, read from the centre outwards (solid bar = 1, broken = 0)
+  const tri=['111','000','010','101','100','011','001','110'];
+  g.fillStyle='#2a1e1a';
+  for(let i=0;i<8;i++){ const a=i*Math.PI/4; g.save(); g.translate(x+Math.cos(a)*r*.87,y+Math.sin(a)*r*.87); g.rotate(a+Math.PI/2);
+    const bw=r*.36, bh=Math.max(1,r*.055); for(let j=0;j<3;j++){ const yy=(j-1)*bh*1.9; if(tri[i][j]==='1') g.fillRect(-bw/2,yy-bh/2,bw,bh); else { g.fillRect(-bw/2,yy-bh/2,bw*.4,bh); g.fillRect(bw*.1,yy-bh/2,bw*.4,bh); } }
+    g.restore(); }
+  // the mirror
+  g.fillStyle='#4a2e0c'; g.beginPath(); g.arc(x,y,r*.66,0,7); g.fill();
+  const mg=g.createRadialGradient(x-r*.18,y-r*.2,r*.05,x,y,r*.6); mg.addColorStop(0,lit?'#ffffff':'#f6f2e0'); mg.addColorStop(.6,lit?'#fff0b8':'#cfc8b0'); mg.addColorStop(1,lit?'#e8c060':'#8a8670');
+  g.fillStyle=mg; g.beginPath(); g.arc(x,y,r*.58,0,7); g.fill();
+  g.save(); g.beginPath(); g.arc(x,y,r*.58,0,7); g.clip(); g.fillStyle='rgba(255,255,255,.75)'; g.translate(x,y); g.rotate(-.7); g.fillRect(-r*.7,-r*.34,r*1.4,r*.1); g.fillRect(-r*.7,-r*.18,r*1.4,r*.04); g.restore(); };
 Object.assign(SCRIPTS, { c2c_flash:C2C.flash, c2c_why1:[...C2C.why1, ...C2C.land()], c2c_why2:[...C2C.why2, ...C2C.land()], c2c_win:C2C.win, c2c_lose:C2C.lose });
 // the mirror's pictures follow the lines; the 'freeze' line ends the scene
 { const _cd=UI.closeDlg; UI.closeDlg=function(){ const r=_cd.apply(UI,arguments); setTimeout(()=>{ if(PixCG.on&&$('#dlg').hidden&&!Battle.s&&(C2C.sealOn||PixCG.cur&&/镜中往事/.test($('#cg .cg-title b')?.textContent||''))){ C2C.sealOn=false; PixCG.close(); } },80); return r; }; }
@@ -319,19 +405,28 @@ const QQLU = {
   bicker(s){ return !!s&&s.kind==='qiongqi2'&&!!S.flags.c2_qq_sealed; },
   // 穷奇's big art with 陆正衡's head pushing up out of its crown (cached as a sprite so the CG can use it too)
   headSprite(){ if(SPRC.c2_qqlu_big) return SPRC.c2_qqlu_big;
-    const base=sprite('qiongqi_big'), hd=lookSprite(LOOK_LU,'down',0), hh=13, top=10, c=document.createElement('canvas');
+    const base=sprite('qiongqi_big'), hd=lookSprite(LOOK_LU,'down',0), hh=13, top=13, c=document.createElement('canvas');
     c.width=base.width; c.height=base.height+top; const g=c.getContext('2d'); g.imageSmoothingEnabled=false;
     g.drawImage(base,0,top);
-    const hx=Math.round((base.width-hd.width)/2), cx=base.width/2;
+    const hx=Math.round((base.width-hd.width)/2), cx=base.width/2, p=(x,y,col)=>{ g.fillStyle=col; g.fillRect(hx+x,y,1,1); };
+    // his neck and the collar of his robe come up out of the beast's crown; its fur closes round them
+    g.fillStyle='#2a1e1a'; g.fillRect(hx+6,hh,6,3); g.fillStyle='#f2c29a'; g.fillRect(hx+7,hh,4,2); g.fillStyle='#d3a986'; g.fillRect(hx+7,hh,1,2); g.fillRect(hx+7,hh,4,1);
+    g.fillStyle='#2a1e1a'; g.fillRect(hx+4,hh+2,10,3); g.fillStyle='#33303f'; g.fillRect(hx+5,hh+2,8,2); g.fillStyle='#fbf3e4'; g.fillRect(hx+6,hh+2,2,1); g.fillRect(hx+10,hh+2,2,1); g.fillRect(hx+8,hh+3,2,1);
+    g.fillStyle='#2a1e1a'; g.fillRect(cx-8,hh+4,16,1); g.fillStyle='#e07b39'; g.fillRect(cx-7,hh+5,14,4); g.fillStyle='#b0532a'; g.fillRect(cx-7,hh+8,14,1); for(const x of [-6,-3,1,4]) g.fillRect(cx+x,hh+4,2,1);
     g.drawImage(hd,0,0,hd.width,hh,hx,0,hd.width,hh);
-    // the beast's fur closes round his neck
-    g.fillStyle='#2a1e1a'; g.fillRect(cx-6,hh-1,12,1); g.fillStyle='#e07b39'; g.fillRect(cx-5,hh,10,5); g.fillStyle='#b0532a'; g.fillRect(cx-5,hh+4,10,1); g.fillRect(cx-2,hh,1,1); g.fillRect(cx+2,hh+1,1,1);
+    // and he is not smiling: no blush, glaring eyes, brows pulled down, the mouth a hard frown
+    for(const x of [5,6,11,12]) p(x,10,'#f2c29a');
+    p(7,9,'#1b1618'); p(10,9,'#1b1618'); p(6,8,'#f2c29a'); p(11,8,'#f2c29a'); p(6,7,'#1b1618'); p(7,8,'#1b1618'); p(11,7,'#1b1618'); p(10,8,'#1b1618');
+    p(8,11,'#6a2a24'); p(9,11,'#6a2a24'); p(7,12,'#8a4a3a'); p(10,12,'#8a4a3a');
     c.bottom=c.height; return SPRC.c2_qqlu_big=c; },
   showHead(s){ const c=$('#bEnemy'); if(!c||s.head) return; s.head=true; const old=c.width, w=parseFloat(c.style.width)||c.getBoundingClientRect().width, sp=QQLU.headSprite();
     c.width=sp.width; c.height=sp.height; const g=c.getContext('2d'); g.imageSmoothingEnabled=false; g.drawImage(sp,0,0); c.style.width=(w*sp.width/old)+'px';
     if(QQLU.is(s)){ s.B={...s.B, name:'穷奇 · 陆正衡'}; const n=$('#battle .b-name'); if(n) n.firstChild.textContent=s.B.name; } },
   // speech bubbles above the stage: 穷奇 on the left, 陆正衡 on the right
-  say(who,text,delay=0){ setTimeout(()=>{ const st=$('#battle .b-stage'); if(!st) return; const b=document.createElement('div'); b.className='b-say '+(who==='陆正衡'?'r':'l'); b.innerHTML=`<small>${who}</small>${esc(text)}`; st.appendChild(b); setTimeout(()=>b.remove(),2600); },delay); },
+  // they sit above everything in the fight, the dodging box included, so the quarrel is heard while you dodge
+  say(who,text,delay=0){ setTimeout(()=>{ const host=$('#battle'); if(!host||host.hidden) return; const side=who==='陆正衡'?'r':'l';
+      host.querySelectorAll('.b-say.'+side).forEach(o=>o.remove());
+      const b=document.createElement('div'); b.className='b-say '+side; b.innerHTML=`<small>${who}</small>${esc(text)}`; host.appendChild(b); setTimeout(()=>b.remove(),3400); },delay); },
   LINES:{
     qq:['呕……好苦……','你闻着倒是挺甜的。','我只吃好人！','滚出我的肚子！'],
     pillar:['明正典刑！','妖就是妖，该杀！','我是为了村民！','天理昭昭！'],
@@ -341,10 +436,11 @@ const QQLU = {
   },
   pick(a){ return a[Math.random()*a.length|0]; },
   chatter(s,it){
-    if(it==='quarrel'||(s.phase3&&Math.random()<.5)||QQLU.bicker(s)&&Math.random()<.6){ const [a,b]=QQLU.pick(QQLU.LINES.quarrel); const first=Math.random()<.5;
-      QQLU.say(first?'穷奇':'陆正衡',a); QQLU.say(first?'陆正衡':'穷奇',b,700); return; }
-    if(!s.head){ if(Math.random()<.5) QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq)); return; }
-    if(it==='pillar') QQLU.say('陆正衡',QQLU.pick(QQLU.LINES.pillar)); else if(Math.random()<.4) QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq)); },
+    // once his head is out, every turn has an exchange: one says something, the other snaps back
+    if(it==='quarrel'||s.phase3||QQLU.bicker(s)||(s.head&&Math.random()<.5)){ const [a,b]=QQLU.pick(QQLU.LINES.quarrel); const first=it==='pillar'?false:Math.random()<.5;
+      QQLU.say(first?'穷奇':'陆正衡',it==='pillar'&&!first?QQLU.pick(QQLU.LINES.pillar):a); QQLU.say(first?'陆正衡':'穷奇',b,1100); return; }
+    if(!s.head){ QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq)); return; }
+    if(it==='pillar'){ QQLU.say('陆正衡',QQLU.pick(QQLU.LINES.pillar)); QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq),1100); } else QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq)); },
   // with classic turns on there is nothing to dodge: the new moves fall back on old ones
   classic(s){ if(!Dodge.on(s)) s.moves=s.moves.map(m=>({pillar:'big', quarrel:'double', tornado:'wind', featherrain:'atk'})[m]||m); },
 };

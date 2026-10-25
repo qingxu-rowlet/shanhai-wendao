@@ -120,7 +120,8 @@ const Battle = {
       if(S.sect==='jian'){ dmg=st.atk*3*Sect.spellMul()*rnd()-def/4; msg='万剑归宗！漫天剑雨倾泻而下！'; BossBg.flash('rgba(170,210,255,.55)'); }
       if(S.sect==='dan'){ dmg=st.atk*1.6*Sect.spellMul()*rnd(); s.burn=3; msg='丹火！敌人被金色的火焰缠住了。'; BossBg.flash('rgba(255,170,60,.45)'); }
       if(S.sect==='shou'){ dmg=(S.pet?st.atk*(1+(S.pet.lv-1)*.15):st.atk)*2.4*rnd()-def/3; msg=S.pet?`兽魂共鸣！${BEASTS[S.pet.kind].name}全力扑了上去！`:'没有灵宠……你学着野兽的样子扑了上去！'; }
-      if(S.sect==='tianji'){ const ok=!s.B.boss||Math.random()<.65; dmg=st.atk*1.8*Sect.spellMul()*rnd()-def/4; if(ok){ s.stun=1; msg='定身符！敌人动弹不得。'; } else msg='定身符被一股妖力震碎了！'; BossBg.flash('rgba(200,160,255,.45)'); } }
+      if(S.sect==='tianji'){ const wary=s.i<(s.stunGuard||0), ok=!wary&&Math.random()<(s.B.boss?.35:.7); dmg=st.atk*1.8*Sect.spellMul()*rnd()-def/4;   // it lands now and then, and never twice in a row
+        if(ok){ s.stun=1; s.stunGuard=s.i+3; msg='定身符！敌人动弹不得。'; } else msg=wary?'敌人对定身符有了防备，符纸一贴上就烧成了灰。':'定身符被一股妖力震碎了！'; BossBg.flash('rgba(200,160,255,.45)'); } }
     else { dmg=st.atk*rnd()-def/2; Sound.hit(); msg='你挥剑斩去。'; }
     const crit=Math.random()<Sect.crit(); if(crit){ dmg*=1.8; msg+=' 暴击！'; }
     dmg=Math.max(1,Math.round(dmg)); s.hp-=dmg; Battle.float((crit?'暴击 ':'')+'-'+dmg, crit?'crit':''); Battle.hitFx();

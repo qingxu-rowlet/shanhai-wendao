@@ -22,7 +22,7 @@ const SECTS = {
     skill:{name:'兽魂共鸣', mp:10, desc:'灵宠全力一击，造成 2.4 倍伤害。'}, passive:'可以收服妖兽；灵宠每回合追加攻击',
     master:{id:'m_shou', name:'苍姑', x:8, y:10, look:{g:'f',skin:3,hair:2,hairColor:2,style:'jin',cloth:3}}},
   tianji:{name:'天机阁', cloth:4, motto:'窥天机，布星阵。', desc:'符修。定身符能让敌人动弹不得，每日卜卦趋吉避凶。',
-    skill:{name:'定身符', mp:10, desc:'1.8 倍伤害，并让敌人下回合无法行动（对首领 65% 生效）。'}, passive:'灵力 +30%、防御 +15%；每日卜卦：吉日灵石更多、更容易暴击',
+    skill:{name:'定身符', mp:10, desc:'1.8 倍伤害；有 70% 的机会让敌人下回合无法行动（对首领 35%）。定住一次之后，敌人会防备三回合。'}, passive:'灵力 +30%、防御 +15%；每日卜卦：吉日灵石更多、更容易暴击',
     master:{id:'m_tianji', name:'天机子', x:17, y:8, look:{g:'m',skin:0,hair:5,hairColor:5,style:'robe',cloth:4}}},
 };
 const FORTUNES = [ {name:'大吉', stones:1.5, crit:.18}, {name:'吉', stones:1.25, crit:.12}, {name:'平', stones:1, crit:.06}, {name:'凶', stones:.8, crit:.03} ];

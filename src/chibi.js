@@ -123,7 +123,9 @@ function cgChibi(look, pose, mood, prop, wear, back){
     if(w==='wet'){ for(const [x,y] of [[30,36],[38,40],[33,48],[27,22],[42,25]]){ set(x,y,'#9fd3ef'); set(x,y+1,'#cfeeff'); } }
   }
   // 2) the head, painted at full detail (three-quarter view to the right)
-  const cx=2*(PCX+7), cy=2*PCY+12+hd;          // face centre, over the shoulders
+  // faces differ by person (chapter 2): 'small' dot eyes like the map sprites, 'mid' eyes in between; either way the head sits higher so the neck shows
+  const small=look.face==='small', mid=look.face==='mid';
+  const cx=2*(PCX+7), cy=2*PCY+12+hd-(small||mid?2:0);          // face centre, over the shoulders
   if(back){
     ell(cx-1,cy-2,11,11,HAIR); for(let x=cx-8;x<cx+7;x+=3) rect(x,cy-10,1,3,HAIR2);
     if(st==='topknot'){ ell(cx-1,cy-14,3,3,HAIR); rect(cx-3,cy-12,5,1,'#e8b84a'); }
@@ -163,21 +165,32 @@ function cgChibi(look, pose, mood, prop, wear, back){
       set(ex+1,top+1,'#ffffff'); set(ex+2,top+1,'#ffffff'); set(ex+1,top+2,'#ffffff'); if(w>4) set(ex+w-2,ey+h-2,'#ffffff');
       if(mood==='sad') for(let i=0;i<w;i++) set(ex+i,top+1,SK2);
     };
-    eye(cx+4,cy-2,5,6); eye(cx-4,cy-2,4,6);
+    if(small){ const D='#2a2230', se=(ex,ey)=>{
+        if(mood==='smile'){ set(ex,ey+1,OUT); set(ex+1,ey,OUT); set(ex+2,ey+1,OUT); return; }
+        if(mood==='blink'){ for(let i=0;i<3;i++) set(ex+i,ey+2,OUT); return; }
+        const top=mood==='sad'||mood==='dim'?ey+1:ey; rect(ex,top,2,ey+3-top,D); if(mood!=='angry'&&mood!=='dim') set(ex+1,top,'#e8e6f0'); };
+      se(cx+5,cy); se(cx-2,cy);
+      if(mood==='angry'){ for(const [x,y] of [[cx+4,cy-1],[cx+5,cy-2],[cx+6,cy-2],[cx+7,cy-3],[cx-1,cy-1],[cx-2,cy-2],[cx-3,cy-3]]) set(x,y,OUT); }
+      if(mood==='sad'){ for(const [x,y] of [[cx+4,cy-2],[cx+5,cy-1],[cx+6,cy-1],[cx-1,cy-2],[cx-2,cy-1],[cx-3,cy-1]]) set(x,y,OUT); } }
+    else if(mid){ eye(cx+4,cy-1,4,4); eye(cx-3,cy-1,3,4); }
+    else { eye(cx+4,cy-2,5,6); eye(cx-4,cy-2,4,6); }
     // brows
-    if(mood==='sad'){ set(cx+4,cy-4,HAIR); set(cx+5,cy-5,HAIR); set(cx+6,cy-5,HAIR); set(cx-1,cy-4,HAIR); set(cx-2,cy-5,HAIR); set(cx-3,cy-5,HAIR); }
-    if(mood==='dim'){ for(let i=0;i<4;i++) set(cx+4+i,cy-3,HAIR); for(let i=0;i<3;i++) set(cx-4+i,cy-3,HAIR); }
+    if(!small&&mood==='sad'){ set(cx+4,cy-4,HAIR); set(cx+5,cy-5,HAIR); set(cx+6,cy-5,HAIR); set(cx-1,cy-4,HAIR); set(cx-2,cy-5,HAIR); set(cx-3,cy-5,HAIR); }
+    if(!small&&mood==='dim'){ for(let i=0;i<4;i++) set(cx+4+i,cy-3,HAIR); for(let i=0;i<3;i++) set(cx-4+i,cy-3,HAIR); }
     // cheeks
     if(mood==='blush'||mood==='smile'){ for(const [bx,n] of [[cx+5,3],[cx-3,2]]){ for(let i=0;i<n;i++) set(bx+i,cy+5,'#f4909e'); for(let i=0;i<n;i+=2) set(bx+i,cy+6,'#f8b0bc'); } }
     else if(mood!=='dim'){ set(cx+6,cy+5,'#f6c8c4'); }
     // mouth
     const M='#a8483e';
     if(mood==='smile'){ set(cx+1,cy+7,M); set(cx+2,cy+8,M); set(cx+3,cy+8,M); set(cx+2,cy+7,'#e86a6a'); set(cx+3,cy+7,'#e86a6a'); set(cx+4,cy+7,M); }
+    else if(mood==='angry'){ set(cx+1,cy+8,M); set(cx+2,cy+7,M); set(cx+3,cy+7,M); set(cx+4,cy+8,M); }
     else if(mood==='sad'){ set(cx+1,cy+9,M); set(cx+2,cy+8,M); set(cx+3,cy+8,M); set(cx+4,cy+9,M); set(cx+9,cy+3,'#9fd3ef'); set(cx+9,cy+4,'#9fd3ef'); set(cx+9,cy+5,'#cfeeff'); }
     else if(mood==='blush'){ set(cx+1,cy+8,M); set(cx+2,cy+7,M); set(cx+3,cy+8,M); set(cx+4,cy+7,M); }
     else if(mood==='subtle'){ set(cx+1,cy+7,M); set(cx+2,cy+8,M); set(cx+3,cy+8,M); set(cx+4,cy+7,M); }
     else if(mood==='dim'){ set(cx+2,cy+8,M); set(cx+3,cy+8,M); set(cx+4,cy+8,M); }
     else { set(cx+2,cy+8,M); set(cx+3,cy+8,M); }
+    // an old man's beard and moustache
+    if(look.beard){ const B=look.beard, B2=shade(B,-.2); rect(cx-1,cy+9,7,2,B); rect(cx,cy+11,5,2,B); rect(cx+1,cy+13,3,1,B); set(cx+2,cy+14,B2); for(let i=0;i<7;i++) set(cx-1+i,cy+7,i===2||i===3?M:B); set(cx-1,cy+10,B2); set(cx+5,cy+10,B2); }
   }
   // 3) one dark outline around everything
   const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');

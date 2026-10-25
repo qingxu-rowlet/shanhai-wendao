@@ -332,8 +332,8 @@ const PixCG = {
       if(m.who==='ge') md={smile:'subtle', blush:'subtle', sad:'dim'}[md]||md;      // 顾长歌 keeps it quiet
       const look=m.who==='me'?S.look:m.who==='tang'?T():m.who==='ge'?G():m.look;
       let spr, sz=k*(m.s||1);
-      if(m.beast) spr=pxBeast(m.beast); else if(m.spr) spr=sprite(m.spr); else spr=cgChibi(look,pose,md,prop,wear,m.back);
-      if(m.beast||m.spr) sz=k*(m.s||1)*1.2; else if(spr.fine) sz=fp*(m.s||1);
+      if(m.cv) spr=m.cv; else if(m.beast) spr=pxBeast(m.beast); else if(m.spr) spr=sprite(m.spr); else spr=cgChibi(look,pose,md,prop,wear,m.back);
+      if(m.cv) sz=(spr.fine?fp:k*1.2)*(m.s||1); else if(m.beast||m.spr) sz=k*(m.s||1)*1.2; else if(spr.fine) sz=fp*(m.s||1);   // m.cv: a ready-made canvas (fine ones share the chibis' pixel size)
       const bob=(m.beast&&m.fly)?Math.round(Math.sin(t*2+m.x*9)*sz*2):(Math.floor(t*1.6+m.x*5)%2)*Math.round(sz*.5);
       const w=spr.width*sz, h=spr.height*sz, fx=W*m.x, fy=H*(m.y||c.gy||.86)-(spr.bottom||spr.height)*sz+bob+(m.hopY||0);
       if(fx<-w||fx>W+w) continue;
