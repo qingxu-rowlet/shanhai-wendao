@@ -367,13 +367,13 @@ body.mjshake #cv{animation:mjshake 1.2s ease-out}
 @keyframes mirrorGlow{50%{box-shadow:inset 0 0 0 2px #c8962a,0 3px 0 var(--wood-d),0 0 14px 2px rgba(255,214,110,.9)}}
 #bEnemy.shielded{filter:drop-shadow(0 0 6px rgba(255,214,110,.95)) drop-shadow(0 0 16px rgba(255,200,90,.7))}
 .b-float.shield{color:#ffe08a;font-size:15px}
-.b-say{position:absolute!important;top:10%;z-index:8!important;max-width:47%;padding:7px 12px 9px;border-radius:12px;background:#fffaf0;color:#2a1e1a;font-family:var(--f-body);font-weight:700;font-size:17px;line-height:1.3;border:3px solid #c8413b;box-shadow:0 3px 0 #2a1e1a,0 6px 18px rgba(0,0,0,.45);animation:sayIn .35s cubic-bezier(.2,1.6,.4,1) both,sayShake .5s .35s ease-in-out;pointer-events:none}
-.b-say::after{content:'';position:absolute;bottom:-11px;width:0;height:0;border:9px solid transparent;border-top-color:inherit;border-bottom:0}
-.b-say small{display:block;font-size:12px;font-weight:400;color:#8a5a36;margin-bottom:1px}
-.b-say.l{left:3%;border-color:#c8413b;transform-origin:left bottom}.b-say.l::after{left:22px;border-top-color:#c8413b}
-.b-say.r{right:3%;background:#fff4d8;border-color:#c8962a;transform-origin:right bottom}.b-say.r::after{right:22px;border-top-color:#c8962a}
-@keyframes sayIn{from{opacity:0;transform:translateY(10px) scale(.6)}}
-@keyframes sayShake{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.b-talk{position:absolute!important;left:3%;right:3%;bottom:2%;z-index:9!important;min-height:96px;padding:12px 16px 14px;border-radius:10px;cursor:pointer;animation:talkIn .25s ease-out both}
+.b-talk b{display:inline-block;padding:2px 10px;margin-bottom:6px;border-radius:6px;font-family:var(--f-head);font-size:16px;color:#fff6e4;background:#8a5a36}
+.b-talk.qq b{background:#c8413b}.b-talk.lu b{background:#a87a20}
+.b-talk p{margin:0;font-size:18px;line-height:1.45;color:var(--ink)}
+.b-talk i{position:absolute;right:14px;bottom:8px;font-style:normal;color:var(--ink-soft);animation:talkBlink 1s steps(2) infinite}
+@keyframes talkBlink{50%{opacity:0}}
+@keyframes talkIn{from{opacity:0;transform:translateY(12px)}}
 .b-acts button.sectb{background:#ffe2b0;box-shadow:inset 0 0 0 2px var(--cinnabar),0 3px 0 var(--wood-d)}
 /* mini-games */
 #minigame.sheet{background:rgba(10,10,20,.12);align-items:end;place-items:end center}

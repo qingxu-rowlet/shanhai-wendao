@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="3ee8afacf0"><script>(function(){var B="3ee8afacf0";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5a9bc16505"><script>(function(){var B="5a9bc16505";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -367,13 +367,13 @@ body.mjshake #cv{animation:mjshake 1.2s ease-out}
 @keyframes mirrorGlow{50%{box-shadow:inset 0 0 0 2px #c8962a,0 3px 0 var(--wood-d),0 0 14px 2px rgba(255,214,110,.9)}}
 #bEnemy.shielded{filter:drop-shadow(0 0 6px rgba(255,214,110,.95)) drop-shadow(0 0 16px rgba(255,200,90,.7))}
 .b-float.shield{color:#ffe08a;font-size:15px}
-.b-say{position:absolute!important;top:10%;z-index:8!important;max-width:47%;padding:7px 12px 9px;border-radius:12px;background:#fffaf0;color:#2a1e1a;font-family:var(--f-body);font-weight:700;font-size:17px;line-height:1.3;border:3px solid #c8413b;box-shadow:0 3px 0 #2a1e1a,0 6px 18px rgba(0,0,0,.45);animation:sayIn .35s cubic-bezier(.2,1.6,.4,1) both,sayShake .5s .35s ease-in-out;pointer-events:none}
-.b-say::after{content:'';position:absolute;bottom:-11px;width:0;height:0;border:9px solid transparent;border-top-color:inherit;border-bottom:0}
-.b-say small{display:block;font-size:12px;font-weight:400;color:#8a5a36;margin-bottom:1px}
-.b-say.l{left:3%;border-color:#c8413b;transform-origin:left bottom}.b-say.l::after{left:22px;border-top-color:#c8413b}
-.b-say.r{right:3%;background:#fff4d8;border-color:#c8962a;transform-origin:right bottom}.b-say.r::after{right:22px;border-top-color:#c8962a}
-@keyframes sayIn{from{opacity:0;transform:translateY(10px) scale(.6)}}
-@keyframes sayShake{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.b-talk{position:absolute!important;left:3%;right:3%;bottom:2%;z-index:9!important;min-height:96px;padding:12px 16px 14px;border-radius:10px;cursor:pointer;animation:talkIn .25s ease-out both}
+.b-talk b{display:inline-block;padding:2px 10px;margin-bottom:6px;border-radius:6px;font-family:var(--f-head);font-size:16px;color:#fff6e4;background:#8a5a36}
+.b-talk.qq b{background:#c8413b}.b-talk.lu b{background:#a87a20}
+.b-talk p{margin:0;font-size:18px;line-height:1.45;color:var(--ink)}
+.b-talk i{position:absolute;right:14px;bottom:8px;font-style:normal;color:var(--ink-soft);animation:talkBlink 1s steps(2) infinite}
+@keyframes talkBlink{50%{opacity:0}}
+@keyframes talkIn{from{opacity:0;transform:translateY(12px)}}
 .b-acts button.sectb{background:#ffe2b0;box-shadow:inset 0 0 0 2px var(--cinnabar),0 3px 0 var(--wood-d)}
 /* mini-games */
 #minigame.sheet{background:rgba(10,10,20,.12);align-items:end;place-items:end center}
@@ -6636,7 +6636,9 @@ MAPS.mj_camp={ name:'秘境 · 营地', w:22, h:16, ground:MJ_CAMP,
     const edge=Math.min(x-1,m.w-2-x,y-1,m.h-2-y);
     if(edge===0&&R()<.85||edge===1&&R()<.45) m.objects.push({type:R()<.55?'pine':'tree', x, y});
     else if(edge>=2&&R()<.12) G[y][x]=R()<.5?',':':'; }
-  m.ground=G.map(r=>r.join('')); }
+  m.ground=G.map(r=>r.join(''));
+  // keep a way open to the 传送阵 in the south-west corner (the edge trees had walled it in)
+  const lane=new Set(['2,13','3,13','4,13','5,13','2,12']); m.objects=m.objects.filter(o=>!((o.type==='pine'||o.type==='tree')&&lane.has(o.x+','+o.y))); }
 // the 雾林: drawn by code so the rows stay square
 { const W=26, H=22, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>(x===0||y===0||x===W-1||y===H-1)?'W':'.'));
   for(let y=6;y<=20;y++) G[y][14]='=';
@@ -7339,16 +7341,16 @@ const C2C = {
   cg(n){
     const village=(g,W,H,R)=>{ Land.paper(g,W,H,R,'#e9dcc0'); Land.sky(g,W,H,['rgba(250,232,196,.9)','rgba(240,220,180,.6)','rgba(236,226,206,.2)']); Land.orb(g,W*.8,H*.16,Math.min(W,H)*.06,'#f0a050',3);
       Land.peaks(g,W,H,R,{y:H*.5,amp:H*.2,n:5,a:.35}); Land.mist(g,W,H,H*.52,H*.12,.4);
-      for(const [x,w] of [[.12,.18],[.36,.16],[.78,.2]]){ Land.roof(g,W*x,H*.56,W*w,H*.08,.8); g.fillStyle='rgba(60,46,34,.55)'; g.fillRect(W*(x-w*.38),H*.6,W*w*.76,H*.14); }
+      for(const [x,w,h] of [[.13,.22,.24],[.36,.17,.2],[.86,.22,.24]]) C2C.house(g,W*x,H*.75,W*w,H*h,R);
       // the archway with the wolf skins hung on it
       g.fillStyle='rgba(40,30,24,.85)'; g.fillRect(W*.55,H*.42,W*.015,H*.36); g.fillRect(W*.72,H*.42,W*.015,H*.36); g.fillRect(W*.53,H*.42,W*.22,H*.03);
       g.fillStyle='rgba(150,30,24,.85)'; g.fillRect(W*.6,H*.455,W*.08,H*.035); g.fillStyle='#f6eedc'; g.font=`${H*.025}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.fillText('安平村',W*.64,H*.482);
       for(const x of [.585,.665]){ g.fillStyle='rgba(140,140,130,.85)'; g.beginPath(); g.moveTo(W*x,H*.5); g.lineTo(W*(x+.045),H*.5); g.lineTo(W*(x+.035),H*.6); g.lineTo(W*(x+.01),H*.6); g.closePath(); g.fill(); }
-      Land.ground(g,W,H,H*.74,.55,'#8a6a46'); for(let i=0;i<8;i++) Land.lantern(g,W*(.05+i*.13),H*.38+(i%2)*H*.03,Math.min(W,H)*.012,3); };
+      Land.ground(g,W,H,H*.74,.55,'#8a6a46'); g.strokeStyle='rgba(60,44,32,.8)'; g.lineWidth=Math.max(1,W*.003); g.beginPath(); g.moveTo(0,H*.36); for(let i=0;i<=8;i++){ const x=W*i/8; g.quadraticCurveTo(x-W/16,H*.4,x,H*.36); } g.stroke();
+      for(let i=0;i<8;i++){ const x=W*(i+.5)/8; g.beginPath(); g.moveTo(x,H*.383); g.lineTo(x,H*.395); g.stroke(); Land.lantern(g,x,H*.405,Math.min(W,H)*.012,3); } };
     const mountain=(g,W,H,R)=>{ Land.paper(g,W,H,R,'#d8ccb4'); Land.sky(g,W,H,['rgba(90,60,46,.8)','rgba(160,96,60,.55)','rgba(210,170,120,.25)']);
       Land.peaks(g,W,H,R,{y:H*.46,amp:H*.24,n:4,a:.55,pines:6}); Land.mist(g,W,H,H*.5,H*.16,.25);
       for(let i=0;i<6;i++){ const x=W*(.08+i*.17); Land.pine(g,x,H*.74,H*(.18+R()*.1),R,.5); }
-      for(let i=0;i<5;i++){ const x=W*(.1+i*.2)+R()*W*.05; Land.orb(g,x,H*.66,Math.min(W,H)*.03,'#ff8a3a',4); }       // the wood burning
       g.fillStyle='rgba(50,36,28,.8)'; g.beginPath(); g.ellipse(W*.22,H*.8,W*.12,H*.07,0,Math.PI,0); g.fill();        // the den in the hillside
       Land.ground(g,W,H,H*.78,.6,'#5a4030'); };
     const night=(g,W,H,R)=>{ Land.paper(g,W,H,R,'#9a8a80'); Land.sky(g,W,H,['rgba(14,8,10,.96)','rgba(40,16,16,.9)','rgba(70,30,24,.75)']); Land.orb(g,W*.72,H*.15,Math.min(W,H)*.06,'#d87a5a',4);
@@ -7373,6 +7375,14 @@ const C2C = {
     if(n===0){ PixCG.open({ink:sc.ink, cast:sc.cast, title:sc.title, small:'镜中往事', seed:731}); Music.play('night',true); }
     else { PixCG.swap({ink:sc.ink, cast:sc.cast}); const t=$('#cg .cg-title b'); if(t) t.textContent=sc.title; }
     const c=PixCG.cur; c.gy=.86;
+    // the wood burns behind the people on the back mountain: flames at the foot of the pines, smoke and sparks going up
+    c.stage=n!==1?null:(g,W,H,fp,t)=>{
+        for(let i=1;i<6;i++){ const x=W*(.08+i*.17), y=H*.75, sz=Math.min(W,H)*(.07+.02*((i*7)%3));
+          const gl=g.createRadialGradient(x,y-sz*.4,0,x,y-sz*.4,sz*2.2); gl.addColorStop(0,'rgba(255,140,50,.35)'); gl.addColorStop(1,'rgba(255,140,50,0)'); g.fillStyle=gl; g.fillRect(x-sz*2.2,y-sz*2.6,sz*4.4,sz*4.4);
+          for(let k=0;k<3;k++){ const u=((t*.35+i*.27+k/3)%1), sx=x+Math.sin(t*.8+i+k)*sz*.6*u, sy=y-sz*1.2-u*sz*4; g.fillStyle=`rgba(70,60,56,${.32*(1-u)})`; g.beginPath(); g.ellipse(sx,sy,sz*(.35+u*.9),sz*(.25+u*.5),0,0,7); g.fill(); }
+          C2C.flame(g,x,y,sz,t+i*1.7);
+          for(let k=0;k<4;k++){ const u=((t*.7+i*.31+k/4)%1); g.fillStyle=`rgba(255,${190-u*80|0},80,${1-u})`; g.fillRect(x+Math.sin(t*3+k*2+i)*sz*.7,y-sz*.8-u*sz*3,Math.max(2,fp*.8),Math.max(2,fp*.8)); } }
+    };
     c.front=(g,W,H,fp,t)=>{
       // the round mirror frame: everything outside the glass is dark, and the glass ripples at its rim
       const R0=Math.min(W,H)*.62, cx=W/2, cy=H*.5;
@@ -7414,6 +7424,21 @@ const C2C = {
       for(let i=0;i<10;i++){ const yy=H*(.1+i*.08), xx=((t*W*.4*(1+i%3*.3)+i*173)%(W*1.3))-W*.15; g.strokeStyle='rgba(245,248,250,.25)'; g.lineWidth=Math.max(1,fp*.6); g.beginPath(); g.moveTo(xx,yy); g.quadraticCurveTo(xx-W*.05,yy-fp*3,xx-W*.1,yy+fp); g.stroke(); } };
   },
 };
+// a village house for the mirror's 安平村: stone footing, a plaster wall in a timber frame, a door with couplets, a lattice window, a tiled roof
+C2C.house=function(g,x,y,w,h,R){ const L=x-w/2, top=y-h*.6;
+  g.fillStyle='rgba(110,104,92,.9)'; g.fillRect(L-w*.03,y-h*.08,w*1.06,h*.08); g.fillStyle='rgba(80,74,66,.6)'; for(let i=0;i<6;i++) g.fillRect(L+i*w/6,y-h*.08,1,h*.08);
+  g.fillStyle='rgba(232,220,196,.96)'; g.fillRect(L,top,w,y-h*.08-top);
+  g.fillStyle='rgba(74,54,38,.95)'; for(const px of [L,L+w*.48,L+w-w*.045]) g.fillRect(px,top,w*.045,y-h*.08-top); g.fillRect(L,top,w,h*.05); g.fillRect(L,top+h*.24,w,h*.03);
+  const dx=L+w*.12, dw=w*.26, dy=top+h*.18; g.fillStyle='rgba(58,40,28,.96)'; g.fillRect(dx,dy,dw,y-h*.08-dy); g.fillStyle='rgba(120,84,52,.9)'; g.fillRect(dx+dw*.47,dy,dw*.06,y-h*.08-dy); g.fillRect(dx,dy,dw,h*.025);
+  g.fillStyle='rgba(176,36,28,.9)'; g.fillRect(dx-w*.06,dy+h*.02,w*.04,h*.2); g.fillRect(dx+dw+w*.02,dy+h*.02,w*.04,h*.2);
+  const wx=L+w*.6, ww=w*.28, wy=top+h*.08, wh=h*.15; g.fillStyle='rgba(74,54,38,.95)'; g.fillRect(wx-2,wy-2,ww+4,wh+4); g.fillStyle='rgba(246,226,180,.95)'; g.fillRect(wx,wy,ww,wh);
+  g.strokeStyle='rgba(74,54,38,.9)'; g.lineWidth=Math.max(1,w*.012); for(let i=1;i<4;i++){ g.beginPath(); g.moveTo(wx+ww*i/4,wy); g.lineTo(wx+ww*i/4,wy+wh); g.stroke(); } g.beginPath(); g.moveTo(wx,wy+wh/2); g.lineTo(wx+ww,wy+wh/2); g.stroke();
+  Land.roof(g,x,top+h*.02,w*1.3,h*.42,.9); g.fillStyle='rgba(40,30,24,.9)'; g.fillRect(x-w*.32,top-h*.21,w*.64,h*.035);
+  g.fillStyle='rgba(74,64,56,.9)'; g.fillRect(x+w*.2,top-h*.36,w*.07,h*.14); for(let i=0;i<3;i++){ g.fillStyle=`rgba(240,236,226,${.35-i*.09})`; g.beginPath(); g.ellipse(x+w*.24+i*w*.05,top-h*(.45+i*.13),w*(.05+i*.03),h*(.04+i*.015),0,0,7); g.fill(); } };
+// a flame: three tongues of colour, flickering
+C2C.flame=function(g,x,y,s,t){ for(const [k,col] of [[1,'rgba(196,48,28,.9)'],[.72,'rgba(255,128,40,.95)'],[.42,'rgba(255,220,120,1)']]){
+    for(let j=-1;j<=1;j++){ const fl=1+.18*Math.sin(t*9+j*2)+.1*Math.sin(t*15+j), hh=s*k*(j?1.1:1.6)*fl, ww=s*k*(j?.42:.55), cx=x+j*s*.42*k;
+      g.fillStyle=col; g.beginPath(); g.moveTo(cx-ww,y); g.quadraticCurveTo(cx-ww*.9,y-hh*.55,cx+Math.sin(t*6+j)*ww*.4,y-hh); g.quadraticCurveTo(cx+ww*.9,y-hh*.55,cx+ww,y); g.closePath(); g.fill(); } } };
 // the 八卦镜 itself: an octagonal bronze frame with the eight trigrams round its rim, a round mirror in the middle, a red tassel
 C2C.bagua=function(g,x,y,r,t,lit){
   const oct=(R,rot=Math.PI/8)=>{ g.beginPath(); for(let i=0;i<8;i++){ const a=rot+i*Math.PI/4; g[i?'lineTo':'moveTo'](x+Math.cos(a)*R,y+Math.sin(a)*R); } g.closePath(); };
@@ -7470,19 +7495,20 @@ const QQLU = {
     g.fillStyle='#2a1e1a'; g.fillRect(hx+4,hh+2,10,3); g.fillStyle='#33303f'; g.fillRect(hx+5,hh+2,8,2); g.fillStyle='#fbf3e4'; g.fillRect(hx+6,hh+2,2,1); g.fillRect(hx+10,hh+2,2,1); g.fillRect(hx+8,hh+3,2,1);
     g.fillStyle='#2a1e1a'; g.fillRect(cx-8,hh+4,16,1); g.fillStyle='#e07b39'; g.fillRect(cx-7,hh+5,14,4); g.fillStyle='#b0532a'; g.fillRect(cx-7,hh+8,14,1); for(const x of [-6,-3,1,4]) g.fillRect(cx+x,hh+4,2,1);
     g.drawImage(hd,0,0,hd.width,hh,hx,0,hd.width,hh);
-    // and he is not smiling: no blush, glaring eyes, brows pulled down, the mouth a hard frown
-    for(const x of [5,6,11,12]) p(x,10,'#f2c29a');
-    p(7,9,'#1b1618'); p(10,9,'#1b1618'); p(6,8,'#f2c29a'); p(11,8,'#f2c29a'); p(6,7,'#1b1618'); p(7,8,'#1b1618'); p(11,7,'#1b1618'); p(10,8,'#1b1618');
-    p(8,11,'#6a2a24'); p(9,11,'#6a2a24'); p(7,12,'#8a4a3a'); p(10,12,'#8a4a3a');
+    // not smiling, but not frightening either: cross, flustered, a bit ridiculous — brows tipped, a small tight mouth, a bead of sweat
+    p(6,7,'#1b1618'); p(11,7,'#1b1618');
+    p(8,11,'#b0504a'); p(9,11,'#b0504a');
+    p(15,4,'#9fd3ef'); p(15,5,'#9fd3ef'); p(16,5,'#cfeeff'); p(15,6,'#cfeeff');
     c.bottom=c.height; return SPRC.c2_qqlu_big=c; },
   showHead(s){ const c=$('#bEnemy'); if(!c||s.head) return; s.head=true; const old=c.width, w=parseFloat(c.style.width)||c.getBoundingClientRect().width, sp=QQLU.headSprite();
     c.width=sp.width; c.height=sp.height; const g=c.getContext('2d'); g.imageSmoothingEnabled=false; g.drawImage(sp,0,0); c.style.width=(w*sp.width/old)+'px';
     if(QQLU.is(s)){ s.B={...s.B, name:'穷奇 · 陆正衡'}; const n=$('#battle .b-name'); if(n) n.firstChild.textContent=s.B.name; } },
-  // speech bubbles above the stage: 穷奇 on the left, 陆正衡 on the right
-  // they sit above everything in the fight, the dodging box included, so the quarrel is heard while you dodge
-  say(who,text,delay=0){ setTimeout(()=>{ const host=$('#battle'); if(!host||host.hidden) return; const side=who==='陆正衡'?'r':'l';
-      host.querySelectorAll('.b-say.'+side).forEach(o=>o.remove());
-      const b=document.createElement('div'); b.className='b-say '+side; b.innerHTML=`<small>${who}</small>${esc(text)}`; host.appendChild(b); setTimeout(()=>b.remove(),3400); },delay); },
+  // the quarrel is told between turns, in a small dialogue box over the bottom of the fight (never while you dodge); tap to go on
+  talk(lines,cb){ const host=$('#battle'); if(!host||host.hidden||!lines||!lines.length){ cb&&cb(); return; }
+    const box=document.createElement('div'); host.appendChild(box); let i=0;
+    const show=()=>{ const [who,text]=lines[i]; box.className='b-talk wood '+(who==='陆正衡'?'lu':who==='穷奇'?'qq':''); box.innerHTML=`<b>${esc(who)}</b><p>${esc(text)}</p><i>▼</i>`; };
+    box.onclick=e=>{ e.stopPropagation(); Sound.tick(); if(++i<lines.length) show(); else { box.remove(); cb&&cb(); } };
+    show(); },
   LINES:{
     qq:['呕……好苦……','你闻着倒是挺甜的。','我只吃好人！','滚出我的肚子！'],
     pillar:['明正典刑！','妖就是妖，该杀！','我是为了村民！','天理昭昭！'],
@@ -7491,12 +7517,14 @@ const QQLU = {
     mirror:['……别照了。','把镜子拿开！','那不是我……','……'],
   },
   pick(a){ return a[Math.random()*a.length|0]; },
-  chatter(s,it){
-    // once his head is out, every turn has an exchange: one says something, the other snaps back
-    if(it==='quarrel'||s.phase3||QQLU.bicker(s)||(s.head&&Math.random()<.5)){ const [a,b]=QQLU.pick(QQLU.LINES.quarrel); const first=it==='pillar'?false:Math.random()<.5;
-      QQLU.say(first?'穷奇':'陆正衡',it==='pillar'&&!first?QQLU.pick(QQLU.LINES.pillar):a); QQLU.say(first?'陆正衡':'穷奇',b,1100); return; }
-    if(!s.head){ QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq)); return; }
-    if(it==='pillar'){ QQLU.say('陆正衡',QQLU.pick(QQLU.LINES.pillar)); QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq),1100); } else QQLU.say('穷奇',QQLU.pick(QQLU.LINES.qq)); },
+  // what they say before the enemy acts: whatever just happened first, then every other turn once his head is out
+  lines(s,it){ s.etn=(s.etn||0)+1; const L=QQLU.LINES, P=QQLU.pick;
+    if(s.pendingTalk){ const t=s.pendingTalk; s.pendingTalk=null; return t; }
+    if(QQLU.is(s)&&it==='shield') return [['陆正衡',P(L.shield)],['穷奇','又来了……']];
+    if(!s.head) return s.etn%3===1?[['穷奇',P(L.qq)]]:null;
+    if(s.etn%2) return null;
+    if(it==='pillar') return [['陆正衡',P(L.pillar)],['穷奇',P(L.qq)]];
+    const [a,b]=P(L.quarrel), first=Math.random()<.5; return [[first?'穷奇':'陆正衡',a],[first?'陆正衡':'穷奇',b]]; },
   // with classic turns on there is nothing to dodge: the new moves fall back on old ones
   classic(s){ if(!Dodge.on(s)) s.moves=s.moves.map(m=>({pillar:'big', quarrel:'double', tornado:'wind', featherrain:'atk'})[m]||m); },
 };
@@ -7504,12 +7532,12 @@ const QQLU = {
 { const _b=Battle._begin; Battle._begin=function(kind,cb){ const r=_b.call(Battle,kind,cb); const s=Battle.s;
     if(QQLU.is(s)){ let hp=s.hp; s.shield=0; QQLU.classic(s);
       Object.defineProperty(s,'hp',{enumerable:true, get(){ return hp; }, set(v){ if(v<hp&&s.shield>0){ const d=hp-v; v=hp-Math.max(1,Math.round(d/3)); if(!s.shieldTip||performance.now()-s.shieldTip>700){ s.shieldTip=performance.now(); setTimeout(()=>Battle.float('清誉护体 · 伤害大减','shield'),120); } } hp=v; }}); }
-    if(QQLU.bicker(s)){ QQLU.showHead(s); QQLU.say('陆正衡','又是你！放我出去！',600); QQLU.say('穷奇','闭嘴，打架呢！',1400); }
+    if(QQLU.bicker(s)){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','又是你！放我出去！'],['穷奇','闭嘴，打架呢！']]; }
     return r; }; }
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s, p2=s&&s.phase2, p3=s&&s.phase3; _pc.call(Battle);
     if(!QQLU.is(s)) return; if(s.phase2!==p2||s.phase3!==p3) QQLU.classic(s);
-    if(s.phase2&&!p2){ QQLU.showHead(s); QQLU.say('陆正衡','放肆！',500); }
-    if(s.phase3&&!p3){ QQLU.say('穷奇','苦死了！',700); QQLU.say('陆正衡','畜生，往哪儿走！',1300); } }; }
+    if(s.phase2&&!p2){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','放肆！谁敢动我青云陆正衡！'],['穷奇','你给我缩回去！'],['陆正衡','你才缩回去！']]; }
+    if(s.phase3&&!p3) s.pendingTalk=[['穷奇','苦死了！我要把你吐出去！'],['陆正衡','你敢！我话还没说完——'],['谢霁月','师兄。够了。']]; }; }
 // the 八卦镜 takes the place of 遁走 (which a boss fight never allows anyway)
 { const _h=Battle.actsHTML; Battle.actsHTML=function(B){ const h=_h.call(Battle,B); return B&&B.mirror?h.replace(/<button data-a="flee"[^>]*>[\s\S]*?<\/button>/,'<button data-a="mirror" class="mirrorb">八卦镜<small>照破护盾</small></button>'):h; }; }
 { const _ui=Battle.ui; Battle.ui=function(){ _ui.call(Battle); const s=Battle.s; if(!QQLU.is(s)) return;
@@ -7523,18 +7551,20 @@ const QQLU = {
     if(a==='mirror'){ if(!(s.shield>0)) return; if(s.charmed) return _act.call(Battle,a);
       s.shield=0; s.stun=1; s.mirrorStun=true; Sound.magic(); BossBg.flash('rgba(255,236,170,.75)');
       Battle.log('你举起八卦镜——镜中映出安平村的后山。「清誉护体」应声而碎，陆正衡愣住了！'); Battle.float('护盾破碎','crit'); Battle.hitFx();
-      QQLU.say('陆正衡',QQLU.pick(QQLU.LINES.mirror),200); Battle.ui(); return Battle.enemyTurn(); }
+      s.busy=true; Battle.ui(); return QQLU.talk([['陆正衡',QQLU.pick(QQLU.LINES.mirror)],['穷奇','哈！照得好！']],()=>{ if(Battle.s!==s||s.dead) return; s.busy=false; Battle.enemyTurn(); }); }
     const had=s.shield>0; const r=_act.call(Battle,a); if(had&&s.shield>0&&Battle.s===s){ s.shield--; Battle.ui(); } return r; }; }
 { const _et=Battle.enemyTurn; Battle.enemyTurn=function(){ const s=Battle.s;
-    if(QQLU.bicker(s)&&!s.stun) QQLU.chatter(s,Battle.intent());
+    if(!(QQLU.is(s)||QQLU.bicker(s))) return _et.call(Battle);
+    // a few lines between the two heads first, then the enemy's turn as usual
+    if(!s.stun&&!s.talked&&!Dodge.auto){ const lines=QQLU.lines(s,Battle.intent()); if(lines){ s.talked=true; s.busy=true; Battle.ui(); return QQLU.talk(lines,()=>{ if(Battle.s!==s||s.dead) return; s.busy=false; Battle.enemyTurn(); }); } }
+    s.talked=false;
     if(!QQLU.is(s)) return _et.call(Battle);
     if(s.stun&&s.mirrorStun){ s.busy=true; Battle.ui(); return setTimeout(()=>{ if(Battle.s!==s||s.dead) return; s.stun=0; s.mirrorStun=false;
         Battle.log('陆正衡盯着镜子里的自己，一动不动。穷奇被他拽着，这一回合没能出手。'); s.busy=false; Battle.ui(); },700); }
     const it=Battle.intent();
-    if(it==='shield'&&!s.stun){ s.busy=true; Battle.ui(); QQLU.say('陆正衡',QQLU.pick(QQLU.LINES.shield));
+    if(it==='shield'&&!s.stun){ s.busy=true; Battle.ui();
       return setTimeout(()=>{ if(Battle.s!==s||s.dead) return; s.shield=3; s.i++; BossBg.flash('rgba(255,220,120,.45)');
         Battle.log('「清誉护体」！一层金光罩住了穷奇。（护盾在时伤害大减——用八卦镜照破它！）'); s.busy=false; Battle.ui(); },700); }
-    if(!s.stun) QQLU.chatter(s,it);
     return _et.call(Battle); }; }
 
 /* ---------- the map's actions, talk and the way back after a fall ---------- */
