@@ -408,9 +408,9 @@ Object.assign(SCRIPTS, { c2c_flash:C2C.flash, c2c_why1:[...C2C.why1, ...C2C.land
 { const _cd=UI.closeDlg; UI.closeDlg=function(){ const r=_cd.apply(UI,arguments); setTimeout(()=>{ if(PixCG.on&&$('#dlg').hidden&&!Battle.s&&(C2C.sealOn||PixCG.cur&&/镜中往事/.test($('#cg .cg-title b')?.textContent||''))){ C2C.sealOn=false; PixCG.close(); } },80); return r; }; }
 
 /* ---------- the boss: 穷奇, with 陆正衡 inside it ---------- */
-BEASTS.c2_qqlu={name:'穷奇', spr:'qiongqi_big', boss:true, big:BEASTS.qiongqi.big, hp:950, atk:34, def:10, exp:320, stones:[160,160], drop:['qq_yu',1], mirror:true, theme:'qiongqi',
+BEASTS.c2_qqlu={name:'穷奇', spr:'qiongqi_big', boss:true, big:BEASTS.qiongqi.big, hp:1800, atk:46, def:14, exp:320, stones:[160,160], drop:['qq_yu',1], mirror:true, theme:'qiongqi',
   lore:'吞下了陆正衡的穷奇。它专吃好人，这一回却被一颗苦心卡住了喉咙。',
-  moves:['atk','wind','double','featherrain','big','wind'],
+  moves:['atk','wind','roar','double','featherrain','big','wind'],
   phase2:{at:.7, moves:['pillar','featherrain','shield','wind','pillar','big'], line:'穷奇的头顶鼓起一团——一颗人头挣了出来。是大师兄！「放肆！谁敢动我青云陆正衡！」'},
   phase3:{at:.35, ally:'谢霁月', moves:['quarrel','pillar','tornado','shield','quarrel','big'], line:'两颗头吵了起来，穷奇的身子被扯得东倒西歪！就在这时，一道剑光落下——「师兄，够了。」谢霁月站到了你身边。'}};
 SCENES.c2_qqlu={...SCENES.qiongqi, title:'穷奇', sub:'闻人忠信，辄食其鼻　——　《神异经》'};

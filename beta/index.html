@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b3fb1bf162"><script>(function(){var B="b3fb1bf162";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="bd372a5cf4"><script>(function(){var B="bd372a5cf4";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -7469,9 +7469,9 @@ Object.assign(SCRIPTS, { c2c_flash:C2C.flash, c2c_why1:[...C2C.why1, ...C2C.land
 { const _cd=UI.closeDlg; UI.closeDlg=function(){ const r=_cd.apply(UI,arguments); setTimeout(()=>{ if(PixCG.on&&$('#dlg').hidden&&!Battle.s&&(C2C.sealOn||PixCG.cur&&/镜中往事/.test($('#cg .cg-title b')?.textContent||''))){ C2C.sealOn=false; PixCG.close(); } },80); return r; }; }
 
 /* ---------- the boss: 穷奇, with 陆正衡 inside it ---------- */
-BEASTS.c2_qqlu={name:'穷奇', spr:'qiongqi_big', boss:true, big:BEASTS.qiongqi.big, hp:950, atk:34, def:10, exp:320, stones:[160,160], drop:['qq_yu',1], mirror:true, theme:'qiongqi',
+BEASTS.c2_qqlu={name:'穷奇', spr:'qiongqi_big', boss:true, big:BEASTS.qiongqi.big, hp:1800, atk:46, def:14, exp:320, stones:[160,160], drop:['qq_yu',1], mirror:true, theme:'qiongqi',
   lore:'吞下了陆正衡的穷奇。它专吃好人，这一回却被一颗苦心卡住了喉咙。',
-  moves:['atk','wind','double','featherrain','big','wind'],
+  moves:['atk','wind','roar','double','featherrain','big','wind'],
   phase2:{at:.7, moves:['pillar','featherrain','shield','wind','pillar','big'], line:'穷奇的头顶鼓起一团——一颗人头挣了出来。是大师兄！「放肆！谁敢动我青云陆正衡！」'},
   phase3:{at:.35, ally:'谢霁月', moves:['quarrel','pillar','tornado','shield','quarrel','big'], line:'两颗头吵了起来，穷奇的身子被扯得东倒西歪！就在这时，一道剑光落下——「师兄，够了。」谢霁月站到了你身边。'}};
 SCENES.c2_qqlu={...SCENES.qiongqi, title:'穷奇', sub:'闻人忠信，辄食其鼻　——　《神异经》'};
@@ -8331,6 +8331,8 @@ const Review = {
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(C2C.again),400); }},
       {id:'c2-seal', group:'第二章', title:'第三幕结尾：封印穷奇', check:'打赢穷奇之后的剧情：插画「封」，八卦镜锁链把穷奇（和大师兄）拖回风穴，两个吵个不停；最后大师姐和二师兄各有一个伏笔。',
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2c_win),()=>Story.check()),400); }},
+      {id:'c2-town', group:'第二章', title:'第二章里回到桃源镇', check:'已经跟师尊去了宗门、在秘境里。用营地的传送阵回到桃源镇：苏小棠（去了药王谷）和顾长歌（去做散修）都不在镇上了，阿禾、钱掌柜他们还在。',
+        run(){ go({},'mj_camp',3,13,'down'); }},
       {id:'c2-rematch', group:'第二章', title:'第二章之后的狂暴穷奇（两个头）', check:'封印穷奇之后再去风眼打狂暴穷奇：穷奇头顶多了大师兄的头，打的时候两个头互相拆台。',
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true},'fx3',8,8,'up'); }},
       ]; })(),

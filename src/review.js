@@ -133,6 +133,8 @@ const Review = {
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(C2C.again),400); }},
       {id:'c2-seal', group:'第二章', title:'第三幕结尾：封印穷奇', check:'打赢穷奇之后的剧情：插画「封」，八卦镜锁链把穷奇（和大师兄）拖回风穴，两个吵个不停；最后大师姐和二师兄各有一个伏笔。',
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2c_win),()=>Story.check()),400); }},
+      {id:'c2-town', group:'第二章', title:'第二章里回到桃源镇', check:'已经跟师尊去了宗门、在秘境里。用营地的传送阵回到桃源镇：苏小棠（去了药王谷）和顾长歌（去做散修）都不在镇上了，阿禾、钱掌柜他们还在。',
+        run(){ go({},'mj_camp',3,13,'down'); }},
       {id:'c2-rematch', group:'第二章', title:'第二章之后的狂暴穷奇（两个头）', check:'封印穷奇之后再去风眼打狂暴穷奇：穷奇头顶多了大师兄的头，打的时候两个头互相拆台。',
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true},'fx3',8,8,'up'); }},
       ]; })(),
