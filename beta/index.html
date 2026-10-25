@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="67514c3941"><script>(function(){var B="67514c3941";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b3fb1bf162"><script>(function(){var B="b3fb1bf162";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6334,7 +6334,8 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
 
 // the masters leave town with you; 苏小棠 moves to 药王谷 if that is your sect
 for(const o of MAPS.town.objects) if(o.id&&/^m_/.test(o.id)){ const c=o.cond; o.cond=s=>c(s)&&!s.flags.c2_arrive; }
-{ const t=MAPS.town.objects.find(o=>o.id==='tang'); if(t){ const c=t.cond; t.cond=s=>(!c||c(s))&&!(s.sect==='dan'&&s.flags.c2_arrive); } }
+// once you have left with your master, neither is in 桃源镇 any more: 苏小棠 is a disciple of 药王谷, 顾长歌 is off wandering on his own
+for(const t of MAPS.town.objects.filter(o=>o.id==='tang'||o.id==='ge')){ const c=t.cond; t.cond=s=>(!c||c(s))&&!s.flags.c2_arrive; }
 // npcAt: skip people who aren't there right now (the master in town vs. in the sect)
 npcAt=function(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id&&(!o.cond||!S||o.cond(S))) return [m,o.x,o.y,o.name]; return null; };
 
@@ -7515,7 +7516,7 @@ const QQLU = {
     qq:['呕……好苦……','你闻着倒是挺甜的。','我只吃好人！','滚出我的肚子！'],
     pillar:['明正典刑！','妖就是妖，该杀！','我是为了村民！','天理昭昭！'],
     shield:['我问心无愧！','青云陆正衡，清清白白！','谁敢污我名声！'],
-    quarrel:[['往左！','往右！'],['苦死了，吐出去！','你敢！'],['那些狼本来就该死！','那你也该死！'],['都怪你！','都怪你！'],['闭嘴！','你先闭嘴！']],
+    quarrel:[[['穷奇','往左！'],['陆正衡','往右！']],[['穷奇','苦死了，吐出去！'],['陆正衡','你敢！']],[['陆正衡','那些狼本来就该死！'],['穷奇','那你也该死！']],[['陆正衡','都怪你！'],['穷奇','都怪你！']],[['穷奇','闭嘴！'],['陆正衡','你先闭嘴！']],[['陆正衡','我是为了村民！'],['穷奇','你是为了你自己！']]],
     mirror:['……别照了。','把镜子拿开！','那不是我……','……'],
   },
   pick(a){ return a[Math.random()*a.length|0]; },
@@ -7526,7 +7527,7 @@ const QQLU = {
     if(!s.head) return s.etn%3===1?[['穷奇',P(L.qq)]]:null;
     if(s.etn%2) return null;
     if(it==='pillar') return [['陆正衡',P(L.pillar)],['穷奇',P(L.qq)]];
-    const [a,b]=P(L.quarrel), first=Math.random()<.5; return [[first?'穷奇':'陆正衡',a],[first?'陆正衡':'穷奇',b]]; },
+    return P(L.quarrel); },
   // with classic turns on there is nothing to dodge: the new moves fall back on old ones
   classic(s){ if(!Dodge.on(s)) s.moves=s.moves.map(m=>({pillar:'big', quarrel:'double', tornado:'wind', featherrain:'atk'})[m]||m); },
 };
@@ -7569,6 +7570,22 @@ const QQLU = {
         Battle.log('「清誉护体」！一层金光罩住了穷奇。（护盾在时伤害大减——用八卦镜照破它！）'); s.busy=false; Battle.ui(); },700); }
     return _et.call(Battle); }; }
 
+/* ---------- 狂暴穷奇 after the sealing: 陆正衡 comes with it, and the scene says so ---------- */
+Object.assign(SCRIPTS, {
+  fx_rematch_meet2:[
+    ['旁白','风眼里的风又乱了起来。云层裂开，狂暴穷奇从天而降——头顶上，还顶着一颗气鼓鼓的人头。'],
+    ['陆正衡','{称}！快、快想办法把我弄出去！'],
+    ['穷奇','闭嘴！好不容易有人来陪我打一架。'],
+    ['陆正衡','你这畜生，吃了我还嫌我吵——'],
+    ['穷奇','你本来就吵！'],
+    {battle:'qiongqi2', win:'fx_rematch_win2', lose:'fx_boss_lose'}],
+  get fx_rematch_win2(){ return [
+    ['陆正衡','……哼。打得还算像样。'],
+    ['穷奇','你闭嘴，是它打的，又不是你。'],
+    ...SCRIPTS.fx_rematch_win]; },
+});
+{ const _a=Dungeon.act; Dungeon.act=function(o){ if(o.act==='fxboss2'&&S.flags.c2_qq_sealed&&S.fxRematchDay!==S.day){ UI.say(SCRIPTS.fx_rematch_meet2); return true; } return _a.call(Dungeon,o); }; }
+
 /* ---------- the map's actions, talk and the way back after a fall ---------- */
 { const _a=Dungeon.act; Dungeon.act=function(o){
     if(o.act==='mjthorn'){ UI.say([['旁白','一大丛荆棘，长得比人还高，刺上挂着雾珠。过不去。']]); return true; }
@@ -7606,7 +7623,7 @@ const Nav = {
   // the tasks shown on screen: the main quest plus active / available side quests (tracked one first), at most 3
   list(){
     const out=[]; const q=QUESTS[S.quest]; if(q) out.push({key:'main', kind:'main', title:q.title, progress:q.progress?q.progress(S):'', target:q.target?q.target(S):null});
-    for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)) continue;
+    for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;   // whoever gives it may have left (苏小棠 and 顾长歌, in chapter 2)
       out.push(st?{key:s.id, kind:'side', title:s.title, progress:sideReady(S,s)?'可以交付了':sideProgress(S,s), target:s.target(S)}:{key:s.id, kind:'avail', title:s.title, progress:'去找'+npcAt(s.giver)[3], target:npcAt(s.giver)}); }
     const tk=S.track||'main'; out.sort((a,b)=>(b.key===tk)-(a.key===tk)||(a.kind==='avail')-(b.kind==='avail'));
     return out.slice(0,3);
@@ -7614,7 +7631,7 @@ const Nav = {
   tracked(){
     if(S.track && S.track!=='main'){
       const q=SIDES.find(x=>x.id===S.track), st=q&&S.side[q.id];
-      if(q && st!=='done'){
+      if(q && st!=='done' && npcAt(q.giver)){
         if(!st) return {kind:'avail', id:q.id, title:q.title, desc:q.desc, progress:'去找'+npcAt(q.giver)[3]+'接取', target:npcAt(q.giver)};
         return {kind:'side', id:q.id, title:q.title, desc:q.desc, progress:sideReady(S,q)?'可以交付了':sideProgress(S,q), target:q.target(S)};
       }
@@ -7741,7 +7758,7 @@ UI.tasks=()=>{
   rows.push(`<div class="task ${S.track==='main'?'on':''}"><div class="tk-head"><span class="tag main">主线</span><b>${esc(q.title)}</b></div><p>${esc(q.desc)}</p>
     ${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}
     <div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div></div>`);
-  for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)) continue;
+  for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;
     const giver=npcAt(s.giver)[3];
     rows.push(`<div class="task ${S.track===s.id?'on':''}"><div class="tk-head"><span class="tag">${st?'支线':'可接取'}</span><b>${esc(s.title)}</b></div>
       <p>${esc(st?s.desc:'去找'+giver+'聊聊，看看有什么能帮忙的。')}</p>${st?`<p class="muted">进度：${esc(sideReady(S,s)?'可以交付给'+giver+'了':sideProgress(S,s))}</p>`:''}

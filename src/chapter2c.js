@@ -455,7 +455,7 @@ const QQLU = {
     qq:['呕……好苦……','你闻着倒是挺甜的。','我只吃好人！','滚出我的肚子！'],
     pillar:['明正典刑！','妖就是妖，该杀！','我是为了村民！','天理昭昭！'],
     shield:['我问心无愧！','青云陆正衡，清清白白！','谁敢污我名声！'],
-    quarrel:[['往左！','往右！'],['苦死了，吐出去！','你敢！'],['那些狼本来就该死！','那你也该死！'],['都怪你！','都怪你！'],['闭嘴！','你先闭嘴！']],
+    quarrel:[[['穷奇','往左！'],['陆正衡','往右！']],[['穷奇','苦死了，吐出去！'],['陆正衡','你敢！']],[['陆正衡','那些狼本来就该死！'],['穷奇','那你也该死！']],[['陆正衡','都怪你！'],['穷奇','都怪你！']],[['穷奇','闭嘴！'],['陆正衡','你先闭嘴！']],[['陆正衡','我是为了村民！'],['穷奇','你是为了你自己！']]],
     mirror:['……别照了。','把镜子拿开！','那不是我……','……'],
   },
   pick(a){ return a[Math.random()*a.length|0]; },
@@ -466,7 +466,7 @@ const QQLU = {
     if(!s.head) return s.etn%3===1?[['穷奇',P(L.qq)]]:null;
     if(s.etn%2) return null;
     if(it==='pillar') return [['陆正衡',P(L.pillar)],['穷奇',P(L.qq)]];
-    const [a,b]=P(L.quarrel), first=Math.random()<.5; return [[first?'穷奇':'陆正衡',a],[first?'陆正衡':'穷奇',b]]; },
+    return P(L.quarrel); },
   // with classic turns on there is nothing to dodge: the new moves fall back on old ones
   classic(s){ if(!Dodge.on(s)) s.moves=s.moves.map(m=>({pillar:'big', quarrel:'double', tornado:'wind', featherrain:'atk'})[m]||m); },
 };
@@ -508,6 +508,22 @@ const QQLU = {
       return setTimeout(()=>{ if(Battle.s!==s||s.dead) return; s.shield=3; s.i++; BossBg.flash('rgba(255,220,120,.45)');
         Battle.log('「清誉护体」！一层金光罩住了穷奇。（护盾在时伤害大减——用八卦镜照破它！）'); s.busy=false; Battle.ui(); },700); }
     return _et.call(Battle); }; }
+
+/* ---------- 狂暴穷奇 after the sealing: 陆正衡 comes with it, and the scene says so ---------- */
+Object.assign(SCRIPTS, {
+  fx_rematch_meet2:[
+    ['旁白','风眼里的风又乱了起来。云层裂开，狂暴穷奇从天而降——头顶上，还顶着一颗气鼓鼓的人头。'],
+    ['陆正衡','{称}！快、快想办法把我弄出去！'],
+    ['穷奇','闭嘴！好不容易有人来陪我打一架。'],
+    ['陆正衡','你这畜生，吃了我还嫌我吵——'],
+    ['穷奇','你本来就吵！'],
+    {battle:'qiongqi2', win:'fx_rematch_win2', lose:'fx_boss_lose'}],
+  get fx_rematch_win2(){ return [
+    ['陆正衡','……哼。打得还算像样。'],
+    ['穷奇','你闭嘴，是它打的，又不是你。'],
+    ...SCRIPTS.fx_rematch_win]; },
+});
+{ const _a=Dungeon.act; Dungeon.act=function(o){ if(o.act==='fxboss2'&&S.flags.c2_qq_sealed&&S.fxRematchDay!==S.day){ UI.say(SCRIPTS.fx_rematch_meet2); return true; } return _a.call(Dungeon,o); }; }
 
 /* ---------- the map's actions, talk and the way back after a fall ---------- */
 { const _a=Dungeon.act; Dungeon.act=function(o){

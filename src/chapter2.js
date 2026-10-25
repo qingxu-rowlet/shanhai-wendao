@@ -137,7 +137,8 @@ for(const k in SECTS){ const L=C2_LOOK[k], sc=SECTS[k], m=sc.master, mine=s=>s.s
 
 // the masters leave town with you; 苏小棠 moves to 药王谷 if that is your sect
 for(const o of MAPS.town.objects) if(o.id&&/^m_/.test(o.id)){ const c=o.cond; o.cond=s=>c(s)&&!s.flags.c2_arrive; }
-{ const t=MAPS.town.objects.find(o=>o.id==='tang'); if(t){ const c=t.cond; t.cond=s=>(!c||c(s))&&!(s.sect==='dan'&&s.flags.c2_arrive); } }
+// once you have left with your master, neither is in 桃源镇 any more: 苏小棠 is a disciple of 药王谷, 顾长歌 is off wandering on his own
+for(const t of MAPS.town.objects.filter(o=>o.id==='tang'||o.id==='ge')){ const c=t.cond; t.cond=s=>(!c||c(s))&&!s.flags.c2_arrive; }
 // npcAt: skip people who aren't there right now (the master in town vs. in the sect)
 npcAt=function(id){ for(const m in MAPS) for(const o of MAPS[m].objects) if(o.id===id&&(!o.cond||!S||o.cond(S))) return [m,o.x,o.y,o.name]; return null; };
 

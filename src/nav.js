@@ -7,7 +7,7 @@ const Nav = {
   // the tasks shown on screen: the main quest plus active / available side quests (tracked one first), at most 3
   list(){
     const out=[]; const q=QUESTS[S.quest]; if(q) out.push({key:'main', kind:'main', title:q.title, progress:q.progress?q.progress(S):'', target:q.target?q.target(S):null});
-    for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)) continue;
+    for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;   // whoever gives it may have left (苏小棠 and 顾长歌, in chapter 2)
       out.push(st?{key:s.id, kind:'side', title:s.title, progress:sideReady(S,s)?'可以交付了':sideProgress(S,s), target:s.target(S)}:{key:s.id, kind:'avail', title:s.title, progress:'去找'+npcAt(s.giver)[3], target:npcAt(s.giver)}); }
     const tk=S.track||'main'; out.sort((a,b)=>(b.key===tk)-(a.key===tk)||(a.kind==='avail')-(b.kind==='avail'));
     return out.slice(0,3);
@@ -15,7 +15,7 @@ const Nav = {
   tracked(){
     if(S.track && S.track!=='main'){
       const q=SIDES.find(x=>x.id===S.track), st=q&&S.side[q.id];
-      if(q && st!=='done'){
+      if(q && st!=='done' && npcAt(q.giver)){
         if(!st) return {kind:'avail', id:q.id, title:q.title, desc:q.desc, progress:'去找'+npcAt(q.giver)[3]+'接取', target:npcAt(q.giver)};
         return {kind:'side', id:q.id, title:q.title, desc:q.desc, progress:sideReady(S,q)?'可以交付了':sideProgress(S,q), target:q.target(S)};
       }
@@ -142,7 +142,7 @@ UI.tasks=()=>{
   rows.push(`<div class="task ${S.track==='main'?'on':''}"><div class="tk-head"><span class="tag main">主线</span><b>${esc(q.title)}</b></div><p>${esc(q.desc)}</p>
     ${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}
     <div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div></div>`);
-  for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)) continue;
+  for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;
     const giver=npcAt(s.giver)[3];
     rows.push(`<div class="task ${S.track===s.id?'on':''}"><div class="tk-head"><span class="tag">${st?'支线':'可接取'}</span><b>${esc(s.title)}</b></div>
       <p>${esc(st?s.desc:'去找'+giver+'聊聊，看看有什么能帮忙的。')}</p>${st?`<p class="muted">进度：${esc(sideReady(S,s)?'可以交付给'+giver+'了':sideProgress(S,s))}</p>`:''}
