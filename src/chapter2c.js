@@ -231,7 +231,7 @@ const C2C = {
     ['旁白','穷奇的肚皮上，鼓起一张人脸的形状。那张脸张着嘴，好像在喊什么。'],
     ['谢霁月','（拔剑）把师兄吐出来。'],
     ['穷奇','吐得出来，我早吐了！'],
-    ['旁白','（八卦镜在你手里发烫。战斗中可以用它照穿大师兄的护盾。）'],
+    ['旁白','（八卦镜在你手里发烫。战斗中可以用它照穿大师兄的护盾，照完之后，你的下一击伤害翻倍。）'],
     {battle:'c2_qqlu', win:'c2c_win', lose:'c2c_lose'}],
   again:[
     ['穷奇','呕……又是你。你闻着倒是挺甜的。'],
@@ -476,7 +476,8 @@ const QQLU = {
 // a fight begins: the shield lives on the enemy's life (any hit while shielded only does a third), the rematch keeps his head
 { const _b=Battle._begin; Battle._begin=function(kind,cb){ const r=_b.call(Battle,kind,cb); const s=Battle.s;
     if(QQLU.is(s)){ let hp=s.hp; s.shield=0; QQLU.classic(s);
-      Object.defineProperty(s,'hp',{enumerable:true, get(){ return hp; }, set(v){ if(v<hp&&s.shield>0){ const d=hp-v; v=hp-Math.max(1,Math.round(d/3)); if(!s.shieldTip||performance.now()-s.shieldTip>700){ s.shieldTip=performance.now(); setTimeout(()=>Battle.float('清誉护体 · 伤害大减','shield'),120); } } hp=v; }}); }
+      Object.defineProperty(s,'hp',{enumerable:true, get(){ return hp; }, set(v){ if(v<hp&&s.dbl){ v=hp-(hp-v)*2; if(!s.dblTip||performance.now()-s.dblTip>700){ s.dblTip=performance.now(); setTimeout(()=>Battle.float('破绽 ×2','crit'),120); } }   // after the 八卦镜: he is wide open
+        if(v<hp&&s.shield>0){ const d=hp-v; v=hp-Math.max(1,Math.round(d/3)); if(!s.shieldTip||performance.now()-s.shieldTip>700){ s.shieldTip=performance.now(); setTimeout(()=>Battle.float('清誉护体 · 伤害大减','shield'),120); } } hp=v; }}); }
     if(QQLU.bicker(s)){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','又是你！放我出去！'],['穷奇','闭嘴，打架呢！']]; }
     return r; }; }
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s, p2=s&&s.phase2, p3=s&&s.phase3; _pc.call(Battle);
@@ -484,22 +485,26 @@ const QQLU = {
     if(s.phase2&&!p2){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','放肆！谁敢动我{宗}陆正衡！'],['穷奇','你给我缩回去！'],['陆正衡','你才缩回去！']]; }
     if(s.phase3&&!p3) s.pendingTalk=[['穷奇','苦死了！我要把你吐出去！'],['陆正衡','你敢！我话还没说完——'],['谢霁月','师兄。够了。']]; }; }
 // the 八卦镜 takes the place of 遁走 (which a boss fight never allows anyway)
-{ const _h=Battle.actsHTML; Battle.actsHTML=function(B){ const h=_h.call(Battle,B); return B&&B.mirror?h.replace(/<button data-a="flee"[^>]*>[\s\S]*?<\/button>/,'<button data-a="mirror" class="mirrorb">八卦镜<small>照破护盾</small></button>'):h; }; }
+{ const _h=Battle.actsHTML; Battle.actsHTML=function(B){ const h=_h.call(Battle,B); return B&&B.mirror?h.replace(/<button data-a="flee"[^>]*>[\s\S]*?<\/button>/,'<button data-a="mirror" class="mirrorb">八卦镜<small>破盾 · 下一击×2</small></button>'):h; }; }
 { const _ui=Battle.ui; Battle.ui=function(){ _ui.call(Battle); const s=Battle.s; if(!QQLU.is(s)) return;
     const mb=$('#battle').querySelector('[data-a="mirror"]'); if(mb) mb.disabled=!(s.shield>0);
     const en=$('#bEnemy'); if(en) en.classList.toggle('shielded',s.shield>0);
     const el=$('#bIntent'); if(!el) return;
     if(!s.stun&&Battle.intent()==='shield'){ el.textContent='清誉护体（开启护盾：受到的伤害大减。用八卦镜照破它）'; el.className='b-intent warn'; }
-    if(s.shield>0) el.textContent+=`　护盾 ${s.shield} 回合`; }; }
+    if(s.shield>0) el.textContent+=`　护盾 ${s.shield} 回合`;
+    if(s.exposed){ el.textContent='陆正衡愣住了 · 破绽大开：你的下一击伤害翻倍'; el.className='b-intent'; } }; }
 { const _act=Battle.act; Battle.act=function(a){ const s=Battle.s;
     if(!QQLU.is(s)||s.over||s.busy||s.dead) return _act.call(Battle,a);
     if(a==='mirror'){ if(!(s.shield>0)) return; if(s.charmed) return _act.call(Battle,a);
-      s.shield=0; s.stun=1; s.mirrorStun=true; Sound.magic(); BossBg.flash('rgba(255,236,170,.75)');
-      Battle.log('你举起八卦镜——镜中映出安平村的后山。「清誉护体」应声而碎，陆正衡愣住了！'); Battle.float('护盾破碎','crit'); Battle.hitFx();
+      s.shield=0; s.stun=1; s.mirrorStun=true; s.exposed=true; Sound.magic(); BossBg.flash('rgba(255,236,170,.75)');
+      Battle.log('你举起八卦镜——镜中映出安平村的后山。「清誉护体」应声而碎，陆正衡愣住了！（破绽大开：你的下一击伤害翻倍）'); Battle.float('护盾破碎','crit'); Battle.hitFx();
       s.busy=true; Battle.ui(); return QQLU.talk([['陆正衡',QQLU.pick(QQLU.LINES.mirror)],['穷奇','哈！照得好！']],()=>{ if(Battle.s!==s||s.dead) return; s.busy=false; Battle.enemyTurn(); }); }
+    // the opening the mirror made: the next blow (yours, and 大师姐's alongside it) lands double; it closes when the enemy acts again
+    if(s.exposed&&a!=='guard'&&a!=='pill'){ s.exposed=false; s.dbl=true; }
     const had=s.shield>0; const r=_act.call(Battle,a); if(had&&s.shield>0&&Battle.s===s){ s.shield--; Battle.ui(); } return r; }; }
 { const _et=Battle.enemyTurn; Battle.enemyTurn=function(){ const s=Battle.s;
     if(!(QQLU.is(s)||QQLU.bicker(s))) return _et.call(Battle);
+    s.dbl=false;
     // a few lines between the two heads first, then the enemy's turn as usual
     if(!s.stun&&!s.talked&&!Dodge.auto){ const lines=QQLU.lines(s,Battle.intent()); if(lines){ s.talked=true; s.busy=true; Battle.ui(); return QQLU.talk(lines,()=>{ if(Battle.s!==s||s.dead) return; s.busy=false; Battle.enemyTurn(); }); } }
     s.talked=false;
