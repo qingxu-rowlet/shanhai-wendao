@@ -249,7 +249,7 @@ Object.assign(SCRIPTS, {
     ['谢霁月','{称}。……谢谢你。'],
     ['谢霁月','这面镜子，你拿着。别再让任何人一个人看它——包括我。'],
     {give:{c2_bagua:1}},
-    {flag:'c2_xin_done'},
+    {flag:'c2_xin_done'}, {love:{xie:80}},
     ['谢霁月','……回营地吧。满仓一个人，该等急了。']],
 });
 // the fox stands on the lake facing you now (the new picture is drawn facing front)
