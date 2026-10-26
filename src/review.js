@@ -211,8 +211,13 @@ const Review = {
     const h=location.hash.replace('#','');
     if(h==='review') return Review.hub();
     if(h==='selftest') return;
-    if(h.startsWith('t-')) return Review.go(h.slice(2));
+    if(h.startsWith('t-')) return Review.fresh(()=>Review.go(h.slice(2)));
   },
+  // jumping between nodes only changes the #hash, so a tab left open would keep running old code: check for a newer build first and reload into it
+  fresh(then){ const meta=document.querySelector('meta[name=build]'), mine=meta&&meta.dataset.build; if(!mine||Review._checked) return then();
+    fetch(location.pathname+'?fresh='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{ const m=t.match(/data-build="([0-9a-f]+)"/);
+      if(m&&m[1]!==mine){ UI.toast('有新版本，正在更新……'); const u=new URL(location.href); u.searchParams.set('v',m[1]); location.replace(u.href); }
+      else { Review._checked=Date.now(); setTimeout(()=>{ Review._checked=0; },20000); then(); } }).catch(()=>then()); },
 };
 // the live site has chapter 2 closed: its review links (which drop you into the sect) are left out there
 if(window.CH2_LOCKED) Review.NODES=Review.NODES.filter(n=>!(n.id.startsWith('c2-')&&n.id!=='c2-portal'));
