@@ -249,7 +249,7 @@ const UI = {
       if(st.face){ CG.setFace(st.face); continue; }
       if(st.cgscene){ CG.setScene(st.cgscene); continue; }
       if(st.cgend){ CG.close(); CG.replaying=false; continue; }
-      if(st.love){ for(const k in st.love) Social.add(k, st.love[k]); Sound.pick(); continue; }
+      if(st.love){ for(const k in st.love){ Social.add(k, st.love[k]); if(st.love[k]>0&&NPCS[k]) UI.toast(`${NPCS[k].name} 好感 +${st.love[k]}`); } Sound.pick(); continue; }   // every change shows, not only a full heart
       if(st.give||st.stones||st.exp){
         const got=[]; let s2=st;
         while(true){

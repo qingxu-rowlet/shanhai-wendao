@@ -70,20 +70,61 @@ for(const k in SECTS){ const M=MAPS['zong_'+k], mine=s=>s.sect===k&&C2L.on(s);
 /* ---------- 九尾狐: white, as the story says — the small sprite and a new picture ---------- */
 SPR.huli=SPR.huli.map((r,y)=>r.replace(/o/g,'z').replace(/w/g,y<8?'l':'x'));
 for(const k of Object.keys(SPRC)) if(/^huli/.test(k)&&k!=='huli_big') delete SPRC[k];
-// sitting and facing you: nine tails fanned up behind like a snow fan, a ruff at the chest, eyes closed in a smile, a red mark on the brow
-FineArt.fox=function(){ return FineArt.cache.fox2||(FineArt.cache.fox2=FineArt.paint(72,68,P=>{
-  const Wt='#fbf9f4', Cr='#ece6da', Sh='#d6cfc2', T1='#cfe0ff', T2='#a9c4f2', Pk='#f4b6c6', Dk='#3a2e2a', Red='#e0483c';
-  for(let i=0;i<9;i++){ const a=-Math.PI*.93+i*Math.PI*.107, L=25+(i===4?3:Math.abs(i-4)<2?1:0), bx=36, by=46, ex=bx+Math.cos(a)*L, ey=by+Math.sin(a)*L;
-    P.cap(bx+Math.cos(a)*8,by+Math.sin(a)*8,ex,ey,4.6,i%2?Cr:Wt); P.cap(ex-Math.cos(a)*5,ey-Math.sin(a)*5,ex,ey,4,T1); P.cap(ex-Math.cos(a)*2,ey-Math.sin(a)*2,ex,ey,2.8,T2); }
-  P.ell(36,54,11,10,Wt); P.ell(36,58,8,5,Cr);                                    // body, sitting
-  P.cap(31,58,31,65,2.6,Wt); P.cap(41,58,41,65,2.6,Wt); P.rect(29,65,5,1,Sh); P.rect(39,65,5,1,Sh);
-  for(let i=-3;i<=3;i++) P.poly([[36+i*3-2,46],[36+i*3+2,46],[36+i*2.6,52]],Wt); P.ell(36,47,9,5,Wt);   // the ruff
-  P.ell(36,36,11,9,Wt); P.poly([[24,36],[28,40],[25,42]],Wt); P.poly([[48,36],[44,40],[47,42]],Wt);      // head and cheek fluff
-  P.poly([[26,31],[27,17],[33,28]],Wt); P.poly([[46,31],[45,17],[39,28]],Wt); P.poly([[28,28],[28.5,21],[31.5,27]],Pk); P.poly([[44,28],[43.5,21],[40.5,27]],Pk);
-  for(const [x,y] of [[29,37],[30,36],[31,36],[32,37]]) P.set(x,y,Dk); for(const [x,y] of [[40,37],[41,36],[42,36],[43,37]]) P.set(x,y,Dk);   // eyes, closed in a smile
-  P.set(28,39,Pk); P.set(29,39,Pk); P.set(43,39,Pk); P.set(44,39,Pk);
-  P.ell(36,41,3.5,2.3,Wt); P.set(36,40,Dk); P.set(35,42,Dk); P.set(37,42,Dk);
-  P.set(36,29,Red); P.set(36,30,Red); P.set(35,31,Red); P.set(37,31,Red); P.set(36,31,Red); })); };
+// sitting tall in profile, facing left: a long neck, a narrow muzzle, a golden almond eye lined in red, a flame mark on the brow,
+// slender straight forelegs, and nine long tails flowing up behind her like white flames
+// 九尾狐 in pixels, side-on as in the author's references: a slender white fox facing left, and nine great tails sweeping
+// back and up from her haunch and curling over, much bigger than she is — white with a shaded underside, the curled tips
+// dipped in ink (two in gold); tall ears black-tipped and red within, a narrow red-lined eye, red flame swirls
+FineArt.fox=function(){ return FineArt.cache.foxside13||(FineArt.cache.foxside13=FineArt.paint(120,80,P=>{
+  const Wt='#fffaf0', Cr='#ece4d4', Sh='#cfc7ba', G1='#b4b0b6', G2='#75717a', Ik='#2b2533', Gd='#e0b040', Rd='#c8413b', Dk='#2a1e1a', oy=27;
+  // a tail: a full, fluffy plume — thick, with tufted edges, drawn to a soft point that curls forward; a grey rim first so
+  // the layers read apart, then the white, a creamy underside, and the tip dipped in ink or gold like a brush
+  const tail=(ax,ay,a0,len,bend,r0,gold,seam)=>{ const pts=[]; let x=ax, y=ay; const n=80;
+    for(let i=0;i<=n;i++){ const t=i/n, a=(a0+bend*Math.pow(t,1.3)*57.3)*Math.PI/180; x+=Math.cos(a)*len/n; y+=Math.sin(a)*len/n; pts.push([x,y,t]); }
+    // wide almost to the end, then rounding off like a brush; the edge tufted so it reads as fur
+    const tuft=t=>1+.13*Math.abs(((t*11)%1)-.5)*2;
+    const rad=t=>Math.max(.9, r0*Math.min(1,.45+t*3)*(t>.6?.12+.88*Math.pow(Math.max(0,1-Math.pow((t-.6)/.4,2)),.8):1)*tuft(t));
+    for(const [x,y,t] of pts) P.cap(x+.5,y+1.6,x+.5,y+1.6,rad(t),t>.5?G1:Sh);
+    for(const [x,y,t] of pts) P.cap(x,y,x,y,rad(t)*.9, t>.95?(gold?Gd:Ik):t>.9?G2:t>.84?G1:Wt);
+    // a fine seam along the upper edge, where this tail lies over the one behind it
+    if(seam) for(let i=1;i<pts.length-1;i++){ const [x,y,t]=pts[i]; if(t<.22||t>.8) continue; const dx=pts[i+1][0]-pts[i-1][0], dy=pts[i+1][1]-pts[i-1][1], d=Math.hypot(dx,dy)||1, r=rad(t)*.82; P.set(Math.round(x+dy/d*r),Math.round(y-dx/d*r),G1); } };
+  // nine tails leaving the rump together and curling up by different amounts, so the tips spread in a soft crest; the
+  // ones arching furthest over her back sit behind, the flatter ones in front
+  const T=[[-64,50,-2.0,5.6,0],[-56,56,-1.8,6.0,0],[-48,60,-1.6,6.2,1],[-40,62,-1.4,6.4,0],[-32,62,-1.2,6.4,0],[-24,60,-1.0,6.2,0],[-16,56,-.8,6.0,1],[-8,50,-.6,5.6,0],[0,44,-.4,5.2,0]];
+  T.forEach(([a0,len,bend,r,gold],k)=>tail(45,29+oy,a0,len,bend,r,gold,k>0));
+  // a leg: a smooth curve through its joints, thick at the top and fine at the paw, the lower part in an ink sock
+  const limb=(J,r0,r1,col,sock)=>{ const C=[];
+    for(let i=0;i<J.length-1;i++){ const p0=J[Math.max(0,i-1)], p1=J[i], p2=J[i+1], p3=J[Math.min(J.length-1,i+2)];
+      for(let k=0;k<8;k++){ const u=k/8, u2=u*u, u3=u2*u, f=(a,b,c,d)=>.5*(2*b+(-a+c)*u+(2*a-5*b+4*c-d)*u2+(-a+3*b-3*c+d)*u3); C.push([f(p0[0],p1[0],p2[0],p3[0]),f(p0[1],p1[1],p2[1],p3[1])]); } }
+    C.push(J[J.length-1]);
+    C.forEach(([x,y],i)=>{ const t=i/(C.length-1); P.cap(x,y+oy,x,y+oy,r0+(r1-r0)*Math.pow(t,.7), t>.68?sock:col); });
+    const f=C[C.length-1], d=C[C.length-3]; P.ell(f[0]-.8+(f[0]-d[0])*.3,f[1]+oy+.2,1.8,1.1,sock); };
+  // walking as in the reference: far foreleg planted, far hind leg pushing off behind
+  limb([[25,33],[24.5,40],[25.5,46.5],[24.8,51]],2.3,1.1,Sh,G2);
+  limb([[42,33],[44.5,39],[48.5,44.5],[48,50.5]],3,1.1,Sh,G2);
+  // the body: a soft full barrel, a round haunch, a deep chest
+  P.ell(32,31+oy,9.6,5.2,Wt); P.ell(39.5,31+oy,6.2,6,Wt); P.ell(24,30+oy,5.4,6,Wt); P.ell(32,34.8+oy,7,1.3,Cr);
+  // near hind leg under her: a full thigh, the knee forward, the hock back, then down to the paw
+  P.ell(40,34.5+oy,5,5.6,Wt);
+  limb([[39.5,35],[37,40.5],[39.8,45.5],[38.6,51]],3.3,1.2,Wt,Ik);
+  // near foreleg raised mid-step: the elbow back, the forearm reaching forward, the paw hanging loose from the wrist
+  limb([[22.5,33],[21.5,38.5],[17.5,41],[15.2,44.8]],2.6,1.2,Wt,Ik);
+  // a thick neck and a fluffy ruff spilling down the chest
+  P.cap(23,28+oy,17,20+oy,4,Wt);
+  P.poly([[21,23+oy],[16,29+oy],[18,29+oy],[16.5,32+oy],[19,31+oy],[18.5,35+oy],[22,32+oy],[24,34+oy]],Wt); P.set(18,30+oy,Cr); P.set(19,33+oy,Cr); P.set(20,31+oy,Cr);
+  // the head: rounder, with a shorter muzzle and fluffy cheeks
+  P.ell(15.5,18+oy,5.2,4.4,Wt); P.poly([[12,16.5+oy],[6.5,19.5+oy],[7,21.5+oy],[13,22+oy]],Wt);
+  P.poly([[17,21+oy],[13,24+oy],[16,23.5+oy],[15,26+oy],[19,23+oy]],Wt);
+  P.set(6,19+oy,Dk); P.set(6,20+oy,Dk); P.set(7,19+oy,Dk); P.line(8,21+oy,11,21+oy,Sh);
+  // ears: tall, black at the tip, red within
+  P.poly([[12.5,15+oy],[14,5+oy],[17.5,14.5+oy]],Wt); P.poly([[14,13.5+oy],[14.5,8+oy],[16.3,13.5+oy]],Rd); P.set(14,5+oy,Ik); P.set(14,6+oy,Ik); P.set(14,7+oy,Ik); P.set(15,7+oy,Ik);
+  P.poly([[17.5,15+oy],[20.5,6+oy],[21,16.5+oy]],Cr); P.set(20,6+oy,Ik); P.set(20,7+oy,Ik); P.set(21,7+oy,Ik); P.set(20,8+oy,Ik);
+  // the eye: narrow, red-lined, drawn out toward the ear
+  P.set(11,17+oy,Dk); P.set(12,17+oy,Dk); P.set(13,17+oy,Dk); P.set(12,18+oy,Rd); P.set(13,18+oy,Rd); P.set(14,17+oy,Rd); P.set(15,16+oy,Rd);
+  // red flame swirls: brow, shoulder, haunch
+  P.set(16,14+oy,Rd); P.set(16,13+oy,Rd); P.set(17,14+oy,Rd);
+  P.set(25,28+oy,Rd); P.set(26,27+oy,Rd); P.set(26,29+oy,Rd); P.set(27,28+oy,Gd);
+  P.set(40,29+oy,Rd); P.set(41,28+oy,Rd); P.set(41,30+oy,Rd); P.set(42,29+oy,Gd); })); };
 
 /* ---------- the night: she kept the mirror; you see her at the stream with it (seen through your tent flap) ---------- */
 C2L.nightCG=function(){ MJ.dark(false); C2L.nightOn=true;
@@ -212,7 +253,7 @@ Object.assign(SCRIPTS, {
     ['谢霁月','……回营地吧。满仓一个人，该等急了。']],
 });
 // the fox stands on the lake facing you now (the new picture is drawn facing front)
-{ const _f=C2X.foxCG; C2X.foxCG=function(){ _f(); const c=PixCG.cur; c.stage=(g,W,H,fp,t)=>{ if(C2X.foxGone) return; const fox=FineArt.fox(), s=fp*.95, w=fox.width*s, h=fox.height*s, x=W-w*.6, y=H*.68+Math.sin(t*1.2)*fp;
+{ const _f=C2X.foxCG; C2X.foxCG=function(){ _f(); const c=PixCG.cur; c.stage=(g,W,H,fp,t)=>{ if(C2X.foxGone) return; const fox=FineArt.fox(), s=Math.max(1,Math.floor(Math.min(W*.6/fox.width, H*.42/fox.height))), w=fox.width*s, h=fox.height*s, x=W-w*.52, y=H*.7+Math.sin(t*1.2)*fp*.6;   // whole pixels, so she stays crisp
       const gl=g.createRadialGradient(x,y-h*.5,0,x,y-h*.5,w*.9); gl.addColorStop(0,'rgba(200,220,255,.35)'); gl.addColorStop(1,'rgba(200,220,255,0)'); g.fillStyle=gl; g.fillRect(x-w,y-h*1.4,w*2,h*1.8);
       g.save(); g.imageSmoothingEnabled=false; g.drawImage(fox,x-w/2,y-h,w,h); g.restore();
       for(let k=0;k<7;k++){ const u=((t*.2+k/7)%1), fx=x+Math.sin(t+k*2)*w*.6, fy=y-h*.3-u*h, r=fp*(1.2+Math.sin(t*3+k)*.3); const fg=g.createRadialGradient(fx,fy,0,fx,fy,r*4); fg.addColorStop(0,`rgba(150,200,255,${.8*(1-u)})`); fg.addColorStop(1,'rgba(150,200,255,0)'); g.fillStyle=fg; g.fillRect(fx-r*4,fy-r*4,r*8,r*8); }
