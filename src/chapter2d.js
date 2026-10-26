@@ -237,7 +237,7 @@ FineArt.fox=function(){ return FineArt.cache.fox||(FineArt.cache.fox=FineArt.pai
   P.line(67,24,70,24,'#2a2220'); P.set(65,21,Red); P.set(65,20,Red); P.set(64,22,Red); })); };
 
 /* ---------- the boss: 心魔 · 霁影 ---------- */
-BEASTS.c2_xinmo={name:'心魔 · 霁影', spr:'c2_xinmo', boss:true, hp:2400, atk:50, def:12, exp:320, stones:[160,160], theme:'huli',
+BEASTS.c2_xinmo={name:'心魔 · 霁影', spr:'c2_xinmo', boss:true, hp:2000, atk:42, def:12, exp:320, stones:[160,160], theme:'huli',
   lore:'秘境里的湖，照出了大师姐心里最深的那一句话。它穿着她的衣服，握着她的剑，说着别人说过的话。',
   moves:['cross','rumor','dash','atk','rumor','cross'],
   phase2:{at:.6, moves:['rumor','dash','rumor','cross','rumor','dash'], line:'湖面上所有的字都飞了起来——流言越来越密了！'}};
@@ -268,7 +268,7 @@ XM.fox=function(s){ if(s.foxed) return; s.foxed=true; s.busy=true; Battle.ui(); 
 { const _et=Battle.enemyTurn; Battle.enemyTurn=function(){ const s=Battle.s;
     if(!XM.is(s)) return _et.call(Battle);
     s.turns=(s.turns||0)+1;
-    if(!s.foxed&&(s.hp<=s.max*.3||s.turns>16)) return XM.fox(s);
+    if(!s.foxed&&(s.hp<=s.max*.3||s.turns>13)) return XM.fox(s);
     if(!s.stun&&!s.talked&&!Dodge.auto){ const lines=XM.lines(s); if(lines){ s.talked=true; s.turns--; s.busy=true; Battle.ui(); return QQLU.talk(lines,()=>{ if(Battle.s!==s||s.dead) return; s.busy=false; Battle.enemyTurn(); }); } }
     s.talked=false; return _et.call(Battle); }; }
 // a blow that would finish it ends in 九尾狐's arrival instead

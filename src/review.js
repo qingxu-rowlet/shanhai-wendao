@@ -141,7 +141,7 @@ const Review = {
         run(){ act4({c2_xin_night:true, c2_xin_start:true},'mj_camp',18,12,'right'); }},
       {id:'c2-island', group:'第二章', title:'第四幕：湖心岛（插画「心镜湖」）', check:'三段往事已经看过。走上湖心岛，点大师姐：插画里水中的倒影站起来、眼睛变红，心魔现身，开打。',
         run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true},'mj_lake',17,8,'right',[0,1,2]); }},
-      {id:'c2-xinmo', group:'第二章', title:'第四幕 Boss：心魔 · 霁影', check:'直接开打。剑光十字斩（红线预警的十字）、残影突刺（红线预警的直线）、流言（「狐媚」「妖女」「靠脸」这些字朝你飞过来）。血量低于六成后流言更密；打到三成血以下或者撑过十六回合，九尾狐现身，战斗转成剧情。战斗中间心魔会说话。',
+      {id:'c2-xinmo', group:'第二章', title:'第四幕 Boss：心魔 · 霁影', check:'直接开打。剑光十字斩（红线预警的十字）、残影突刺（红线预警的直线）、流言（「狐媚」「妖女」「靠脸」这些字朝你飞过来）。血量低于六成后流言更密；打到三成血以下或者撑过十三回合，九尾狐现身，战斗转成剧情。战斗中间心魔会说话。',
         run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true},'mj_lake',19,8,'right',[0,1,2]); setTimeout(()=>UI.say(C2X.again),400); }},
       {id:'c2-fox', group:'第二章', title:'第四幕：九尾狐与大师姐（插画「九尾」）', check:'打完心魔之后的剧情：九尾狐落在湖面上，和大师姐说话，心魔化成水落回湖里，大师姐第一次笑了。',
         run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true},'mj_lake',19,8,'right',[0,1,2]); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2x_fox)),400); }},
