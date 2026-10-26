@@ -451,7 +451,7 @@ const QQLU = {
   // the quarrel is told between turns, in a small dialogue box over the bottom of the fight (never while you dodge); tap to go on
   talk(lines,cb){ const host=$('#battle'); if(!host||host.hidden||!lines||!lines.length){ cb&&cb(); return; }
     const box=document.createElement('div'); host.appendChild(box); let i=0;
-    const show=()=>{ const [who,text]=lines[i]; box.className='b-talk wood '+(who==='陆正衡'?'lu':who==='穷奇'?'qq':''); box.innerHTML=`<b>${esc(who)}</b><p>${esc(text.replace(/\{宗\}/g,zongName()))}</p><i>▼</i>`; };
+    const show=()=>{ const [who,text]=lines[i]; box.className='b-talk wood '+(who==='陆正衡'?'lu':who==='穷奇'?'qq':''); box.innerHTML=`<b>${esc(who)}</b><p>${esc(text.replace(/\{宗\}/g,zongName()).replace(/\{称\}/g,S.look&&S.look.g==='f'?'小师妹':'小师弟').replace(/\{名\}/g,S.name||''))}</p><i>▼</i>`; };
     box.onclick=e=>{ e.stopPropagation(); Sound.tick(); if(++i<lines.length) show(); else { box.remove(); cb&&cb(); } };
     show(); },
   LINES:{

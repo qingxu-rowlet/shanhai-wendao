@@ -2,7 +2,7 @@
 import os
 here = os.path.dirname(os.path.abspath(__file__))
 src = lambda f: open(os.path.join(here, 'src', f), encoding='utf-8').read()
-js = '\n'.join(src(f) for f in ('data.js', 'player.js', 'engine.js', 'art.js', 'ui.js', 'social.js', 'music.js', 'boss.js', 'dodge.js', 'sect.js', 'mini.js', 'qiyu.js', 'life.js', 'romance.js', 'mail.js', 'bounty.js', 'inkbg.js', 'pixcg.js', 'chibi.js', 'med.js', 'dungeon.js', 'skillfx.js', 'guide.js', 'beasts2.js', 'chapter2.js', 'chapter2b.js', 'mjbeasts.js', 'mjhorror.js', 'chapter2c.js', 'nav.js', 'chapter2nav.js', 'saves.js', 'replay.js', 'dev.js', 'selftest.js', 'review.js'))
+js = '\n'.join(src(f) for f in ('data.js', 'player.js', 'engine.js', 'art.js', 'ui.js', 'social.js', 'music.js', 'boss.js', 'dodge.js', 'sect.js', 'mini.js', 'qiyu.js', 'life.js', 'romance.js', 'mail.js', 'bounty.js', 'inkbg.js', 'pixcg.js', 'chibi.js', 'med.js', 'dungeon.js', 'skillfx.js', 'guide.js', 'beasts2.js', 'chapter2.js', 'chapter2b.js', 'mjbeasts.js', 'mjhorror.js', 'chapter2c.js', 'chapter2d.js', 'nav.js', 'chapter2nav.js', 'saves.js', 'replay.js', 'dev.js', 'selftest.js', 'review.js'))
 page = src('page.html').replace('__JS__', js)
 open(os.path.join(here, 'shanhai.html'), 'w', encoding='utf-8').write(page)
 HEAD = ('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'

@@ -123,7 +123,7 @@ const Review = {
     ...[[1,'秘境第一天（插阵旗、采灵草、煮晚饭）',3],[2,'秘境第二天（饭少了一半、打妖兽、摘朱果、钓鱼）',4],[3,'秘境第三天（翅膀声之后：鸟兽全无、大师兄的纸条、干粮袋）',5]].map(([d,t,n])=>({id:'c2-mj'+d, group:'第二章', title:t, check:'在秘境营地，这一天的吩咐都还没接。做完三件事后回左下的帐篷休息，会有夜里的怪事和第二天早上的剧情。'+(d===3?'这一天做完再睡，第二天早上大师兄就不见了（第二幕结尾）。':''),
       run(){ Review.base({quest:'c2e', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3+d-1; S.c2.counted=n-1; S.c2.night=d-1; C2.nextSet(n); Review.at('mj_camp',10,12,'up'); }})),
     ...(()=>{ const F={qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:5, juqi:2};
-      const go=(flags,map,x,y,dir)=>{ Review.base({quest:'c2f', L:11, sect:'jian', side:{zhenfeng:'active'}, flags:{...F,...flags}, inv:{...I}}); S.c2=C2.fresh(); S.c2.days=6; S.c2.night=3; S.c2.counted=5; Review.at(map,x,y,dir); };
+      const go=(flags,map,x,y,dir,quest='c2f')=>{ Review.base({quest, L:11, sect:'jian', side:{zhenfeng:'active'}, flags:{...F,...flags}, inv:{...I}}); S.c2=C2.fresh(); S.c2.days=6; S.c2.night=3; S.c2.counted=5; Review.at(map,x,y,dir); };
       return [
       {id:'c2-cliff', group:'第二章', title:'第三幕：顺着白羽去白羽崖', check:'大师兄刚失踪，你在秘境营地。地上有一串白羽毛：穿过雾林，最北边的荆棘丛已经被撕开（寻路会带路）。上到白羽崖时有一段对话，山道边能捡到大师兄的「正」字玉牌。',
         run(){ go({},'mj_camp',10,8,'up'); }},
@@ -133,6 +133,21 @@ const Review = {
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(C2C.again),400); }},
       {id:'c2-seal', group:'第二章', title:'第三幕结尾：封印穷奇', check:'打赢穷奇之后的剧情：插画「封」，八卦镜锁链把穷奇（和大师兄）拖回风穴，两个吵个不停；最后大师姐和二师兄各有一个伏笔。',
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2c_win),()=>Story.check()),400); }},
+      ...(()=>{ const A3={c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true}, act4=(flags,map,x,y,dir,echo)=>{ go({...A3,...flags},map,x,y,dir,'c2g'); S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:echo||[]}; save(); };
+        return [
+      {id:'c2-xin-night', group:'第二章', title:'第四幕：封印之后的那一夜', check:'穷奇刚被封印，你回到了营地。去自己的帐篷（左下）休息：夜里八卦镜照见大师姐，第二天早上大师姐不见了，营地东边的芦苇被分开了。',
+        run(){ act4({},'mj_camp',5,11,'left'); }},
+      {id:'c2-lake', group:'第二章', title:'第四幕：顺着脚印去心镜湖', check:'大师姐刚不见。营地里有一串湿脚印通到东边的溪水，顺着走进新地图「心镜湖」：湖面上漂着字，路边三处水面映着大师姐的往事（入门、那位师兄、宗门大比），看完三处，湖心的雾才散开。',
+        run(){ act4({c2_xin_night:true, c2_xin_start:true},'mj_camp',18,12,'right'); }},
+      {id:'c2-island', group:'第二章', title:'第四幕：湖心岛（插画「心镜湖」）', check:'三段往事已经看过。走上湖心岛，点大师姐：插画里水中的倒影站起来、眼睛变红，心魔现身，开打。',
+        run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true},'mj_lake',17,8,'right',[0,1,2]); }},
+      {id:'c2-xinmo', group:'第二章', title:'第四幕 Boss：心魔 · 霁影', check:'直接开打。剑光十字斩（红线预警的十字）、残影突刺（红线预警的直线）、流言（「狐媚」「妖女」「靠脸」这些字朝你飞过来）。血量低于六成后流言更密；打到三成血以下或者撑过十六回合，九尾狐现身，战斗转成剧情。战斗中间心魔会说话。',
+        run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true},'mj_lake',19,8,'right',[0,1,2]); setTimeout(()=>UI.say(C2X.again),400); }},
+      {id:'c2-fox', group:'第二章', title:'第四幕：九尾狐与大师姐（插画「九尾」）', check:'打完心魔之后的剧情：九尾狐落在湖面上，和大师姐说话，心魔化成水落回湖里，大师姐第一次笑了。',
+        run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true},'mj_lake',19,8,'right',[0,1,2]); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2x_fox)),400); }},
+      {id:'c2-act4end', group:'第二章', title:'第四幕结尾：二师兄不见了', check:'从心镜湖回到营地：篝火灭了，锅底被舔得发亮，二师兄不见了（第五幕的开头）。',
+        run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_xin_done:true},'mj_lake',2,8,'left',[0,1,2]); }},
+      ]; })(),
       {id:'c2-town', group:'第二章', title:'第二章里回到桃源镇', check:'已经跟师尊去了宗门、在秘境里。用营地的传送阵回到桃源镇：苏小棠（去了药王谷）和顾长歌（去做散修）都不在镇上了，阿禾、钱掌柜他们还在。',
         run(){ go({},'mj_camp',3,13,'down'); }},
       {id:'c2-rematch', group:'第二章', title:'第二章之后的狂暴穷奇（两个头）', check:'封印穷奇之后再去风眼打狂暴穷奇：穷奇头顶多了大师兄的头，打的时候两个头互相拆台。',

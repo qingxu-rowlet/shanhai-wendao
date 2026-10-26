@@ -51,7 +51,7 @@ const Dodge = {
     const MD=Dodge.mods?Dodge.mods():{speed:1,inv:0,r:1,dur:1}, R=3.2*MD.r, SPEED=58*MD.speed, DUR=pat.dur*MD.dur; let t=0, last=performance.now(), ended=false;
     const segDist=(px,py,b)=>{ const dx=Math.cos(b.a), dy=Math.sin(b.a), qx=px-b.cx, qy=py-b.cy; return Math.abs(qx*dy-qy*dx); };
     const hitTest=b=>{
-      if(b.k==='feather'||b.k==='blade'||b.k==='orbit'||b.k==='fruit'||b.k==='ember'||b.k==='stone') return b.x!==undefined&&Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
+      if(b.k==='feather'||b.k==='blade'||b.k==='orbit'||b.k==='fruit'||b.k==='ember'||b.k==='stone'||b.k==='word') return b.x!==undefined&&Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
       if(b.k==='slash') return b.t>b.warn && segDist(P.me.x,P.me.y,b)<b.w/2+R*.6;
       if(b.k==='band') return b.t>b.warn && Math.abs((b.dir==='h'?P.me.y:P.me.x)-b.at)<b.w/2+R*.4;
       if(b.k==='pillar') return b.t>b.warn && P.me.y<Math.min(1,(b.t-b.warn)/.12)*100+R && Math.abs(P.me.x-b.at)<b.w/2+R*.4;
@@ -97,6 +97,8 @@ const Dodge = {
             g.globalAlpha=fade; g.fillStyle='rgba(255,200,90,.45)'; g.fillRect(x0-1.5,0,b.w+3,len); g.fillStyle='#ffe9a8'; g.fillRect(x0,0,b.w,len); g.fillStyle='#fffbea'; g.fillRect(b.at-b.w*.18,0,b.w*.36,len);
             g.fillStyle='rgba(150,100,30,.7)'; for(let y=6;y<len;y+=8) g.fillRect(x0+1,y,b.w-2,.6);       // the marks on a steelyard beam
             if(len>=100){ g.fillStyle='rgba(255,230,160,.6)'; g.beginPath(); g.ellipse(b.at,98,b.w*.9,3,0,0,7); g.fill(); } g.globalAlpha=1; } }
+        if(b.k==='word'){ g.save(); g.translate(b.x,b.y); g.rotate(Math.sin(b.t*3+b.x)*.12); g.font=`${b.r*2.3}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.textBaseline='middle';
+          g.lineWidth=1.1; g.strokeStyle='rgba(20,6,10,.9)'; g.strokeText(b.text,0,0); g.fillStyle=b.t<.25?'#ffd0d0':'#e8384a'; g.fillText(b.text,0,0); g.restore(); }   // 流言: a word thrown like a stone
         if(b.k==='orbit'&&b.x!==undefined){ g.save(); g.translate(b.x,b.y); g.rotate(b.a+Math.PI/2); g.fillStyle='#e8f2ff'; g.beginPath(); g.ellipse(0,0,4,1.5,0,0,7); g.fill(); g.fillStyle='#7fb2e8'; g.beginPath(); g.ellipse(2.4,0,1.5,1,0,0,7); g.fill(); g.restore(); }
         if(b.k==='fruit'){ g.fillStyle='#d8413b'; g.beginPath(); g.arc(b.x,b.y,b.r,0,7); g.fill(); g.fillStyle='#ffb0a0'; g.fillRect(b.x-b.r*.5,b.y-b.r*.6,1.2,1.2); g.fillStyle='#5fa35a'; g.fillRect(b.x-.5,b.y-b.r-1.6,1.4,1.8); }
         if(b.k==='ember'){ const gr=g.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*2.4); gr.addColorStop(0,'rgba(255,220,120,1)'); gr.addColorStop(.45,'rgba(255,120,40,.9)'); gr.addColorStop(1,'rgba(255,80,20,0)'); g.fillStyle=gr; g.fillRect(b.x-b.r*2.4,b.y-b.r*2.4,b.r*4.8,b.r*4.8); }
