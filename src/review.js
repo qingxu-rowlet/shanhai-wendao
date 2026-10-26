@@ -135,7 +135,7 @@ const Review = {
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(C2C.again),400); }},
       {id:'c2-seal', group:'第二章', title:'第三幕结尾：封印穷奇', check:'打赢穷奇之后的剧情：插画「封」，八卦镜锁链把穷奇（和大师兄）拖回风穴，两个吵个不停；最后大师姐和二师兄各有一个伏笔。',
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2c_win),()=>Story.check()),400); }},
-      ...(()=>{ const A3={c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true}, act4=(flags,map,x,y,dir,echo)=>{ go({...A3,...flags},map,x,y,dir,'c2g'); if(flags.c2_xin_done) S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:echo||[]}; save(); };
+      ...(()=>{ const A3={c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true}, act4=(flags,map,x,y,dir,echo)=>{ go({...A3,...flags},map,x,y,dir,'c2g'); if(flags.c2_xin_done) S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:echo||[]}; enterMap(map,x,y); RT.dir=dir; save(); };   // re-enter so the lake's fog wall sees the memories already seen
         return [
       {id:'c2-xin-night', group:'第二章', title:'第四幕：封印之后的那一夜', check:'穷奇刚被封印，你回到了营地。去自己的帐篷（左下）休息：夜里八卦镜照见大师姐，第二天早上大师姐不见了，营地东边的芦苇被分开了。',
         run(){ act4({},'mj_camp',5,11,'left'); }},
