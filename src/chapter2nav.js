@@ -16,3 +16,4 @@
 { const _tr=Nav.tracked; Nav.tracked=function(){ if(S.track&&S.track.startsWith('c2_')){ const it=C2.items().find(x=>x.key===S.track); if(it) return {kind:'side', id:it.key, title:it.title, desc:it.progress, progress:it.progress, target:it.target}; }
     if(C2.on()&&(!S.track||S.track==='main')){ const it=C2.items()[0]; if(it) return {kind:'side', id:it.key, title:it.title, desc:it.progress, progress:it.progress, target:it.target}; }
     return _tr.call(Nav); }; }
+Nav.extraTasks=()=>C2.items();

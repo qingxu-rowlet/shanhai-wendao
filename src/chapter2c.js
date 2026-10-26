@@ -555,7 +555,7 @@ Object.assign(SCRIPTS, {
   Object.assign(q,{title:'白羽崖', desc:'大师兄不见了，帐篷里只剩一根带血的白羽。羽毛从北边飘来——穿过雾林，去找他。',
     check:s=>!!s.flags.c2_qq_sealed,
     progress:s=>!s.flags.c2_cliff_in?'顺着白羽，穿过雾林往北':!s.flags.c2_mirror?'登上白羽崖顶':'在崖顶击败穷奇',
-    target:s=>{ const m=RT.mapId; if(m==='mj_cliff') return ['mj_cliff',10,4,s.flags.c2_mirror?'穷奇':'崖顶的石台']; if(m==='mj_wood') return ['mj_wood',13,0,'白羽崖']; return ['mj_wood',13,1,'雾林北边']; }});
+    target:s=>{ const m=RT.mapId; if(m==='mj_cliff') return ['mj_cliff',10,3,s.flags.c2_mirror?'穷奇':'崖顶的石台']; if(m==='mj_wood') return ['mj_wood',13,0,'白羽崖']; return ['mj_wood',13,1,'雾林北边']; }});
   QUESTS.splice(QUESTS.indexOf(q)+1,0,{id:'c2g', title:'第四幕 · 大师姐的心魔（制作中）', desc:'穷奇被封回了风穴，大师兄永远留在了它肚子里。第四幕正在制作中，敬请期待。', check:s=>false}); }
 // the end of 第二幕 now points the way
 { const _e=MJ.end; MJ.end=()=>_e().map(st=>Array.isArray(st)&&/第三幕「大师兄失踪」正在制作中/.test(st[1])?['旁白','（第二幕「秘境」完。顺着白羽往北走——雾林最北边的荆棘丛，被什么东西撕开了。）']:st); }

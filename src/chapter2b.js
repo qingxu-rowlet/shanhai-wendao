@@ -113,7 +113,7 @@ C2_TASKS.xie.push(
   {id:'mjfruit', title:'大师姐：摘朱果', ask:['朱果。两颗。','……满仓昨晚说他饿得睡不着。'], goal:'在雾林摘 2 颗朱果交给大师姐', need:s=>count(s,'zhuguo')>=2, prog:s=>`朱果 ${Math.min(2,count(s,'zhuguo'))}/2`, take:{zhuguo:2},
     tgt:s=>count(s,'zhuguo')>=2?null:WOOD(22,4,'雾林里的朱果'), done:[['谢霁月','我拿去给满仓。'],['旁白','她嘴上没说，却把那两颗朱果洗得干干净净。']]},
   {id:'mjmush', title:'大师姐：采薰草', ask:['替我采两株薰草。我要配一副安神的药。','……这几天，大家都睡不好。'], goal:'在雾林采 2 株薰草交给大师姐', need:s=>count(s,'xuncao')>=2, prog:s=>`薰草 ${Math.min(2,count(s,'xuncao'))}/2`, take:{xuncao:2},
-    tgt:s=>count(s,'xuncao')>=2?null:WOOD(20,9,'雾林里的薰草'), done:[['谢霁月','……'],['谢霁月','你也觉得大师兄不对劲，对吗？'],['旁白','她没等你回答，转身走开了。']]},
+    tgt:s=>{ if(count(s,'xuncao')>=2) return null; const p=[[20,9],[6,19]].find(([x,y])=>(s.gathered||{})['mj_wood:'+x+','+y]!==s.day)||[20,9]; return WOOD(p[0],p[1],'雾林里的薰草'); }, done:[['谢霁月','……'],['谢霁月','你也觉得大师兄不对劲，对吗？'],['旁白','她没等你回答，转身走开了。']]},
 );
 C2_TASKS.man.push(
   {id:'mjcook', title:'二师兄：做晚饭', ask:['{称}！营地第一顿饭，得吃顿好的！','我在书上看过，雾林里长着一种叫「祝余」的草——吃了就不会饿！采两株来，到篝火边的锅里煮！'], goal:'在雾林采 2 株祝余，在营地的锅里煮晚饭', need:s=>!!s.c2.p.mj.cooked, prog:s=>s.c2.p.mj.cooked?'煮好了':`祝余 ${Math.min(2,count(s,'zhuyu'))}/2`,

@@ -300,9 +300,9 @@ XM.fox=function(s){ if(s.foxed) return; s.foxed=true; s.busy=true; Battle.ui(); 
 { const q=QUESTS.find(q=>q.id==='c2g');
   Object.assign(q,{title:'心镜湖', desc:'穷奇被封回了风穴，大师兄永远留在了它肚子里。那一夜，八卦镜照见了大师姐。',
     check:s=>!!s.flags.c2_man_gone,
-    progress:s=>{ const F=s.flags, n=(s.c2x&&s.c2x.echo||[]).length; return !F.c2_xin_night?'回营地，在自己的帐篷里歇一晚':!F.c2_lake_in?'顺着大师姐的脚印，沿溪水往东':n<3?`看清湖面上映着的往事 ${n}/3`:!F.c2_xin_done?'去湖心岛找大师姐':'回营地'; },
+    progress:s=>{ const F=s.flags, n=(s.c2x&&s.c2x.echo||[]).length; return !F.c2_xin_night?'回营地，在自己的帐篷里歇一晚':!F.c2_lake_in?'顺着大师姐的脚印，沿溪水往东':n<3?`看清湖面上映着的往事 ${n}/3`:!F.c2_xin_met?'去湖心岛找大师姐':!F.c2_xin_done?'打败大师姐的心魔（和她说话）':'回营地'; },
     target:s=>{ const F=s.flags, m=RT.mapId, n=(s.c2x&&s.c2x.echo||[]).length;
-      if(!F.c2_xin_night) return ['mj_camp',5,11,'你的帐篷'];
+      if(!F.c2_xin_night) return ['mj_camp',4,11,'你的帐篷'];
       if(F.c2_xin_done) return ['mj_camp',10,8,'营地'];
       if(m==='mj_lake'){ if(n<3){ const E=MAPS.mj_lake.objects.find(o=>o.act==='c2echo'&&!(s.c2x&&s.c2x.echo||[]).includes(o.ei)); return ['mj_lake',E.x,E.y,'水面上的倒影']; } return ['mj_lake',20,8,'湖心岛']; }
       return ['mj_camp',21,13,'东边的溪水']; }});

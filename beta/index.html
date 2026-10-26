@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="784b4929d4"><script>(function(){var B="784b4929d4";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="15131d528d"><script>(function(){var B="15131d528d";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6707,7 +6707,7 @@ C2_TASKS.xie.push(
   {id:'mjfruit', title:'大师姐：摘朱果', ask:['朱果。两颗。','……满仓昨晚说他饿得睡不着。'], goal:'在雾林摘 2 颗朱果交给大师姐', need:s=>count(s,'zhuguo')>=2, prog:s=>`朱果 ${Math.min(2,count(s,'zhuguo'))}/2`, take:{zhuguo:2},
     tgt:s=>count(s,'zhuguo')>=2?null:WOOD(22,4,'雾林里的朱果'), done:[['谢霁月','我拿去给满仓。'],['旁白','她嘴上没说，却把那两颗朱果洗得干干净净。']]},
   {id:'mjmush', title:'大师姐：采薰草', ask:['替我采两株薰草。我要配一副安神的药。','……这几天，大家都睡不好。'], goal:'在雾林采 2 株薰草交给大师姐', need:s=>count(s,'xuncao')>=2, prog:s=>`薰草 ${Math.min(2,count(s,'xuncao'))}/2`, take:{xuncao:2},
-    tgt:s=>count(s,'xuncao')>=2?null:WOOD(20,9,'雾林里的薰草'), done:[['谢霁月','……'],['谢霁月','你也觉得大师兄不对劲，对吗？'],['旁白','她没等你回答，转身走开了。']]},
+    tgt:s=>{ if(count(s,'xuncao')>=2) return null; const p=[[20,9],[6,19]].find(([x,y])=>(s.gathered||{})['mj_wood:'+x+','+y]!==s.day)||[20,9]; return WOOD(p[0],p[1],'雾林里的薰草'); }, done:[['谢霁月','……'],['谢霁月','你也觉得大师兄不对劲，对吗？'],['旁白','她没等你回答，转身走开了。']]},
 );
 C2_TASKS.man.push(
   {id:'mjcook', title:'二师兄：做晚饭', ask:['{称}！营地第一顿饭，得吃顿好的！','我在书上看过，雾林里长着一种叫「祝余」的草——吃了就不会饿！采两株来，到篝火边的锅里煮！'], goal:'在雾林采 2 株祝余，在营地的锅里煮晚饭', need:s=>!!s.c2.p.mj.cooked, prog:s=>s.c2.p.mj.cooked?'煮好了':`祝余 ${Math.min(2,count(s,'zhuyu'))}/2`,
@@ -7641,7 +7641,7 @@ Object.assign(SCRIPTS, {
   Object.assign(q,{title:'白羽崖', desc:'大师兄不见了，帐篷里只剩一根带血的白羽。羽毛从北边飘来——穿过雾林，去找他。',
     check:s=>!!s.flags.c2_qq_sealed,
     progress:s=>!s.flags.c2_cliff_in?'顺着白羽，穿过雾林往北':!s.flags.c2_mirror?'登上白羽崖顶':'在崖顶击败穷奇',
-    target:s=>{ const m=RT.mapId; if(m==='mj_cliff') return ['mj_cliff',10,4,s.flags.c2_mirror?'穷奇':'崖顶的石台']; if(m==='mj_wood') return ['mj_wood',13,0,'白羽崖']; return ['mj_wood',13,1,'雾林北边']; }});
+    target:s=>{ const m=RT.mapId; if(m==='mj_cliff') return ['mj_cliff',10,3,s.flags.c2_mirror?'穷奇':'崖顶的石台']; if(m==='mj_wood') return ['mj_wood',13,0,'白羽崖']; return ['mj_wood',13,1,'雾林北边']; }});
   QUESTS.splice(QUESTS.indexOf(q)+1,0,{id:'c2g', title:'第四幕 · 大师姐的心魔（制作中）', desc:'穷奇被封回了风穴，大师兄永远留在了它肚子里。第四幕正在制作中，敬请期待。', check:s=>false}); }
 // the end of 第二幕 now points the way
 { const _e=MJ.end; MJ.end=()=>_e().map(st=>Array.isArray(st)&&/第三幕「大师兄失踪」正在制作中/.test(st[1])?['旁白','（第二幕「秘境」完。顺着白羽往北走——雾林最北边的荆棘丛，被什么东西撕开了。）']:st); }
@@ -7949,9 +7949,9 @@ XM.fox=function(s){ if(s.foxed) return; s.foxed=true; s.busy=true; Battle.ui(); 
 { const q=QUESTS.find(q=>q.id==='c2g');
   Object.assign(q,{title:'心镜湖', desc:'穷奇被封回了风穴，大师兄永远留在了它肚子里。那一夜，八卦镜照见了大师姐。',
     check:s=>!!s.flags.c2_man_gone,
-    progress:s=>{ const F=s.flags, n=(s.c2x&&s.c2x.echo||[]).length; return !F.c2_xin_night?'回营地，在自己的帐篷里歇一晚':!F.c2_lake_in?'顺着大师姐的脚印，沿溪水往东':n<3?`看清湖面上映着的往事 ${n}/3`:!F.c2_xin_done?'去湖心岛找大师姐':'回营地'; },
+    progress:s=>{ const F=s.flags, n=(s.c2x&&s.c2x.echo||[]).length; return !F.c2_xin_night?'回营地，在自己的帐篷里歇一晚':!F.c2_lake_in?'顺着大师姐的脚印，沿溪水往东':n<3?`看清湖面上映着的往事 ${n}/3`:!F.c2_xin_met?'去湖心岛找大师姐':!F.c2_xin_done?'打败大师姐的心魔（和她说话）':'回营地'; },
     target:s=>{ const F=s.flags, m=RT.mapId, n=(s.c2x&&s.c2x.echo||[]).length;
-      if(!F.c2_xin_night) return ['mj_camp',5,11,'你的帐篷'];
+      if(!F.c2_xin_night) return ['mj_camp',4,11,'你的帐篷'];
       if(F.c2_xin_done) return ['mj_camp',10,8,'营地'];
       if(m==='mj_lake'){ if(n<3){ const E=MAPS.mj_lake.objects.find(o=>o.act==='c2echo'&&!(s.c2x&&s.c2x.echo||[]).includes(o.ei)); return ['mj_lake',E.x,E.y,'水面上的倒影']; } return ['mj_lake',20,8,'湖心岛']; }
       return ['mj_camp',21,13,'东边的溪水']; }});
@@ -8252,7 +8252,7 @@ const Nav = {
   },
   goal(){
     const tr=Nav.tracked(), t=tr&&tr.target; if(!t||!RT.map) return null;
-    if(t[0]===RT.mapId) return {x:t[1], y:t[2], final:true, label:t[3]};
+    if(t[0]===RT.mapId) return {x:t[1], y:t[2], final:!RT.map.exits.some(e=>e.x===t[1]&&e.y===t[2]), label:t[3]};   // a target on a map's way out: walk through it
     const prev={[RT.mapId]:null}, q=[RT.mapId];
     while(q.length){ const m=q.shift(); if(m===t[0]) break; for(const e of MAPS[m].exits) if(!(e.to in prev)){ prev[e.to]=m; q.push(e.to); } }
     if(!(t[0] in prev)) return null;
@@ -8269,6 +8269,8 @@ const Nav = {
   tick(dt){
     RT.navT-=dt; if(RT.navT>0) return; RT.navT=0.25;
     const g=Nav.goal(); RT.navGoal=g; RT.navPath=g&&S.gps!==false?(Nav.pathTo(g)||[]):[];
+    // the task bar follows the story as it moves (a memory seen, a chore done), not only when something else redraws it
+    if(!RT.paused){ const sig=Nav.list().map(t=>t.key+t.title+t.progress+(t.target||'')).join('|'); if(sig!==Nav._sig){ Nav._sig=sig; UI.hud(); } }
     UI.miniDraw();
   },
   go(cont){
@@ -8365,9 +8367,12 @@ UI.worldMap=()=>{
 UI.tasks=()=>{
   if(!$('#panel').hidden && UI._panelKind==='tasks'){ UI.closePanel(); return; }
   const q=QUESTS[S.quest], rows=[];
+  const extra=Nav.extraTasks?Nav.extraTasks():[];   // chapter 2: the chores the seniors hand out
   rows.push(`<div class="task ${S.track==='main'?'on':''}"><div class="tk-head"><span class="tag main">主线</span><b>${esc(q.title)}</b></div><p>${esc(q.desc)}</p>
     ${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}
-    <div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div></div>`);
+    ${extra.length?'':`<div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div>`}</div>`);
+  for(const t of extra) rows.push(`<div class="task ${Nav.tracked()?.id===t.key?'on':''}"><div class="tk-head"><span class="tag">今日</span><b>${esc(t.title)}</b></div><p class="muted">进度：${esc(t.progress)}</p>
+      <div class="tk-btns"><button class="btn mini" data-track="${t.key}">${Nav.tracked()?.id===t.key?'追踪中':'追踪'}</button>${t.target?`<button class="btn mini main" data-go="${t.key}">寻路</button>`:''}</div></div>`);
   for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;
     const giver=npcAt(s.giver)[3];
     rows.push(`<div class="task ${S.track===s.id?'on':''}"><div class="tk-head"><span class="tag">${st?'支线':'可接取'}</span><b>${esc(s.title)}</b></div>
@@ -8457,6 +8462,7 @@ UI.title();
 { const _tr=Nav.tracked; Nav.tracked=function(){ if(S.track&&S.track.startsWith('c2_')){ const it=C2.items().find(x=>x.key===S.track); if(it) return {kind:'side', id:it.key, title:it.title, desc:it.progress, progress:it.progress, target:it.target}; }
     if(C2.on()&&(!S.track||S.track==='main')){ const it=C2.items()[0]; if(it) return {kind:'side', id:it.key, title:it.title, desc:it.progress, progress:it.progress, target:it.target}; }
     return _tr.call(Nav); }; }
+Nav.extraTasks=()=>C2.items();
 
 /* ============================================================
    山海问道 · saving: autosave + three manual snapshots per profile + a "测灵根前" snapshot

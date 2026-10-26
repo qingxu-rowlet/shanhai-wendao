@@ -26,7 +26,7 @@ const Nav = {
   },
   goal(){
     const tr=Nav.tracked(), t=tr&&tr.target; if(!t||!RT.map) return null;
-    if(t[0]===RT.mapId) return {x:t[1], y:t[2], final:true, label:t[3]};
+    if(t[0]===RT.mapId) return {x:t[1], y:t[2], final:!RT.map.exits.some(e=>e.x===t[1]&&e.y===t[2]), label:t[3]};   // a target on a map's way out: walk through it
     const prev={[RT.mapId]:null}, q=[RT.mapId];
     while(q.length){ const m=q.shift(); if(m===t[0]) break; for(const e of MAPS[m].exits) if(!(e.to in prev)){ prev[e.to]=m; q.push(e.to); } }
     if(!(t[0] in prev)) return null;
@@ -43,6 +43,8 @@ const Nav = {
   tick(dt){
     RT.navT-=dt; if(RT.navT>0) return; RT.navT=0.25;
     const g=Nav.goal(); RT.navGoal=g; RT.navPath=g&&S.gps!==false?(Nav.pathTo(g)||[]):[];
+    // the task bar follows the story as it moves (a memory seen, a chore done), not only when something else redraws it
+    if(!RT.paused){ const sig=Nav.list().map(t=>t.key+t.title+t.progress+(t.target||'')).join('|'); if(sig!==Nav._sig){ Nav._sig=sig; UI.hud(); } }
     UI.miniDraw();
   },
   go(cont){
@@ -139,9 +141,12 @@ UI.worldMap=()=>{
 UI.tasks=()=>{
   if(!$('#panel').hidden && UI._panelKind==='tasks'){ UI.closePanel(); return; }
   const q=QUESTS[S.quest], rows=[];
+  const extra=Nav.extraTasks?Nav.extraTasks():[];   // chapter 2: the chores the seniors hand out
   rows.push(`<div class="task ${S.track==='main'?'on':''}"><div class="tk-head"><span class="tag main">主线</span><b>${esc(q.title)}</b></div><p>${esc(q.desc)}</p>
     ${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}
-    <div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div></div>`);
+    ${extra.length?'':`<div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div>`}</div>`);
+  for(const t of extra) rows.push(`<div class="task ${Nav.tracked()?.id===t.key?'on':''}"><div class="tk-head"><span class="tag">今日</span><b>${esc(t.title)}</b></div><p class="muted">进度：${esc(t.progress)}</p>
+      <div class="tk-btns"><button class="btn mini" data-track="${t.key}">${Nav.tracked()?.id===t.key?'追踪中':'追踪'}</button>${t.target?`<button class="btn mini main" data-go="${t.key}">寻路</button>`:''}</div></div>`);
   for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;
     const giver=npcAt(s.giver)[3];
     rows.push(`<div class="task ${S.track===s.id?'on':''}"><div class="tk-head"><span class="tag">${st?'支线':'可接取'}</span><b>${esc(s.title)}</b></div>
