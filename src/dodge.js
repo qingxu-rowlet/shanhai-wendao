@@ -127,7 +127,7 @@ const Dodge = {
         else { msg=`被${pat.name}击中 ${hits} 下。`; S.hp-=dmg; $('#battle').classList.remove('shake'); void $('#battle').offsetWidth; $('#battle').classList.add('shake'); Battle.float('-'+dmg,'me'); }
         if(pat.mp&&hits){ S.mp=Math.max(0,S.mp-pat.mp*hits); msg+=`灵力被震散 ${pat.mp*hits}。`; }
         s.i++; let tail='';
-        if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.6)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
+        if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.8)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
         Battle.log(msg+(dmg?`（-${dmg}）`:'')+tail); s.busy=false; Battle.phaseCheck(); Battle.ui();
         if(s.hp<=0){ s.busy=true; s.dead=true; return setTimeout(()=>Battle.end('win'),500); }
         if(S.hp<=0){ S.hp=0; setTimeout(()=>Battle.end('lose'),600); }

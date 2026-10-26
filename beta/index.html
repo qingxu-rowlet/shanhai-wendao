@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="bd372a5cf4"><script>(function(){var B="bd372a5cf4";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="7fe48e60e9"><script>(function(){var B="7fe48e60e9";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2570,9 +2570,9 @@ const Battle = {
     if(a==='skill'){ if(S.mp<8) return; S.mp-=8; dmg=st.atk*2.2*Sect.spellMul()*rnd()-def/4; Sound.magic(); msg='御剑术！飞剑化作一道青光。'; }
     else if(a==='sect'){ const sc=SECTS[S.sect]; if(!sc||S.mp<sc.skill.mp) return; S.mp-=sc.skill.mp; Sound.magic();
       if(S.sect==='jian'){ dmg=st.atk*3*Sect.spellMul()*rnd()-def/4; msg='万剑归宗！漫天剑雨倾泻而下！'; BossBg.flash('rgba(170,210,255,.55)'); }
-      if(S.sect==='dan'){ dmg=st.atk*1.6*Sect.spellMul()*rnd(); s.burn=3; msg='丹火！敌人被金色的火焰缠住了。'; BossBg.flash('rgba(255,170,60,.45)'); }
+      if(S.sect==='dan'){ dmg=st.atk*2.2*Sect.spellMul()*rnd(); s.burn=3; msg='丹火！敌人被金色的火焰缠住了。'; BossBg.flash('rgba(255,170,60,.45)'); }
       if(S.sect==='shou'){ dmg=(S.pet?st.atk*(1+(S.pet.lv-1)*.15):st.atk)*2.4*rnd()-def/3; msg=S.pet?`兽魂共鸣！${BEASTS[S.pet.kind].name}全力扑了上去！`:'没有灵宠……你学着野兽的样子扑了上去！'; }
-      if(S.sect==='tianji'){ const wary=s.i<(s.stunGuard||0), ok=!wary&&Math.random()<(s.B.boss?.35:.7); dmg=st.atk*1.8*Sect.spellMul()*rnd()-def/4;   // it lands now and then, and never twice in a row
+      if(S.sect==='tianji'){ const wary=s.i<(s.stunGuard||0), ok=!wary&&Math.random()<(s.B.boss?.35:.7); dmg=st.atk*2.6*Sect.spellMul()*rnd()-def/4;   // it lands now and then, and never twice in a row
         if(ok){ s.stun=1; s.stunGuard=s.i+3; msg='定身符！敌人动弹不得。'; } else msg=wary?'敌人对定身符有了防备，符纸一贴上就烧成了灰。':'定身符被一股妖力震碎了！'; BossBg.flash('rgba(200,160,255,.45)'); } }
     else { dmg=st.atk*rnd()-def/2; Sound.hit(); msg='你挥剑斩去。'; }
     const crit=Math.random()<Sect.crit(); if(crit){ dmg*=1.8; msg+=' 暴击！'; }
@@ -2615,7 +2615,7 @@ const Battle = {
       }
       if(dmg){ S.hp-=dmg; Sound.hurt(); $('#battle').classList.remove('shake'); void $('#battle').offsetWidth; $('#battle').classList.add('shake'); Battle.float('-'+dmg,'me'); }
       let tail='';
-      if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.6)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
+      if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.8)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
       Battle.log(msg+(dmg?`（-${dmg}）`:'')+tail); s.busy=false; Battle.phaseCheck(); Battle.ui();
       if(s.hp<=0){ s.busy=true; s.dead=true; return setTimeout(()=>Battle.end('win'),500); }
       if(S.hp<=0){ S.hp=0; setTimeout(()=>Battle.end('lose'),600); }
@@ -3540,7 +3540,7 @@ const Dodge = {
         else { msg=`被${pat.name}击中 ${hits} 下。`; S.hp-=dmg; $('#battle').classList.remove('shake'); void $('#battle').offsetWidth; $('#battle').classList.add('shake'); Battle.float('-'+dmg,'me'); }
         if(pat.mp&&hits){ S.mp=Math.max(0,S.mp-pat.mp*hits); msg+=`灵力被震散 ${pat.mp*hits}。`; }
         s.i++; let tail='';
-        if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.6)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
+        if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.8)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
         Battle.log(msg+(dmg?`（-${dmg}）`:'')+tail); s.busy=false; Battle.phaseCheck(); Battle.ui();
         if(s.hp<=0){ s.busy=true; s.dead=true; return setTimeout(()=>Battle.end('win'),500); }
         if(S.hp<=0){ S.hp=0; setTimeout(()=>Battle.end('lose'),600); }
@@ -3571,13 +3571,13 @@ const SECTS = {
     skill:{name:'万剑归宗', mp:14, desc:'召来漫天剑雨，造成 3 倍攻击的伤害。'}, passive:'攻击 +20%',
     master:{id:'m_jian', name:'凌虚剑尊', x:8, y:8, look:{g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:0}}},
   dan:{name:'药王谷', cloth:7, motto:'悬壶济世，以药入道。', desc:'药修。炼丹火候更好掌控，丹火还能灼烧敌人。苏小棠也拜在这里。',
-    skill:{name:'丹火', mp:10, desc:'1.6 倍伤害，并灼烧敌人 3 回合。'}, passive:'炼丹火候区更宽；回春丹效果 +50%',
+    skill:{name:'丹火', mp:10, desc:'2.2 倍伤害，并灼烧敌人 3 回合。'}, passive:'炼丹火候区更宽；回春丹效果 +50%',
     master:{id:'m_dan', name:'药尘长老', x:14, y:10, look:{g:'m',skin:2,hair:1,hairColor:3,style:'robe',cloth:7}}},
   shou:{name:'万兽谷', cloth:3, motto:'万物有灵，以心御之。', desc:'驭兽师。击败山林妖兽后能收服为灵宠，灵宠会跟着你、帮你战斗。',
     skill:{name:'兽魂共鸣', mp:10, desc:'灵宠全力一击，造成 2.4 倍伤害。'}, passive:'可以收服妖兽；灵宠每回合追加攻击',
     master:{id:'m_shou', name:'苍姑', x:8, y:10, look:{g:'f',skin:3,hair:2,hairColor:2,style:'jin',cloth:3}}},
   tianji:{name:'天机阁', cloth:4, motto:'窥天机，布星阵。', desc:'符修。定身符能让敌人动弹不得，每日卜卦趋吉避凶。',
-    skill:{name:'定身符', mp:10, desc:'1.8 倍伤害；有 70% 的机会让敌人下回合无法行动（对首领 35%）。定住一次之后，敌人会防备三回合。'}, passive:'灵力 +30%、防御 +15%；每日卜卦：吉日灵石更多、更容易暴击',
+    skill:{name:'定身符', mp:10, desc:'2.6 倍伤害；有 70% 的机会让敌人下回合无法行动（对首领 35%）。定住一次之后，敌人会防备三回合。'}, passive:'灵力 +30%、防御 +15%；每日卜卦：吉日灵石更多、更容易暴击',
     master:{id:'m_tianji', name:'天机子', x:17, y:8, look:{g:'m',skin:0,hair:5,hairColor:5,style:'robe',cloth:4}}},
 };
 const FORTUNES = [ {name:'大吉', stones:1.5, crit:.18}, {name:'吉', stones:1.25, crit:.12}, {name:'平', stones:1, crit:.06}, {name:'凶', stones:.8, crit:.03} ];
@@ -7251,7 +7251,7 @@ const C2C = {
     ['村民','陆仙长为民除害！后山的狼妖，一只都没跑掉！'],
     ['旁白','村民们把狼皮挂上牌坊，敲锣打鼓。人群中间站着一个年轻人，腰间的「正」字玉牌在太阳下发亮。'],
     ['陆正衡','斩妖除魔，本是我辈分内之事。'],
-    ['旁白','那一年，「青云陆正衡」的名字，传遍了整座山。'],
+    ['旁白','那一年，「{宗}陆正衡」的名字，传遍了整座山。'],
     {run:()=>C2C.cg(1)},
     ['旁白','镜面又是一晃。画面往回倒去——'],
     ['旁白','那是更早的时候。村民们扛着锄头、举着火把上了后山。他们烧林开荒，掏了狼窝，把还没睁眼的小狼一只只拎出来卖。'],
@@ -7305,7 +7305,7 @@ const C2C = {
   win:[
     {run:()=>C2C.sealCG()},
     ['旁白','穷奇重重摔在崖顶，双翼散了一地白羽。它头顶那颗人头还在骂个不停——是大师兄。'],
-    ['陆正衡','放我出来！我是青云陆正衡！我斩过的妖，比你吃过的人还多！'],
+    ['陆正衡','放我出来！我是{宗}陆正衡！我斩过的妖，比你吃过的人还多！'],
     ['穷奇','闭嘴……你好苦……'],
     ['谢霁月','（举起八卦镜）师兄。镜子里的事，是真的吗？'],
     ['陆正衡','……'],
@@ -7464,6 +7464,9 @@ C2C.bagua=function(g,x,y,r,t,lit){
   const mg=g.createRadialGradient(x-r*.18,y-r*.2,r*.05,x,y,r*.6); mg.addColorStop(0,lit?'#ffffff':'#f6f2e0'); mg.addColorStop(.6,lit?'#fff0b8':'#cfc8b0'); mg.addColorStop(1,lit?'#e8c060':'#8a8670');
   g.fillStyle=mg; g.beginPath(); g.arc(x,y,r*.58,0,7); g.fill();
   g.save(); g.beginPath(); g.arc(x,y,r*.58,0,7); g.clip(); g.fillStyle='rgba(255,255,255,.75)'; g.translate(x,y); g.rotate(-.7); g.fillRect(-r*.7,-r*.34,r*1.4,r*.1); g.fillRect(-r*.7,-r*.18,r*1.4,r*.04); g.restore(); };
+const zongName=()=>({jian:'青云',dan:'药王谷',shou:'万兽谷',tianji:'天机阁'})[S&&S.sect]||'青云';
+{ const _l=UI.line; UI.line=function(who,text){ return _l.call(UI,who,String(text).replace(/\{宗\}/g,zongName())); }; }
+{ const _lg=Battle.log; Battle.log=function(t){ return _lg.call(Battle,String(t).replace(/\{宗\}/g,zongName())); }; }
 Object.assign(SCRIPTS, { c2c_flash:C2C.flash, c2c_why1:[...C2C.why1, ...C2C.land()], c2c_why2:[...C2C.why2, ...C2C.land()], c2c_win:C2C.win, c2c_lose:C2C.lose });
 // the mirror's pictures follow the lines; the 'freeze' line ends the scene
 { const _cd=UI.closeDlg; UI.closeDlg=function(){ const r=_cd.apply(UI,arguments); setTimeout(()=>{ if(PixCG.on&&$('#dlg').hidden&&!Battle.s&&(C2C.sealOn||PixCG.cur&&/镜中往事/.test($('#cg .cg-title b')?.textContent||''))){ C2C.sealOn=false; PixCG.close(); } },80); return r; }; }
@@ -7472,7 +7475,7 @@ Object.assign(SCRIPTS, { c2c_flash:C2C.flash, c2c_why1:[...C2C.why1, ...C2C.land
 BEASTS.c2_qqlu={name:'穷奇', spr:'qiongqi_big', boss:true, big:BEASTS.qiongqi.big, hp:1800, atk:46, def:14, exp:320, stones:[160,160], drop:['qq_yu',1], mirror:true, theme:'qiongqi',
   lore:'吞下了陆正衡的穷奇。它专吃好人，这一回却被一颗苦心卡住了喉咙。',
   moves:['atk','wind','roar','double','featherrain','big','wind'],
-  phase2:{at:.7, moves:['pillar','featherrain','shield','wind','pillar','big'], line:'穷奇的头顶鼓起一团——一颗人头挣了出来。是大师兄！「放肆！谁敢动我青云陆正衡！」'},
+  phase2:{at:.7, moves:['pillar','featherrain','shield','wind','pillar','big'], line:'穷奇的头顶鼓起一团——一颗人头挣了出来。是大师兄！「放肆！谁敢动我{宗}陆正衡！」'},
   phase3:{at:.35, ally:'谢霁月', moves:['quarrel','pillar','tornado','shield','quarrel','big'], line:'两颗头吵了起来，穷奇的身子被扯得东倒西歪！就在这时，一道剑光落下——「师兄，够了。」谢霁月站到了你身边。'}};
 SCENES.c2_qqlu={...SCENES.qiongqi, title:'穷奇', sub:'闻人忠信，辄食其鼻　——　《神异经》'};
 DODGE.c2_qqlu={...DODGE.qiongqi,
@@ -7509,13 +7512,13 @@ const QQLU = {
   // the quarrel is told between turns, in a small dialogue box over the bottom of the fight (never while you dodge); tap to go on
   talk(lines,cb){ const host=$('#battle'); if(!host||host.hidden||!lines||!lines.length){ cb&&cb(); return; }
     const box=document.createElement('div'); host.appendChild(box); let i=0;
-    const show=()=>{ const [who,text]=lines[i]; box.className='b-talk wood '+(who==='陆正衡'?'lu':who==='穷奇'?'qq':''); box.innerHTML=`<b>${esc(who)}</b><p>${esc(text)}</p><i>▼</i>`; };
+    const show=()=>{ const [who,text]=lines[i]; box.className='b-talk wood '+(who==='陆正衡'?'lu':who==='穷奇'?'qq':''); box.innerHTML=`<b>${esc(who)}</b><p>${esc(text.replace(/\{宗\}/g,zongName()))}</p><i>▼</i>`; };
     box.onclick=e=>{ e.stopPropagation(); Sound.tick(); if(++i<lines.length) show(); else { box.remove(); cb&&cb(); } };
     show(); },
   LINES:{
     qq:['呕……好苦……','你闻着倒是挺甜的。','我只吃好人！','滚出我的肚子！'],
     pillar:['明正典刑！','妖就是妖，该杀！','我是为了村民！','天理昭昭！'],
-    shield:['我问心无愧！','青云陆正衡，清清白白！','谁敢污我名声！'],
+    shield:['我问心无愧！','{宗}陆正衡，清清白白！','谁敢污我名声！'],
     quarrel:[[['穷奇','往左！'],['陆正衡','往右！']],[['穷奇','苦死了，吐出去！'],['陆正衡','你敢！']],[['陆正衡','那些狼本来就该死！'],['穷奇','那你也该死！']],[['陆正衡','都怪你！'],['穷奇','都怪你！']],[['穷奇','闭嘴！'],['陆正衡','你先闭嘴！']],[['陆正衡','我是为了村民！'],['穷奇','你是为了你自己！']]],
     mirror:['……别照了。','把镜子拿开！','那不是我……','……'],
   },
@@ -7539,7 +7542,7 @@ const QQLU = {
     return r; }; }
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s, p2=s&&s.phase2, p3=s&&s.phase3; _pc.call(Battle);
     if(!QQLU.is(s)) return; if(s.phase2!==p2||s.phase3!==p3) QQLU.classic(s);
-    if(s.phase2&&!p2){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','放肆！谁敢动我青云陆正衡！'],['穷奇','你给我缩回去！'],['陆正衡','你才缩回去！']]; }
+    if(s.phase2&&!p2){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','放肆！谁敢动我{宗}陆正衡！'],['穷奇','你给我缩回去！'],['陆正衡','你才缩回去！']]; }
     if(s.phase3&&!p3) s.pendingTalk=[['穷奇','苦死了！我要把你吐出去！'],['陆正衡','你敢！我话还没说完——'],['谢霁月','师兄。够了。']]; }; }
 // the 八卦镜 takes the place of 遁走 (which a boss fight never allows anyway)
 { const _h=Battle.actsHTML; Battle.actsHTML=function(B){ const h=_h.call(Battle,B); return B&&B.mirror?h.replace(/<button data-a="flee"[^>]*>[\s\S]*?<\/button>/,'<button data-a="mirror" class="mirrorb">八卦镜<small>照破护盾</small></button>'):h; }; }

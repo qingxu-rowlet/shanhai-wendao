@@ -16,13 +16,13 @@ const SECTS = {
     skill:{name:'万剑归宗', mp:14, desc:'召来漫天剑雨，造成 3 倍攻击的伤害。'}, passive:'攻击 +20%',
     master:{id:'m_jian', name:'凌虚剑尊', x:8, y:8, look:{g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:0}}},
   dan:{name:'药王谷', cloth:7, motto:'悬壶济世，以药入道。', desc:'药修。炼丹火候更好掌控，丹火还能灼烧敌人。苏小棠也拜在这里。',
-    skill:{name:'丹火', mp:10, desc:'1.6 倍伤害，并灼烧敌人 3 回合。'}, passive:'炼丹火候区更宽；回春丹效果 +50%',
+    skill:{name:'丹火', mp:10, desc:'2.2 倍伤害，并灼烧敌人 3 回合。'}, passive:'炼丹火候区更宽；回春丹效果 +50%',
     master:{id:'m_dan', name:'药尘长老', x:14, y:10, look:{g:'m',skin:2,hair:1,hairColor:3,style:'robe',cloth:7}}},
   shou:{name:'万兽谷', cloth:3, motto:'万物有灵，以心御之。', desc:'驭兽师。击败山林妖兽后能收服为灵宠，灵宠会跟着你、帮你战斗。',
     skill:{name:'兽魂共鸣', mp:10, desc:'灵宠全力一击，造成 2.4 倍伤害。'}, passive:'可以收服妖兽；灵宠每回合追加攻击',
     master:{id:'m_shou', name:'苍姑', x:8, y:10, look:{g:'f',skin:3,hair:2,hairColor:2,style:'jin',cloth:3}}},
   tianji:{name:'天机阁', cloth:4, motto:'窥天机，布星阵。', desc:'符修。定身符能让敌人动弹不得，每日卜卦趋吉避凶。',
-    skill:{name:'定身符', mp:10, desc:'1.8 倍伤害；有 70% 的机会让敌人下回合无法行动（对首领 35%）。定住一次之后，敌人会防备三回合。'}, passive:'灵力 +30%、防御 +15%；每日卜卦：吉日灵石更多、更容易暴击',
+    skill:{name:'定身符', mp:10, desc:'2.6 倍伤害；有 70% 的机会让敌人下回合无法行动（对首领 35%）。定住一次之后，敌人会防备三回合。'}, passive:'灵力 +30%、防御 +15%；每日卜卦：吉日灵石更多、更容易暴击',
     master:{id:'m_tianji', name:'天机子', x:17, y:8, look:{g:'m',skin:0,hair:5,hairColor:5,style:'robe',cloth:4}}},
 };
 const FORTUNES = [ {name:'大吉', stones:1.5, crit:.18}, {name:'吉', stones:1.25, crit:.12}, {name:'平', stones:1, crit:.06}, {name:'凶', stones:.8, crit:.03} ];

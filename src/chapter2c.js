@@ -190,7 +190,7 @@ const C2C = {
     ['村民','陆仙长为民除害！后山的狼妖，一只都没跑掉！'],
     ['旁白','村民们把狼皮挂上牌坊，敲锣打鼓。人群中间站着一个年轻人，腰间的「正」字玉牌在太阳下发亮。'],
     ['陆正衡','斩妖除魔，本是我辈分内之事。'],
-    ['旁白','那一年，「青云陆正衡」的名字，传遍了整座山。'],
+    ['旁白','那一年，「{宗}陆正衡」的名字，传遍了整座山。'],
     {run:()=>C2C.cg(1)},
     ['旁白','镜面又是一晃。画面往回倒去——'],
     ['旁白','那是更早的时候。村民们扛着锄头、举着火把上了后山。他们烧林开荒，掏了狼窝，把还没睁眼的小狼一只只拎出来卖。'],
@@ -244,7 +244,7 @@ const C2C = {
   win:[
     {run:()=>C2C.sealCG()},
     ['旁白','穷奇重重摔在崖顶，双翼散了一地白羽。它头顶那颗人头还在骂个不停——是大师兄。'],
-    ['陆正衡','放我出来！我是青云陆正衡！我斩过的妖，比你吃过的人还多！'],
+    ['陆正衡','放我出来！我是{宗}陆正衡！我斩过的妖，比你吃过的人还多！'],
     ['穷奇','闭嘴……你好苦……'],
     ['谢霁月','（举起八卦镜）师兄。镜子里的事，是真的吗？'],
     ['陆正衡','……'],
@@ -403,6 +403,9 @@ C2C.bagua=function(g,x,y,r,t,lit){
   const mg=g.createRadialGradient(x-r*.18,y-r*.2,r*.05,x,y,r*.6); mg.addColorStop(0,lit?'#ffffff':'#f6f2e0'); mg.addColorStop(.6,lit?'#fff0b8':'#cfc8b0'); mg.addColorStop(1,lit?'#e8c060':'#8a8670');
   g.fillStyle=mg; g.beginPath(); g.arc(x,y,r*.58,0,7); g.fill();
   g.save(); g.beginPath(); g.arc(x,y,r*.58,0,7); g.clip(); g.fillStyle='rgba(255,255,255,.75)'; g.translate(x,y); g.rotate(-.7); g.fillRect(-r*.7,-r*.34,r*1.4,r*.1); g.fillRect(-r*.7,-r*.18,r*1.4,r*.04); g.restore(); };
+const zongName=()=>({jian:'青云',dan:'药王谷',shou:'万兽谷',tianji:'天机阁'})[S&&S.sect]||'青云';
+{ const _l=UI.line; UI.line=function(who,text){ return _l.call(UI,who,String(text).replace(/\{宗\}/g,zongName())); }; }
+{ const _lg=Battle.log; Battle.log=function(t){ return _lg.call(Battle,String(t).replace(/\{宗\}/g,zongName())); }; }
 Object.assign(SCRIPTS, { c2c_flash:C2C.flash, c2c_why1:[...C2C.why1, ...C2C.land()], c2c_why2:[...C2C.why2, ...C2C.land()], c2c_win:C2C.win, c2c_lose:C2C.lose });
 // the mirror's pictures follow the lines; the 'freeze' line ends the scene
 { const _cd=UI.closeDlg; UI.closeDlg=function(){ const r=_cd.apply(UI,arguments); setTimeout(()=>{ if(PixCG.on&&$('#dlg').hidden&&!Battle.s&&(C2C.sealOn||PixCG.cur&&/镜中往事/.test($('#cg .cg-title b')?.textContent||''))){ C2C.sealOn=false; PixCG.close(); } },80); return r; }; }
@@ -411,7 +414,7 @@ Object.assign(SCRIPTS, { c2c_flash:C2C.flash, c2c_why1:[...C2C.why1, ...C2C.land
 BEASTS.c2_qqlu={name:'穷奇', spr:'qiongqi_big', boss:true, big:BEASTS.qiongqi.big, hp:1800, atk:46, def:14, exp:320, stones:[160,160], drop:['qq_yu',1], mirror:true, theme:'qiongqi',
   lore:'吞下了陆正衡的穷奇。它专吃好人，这一回却被一颗苦心卡住了喉咙。',
   moves:['atk','wind','roar','double','featherrain','big','wind'],
-  phase2:{at:.7, moves:['pillar','featherrain','shield','wind','pillar','big'], line:'穷奇的头顶鼓起一团——一颗人头挣了出来。是大师兄！「放肆！谁敢动我青云陆正衡！」'},
+  phase2:{at:.7, moves:['pillar','featherrain','shield','wind','pillar','big'], line:'穷奇的头顶鼓起一团——一颗人头挣了出来。是大师兄！「放肆！谁敢动我{宗}陆正衡！」'},
   phase3:{at:.35, ally:'谢霁月', moves:['quarrel','pillar','tornado','shield','quarrel','big'], line:'两颗头吵了起来，穷奇的身子被扯得东倒西歪！就在这时，一道剑光落下——「师兄，够了。」谢霁月站到了你身边。'}};
 SCENES.c2_qqlu={...SCENES.qiongqi, title:'穷奇', sub:'闻人忠信，辄食其鼻　——　《神异经》'};
 DODGE.c2_qqlu={...DODGE.qiongqi,
@@ -448,13 +451,13 @@ const QQLU = {
   // the quarrel is told between turns, in a small dialogue box over the bottom of the fight (never while you dodge); tap to go on
   talk(lines,cb){ const host=$('#battle'); if(!host||host.hidden||!lines||!lines.length){ cb&&cb(); return; }
     const box=document.createElement('div'); host.appendChild(box); let i=0;
-    const show=()=>{ const [who,text]=lines[i]; box.className='b-talk wood '+(who==='陆正衡'?'lu':who==='穷奇'?'qq':''); box.innerHTML=`<b>${esc(who)}</b><p>${esc(text)}</p><i>▼</i>`; };
+    const show=()=>{ const [who,text]=lines[i]; box.className='b-talk wood '+(who==='陆正衡'?'lu':who==='穷奇'?'qq':''); box.innerHTML=`<b>${esc(who)}</b><p>${esc(text.replace(/\{宗\}/g,zongName()))}</p><i>▼</i>`; };
     box.onclick=e=>{ e.stopPropagation(); Sound.tick(); if(++i<lines.length) show(); else { box.remove(); cb&&cb(); } };
     show(); },
   LINES:{
     qq:['呕……好苦……','你闻着倒是挺甜的。','我只吃好人！','滚出我的肚子！'],
     pillar:['明正典刑！','妖就是妖，该杀！','我是为了村民！','天理昭昭！'],
-    shield:['我问心无愧！','青云陆正衡，清清白白！','谁敢污我名声！'],
+    shield:['我问心无愧！','{宗}陆正衡，清清白白！','谁敢污我名声！'],
     quarrel:[[['穷奇','往左！'],['陆正衡','往右！']],[['穷奇','苦死了，吐出去！'],['陆正衡','你敢！']],[['陆正衡','那些狼本来就该死！'],['穷奇','那你也该死！']],[['陆正衡','都怪你！'],['穷奇','都怪你！']],[['穷奇','闭嘴！'],['陆正衡','你先闭嘴！']],[['陆正衡','我是为了村民！'],['穷奇','你是为了你自己！']]],
     mirror:['……别照了。','把镜子拿开！','那不是我……','……'],
   },
@@ -478,7 +481,7 @@ const QQLU = {
     return r; }; }
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s, p2=s&&s.phase2, p3=s&&s.phase3; _pc.call(Battle);
     if(!QQLU.is(s)) return; if(s.phase2!==p2||s.phase3!==p3) QQLU.classic(s);
-    if(s.phase2&&!p2){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','放肆！谁敢动我青云陆正衡！'],['穷奇','你给我缩回去！'],['陆正衡','你才缩回去！']]; }
+    if(s.phase2&&!p2){ QQLU.showHead(s); s.pendingTalk=[['陆正衡','放肆！谁敢动我{宗}陆正衡！'],['穷奇','你给我缩回去！'],['陆正衡','你才缩回去！']]; }
     if(s.phase3&&!p3) s.pendingTalk=[['穷奇','苦死了！我要把你吐出去！'],['陆正衡','你敢！我话还没说完——'],['谢霁月','师兄。够了。']]; }; }
 // the 八卦镜 takes the place of 遁走 (which a boss fight never allows anyway)
 { const _h=Battle.actsHTML; Battle.actsHTML=function(B){ const h=_h.call(Battle,B); return B&&B.mirror?h.replace(/<button data-a="flee"[^>]*>[\s\S]*?<\/button>/,'<button data-a="mirror" class="mirrorb">八卦镜<small>照破护盾</small></button>'):h; }; }

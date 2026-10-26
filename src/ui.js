@@ -118,9 +118,9 @@ const Battle = {
     if(a==='skill'){ if(S.mp<8) return; S.mp-=8; dmg=st.atk*2.2*Sect.spellMul()*rnd()-def/4; Sound.magic(); msg='御剑术！飞剑化作一道青光。'; }
     else if(a==='sect'){ const sc=SECTS[S.sect]; if(!sc||S.mp<sc.skill.mp) return; S.mp-=sc.skill.mp; Sound.magic();
       if(S.sect==='jian'){ dmg=st.atk*3*Sect.spellMul()*rnd()-def/4; msg='万剑归宗！漫天剑雨倾泻而下！'; BossBg.flash('rgba(170,210,255,.55)'); }
-      if(S.sect==='dan'){ dmg=st.atk*1.6*Sect.spellMul()*rnd(); s.burn=3; msg='丹火！敌人被金色的火焰缠住了。'; BossBg.flash('rgba(255,170,60,.45)'); }
+      if(S.sect==='dan'){ dmg=st.atk*2.2*Sect.spellMul()*rnd(); s.burn=3; msg='丹火！敌人被金色的火焰缠住了。'; BossBg.flash('rgba(255,170,60,.45)'); }
       if(S.sect==='shou'){ dmg=(S.pet?st.atk*(1+(S.pet.lv-1)*.15):st.atk)*2.4*rnd()-def/3; msg=S.pet?`兽魂共鸣！${BEASTS[S.pet.kind].name}全力扑了上去！`:'没有灵宠……你学着野兽的样子扑了上去！'; }
-      if(S.sect==='tianji'){ const wary=s.i<(s.stunGuard||0), ok=!wary&&Math.random()<(s.B.boss?.35:.7); dmg=st.atk*1.8*Sect.spellMul()*rnd()-def/4;   // it lands now and then, and never twice in a row
+      if(S.sect==='tianji'){ const wary=s.i<(s.stunGuard||0), ok=!wary&&Math.random()<(s.B.boss?.35:.7); dmg=st.atk*2.6*Sect.spellMul()*rnd()-def/4;   // it lands now and then, and never twice in a row
         if(ok){ s.stun=1; s.stunGuard=s.i+3; msg='定身符！敌人动弹不得。'; } else msg=wary?'敌人对定身符有了防备，符纸一贴上就烧成了灰。':'定身符被一股妖力震碎了！'; BossBg.flash('rgba(200,160,255,.45)'); } }
     else { dmg=st.atk*rnd()-def/2; Sound.hit(); msg='你挥剑斩去。'; }
     const crit=Math.random()<Sect.crit(); if(crit){ dmg*=1.8; msg+=' 暴击！'; }
@@ -163,7 +163,7 @@ const Battle = {
       }
       if(dmg){ S.hp-=dmg; Sound.hurt(); $('#battle').classList.remove('shake'); void $('#battle').offsetWidth; $('#battle').classList.add('shake'); Battle.float('-'+dmg,'me'); }
       let tail='';
-      if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.6)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
+      if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.8)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
       Battle.log(msg+(dmg?`（-${dmg}）`:'')+tail); s.busy=false; Battle.phaseCheck(); Battle.ui();
       if(s.hp<=0){ s.busy=true; s.dead=true; return setTimeout(()=>Battle.end('win'),500); }
       if(S.hp<=0){ S.hp=0; setTimeout(()=>Battle.end('lose'),600); }
