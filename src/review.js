@@ -116,6 +116,8 @@ const Review = {
       run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{hu_wei:1}}); Review.at('town',8,9,'up'); }},
     ...['jian','dan','shou','tianji'].map(k=>({id:'c2-'+k, group:'第二章', title:'宗门第一天（'+SECTS[k].name+'）', check:'四个宗门布局一样，屋顶颜色、地面和摆设不一样'+(k==='dan'?'；苏小棠也在药王谷，药圃旁边能找到她':'')+'。左上角是三位师兄师姐今天的吩咐：先找他们说话接任务，做完回去交差。三件都做完后回房间睡觉，第二天有新的吩咐。山门旁的传送阵能去桃源镇、洞府、风眼。',
       run(){ Review.base({quest:'c2b', L:10, sect:k, side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_'+k,12,15,'up'); }})),
+    {id:'c2-gossip', group:'第二章', title:'宗门里的闲话（外门弟子）', check:'刚到宗门的第一天。练功场、药圃、膳堂门口各有两个外门弟子在说悄悄话，走近就能听见头顶冒出的对话（每天说的不一样）；点他们能聊更多。药圃那两个说大师姐的闲话时可以选「你们亲眼看见了？」，第四幕大师姐会记得。山门旁还有一位守门的老弟子。',
+      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_jian',20,7,'up'); }},
     {id:'c2-day3', group:'第二章', title:'宗门第三天（界碑抓痕、二师兄的房间）', check:'第三天的吩咐：大师兄让你看三块界碑（第三块底下有狼爪痕），大师姐要两颗朱果，二师兄请你收拾房间（发霉的点心，两种选择）。三件都交差后，师尊会传召。',
       run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1, zhuguo:2}}); S.c2=C2.fresh(); S.c2.n=2; S.c2.days=2; S.c2.counted=1; Review.at('zong_jian',12,15,'up'); }},
     {id:'c2-mjgo', group:'第二章', title:'山门集合 → 秘境', check:'第一幕已完成，是师尊下令的第二天早上。去山门找大师兄（寻路会带你去），出发去秘境、扎营。',
@@ -133,7 +135,7 @@ const Review = {
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(C2C.again),400); }},
       {id:'c2-seal', group:'第二章', title:'第三幕结尾：封印穷奇', check:'打赢穷奇之后的剧情：插画「封」，八卦镜锁链把穷奇（和大师兄）拖回风穴，两个吵个不停；最后大师姐和二师兄各有一个伏笔。',
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true},'mj_cliff',10,5,'up'); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2c_win),()=>Story.check()),400); }},
-      ...(()=>{ const A3={c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true}, act4=(flags,map,x,y,dir,echo)=>{ go({...A3,...flags},map,x,y,dir,'c2g'); S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:echo||[]}; save(); };
+      ...(()=>{ const A3={c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true}, act4=(flags,map,x,y,dir,echo)=>{ go({...A3,...flags},map,x,y,dir,'c2g'); if(flags.c2_xin_done) S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:echo||[]}; save(); };
         return [
       {id:'c2-xin-night', group:'第二章', title:'第四幕：封印之后的那一夜', check:'穷奇刚被封印，你回到了营地。去自己的帐篷（左下）休息：夜里八卦镜照见大师姐，第二天早上大师姐不见了，营地东边的芦苇被分开了。',
         run(){ act4({},'mj_camp',5,11,'left'); }},
