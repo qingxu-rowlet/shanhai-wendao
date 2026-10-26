@@ -124,8 +124,8 @@ const Social = {
   rel(id){ S.rel=S.rel||{}; return S.rel[id]=S.rel[id]||{pts:0, talked:0, gifted:0, known:{}, ev:{}}; },
   hearts(id){ return Math.min(10, Math.floor(Social.rel(id).pts/100)); },
   tier(id){ const h=Social.hearts(id); return h>=6?3:h>=4?2:h>=2?1:0; },
-  add(id,n){ const r=Social.rel(id), before=Social.hearts(id); r.pts=Math.max(0,Math.min(1000,r.pts+n)); const after=Social.hearts(id);
-    if(after>before) UI.toast(`${NPCS[id].name} 好感 ${'♥'.repeat(after)}`); },
+  add(id,n,quiet){ const r=Social.rel(id), before=Social.hearts(id); r.pts=Math.max(0,Math.min(1000,r.pts+n)); const after=Social.hearts(id);
+    if(after>before&&!quiet) UI.toast(`${NPCS[id].name} 好感 ${'♥'.repeat(after)}`); },
   menu(id){
     const n=NPCS[id]; if(!n) return;
     const opts=[];

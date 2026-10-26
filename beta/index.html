@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a6506072a1"><script>(function(){var B="a6506072a1";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="784b4929d4"><script>(function(){var B="784b4929d4";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,6 +103,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes mn{0%{opacity:0}20%{opacity:1}70%{opacity:1}100%{opacity:0}}
 
 /* ---------- dialogue ---------- */
+#skipTag{position:fixed;top:max(10px,env(safe-area-inset-top,0px));right:12px;z-index:60;background:rgba(20,16,10,.78);color:#f2c14e;font-size:13px;padding:4px 10px;border-radius:12px;letter-spacing:1px;pointer-events:none}
+#skipTag[hidden]{display:none}
+#dlg,#cg{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #dlg{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:0 max(10px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
 .dlg{max-width:760px;margin:0 auto;display:flex;gap:12px;padding:12px;min-height:104px;position:relative;cursor:pointer}
 .port{flex:none;width:84px;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -2703,7 +2706,7 @@ const UI = {
       if(st.face){ CG.setFace(st.face); continue; }
       if(st.cgscene){ CG.setScene(st.cgscene); continue; }
       if(st.cgend){ CG.close(); CG.replaying=false; continue; }
-      if(st.love){ for(const k in st.love){ Social.add(k, st.love[k]); if(st.love[k]>0&&NPCS[k]) UI.toast(`${NPCS[k].name} 好感 +${st.love[k]}`); } Sound.pick(); continue; }   // every change shows, not only a full heart
+      if(st.love){ for(const k in st.love){ const v=st.love[k], h0=Social.hearts(k); Social.add(k, v, v>0); const h1=Social.hearts(k); if(v>0&&NPCS[k]) UI.toast(`${NPCS[k].name} 好感 +${v}${h1>h0?'　'+'♥'.repeat(h1):''}`); } Sound.pick(); continue; }   // every gain shows, with the hearts when one fills
       if(st.give||st.stones||st.exp){
         const got=[]; let s2=st;
         while(true){
@@ -2882,6 +2885,24 @@ addEventListener('click', e=>{
   if(e.target.closest('#reviewNote,#panel,#minigame,#battle,#title,button,a,input')) return;
   d.onclick();
 });
+// fast-forward: hold Ctrl (or keep a finger / the mouse pressed anywhere for half a second) and the lines run past on their
+// own; it always stops at a choice, a battle or anything else that needs the player
+const Skip={ on:false, held:0, timer:null,
+  start(){ if(Skip.on) return; Skip.on=true; $('#skipTag').hidden=false; Skip.timer=setInterval(Skip.tick,70); },
+  stop(){ if(!Skip.on) return; Skip.on=false; clearInterval(Skip.timer); $('#skipTag').hidden=true; },
+  tick(){ const d=$('#dlg'); if(d.hidden||!d.onclick) return; if(UI.typing) d.onclick(); d.onclick(); } };
+{ const tag=document.createElement('div'); tag.id='skipTag'; tag.hidden=true; tag.textContent='快进中 ▶▶'; document.body.appendChild(tag); }
+addEventListener('keydown', e=>{ if((e.key==='Control')&&!$('#dlg').hidden) Skip.start(); });
+addEventListener('keyup', e=>{ if(e.key==='Control') Skip.stop(); });
+addEventListener('blur', ()=>Skip.stop());
+let skipPress=null;
+addEventListener('pointerdown', e=>{ const d=$('#dlg'); if(d.hidden||e.target.closest('#reviewNote,#panel,#minigame,#battle,#title,button,a,input')) return;
+  clearTimeout(skipPress); skipPress=setTimeout(()=>{ Skip.start(); Skip.byPress=true; },500); });
+const endPress=()=>{ clearTimeout(skipPress); if(Skip.byPress){ Skip.stop(); Skip.byPress=false; Skip.justEnded=performance.now(); } };
+addEventListener('pointerup', endPress); addEventListener('pointercancel', endPress);
+// the click that ends a long press is not one more tap
+addEventListener('click', e=>{ if(performance.now()-(Skip.justEnded||0)<400){ e.stopPropagation(); e.preventDefault(); } }, true);
+addEventListener('contextmenu', e=>{ if(!$('#dlg').hidden) e.preventDefault(); });
 $('#menuB').onclick=()=>{ Sound.tick(); UI.menu(); };
 $('#mini').onclick=()=>{ Sound.tick(); UI.worldMap(); };
 UI.musicBtn=()=>{ const b=$('#musicB'); if(b) b.classList.toggle('off', !!(S&&S.music===false)); };
@@ -3015,8 +3036,8 @@ const Social = {
   rel(id){ S.rel=S.rel||{}; return S.rel[id]=S.rel[id]||{pts:0, talked:0, gifted:0, known:{}, ev:{}}; },
   hearts(id){ return Math.min(10, Math.floor(Social.rel(id).pts/100)); },
   tier(id){ const h=Social.hearts(id); return h>=6?3:h>=4?2:h>=2?1:0; },
-  add(id,n){ const r=Social.rel(id), before=Social.hearts(id); r.pts=Math.max(0,Math.min(1000,r.pts+n)); const after=Social.hearts(id);
-    if(after>before) UI.toast(`${NPCS[id].name} 好感 ${'♥'.repeat(after)}`); },
+  add(id,n,quiet){ const r=Social.rel(id), before=Social.hearts(id); r.pts=Math.max(0,Math.min(1000,r.pts+n)); const after=Social.hearts(id);
+    if(after>before&&!quiet) UI.toast(`${NPCS[id].name} 好感 ${'♥'.repeat(after)}`); },
   menu(id){
     const n=NPCS[id]; if(!n) return;
     const opts=[];

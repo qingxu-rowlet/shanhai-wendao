@@ -249,7 +249,7 @@ const UI = {
       if(st.face){ CG.setFace(st.face); continue; }
       if(st.cgscene){ CG.setScene(st.cgscene); continue; }
       if(st.cgend){ CG.close(); CG.replaying=false; continue; }
-      if(st.love){ for(const k in st.love){ Social.add(k, st.love[k]); if(st.love[k]>0&&NPCS[k]) UI.toast(`${NPCS[k].name} 好感 +${st.love[k]}`); } Sound.pick(); continue; }   // every change shows, not only a full heart
+      if(st.love){ for(const k in st.love){ const v=st.love[k], h0=Social.hearts(k); Social.add(k, v, v>0); const h1=Social.hearts(k); if(v>0&&NPCS[k]) UI.toast(`${NPCS[k].name} 好感 +${v}${h1>h0?'　'+'♥'.repeat(h1):''}`); } Sound.pick(); continue; }   // every gain shows, with the hearts when one fills
       if(st.give||st.stones||st.exp){
         const got=[]; let s2=st;
         while(true){
@@ -428,6 +428,24 @@ addEventListener('click', e=>{
   if(e.target.closest('#reviewNote,#panel,#minigame,#battle,#title,button,a,input')) return;
   d.onclick();
 });
+// fast-forward: hold Ctrl (or keep a finger / the mouse pressed anywhere for half a second) and the lines run past on their
+// own; it always stops at a choice, a battle or anything else that needs the player
+const Skip={ on:false, held:0, timer:null,
+  start(){ if(Skip.on) return; Skip.on=true; $('#skipTag').hidden=false; Skip.timer=setInterval(Skip.tick,70); },
+  stop(){ if(!Skip.on) return; Skip.on=false; clearInterval(Skip.timer); $('#skipTag').hidden=true; },
+  tick(){ const d=$('#dlg'); if(d.hidden||!d.onclick) return; if(UI.typing) d.onclick(); d.onclick(); } };
+{ const tag=document.createElement('div'); tag.id='skipTag'; tag.hidden=true; tag.textContent='快进中 ▶▶'; document.body.appendChild(tag); }
+addEventListener('keydown', e=>{ if((e.key==='Control')&&!$('#dlg').hidden) Skip.start(); });
+addEventListener('keyup', e=>{ if(e.key==='Control') Skip.stop(); });
+addEventListener('blur', ()=>Skip.stop());
+let skipPress=null;
+addEventListener('pointerdown', e=>{ const d=$('#dlg'); if(d.hidden||e.target.closest('#reviewNote,#panel,#minigame,#battle,#title,button,a,input')) return;
+  clearTimeout(skipPress); skipPress=setTimeout(()=>{ Skip.start(); Skip.byPress=true; },500); });
+const endPress=()=>{ clearTimeout(skipPress); if(Skip.byPress){ Skip.stop(); Skip.byPress=false; Skip.justEnded=performance.now(); } };
+addEventListener('pointerup', endPress); addEventListener('pointercancel', endPress);
+// the click that ends a long press is not one more tap
+addEventListener('click', e=>{ if(performance.now()-(Skip.justEnded||0)<400){ e.stopPropagation(); e.preventDefault(); } }, true);
+addEventListener('contextmenu', e=>{ if(!$('#dlg').hidden) e.preventDefault(); });
 $('#menuB').onclick=()=>{ Sound.tick(); UI.menu(); };
 $('#mini').onclick=()=>{ Sound.tick(); UI.worldMap(); };
 UI.musicBtn=()=>{ const b=$('#musicB'); if(b) b.classList.toggle('off', !!(S&&S.music===false)); };

@@ -103,6 +103,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes mn{0%{opacity:0}20%{opacity:1}70%{opacity:1}100%{opacity:0}}
 
 /* ---------- dialogue ---------- */
+#skipTag{position:fixed;top:max(10px,env(safe-area-inset-top,0px));right:12px;z-index:60;background:rgba(20,16,10,.78);color:#f2c14e;font-size:13px;padding:4px 10px;border-radius:12px;letter-spacing:1px;pointer-events:none}
+#skipTag[hidden]{display:none}
+#dlg,#cg{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #dlg{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:0 max(10px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
 .dlg{max-width:760px;margin:0 auto;display:flex;gap:12px;padding:12px;min-height:104px;position:relative;cursor:pointer}
 .port{flex:none;width:84px;display:flex;flex-direction:column;align-items:center;gap:4px}
