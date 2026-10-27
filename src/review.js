@@ -149,6 +149,16 @@ const Review = {
         run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_defend_xie:true},'mj_lake',19,8,'right',[0,1,2]); setTimeout(()=>UI.say(UI.commit(SCRIPTS.c2x_fox)),400); }},
       {id:'c2-act4end', group:'第二章', title:'第四幕结尾：二师兄不见了', check:'从心镜湖回到营地：篝火灭了，锅底被舔得发亮，二师兄不见了（第五幕的开头）。',
         run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_xin_done:true},'mj_lake',2,8,'left',[0,1,2]); }},
+      ...(()=>{ const A4={c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_xin_done:true, c2_man_gone:true},
+          act5=(flags,map,x,y,dir)=>{ go({...A3,...A4,...flags},map,x,y,dir,'c2h'); S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:[0,1,2]}; enterMap(map,x,y); RT.dir=dir; save(); };
+        return [
+        {id:'c2-south', group:'第二章', title:'第五幕：往南追（南边的林子）', check:'营地南边开了一条路。进林子：树皮都被啃光了；路边可以看看啃过的树、码好的骨头、被啃的石头；捡到二师兄掉的半个馒头。',
+          run(){ act5({},'mj_camp',11,13,'down'); }},
+        {id:'c2-ge', group:'第二章', title:'第五幕：洞口遇见顾长歌（插画「洞口」）', check:'林子尽头的洞口，顾长歌在看脚印。重逢的对话；他和大师姐互相戒备；他说这是饕餮吃东西的样子。（这个测试存档当作第一章和他约过「北边见」、问过青铜面具，所以会多两句。）',
+          run(){ act5({c2_south_in:true, ge_promise:true, ge_mask:true},'mj_south',11,11,'down'); }},
+        {id:'c2-cave', group:'第二章', title:'第五幕：饿鬼洞（插画「饿」、三段往事、「饕餮」）', check:'洞里很黑，只有火折子照着。找到二师兄：插画「饿」（背对着你们在吃妖兽，回头满嘴是血）→ 八卦镜照出往事三张插画（丰年村、别出声、大火）→ 饕餮从他影子里站起来（插画「饕餮」）→ 顾长歌的剑在发抖，你选一句话。（这个测试存档当作你第二幕说过「我相信二师兄」、捡到了半个馒头、问过青铜面具，所以会多几句。）',
+          run(){ act5({c2_south_in:true, c2_ge_met:true, c2_cave_in:true, c2_trust_man:true, c2_bun:true, ge_promise:true, ge_mask:true},'mj_cave',12,5,'up'); S.inv.c2_bun=1; setTimeout(()=>UI.say(C2Y.found()),400); }},
+        ]; })(),
       ]; })(),
       {id:'c2-town', group:'第二章', title:'第二章里回到桃源镇', check:'已经跟师尊去了宗门、在秘境里。用营地的传送阵回到桃源镇：苏小棠（去了药王谷）和顾长歌（去做散修）都不在镇上了，阿禾、钱掌柜他们还在。',
         run(){ go({},'mj_camp',3,13,'down'); }},
