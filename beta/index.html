@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="43df614d2b"><script>(function(){var B="43df614d2b";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b8998a48cf"><script>(function(){var B="b8998a48cf";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8787,7 +8787,7 @@ C2Y.sealCG=function(){ C2Y.sealing=0; C2Y.sealT=0;
 /* ---------- 长歌: dawn outside the cave — the first sun in the 秘境, a sea of cloud, 顾长歌 against the light; then he goes ---------- */
 C2Y.leaving=0;
 C2Y.lv=function(){ if(!C2Y.leaving){ C2Y.leaveT=0; return 0; } C2Y.leaveT=C2Y.leaveT||performance.now(); return Math.min(1,(performance.now()-C2Y.leaveT)/6000); };
-C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the same size as everyone else: the light, not his size, makes him the centre
+C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; Music.play('village',true); const GX=.6, GS=1;   // the same size as everyone else: the light, not his size, makes him the centre
   PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#f2dcc0'); Land.sky(g,W,H,['rgba(38,44,88,.97)','rgba(108,84,132,.92)','rgba(226,140,118,.9)','rgba(252,208,146,.92)','rgba(255,238,196,.7)']);
       for(let i=0;i<70;i++){ g.fillStyle=`rgba(255,255,255,${.2+R()*.45})`; g.fillRect(R()*W,R()*H*.2,1+R()*1.4,1+R()*1.4); }
       // the sun rising right behind where he will stand; its rays fan out from his back
@@ -8807,7 +8807,7 @@ C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the 
       C2Y.bareTree(g,W*.94,H*.84,H*.36,R,.85); for(let k=0;k<16;k++){ g.fillStyle=`rgba(${120+R()*40|0},${190+R()*30|0},110,.95)`; g.fillRect(W*(.9+R()*.09),H*(.52+R()*.22),Math.max(2,W*.004),Math.max(2,W*.004)); }
       for(let k=0;k<50;k++){ const x=R()*W, y=H*(.86+R()*.12), h=H*(.02+R()*.035); brush(g,[[x,y],[x+(R()-.3)*W*.01,y-h]],Math.max(1,W*.002),.6,'rgba(100,140,80,.8)'); } },
     cast:[{who:'me', x:.12, pose:'stand', face:1},{look:LOOK_XIE, x:.25, pose:'stand', face:1, mood:'subtle'},
-      {look:LOOK_MAN, get x(){ return .73+C2Y.lv()*.3; }, face:-1, get pose(){ return C2Y.leaving?'reach':'stand'; }, mood:'smile'},
+      {look:LOOK_MAN, get x(){ return .73+C2Y.lv()*.3; }, get face(){ return C2Y.leaving&&C2Y.lv()<1&&Math.floor(performance.now()/1400)%3?1:-1; }, get pose(){ if(!C2Y.leaving) return 'stand'; const back=!(Math.floor(performance.now()/1400)%3); return back?'lantern':C2Y.lv()<1?(Math.floor(performance.now()/180)%2?'walk':'stand'):'stand'; }, mood:'smile'},   // walking after him, turning back now and then to wave
       {look:G(), get x(){ return GX+C2Y.lv()*.36; }, get face(){ return C2Y.leaving?1:-1; }, get pose(){ return C2Y.leaving&&C2Y.lv()<1?(Math.floor(performance.now()/180)%2?'walk':'stand'):'stand'; }, mood:'subtle', s:GS}],
     title:'长歌', small:'第二章 · 第五幕', seed:5205});
   const c=PixCG.cur; c.gy=.84;
@@ -8825,7 +8825,7 @@ C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the 
     g.strokeStyle='#3a2a22'; g.lineWidth=fp*1.6; g.beginPath(); g.moveTo(hx,hy); g.lineTo(hx+(P.face<0?-1:1)*-fp*5,hy-fp*9); g.stroke(); g.strokeStyle='#d8b04c'; g.lineWidth=fp*1.2; g.beginPath(); g.moveTo(hx-fp*2.5,hy-fp*1.5); g.lineTo(hx+fp*2.5,hy+fp*.5); g.stroke(); };
   c.front=(g,W,H,fp,t)=>{ const P=place(W,H,fp), bb=P.bb, x0=P.face<0?P.fx+P.w/2:P.fx-P.w/2, sx=x=>P.face<0?x0-x*P.sz:x0+x*P.sz;
     // his red hair ribbon and the end of his hair, streaming out behind him in the wind
-    const ax=sx(bb.x0+bb.w*(P.face<0?.78:.22)), ay=P.fy+(bb.y0+bb.h*.12)*P.sz, dir=P.face<0?1:-1;
+    const rb=C2Y.ribbonAt(P.sp), ax=sx(rb[0]+.5), ay=P.fy+(rb[1]+.5)*P.sz, dir=P.face<0?1:-1;   // tied where the sprite's own red ribbon is
     for(const [len,amp,wd,col,ph] of [[W*.08,H*.018,fp*1.2,'#c8413b',0],[W*.06,H*.014,fp*.9,'#e05a4a',1.3]]){ g.strokeStyle=col; g.lineWidth=wd; g.lineCap='round'; g.beginPath(); g.moveTo(ax,ay);
       for(let k=1;k<=16;k++){ const u=k/16; g.lineTo(ax+dir*len*u, ay+Math.sin(t*4.2+u*5+ph)*amp*u+H*.02*u); } g.stroke(); }
     // petals and motes of light going up on the morning wind; birds come back
@@ -8839,20 +8839,48 @@ C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the 
 // the box a figure's pixels fill, and the figure all in gold (for the rim of light)
 C2Y.bbox=function(sp){ if(sp._bb) return sp._bb; const W=sp.width, H=sp.height, d=sp.getContext('2d').getImageData(0,0,W,H).data; let x0=W,y0=H,x1=0,y1=0;
   for(let y=0;y<H;y++) for(let x=0;x<W;x++) if(d[(y*W+x)*4+3]){ x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x); y1=Math.max(y1,y); } return sp._bb={x0,y0,w:x1-x0+1,h:y1-y0+1}; };
+C2Y.ribbonAt=function(sp){ if(sp._rb) return sp._rb; const W=sp.width, H=sp.height, d=sp.getContext('2d').getImageData(0,0,W,H).data; let n=0, sx=0, sy=0;
+  for(let y=0;y<H*.5;y++) for(let x=0;x<W;x++){ const i=(y*W+x)*4; if(d[i+3]&&d[i]>170&&d[i+1]<110&&d[i+2]<110){ n++; sx+=x; sy+=y; } }
+  const bb=C2Y.bbox(sp); return sp._rb=n?[sx/n,sy/n]:[bb.x0+bb.w*.3,bb.y0+bb.h*.12]; };
 C2Y.goldOf=function(sp){ if(sp._gold) return sp._gold; const c=document.createElement('canvas'); c.width=sp.width; c.height=sp.height; const g=c.getContext('2d'); g.drawImage(sp,0,0); g.globalCompositeOperation='source-in'; g.fillStyle='#ffe2a0'; g.fillRect(0,0,c.width,c.height); return sp._gold=c; };
 
-/* ---------- 早课: back at the sect, morning on the practice ground; she turns away, and smiles ---------- */
+/* ---------- 早课: back at the sect, morning on the practice ground — the great hall, its steps, the bronze censer, the weapon
+   rack, pines in the mist, cranes going over; she turns away, and smiles ---------- */
 C2Y.morningSmile=0;
-C2Y.morningCG=function(){ C2Y.morningSmile=0;
-  PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#eae2d0'); Land.sky(g,W,H,['rgba(200,220,236,.9)','rgba(236,232,220,.6)','rgba(246,238,222,.2)']); Land.orb(g,W*.2,H*.18,Math.min(W,H)*.05,'#fff2d0',4);
-      Land.peaks(g,W,H,R,{y:H*.46,amp:H*.22,n:5,a:.38,pines:5}); Land.mist(g,W,H,H*.5,H*.14,.45);
-      Land.roof(g,W*.72,H*.46,W*.42,H*.08,.8); g.fillStyle='rgba(60,46,36,.85)'; for(const x of [.56,.88]) g.fillRect(W*x,H*.5,W*.012,H*.22);
-      for(let i=0;i<4;i++) Land.pine(g,W*(.04+i*.11),H*.74,H*(.2+R()*.08),R,.5);
-      g.fillStyle='rgba(196,180,150,.9)'; g.fillRect(0,H*.74,W,H*.26); g.strokeStyle='rgba(150,130,100,.6)'; g.lineWidth=1; for(let k=0;k<8;k++){ const y=H*(.76+k*.03); g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
-      g.fillStyle='rgba(120,90,60,.9)'; g.fillRect(W*.86,H*.62,W*.02,H*.16); g.fillRect(W*.82,H*.66,W*.1,H*.015); },
-    cast:[{who:'me', x:.3, pose:'stand', face:1},{look:LOOK_XIE, x:.62, get face(){ return C2Y.morningSmile?1:-1; }, pose:'stand', prop:'sword', get mood(){ return C2Y.morningSmile?'smile':'subtle'; }}],
+C2Y.morningCG=function(){ C2Y.morningSmile=0; Music.play('calm',true);
+  PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#efe6d2'); Land.sky(g,W,H,['rgba(186,212,232,.92)','rgba(232,232,222,.65)','rgba(250,238,214,.3)']); Land.orb(g,W*.16,H*.16,Math.min(W,H)*.05,'#fff2d0',5);
+      Land.peaks(g,W,H,R,{y:H*.4,amp:H*.26,n:5,a:.3,pines:6}); Land.mist(g,W,H,H*.42,H*.14,.55); Land.peaks(g,W,H,R,{y:H*.5,amp:H*.12,n:6,a:.35,pines:8}); Land.mist(g,W,H,H*.52,H*.1,.5);
+      // the great hall: a stone terrace and steps, red pillars, lattice doors, a double roof with upturned eaves, a plaque
+      const hx=W*.6, hw=W*.46, base=H*.66;
+      g.fillStyle='rgba(176,168,152,.97)'; g.fillRect(hx-hw*.56,base,hw*1.12,H*.05); g.fillStyle='rgba(150,142,128,.97)'; g.fillRect(hx-hw*.56,base+H*.05,hw*1.12,H*.012);
+      for(let k=0;k<4;k++){ g.fillStyle=`rgba(${190-k*8},${182-k*8},${166-k*8},.97)`; g.fillRect(hx-hw*.14-k*W*.012,base+H*.062+k*H*.012,hw*.28+k*W*.024,H*.012); }
+      g.fillStyle='rgba(236,226,206,.97)'; g.fillRect(hx-hw*.46,base-H*.15,hw*.92,H*.15);
+      for(let k=0;k<6;k++){ const x=hx-hw*.44+k*hw*.176; g.fillStyle='rgba(168,48,40,.95)'; g.fillRect(x,base-H*.15,W*.012,H*.15); }
+      for(let k=0;k<5;k++){ const x=hx-hw*.425+k*hw*.176; g.fillStyle='rgba(120,70,50,.9)'; g.fillRect(x+W*.012,base-H*.13,hw*.176-W*.016,H*.13); g.strokeStyle='rgba(220,190,150,.5)'; g.lineWidth=1;
+        for(let j=1;j<5;j++){ g.beginPath(); g.moveTo(x+W*.012,base-H*.13+j*H*.026); g.lineTo(x+hw*.176-W*.004,base-H*.13+j*H*.026); g.stroke(); } }
+      Land.roof(g,hx,base-H*.15,hw*1.08,H*.07,.9); g.fillStyle='rgba(236,226,206,.97)'; g.fillRect(hx-hw*.3,base-H*.25,hw*.6,H*.05); Land.roof(g,hx,base-H*.25,hw*.78,H*.06,.9);
+      g.fillStyle='rgba(40,30,30,.95)'; g.fillRect(hx-W*.05,base-H*.245,W*.1,H*.035); g.fillStyle='#e8c46a'; g.font=`${Math.round(H*.024)}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.fillText('问道堂',hx,base-H*.22);
+      // a side building at the left, half in the trees
+      C2C.house(g,W*.12,H*.7,W*.2,H*.18,R);
+      // the practice ground: grey flagstones
+      g.fillStyle='rgba(206,198,182,.95)'; g.fillRect(0,H*.74,W,H*.26);
+      g.strokeStyle='rgba(150,140,124,.55)'; g.lineWidth=1; for(let k=0;k<7;k++){ const y=H*(.76+k*.035); g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); for(let x=(k%2)*W*.04;x<W;x+=W*.08){ g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+H*.035); g.stroke(); } }
+      // the bronze censer, a thread of smoke
+      const cx=W*.42, cy=H*.76; g.fillStyle='rgba(96,86,60,.97)'; g.beginPath(); g.ellipse(cx,cy-H*.035,W*.03,H*.025,0,0,7); g.fill(); g.fillRect(cx-W*.032,cy-H*.05,W*.064,H*.008); for(const d of [-1,0,1]) g.fillRect(cx+d*W*.02-W*.003,cy-H*.015,W*.006,H*.02);
+      brush(g,[[cx,cy-H*.06],[cx+W*.01,cy-H*.12],[cx-W*.005,cy-H*.18],[cx+W*.012,cy-H*.25]],Math.max(1,W*.002),.35,'rgba(150,150,150,.4)');
+      // the weapon rack with its swords and spears
+      const rx=W*.88, ry=H*.78; g.fillStyle='rgba(110,76,48,.97)'; g.fillRect(rx-W*.05,ry-H*.12,W*.008,H*.12); g.fillRect(rx+W*.045,ry-H*.12,W*.008,H*.12); g.fillRect(rx-W*.055,ry-H*.1,W*.11,H*.008); g.fillRect(rx-W*.055,ry-H*.04,W*.11,H*.008);
+      for(let k=0;k<5;k++){ const x=rx-W*.04+k*W*.02; g.strokeStyle='rgba(180,186,196,.95)'; g.lineWidth=Math.max(1,W*.003); g.beginPath(); g.moveTo(x,ry-H*.005); g.lineTo(x,ry-H*.15); g.stroke(); g.fillStyle=k%2?'#c8413b':'#e8b84a'; g.fillRect(x-W*.003,ry-H*.06,W*.006,H*.01); }
+      // pines framing it
+      Land.pine(g,W*.03,H*.8,H*.42,R,.75); Land.pine(g,W*.97,H*.76,H*.3,R,.6); },
+    cast:[{who:'me', x:.28, pose:'stand', face:1},{look:LOOK_XIE, x:.58, get face(){ return C2Y.morningSmile?1:-1; }, pose:'stand', prop:'sword', get mood(){ return C2Y.morningSmile?'smile':'subtle'; }}],
     title:'早课', small:'第二章 · 尾声', seed:5206});
-  const c=PixCG.cur; c.front=(g,W,H,fp,t)=>{ for(let k=0;k<10;k++){ const u=(t*.04+k*.1)%1, x=W*((k*.37+u*.4)%1), y=H*(.2+u*.6); g.fillStyle=`rgba(255,250,236,${Math.sin(u*Math.PI)*.6})`; g.fillRect(x,y,Math.max(2,fp*.7),Math.max(2,fp*.7)); } }; };
+  const c=PixCG.cur; c.front=(g,W,H,fp,t)=>{
+    for(let k=0;k<12;k++){ const u=(t*.04+k*.083)%1, x=W*((k*.37+u*.4)%1), y=H*(.2+u*.6); g.fillStyle=`rgba(255,250,236,${Math.sin(u*Math.PI)*.6})`; g.fillRect(x,y,Math.max(2,fp*.7),Math.max(2,fp*.7)); }
+    // two cranes going over, slow
+    for(let k=0;k<2;k++){ const u=((t*.025+k*.4)%1), x=W*(1.1-u*1.3), y=H*(.14+k*.05)+Math.sin(t*1.5+k)*H*.01, w=fp*(3.2+Math.sin(t*3+k)*1.4);
+      g.strokeStyle='rgba(40,36,40,.8)'; g.lineWidth=fp*.7; g.beginPath(); g.moveTo(x-w*2,y-w*.8); g.quadraticCurveTo(x-w,y-w*1.3,x,y); g.quadraticCurveTo(x+w,y-w*1.3,x+w*2,y-w*.8); g.stroke();
+      g.beginPath(); g.moveTo(x,y); g.lineTo(x-w*1.6,y+w*.15); g.stroke(); g.fillStyle='#c8413b'; g.fillRect(x-w*1.7,y+w*.05,fp,fp); } }; };
 
 /* ============================================================
    山海问道 · 第二章 第五幕「饿鬼洞」(后半) and 尾声 — 饕餮 fought by three: you, with 顾长歌 and 大师姐 striking after each of
@@ -8925,18 +8953,19 @@ const Strip = {
     const cv2=ov.querySelector('canvas'), g=cv2.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1), L=Math.min(320, innerWidth*.84, innerHeight*.42); cv2.style.width=cv2.style.height=L+'px'; cv2.width=cv2.height=Math.round(L*dpr);
     const say=ov.querySelector('.st-say'); say.style.cssText='text-align:center;color:#f2e6c8;font-size:14px;min-height:20px;margin-top:6px';
     let p=0, t=0, last=performance.now(), ended=false, next=2.4, warn=0, lash=0, lashHit=0, shake=0, pulled=0, said={};
-    const pull=()=>{ if(ended) return; if(lash>0){ shake=.35; if(!lashHit){ lashHit=1; p=Math.max(0,p-.1); Sound.hurt(); } say.textContent='它反扑了——松手！'; return; } p=Math.min(1,p+.022); pulled=.12; Sound.tick(); };   // only the first pull into a lash costs you
+    const pull=()=>{ if(ended) return; if(lash>0){ shake=.35; if(!lashHit){ lashHit=1; p=Math.max(0,p-.15); Sound.hurt(); } say.textContent='它反扑了——松手！'; return; } p=Math.min(1,p+.017); pulled=.12; Sound.tick(); };   // only the first pull into a lash costs you
     const kd=e=>{ if(['Space','KeyJ','Enter','KeyE'].includes(e.code)){ e.preventDefault(); e.stopPropagation(); if(!e.repeat) pull(); } };
     addEventListener('keydown',kd,true); ov.addEventListener('pointerdown',e=>{ e.preventDefault(); pull(); });
     const man=cgChibi(LOOK_MAN,'kneel','sad',null,null,false), T=FineArt.taotie();
     const lines=[[.25,'顾长歌：别松手！'],[.5,'何满仓：……{称}……我在这儿……'],[.75,'谢霁月：快了——再用力！']];
     const step=now=>{ if(ended) return; const dt=Math.min(.05,(now-last)/1000); last=now; t+=dt;
-      p=Math.min(1,p+dt*.012);                                     // 顾长歌 and 大师姐 pull too, slowly
-      if(lash>0){ lash-=dt; if(lash<=0){ next=t+1.8+Math.random()*1.6; say.textContent=''; } }
-      else if(warn>0){ warn-=dt; if(warn<=0){ lash=.95; lashHit=0; BossBg.flash('rgba(255,60,40,.5)'); say.textContent='它反扑了——松手！'; } }
-      else if(t>=next){ warn=.55; say.textContent='它要反扑了……'; }
+      if(pulled<=0&&lash<=0) p=Math.max(0,p-dt*.035*(.4+p));        // it keeps dragging itself back in; the harder you have it, the harder it drags
+      p=Math.min(1,p+dt*.006);                                     // 顾长歌 and 大师姐 pull too, slowly
+      if(lash>0){ lash-=dt; if(lash<=0){ next=t+1.2+Math.random()*1.3; say.textContent=''; } }
+      else if(warn>0){ warn-=dt; if(warn<=0){ lash=1.1; lashHit=0; BossBg.flash('rgba(255,60,40,.5)'); say.textContent='它反扑了——松手！'; } }
+      else if(t>=next){ warn=.45; say.textContent='它要反扑了……'; }
       for(const [at,text] of lines) if(p>=at&&!said[at]){ said[at]=1; if(!lash&&!warn) say.textContent=text.replace(/\{称\}/g,S.look&&S.look.g==='f'?'小师妹':'小师弟'); }
-      shake=Math.max(0,shake-dt); pulled=Math.max(0,pulled-dt);
+      shake=Math.max(0,shake-dt); pulled=Math.max(0,pulled-dt*.35);
       // draw: the cave, him kneeling, its soul being pulled up out of him on three golden threads
       const W=cv2.width, H=cv2.height, k=W/100; g.setTransform(1,0,0,1,0,0); g.fillStyle='#120a08'; g.fillRect(0,0,W,H);
       const gl=g.createRadialGradient(W/2,H*.7,0,W/2,H*.7,W*.6); gl.addColorStop(0,'rgba(232,184,74,.22)'); gl.addColorStop(1,'rgba(232,184,74,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H);
@@ -8978,6 +9007,7 @@ C2Y.win=()=>{ const F=S.flags, dan=S.sect==='dan', R=F.c2_ge_r; return [
   {run:()=>{ C2Y.sealing=2; }},
   ['旁白','镜面合上了。洞里一下子安静下来，静得能听见水珠从石头上滴下来的声音。'],
   {flag:'c2_sealed'},
+  {run:()=>Music.play('romance',true)},
   ['顾长歌','满仓！'],
   ['旁白','二师兄躺在骨头堆里，脸白得像纸。可是胸口，还在一起一伏。'],
   ['旁白','顾长歌在他身边跪了下来。'],
@@ -9023,12 +9053,35 @@ C2Y.win=()=>{ const F=S.flags, dan=S.sect==='dan', R=F.c2_ge_r; return [
   ['谢霁月','（沉默了很久）……师尊那边，我去说。'],
   ['谢霁月','记得写信。'],
   ['何满仓','嗯！'],
+  ['何满仓','{称}。'],
+  ['何满仓','你来宗门的第一天，我给了你半个馒头。你还记得吗？'],
+  ['我','记得。你说，晚饭你请。'],
+  ['何满仓','（他挠挠头，笑了）……欠着呢。'],
+  {choice:'你对二师兄说——', options:[
+    {text:'一言为定。一桌，少一个菜都不行', go:'c2y_m_feast'},
+    {text:'路上饿了，就写信回来', go:'c2y_m_letter'},
+    {text:'（把他的干粮袋缝好，还给他）', go:'c2y_m_bag'}]}]; };
+Object.assign(SCRIPTS, {
+  c2y_m_feast:[['我','一言为定。一桌，少一个菜都不行。'],['何满仓','一言为定！'],['何满仓','……还要加一大锅祝余汤。这回，我一定喝得饱。'],{love:{man:50}},{go:'c2y_ge_bye'}],
+  c2y_m_letter:[['我','二师兄，路上饿了，就写信回来。'],['何满仓','……嗯。'],['何满仓','（他把手按在肚子上，按了很久）……不过，我想以后不会了。'],{love:{man:50}},{go:'c2y_ge_bye'}],
+  c2y_m_bag:[['旁白','你从他手里拿过那个被撕破的干粮袋，借了大师姐的针线，一针一针地缝好。'],['旁白','针脚歪歪扭扭的。'],['何满仓','（他捧着袋子，眼圈红了）……这下，装得住了。'],{love:{man:50}},{go:'c2y_ge_bye'}],
+});
+Object.defineProperty(SCRIPTS,'c2y_ge_bye',{configurable:true, get(){ return C2Y.geBye(); }});
+C2Y.geBye=()=>{ const F=S.flags, R=F.c2_ge_r; return [
+  ['旁白','顾长歌走到你身边。你们并肩站着，看太阳一点一点爬上山头。'],
+  ['顾长歌','……这十年，我每天早上醒来，想的第一件事，都是它在哪儿。'],
+  ['顾长歌','今天早上，我什么都没想。'],
+  ['我','那你现在在想什么？'],
+  ['顾长歌','（他看了你一眼）……在想，日出原来是这个颜色。'],
   ['顾长歌','{名}。'],
   ...(R==='side'?[['顾长歌','你说你陪我。……你做到了。'],['顾长歌','仇报不报，已经不重要了。可那句话，我记着。']]
     :R==='split'?[['顾长歌','谢谢你，替我说出那句话。'],['顾长歌','我恨了十年的东西，原来只是一个饿坏了的孩子。……我早该知道的。']]
     :R==='hand'?[['旁白','他低头，看了看自己的手。'],['顾长歌','那时候……你的手很暖。'],['顾长歌','我大概，会记很久。']]
     :[['顾长歌','谢谢你。']]),
-  ['顾长歌', F.ge_promise?'北边见。':'……以后，北边见。'],
+  ['顾长歌','那把剑，我背了十年。今天，好像轻了一点。'],
+  ...(F.ge_mask?[['顾长歌','可那张青铜面具……十年前那个晚上，戴着它站在火光里的，是一个人。'],['顾长歌','饕餮一直睡在满仓身体里。那个人是谁，我得弄清楚。']]:[['顾长歌','北边还有些事，我没弄清楚。']]),
+  ['顾长歌','我和满仓先往北走。'],
+  ['顾长歌', F.ge_promise?'等你修为稳了——北边见。':'……以后，北边见。'],
   {run:()=>{ C2Y.leaving=1; }},
   ['旁白','他转过身。晨光落在他的肩上，长发和剑穗一起，在风里扬了起来。'],
   ['旁白','走出很远，他停下来。没有回头，只是抬起手，挥了一下。'],
@@ -9041,18 +9094,44 @@ C2Y.win=()=>{ const F=S.flags, dan=S.sect==='dan', R=F.c2_ge_r; return [
   ['旁白','（第五幕「饿鬼洞」完。回营地，用传送阵离开秘境吧。）']]; };
 Object.defineProperty(SCRIPTS,'c2y_win',{configurable:true, get(){ return C2Y.win(); }});
 
-/* ---------- 尾声: back at the sect ---------- */
-C2Y.epilogue=function(){ PixCG.close(); enterMap(zongId(),3,14); RT.dir='down'; UI.hud(); Music.play(areaTheme(),true);
+/* ---------- 尾声: back at the sect — 师尊 at the gate (four went, two came back; he takes the mirror to seal it away), the sect
+   talking about it, your room, and in the morning 大师姐 ---------- */
+C2Y.epilogue=function(){ PixCG.close(); S.flags.c2_back=true; enterMap(zongId(),11,17); RT.dir='up'; UI.hud(); Music.play('calm',true);
+  const m=SECTS[S.sect].master.name, F=S.flags, k=S.look&&S.look.g==='f'?'师妹':'师弟';
   setTimeout(()=>UI.say([
     ['旁白','秘境的雾，在那天之后，就散了。'],
-    ['旁白','你和大师姐回到了宗门。'],
-    ['旁白','山门还是老样子。练功场上，外门弟子们还在说着闲话。'],
-    ['外门弟子','……听说了吗？陆师兄在秘境里失踪了。'],
-    ['外门弟子','何师兄跟一个散修走了，说是去北边……'],
-    ['外门弟子','那谢师姐呢？'],
-    ['旁白','没有人敢接这句话。'],
-    ['旁白','大师兄的房间空着，门上落了一层灰。'],
-    ['旁白','二师兄的房间也空了。床底下干干净净，一块点心都没剩下——他走之前，自己收拾好了。'],
+    ['旁白','你和大师姐走上山门的石阶。台阶还是那么长，山风还是那么凉。'],
+    ['旁白',`山门下站着一个人。是${m}。`],
+    [m,'……回来了。'],
+    ['旁白','师尊看着你们身后。山路上空荡荡的。'],
+    [m,'去了四个。'],
+    [m,'回来两个。'],
+    ['旁白','他沉默了很久，长长地，叹了一口气。'],
+    ['谢霁月','师尊，大师兄他……'],
+    [m,'我知道。'],
+    [m,'（他闭上眼睛）正衡那孩子，太要名声了。他心里那根刺，我早该看出来的。'],
+    ['谢霁月','满仓跟着一个散修，往北边去了。他说……要去赎罪。'],
+    [m,'……满仓。'],
+    [m,'当年我从丰年村的灰烬里把他抱出来，他手里攥着半个馒头，怎么掰都不肯松手。'],
+    [m,'我教了他十几年剑，从没教会他吃饱。'],
+    [m,'由他去吧。吃饱了的人，才走得动远路。'],
+    [m,'那面镜子，给我。'],
+    ['旁白','你把八卦镜递了过去。镜面冰凉。里面隐约有一个小小的影子，蜷着身子，睡得很沉。'],
+    [m,'穷奇照过它。霁月照过它。满仓也照过它。'],
+    [m,'这面镜子，照过太多人心里最怕的东西了。'],
+    [m,'我把它封进藏经阁最底下那一层。以后，谁也别再看它。'],
+    {run:()=>{ if(count(S,'c2_bagua')) addItem('c2_bagua',-count(S,'c2_bagua')); UI.toast('八卦镜交给了师尊'); }},
+    [m,'霁月。'],
+    ['谢霁月','弟子在。'],
+    [m,`从今往后，你就是这一门的大师姐了。真正的那种。带好你${k}。`],
+    ['谢霁月','（她低下头）……是。'],
+    [m,'{名}，你也辛苦了。回房好好睡一觉。'],
+    {flag:'c2_master_back'},
+    ['旁白','（宗门里的人都在说秘境里的事。走走看看，再回房间睡一觉。）']], ()=>{ enterMap(zongId(),S.x,S.y); UI.hud(); Story.check(); save(); }),500); };
+{ const _o=Portal.open; Portal.open=function(){ if(RT.mapId==='mj_camp'&&S.flags.c2_man_saved&&!S.flags.c2_back) return C2Y.epilogue(); return _o.apply(Portal,arguments); }; }
+// the morning after: 大师姐 on the practice ground
+C2Y.morning=function(){ enterMap(zongId(),12,10); RT.dir='up'; UI.hud();
+  setTimeout(()=>UI.say([
     ['旁白','第二天清早，你在练功场上遇见了大师姐。'],
     {run:()=>C2Y.morningCG()},
     ['谢霁月','……{称}。'],
@@ -9065,16 +9144,43 @@ C2Y.epilogue=function(){ PixCG.close(); enterMap(zongId(),3,14); RT.dir='down'; 
     {run:()=>PixCG.close()},
     {flag:'c2_done'},
     ['旁白','【第二章「秘境」完】'],
-    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章，敬请期待。）']], ()=>{ UI.hud(); Story.check(); save(); }),400); };
-{ const _o=Portal.open; Portal.open=function(){ if(RT.mapId==='mj_camp'&&S.flags.c2_man_saved&&!S.flags.c2_done) return C2Y.epilogue(); return _o.apply(Portal,arguments); }; }
+    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章，敬请期待。）']], ()=>{ UI.hud(); Story.check(); save(); }),900); };
+{ const _a=Dungeon.act; Dungeon.act=function(o){ if(o.act==='c2bed'&&S.flags.c2_master_back&&!S.flags.c2_done){ UI.confirm('回房休息，结束今天？', ()=>{ sleep(false); C2Y.morning(); }); return true; } return _a.call(Dungeon,o); }; }
+
+// the sect after: the disciples are still about, saying other things now; 大师姐 is back; 师尊 has the mirror
+C2L.on=s=>!!s.sect&&!!s.flags.c2_arrive&&(!s.flags.c2_depart||!!s.flags.c2_back);
+C2L.backDays=[
+  [[0,'陆师兄……真的没回来？'],[1,'听说是在秘境里出的事。'],[0,'那么厉害的一个人……'],[1,'……嘘。']],
+  [[0,'谢师姐回来了。'],[1,'她刚才……对我点了一下头。'],[0,'你看错了吧？'],[1,'真的！']],
+  [[0,'何师兄走了。'],[1,'屋里收拾得干干净净，一块点心都没剩。'],[0,'……以后膳堂的饭，怕是要剩了。']]];
+C2L.backTalks={
+  c2d_zhou:[['外门弟子·周小川','（压低了声音）你在秘境里……见到陆师兄最后一面了吗？'],['外门弟子·周小川','……算了，别说了。'],['外门弟子·吴阿蛮','我墙上抄的那句「名正言顺」，昨天撕了。']],
+  c2d_lin:()=>[['外门弟子·林巧儿','……那个，新来的。'],['外门弟子·林巧儿','以前那些话，你别跟谢师姐说是我说的。'],['外门弟子·孟大壮','（小声）她好像……也没那么凶。'],
+    ...(S.flags.c2_defend_xie?[['外门弟子·孟大壮','你那时候问我们亲眼看见没有。'],['外门弟子·孟大壮','……没有。我们谁都没看见过。']]:[])],
+  c2d_sun:[['外门弟子·孙小六','何师兄走的时候，给膳堂的大娘留了一封信。'],['外门弟子·柳青青','信上就一句话：「我吃饱了。谢谢大家这些年的饭。」'],['外门弟子·孙小六','……以前那么笑话他，怪不好意思的。']],
+  c2d_zhong:[['守门弟子·老钟','四个真传，回来两个。'],['守门弟子·老钟','我守了这山门三十年，这样的事，见过不止一回。'],['守门弟子·老钟','……活着回来的，就好好活着。']]};
+C2L.backTalks.c2d_wu=C2L.backTalks.c2d_zhou; C2L.backTalks.c2d_meng=C2L.backTalks.c2d_lin; C2L.backTalks.c2d_liu=C2L.backTalks.c2d_sun;
+{ const _t=Story.talk; Story.talk=function(id){ const F=S&&S.flags;
+    if(F&&F.c2_back&&/^zong_/.test(RT.mapId)){
+      const bt=C2L.backTalks[id]; if(bt) return UI.say(typeof bt==='function'?bt():bt);
+      if(id==='xie') return UI.say(F.c2_done?[['谢霁月','……早课，别迟到。']]:[['谢霁月','……早些歇着吧。'],['谢霁月','（她看了一眼大师兄和二师兄的房间，没有再说话。）']]);
+      if(id===SECTS[S.sect].master.id) return UI.say([[SECTS[S.sect].master.name,'镜子，我封好了。'],[SECTS[S.sect].master.name,'修道先修心。你们这一趟，修的就是心。']]); }
+    return _t.call(Story,id); }; }
+for(const k in SECTS){ const o=MAPS['zong_'+k].objects.find(o=>o.id==='xie'); if(o){ const c=o.cond; o.cond=s=>c(s)||(s.sect===k&&!!s.flags.c2_back); } }
+// what you overhear walking past: their talk after you came back
+{ const day0=C2L.pairs.map(p=>p.days); Object.defineProperty(C2L,'backOn',{get(){ return !!(S&&S.flags.c2_back); }});
+  C2L.pairs.forEach((p,i)=>{ const d=p.days; Object.defineProperty(p,'days',{configurable:true, get(){ return C2L.backOn?[C2L.backDays[i],C2L.backDays[i],C2L.backDays[i]]:d; }}); }); }
 
 /* ---------- the quests ---------- */
 { const q=QUESTS.find(q=>q.id==='c2h'), pr=q.progress, tg=q.target;
   q.progress=s=>s.flags.c2_awake&&!s.flags.c2_sealed?'打败饕餮，把二师兄救出来（和洞底的饕餮说话）':pr(s);
   q.target=s=>s.flags.c2_awake&&!s.flags.c2_sealed?(RT.mapId==='mj_cave'?['mj_cave',12,3,'饕餮']:['mj_south',11,17,'洞口']):tg(s);
   QUESTS.splice(QUESTS.indexOf(q)+1,0,
-    {id:'c2i', title:'尾声', desc:'二师兄跟着顾长歌走了。秘境的雾散了，该回宗门了。', check:s=>!!s.flags.c2_done, progress:()=>'回营地，用传送阵离开秘境', target:()=>['mj_camp',2,14,'传送阵']},
+    {id:'c2i', title:'尾声', desc:'二师兄跟着顾长歌走了。秘境的雾散了，该回宗门了。', check:s=>!!s.flags.c2_done, progress:s=>!s.flags.c2_back?'回营地，用传送阵离开秘境':'在宗门里走走，然后回房间睡一觉', target:s=>!s.flags.c2_back?['mj_camp',2,14,'传送阵']:[zongId(),3,14,'你的房间']},
     {id:'c2z', title:'第二章 完', desc:'第二章「秘境」完。第三章敬请期待。可以继续做日常、钓鱼、刷狂暴穷奇。', check:s=>false}); }
+
+// once it is sealed, the wood and the cave are quiet again
+{ const _at=areaTheme; areaTheme=function(){ if((RT.mapId==='mj_cave'||RT.mapId==='mj_south')&&S&&S.flags.c2_sealed) return 'calm'; return _at(); }; }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles

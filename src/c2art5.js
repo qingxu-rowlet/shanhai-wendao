@@ -263,7 +263,7 @@ C2Y.sealCG=function(){ C2Y.sealing=0; C2Y.sealT=0;
 /* ---------- 长歌: dawn outside the cave — the first sun in the 秘境, a sea of cloud, 顾长歌 against the light; then he goes ---------- */
 C2Y.leaving=0;
 C2Y.lv=function(){ if(!C2Y.leaving){ C2Y.leaveT=0; return 0; } C2Y.leaveT=C2Y.leaveT||performance.now(); return Math.min(1,(performance.now()-C2Y.leaveT)/6000); };
-C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the same size as everyone else: the light, not his size, makes him the centre
+C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; Music.play('village',true); const GX=.6, GS=1;   // the same size as everyone else: the light, not his size, makes him the centre
   PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#f2dcc0'); Land.sky(g,W,H,['rgba(38,44,88,.97)','rgba(108,84,132,.92)','rgba(226,140,118,.9)','rgba(252,208,146,.92)','rgba(255,238,196,.7)']);
       for(let i=0;i<70;i++){ g.fillStyle=`rgba(255,255,255,${.2+R()*.45})`; g.fillRect(R()*W,R()*H*.2,1+R()*1.4,1+R()*1.4); }
       // the sun rising right behind where he will stand; its rays fan out from his back
@@ -283,7 +283,7 @@ C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the 
       C2Y.bareTree(g,W*.94,H*.84,H*.36,R,.85); for(let k=0;k<16;k++){ g.fillStyle=`rgba(${120+R()*40|0},${190+R()*30|0},110,.95)`; g.fillRect(W*(.9+R()*.09),H*(.52+R()*.22),Math.max(2,W*.004),Math.max(2,W*.004)); }
       for(let k=0;k<50;k++){ const x=R()*W, y=H*(.86+R()*.12), h=H*(.02+R()*.035); brush(g,[[x,y],[x+(R()-.3)*W*.01,y-h]],Math.max(1,W*.002),.6,'rgba(100,140,80,.8)'); } },
     cast:[{who:'me', x:.12, pose:'stand', face:1},{look:LOOK_XIE, x:.25, pose:'stand', face:1, mood:'subtle'},
-      {look:LOOK_MAN, get x(){ return .73+C2Y.lv()*.3; }, face:-1, get pose(){ return C2Y.leaving?'reach':'stand'; }, mood:'smile'},
+      {look:LOOK_MAN, get x(){ return .73+C2Y.lv()*.3; }, get face(){ return C2Y.leaving&&C2Y.lv()<1&&Math.floor(performance.now()/1400)%3?1:-1; }, get pose(){ if(!C2Y.leaving) return 'stand'; const back=!(Math.floor(performance.now()/1400)%3); return back?'lantern':C2Y.lv()<1?(Math.floor(performance.now()/180)%2?'walk':'stand'):'stand'; }, mood:'smile'},   // walking after him, turning back now and then to wave
       {look:G(), get x(){ return GX+C2Y.lv()*.36; }, get face(){ return C2Y.leaving?1:-1; }, get pose(){ return C2Y.leaving&&C2Y.lv()<1?(Math.floor(performance.now()/180)%2?'walk':'stand'):'stand'; }, mood:'subtle', s:GS}],
     title:'长歌', small:'第二章 · 第五幕', seed:5205});
   const c=PixCG.cur; c.gy=.84;
@@ -301,7 +301,7 @@ C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the 
     g.strokeStyle='#3a2a22'; g.lineWidth=fp*1.6; g.beginPath(); g.moveTo(hx,hy); g.lineTo(hx+(P.face<0?-1:1)*-fp*5,hy-fp*9); g.stroke(); g.strokeStyle='#d8b04c'; g.lineWidth=fp*1.2; g.beginPath(); g.moveTo(hx-fp*2.5,hy-fp*1.5); g.lineTo(hx+fp*2.5,hy+fp*.5); g.stroke(); };
   c.front=(g,W,H,fp,t)=>{ const P=place(W,H,fp), bb=P.bb, x0=P.face<0?P.fx+P.w/2:P.fx-P.w/2, sx=x=>P.face<0?x0-x*P.sz:x0+x*P.sz;
     // his red hair ribbon and the end of his hair, streaming out behind him in the wind
-    const ax=sx(bb.x0+bb.w*(P.face<0?.78:.22)), ay=P.fy+(bb.y0+bb.h*.12)*P.sz, dir=P.face<0?1:-1;
+    const rb=C2Y.ribbonAt(P.sp), ax=sx(rb[0]+.5), ay=P.fy+(rb[1]+.5)*P.sz, dir=P.face<0?1:-1;   // tied where the sprite's own red ribbon is
     for(const [len,amp,wd,col,ph] of [[W*.08,H*.018,fp*1.2,'#c8413b',0],[W*.06,H*.014,fp*.9,'#e05a4a',1.3]]){ g.strokeStyle=col; g.lineWidth=wd; g.lineCap='round'; g.beginPath(); g.moveTo(ax,ay);
       for(let k=1;k<=16;k++){ const u=k/16; g.lineTo(ax+dir*len*u, ay+Math.sin(t*4.2+u*5+ph)*amp*u+H*.02*u); } g.stroke(); }
     // petals and motes of light going up on the morning wind; birds come back
@@ -315,17 +315,45 @@ C2Y.dawnCG=function(){ C2Y.leaving=0; C2Y.leaveT=0; const GX=.6, GS=1;   // the 
 // the box a figure's pixels fill, and the figure all in gold (for the rim of light)
 C2Y.bbox=function(sp){ if(sp._bb) return sp._bb; const W=sp.width, H=sp.height, d=sp.getContext('2d').getImageData(0,0,W,H).data; let x0=W,y0=H,x1=0,y1=0;
   for(let y=0;y<H;y++) for(let x=0;x<W;x++) if(d[(y*W+x)*4+3]){ x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x); y1=Math.max(y1,y); } return sp._bb={x0,y0,w:x1-x0+1,h:y1-y0+1}; };
+C2Y.ribbonAt=function(sp){ if(sp._rb) return sp._rb; const W=sp.width, H=sp.height, d=sp.getContext('2d').getImageData(0,0,W,H).data; let n=0, sx=0, sy=0;
+  for(let y=0;y<H*.5;y++) for(let x=0;x<W;x++){ const i=(y*W+x)*4; if(d[i+3]&&d[i]>170&&d[i+1]<110&&d[i+2]<110){ n++; sx+=x; sy+=y; } }
+  const bb=C2Y.bbox(sp); return sp._rb=n?[sx/n,sy/n]:[bb.x0+bb.w*.3,bb.y0+bb.h*.12]; };
 C2Y.goldOf=function(sp){ if(sp._gold) return sp._gold; const c=document.createElement('canvas'); c.width=sp.width; c.height=sp.height; const g=c.getContext('2d'); g.drawImage(sp,0,0); g.globalCompositeOperation='source-in'; g.fillStyle='#ffe2a0'; g.fillRect(0,0,c.width,c.height); return sp._gold=c; };
 
-/* ---------- 早课: back at the sect, morning on the practice ground; she turns away, and smiles ---------- */
+/* ---------- 早课: back at the sect, morning on the practice ground — the great hall, its steps, the bronze censer, the weapon
+   rack, pines in the mist, cranes going over; she turns away, and smiles ---------- */
 C2Y.morningSmile=0;
-C2Y.morningCG=function(){ C2Y.morningSmile=0;
-  PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#eae2d0'); Land.sky(g,W,H,['rgba(200,220,236,.9)','rgba(236,232,220,.6)','rgba(246,238,222,.2)']); Land.orb(g,W*.2,H*.18,Math.min(W,H)*.05,'#fff2d0',4);
-      Land.peaks(g,W,H,R,{y:H*.46,amp:H*.22,n:5,a:.38,pines:5}); Land.mist(g,W,H,H*.5,H*.14,.45);
-      Land.roof(g,W*.72,H*.46,W*.42,H*.08,.8); g.fillStyle='rgba(60,46,36,.85)'; for(const x of [.56,.88]) g.fillRect(W*x,H*.5,W*.012,H*.22);
-      for(let i=0;i<4;i++) Land.pine(g,W*(.04+i*.11),H*.74,H*(.2+R()*.08),R,.5);
-      g.fillStyle='rgba(196,180,150,.9)'; g.fillRect(0,H*.74,W,H*.26); g.strokeStyle='rgba(150,130,100,.6)'; g.lineWidth=1; for(let k=0;k<8;k++){ const y=H*(.76+k*.03); g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
-      g.fillStyle='rgba(120,90,60,.9)'; g.fillRect(W*.86,H*.62,W*.02,H*.16); g.fillRect(W*.82,H*.66,W*.1,H*.015); },
-    cast:[{who:'me', x:.3, pose:'stand', face:1},{look:LOOK_XIE, x:.62, get face(){ return C2Y.morningSmile?1:-1; }, pose:'stand', prop:'sword', get mood(){ return C2Y.morningSmile?'smile':'subtle'; }}],
+C2Y.morningCG=function(){ C2Y.morningSmile=0; Music.play('calm',true);
+  PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#efe6d2'); Land.sky(g,W,H,['rgba(186,212,232,.92)','rgba(232,232,222,.65)','rgba(250,238,214,.3)']); Land.orb(g,W*.16,H*.16,Math.min(W,H)*.05,'#fff2d0',5);
+      Land.peaks(g,W,H,R,{y:H*.4,amp:H*.26,n:5,a:.3,pines:6}); Land.mist(g,W,H,H*.42,H*.14,.55); Land.peaks(g,W,H,R,{y:H*.5,amp:H*.12,n:6,a:.35,pines:8}); Land.mist(g,W,H,H*.52,H*.1,.5);
+      // the great hall: a stone terrace and steps, red pillars, lattice doors, a double roof with upturned eaves, a plaque
+      const hx=W*.6, hw=W*.46, base=H*.66;
+      g.fillStyle='rgba(176,168,152,.97)'; g.fillRect(hx-hw*.56,base,hw*1.12,H*.05); g.fillStyle='rgba(150,142,128,.97)'; g.fillRect(hx-hw*.56,base+H*.05,hw*1.12,H*.012);
+      for(let k=0;k<4;k++){ g.fillStyle=`rgba(${190-k*8},${182-k*8},${166-k*8},.97)`; g.fillRect(hx-hw*.14-k*W*.012,base+H*.062+k*H*.012,hw*.28+k*W*.024,H*.012); }
+      g.fillStyle='rgba(236,226,206,.97)'; g.fillRect(hx-hw*.46,base-H*.15,hw*.92,H*.15);
+      for(let k=0;k<6;k++){ const x=hx-hw*.44+k*hw*.176; g.fillStyle='rgba(168,48,40,.95)'; g.fillRect(x,base-H*.15,W*.012,H*.15); }
+      for(let k=0;k<5;k++){ const x=hx-hw*.425+k*hw*.176; g.fillStyle='rgba(120,70,50,.9)'; g.fillRect(x+W*.012,base-H*.13,hw*.176-W*.016,H*.13); g.strokeStyle='rgba(220,190,150,.5)'; g.lineWidth=1;
+        for(let j=1;j<5;j++){ g.beginPath(); g.moveTo(x+W*.012,base-H*.13+j*H*.026); g.lineTo(x+hw*.176-W*.004,base-H*.13+j*H*.026); g.stroke(); } }
+      Land.roof(g,hx,base-H*.15,hw*1.08,H*.07,.9); g.fillStyle='rgba(236,226,206,.97)'; g.fillRect(hx-hw*.3,base-H*.25,hw*.6,H*.05); Land.roof(g,hx,base-H*.25,hw*.78,H*.06,.9);
+      g.fillStyle='rgba(40,30,30,.95)'; g.fillRect(hx-W*.05,base-H*.245,W*.1,H*.035); g.fillStyle='#e8c46a'; g.font=`${Math.round(H*.024)}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.fillText('问道堂',hx,base-H*.22);
+      // a side building at the left, half in the trees
+      C2C.house(g,W*.12,H*.7,W*.2,H*.18,R);
+      // the practice ground: grey flagstones
+      g.fillStyle='rgba(206,198,182,.95)'; g.fillRect(0,H*.74,W,H*.26);
+      g.strokeStyle='rgba(150,140,124,.55)'; g.lineWidth=1; for(let k=0;k<7;k++){ const y=H*(.76+k*.035); g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); for(let x=(k%2)*W*.04;x<W;x+=W*.08){ g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+H*.035); g.stroke(); } }
+      // the bronze censer, a thread of smoke
+      const cx=W*.42, cy=H*.76; g.fillStyle='rgba(96,86,60,.97)'; g.beginPath(); g.ellipse(cx,cy-H*.035,W*.03,H*.025,0,0,7); g.fill(); g.fillRect(cx-W*.032,cy-H*.05,W*.064,H*.008); for(const d of [-1,0,1]) g.fillRect(cx+d*W*.02-W*.003,cy-H*.015,W*.006,H*.02);
+      brush(g,[[cx,cy-H*.06],[cx+W*.01,cy-H*.12],[cx-W*.005,cy-H*.18],[cx+W*.012,cy-H*.25]],Math.max(1,W*.002),.35,'rgba(150,150,150,.4)');
+      // the weapon rack with its swords and spears
+      const rx=W*.88, ry=H*.78; g.fillStyle='rgba(110,76,48,.97)'; g.fillRect(rx-W*.05,ry-H*.12,W*.008,H*.12); g.fillRect(rx+W*.045,ry-H*.12,W*.008,H*.12); g.fillRect(rx-W*.055,ry-H*.1,W*.11,H*.008); g.fillRect(rx-W*.055,ry-H*.04,W*.11,H*.008);
+      for(let k=0;k<5;k++){ const x=rx-W*.04+k*W*.02; g.strokeStyle='rgba(180,186,196,.95)'; g.lineWidth=Math.max(1,W*.003); g.beginPath(); g.moveTo(x,ry-H*.005); g.lineTo(x,ry-H*.15); g.stroke(); g.fillStyle=k%2?'#c8413b':'#e8b84a'; g.fillRect(x-W*.003,ry-H*.06,W*.006,H*.01); }
+      // pines framing it
+      Land.pine(g,W*.03,H*.8,H*.42,R,.75); Land.pine(g,W*.97,H*.76,H*.3,R,.6); },
+    cast:[{who:'me', x:.28, pose:'stand', face:1},{look:LOOK_XIE, x:.58, get face(){ return C2Y.morningSmile?1:-1; }, pose:'stand', prop:'sword', get mood(){ return C2Y.morningSmile?'smile':'subtle'; }}],
     title:'早课', small:'第二章 · 尾声', seed:5206});
-  const c=PixCG.cur; c.front=(g,W,H,fp,t)=>{ for(let k=0;k<10;k++){ const u=(t*.04+k*.1)%1, x=W*((k*.37+u*.4)%1), y=H*(.2+u*.6); g.fillStyle=`rgba(255,250,236,${Math.sin(u*Math.PI)*.6})`; g.fillRect(x,y,Math.max(2,fp*.7),Math.max(2,fp*.7)); } }; };
+  const c=PixCG.cur; c.front=(g,W,H,fp,t)=>{
+    for(let k=0;k<12;k++){ const u=(t*.04+k*.083)%1, x=W*((k*.37+u*.4)%1), y=H*(.2+u*.6); g.fillStyle=`rgba(255,250,236,${Math.sin(u*Math.PI)*.6})`; g.fillRect(x,y,Math.max(2,fp*.7),Math.max(2,fp*.7)); }
+    // two cranes going over, slow
+    for(let k=0;k<2;k++){ const u=((t*.025+k*.4)%1), x=W*(1.1-u*1.3), y=H*(.14+k*.05)+Math.sin(t*1.5+k)*H*.01, w=fp*(3.2+Math.sin(t*3+k)*1.4);
+      g.strokeStyle='rgba(40,36,40,.8)'; g.lineWidth=fp*.7; g.beginPath(); g.moveTo(x-w*2,y-w*.8); g.quadraticCurveTo(x-w,y-w*1.3,x,y); g.quadraticCurveTo(x+w,y-w*1.3,x+w*2,y-w*.8); g.stroke();
+      g.beginPath(); g.moveTo(x,y); g.lineTo(x-w*1.6,y+w*.15); g.stroke(); g.fillStyle='#c8413b'; g.fillRect(x-w*1.7,y+w*.05,fp,fp); } }; };

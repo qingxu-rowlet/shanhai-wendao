@@ -69,18 +69,19 @@ const Strip = {
     const cv2=ov.querySelector('canvas'), g=cv2.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1), L=Math.min(320, innerWidth*.84, innerHeight*.42); cv2.style.width=cv2.style.height=L+'px'; cv2.width=cv2.height=Math.round(L*dpr);
     const say=ov.querySelector('.st-say'); say.style.cssText='text-align:center;color:#f2e6c8;font-size:14px;min-height:20px;margin-top:6px';
     let p=0, t=0, last=performance.now(), ended=false, next=2.4, warn=0, lash=0, lashHit=0, shake=0, pulled=0, said={};
-    const pull=()=>{ if(ended) return; if(lash>0){ shake=.35; if(!lashHit){ lashHit=1; p=Math.max(0,p-.1); Sound.hurt(); } say.textContent='它反扑了——松手！'; return; } p=Math.min(1,p+.022); pulled=.12; Sound.tick(); };   // only the first pull into a lash costs you
+    const pull=()=>{ if(ended) return; if(lash>0){ shake=.35; if(!lashHit){ lashHit=1; p=Math.max(0,p-.15); Sound.hurt(); } say.textContent='它反扑了——松手！'; return; } p=Math.min(1,p+.017); pulled=.12; Sound.tick(); };   // only the first pull into a lash costs you
     const kd=e=>{ if(['Space','KeyJ','Enter','KeyE'].includes(e.code)){ e.preventDefault(); e.stopPropagation(); if(!e.repeat) pull(); } };
     addEventListener('keydown',kd,true); ov.addEventListener('pointerdown',e=>{ e.preventDefault(); pull(); });
     const man=cgChibi(LOOK_MAN,'kneel','sad',null,null,false), T=FineArt.taotie();
     const lines=[[.25,'顾长歌：别松手！'],[.5,'何满仓：……{称}……我在这儿……'],[.75,'谢霁月：快了——再用力！']];
     const step=now=>{ if(ended) return; const dt=Math.min(.05,(now-last)/1000); last=now; t+=dt;
-      p=Math.min(1,p+dt*.012);                                     // 顾长歌 and 大师姐 pull too, slowly
-      if(lash>0){ lash-=dt; if(lash<=0){ next=t+1.8+Math.random()*1.6; say.textContent=''; } }
-      else if(warn>0){ warn-=dt; if(warn<=0){ lash=.95; lashHit=0; BossBg.flash('rgba(255,60,40,.5)'); say.textContent='它反扑了——松手！'; } }
-      else if(t>=next){ warn=.55; say.textContent='它要反扑了……'; }
+      if(pulled<=0&&lash<=0) p=Math.max(0,p-dt*.035*(.4+p));        // it keeps dragging itself back in; the harder you have it, the harder it drags
+      p=Math.min(1,p+dt*.006);                                     // 顾长歌 and 大师姐 pull too, slowly
+      if(lash>0){ lash-=dt; if(lash<=0){ next=t+1.2+Math.random()*1.3; say.textContent=''; } }
+      else if(warn>0){ warn-=dt; if(warn<=0){ lash=1.1; lashHit=0; BossBg.flash('rgba(255,60,40,.5)'); say.textContent='它反扑了——松手！'; } }
+      else if(t>=next){ warn=.45; say.textContent='它要反扑了……'; }
       for(const [at,text] of lines) if(p>=at&&!said[at]){ said[at]=1; if(!lash&&!warn) say.textContent=text.replace(/\{称\}/g,S.look&&S.look.g==='f'?'小师妹':'小师弟'); }
-      shake=Math.max(0,shake-dt); pulled=Math.max(0,pulled-dt);
+      shake=Math.max(0,shake-dt); pulled=Math.max(0,pulled-dt*.35);
       // draw: the cave, him kneeling, its soul being pulled up out of him on three golden threads
       const W=cv2.width, H=cv2.height, k=W/100; g.setTransform(1,0,0,1,0,0); g.fillStyle='#120a08'; g.fillRect(0,0,W,H);
       const gl=g.createRadialGradient(W/2,H*.7,0,W/2,H*.7,W*.6); gl.addColorStop(0,'rgba(232,184,74,.22)'); gl.addColorStop(1,'rgba(232,184,74,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H);
@@ -122,6 +123,7 @@ C2Y.win=()=>{ const F=S.flags, dan=S.sect==='dan', R=F.c2_ge_r; return [
   {run:()=>{ C2Y.sealing=2; }},
   ['旁白','镜面合上了。洞里一下子安静下来，静得能听见水珠从石头上滴下来的声音。'],
   {flag:'c2_sealed'},
+  {run:()=>Music.play('romance',true)},
   ['顾长歌','满仓！'],
   ['旁白','二师兄躺在骨头堆里，脸白得像纸。可是胸口，还在一起一伏。'],
   ['旁白','顾长歌在他身边跪了下来。'],
@@ -167,12 +169,35 @@ C2Y.win=()=>{ const F=S.flags, dan=S.sect==='dan', R=F.c2_ge_r; return [
   ['谢霁月','（沉默了很久）……师尊那边，我去说。'],
   ['谢霁月','记得写信。'],
   ['何满仓','嗯！'],
+  ['何满仓','{称}。'],
+  ['何满仓','你来宗门的第一天，我给了你半个馒头。你还记得吗？'],
+  ['我','记得。你说，晚饭你请。'],
+  ['何满仓','（他挠挠头，笑了）……欠着呢。'],
+  {choice:'你对二师兄说——', options:[
+    {text:'一言为定。一桌，少一个菜都不行', go:'c2y_m_feast'},
+    {text:'路上饿了，就写信回来', go:'c2y_m_letter'},
+    {text:'（把他的干粮袋缝好，还给他）', go:'c2y_m_bag'}]}]; };
+Object.assign(SCRIPTS, {
+  c2y_m_feast:[['我','一言为定。一桌，少一个菜都不行。'],['何满仓','一言为定！'],['何满仓','……还要加一大锅祝余汤。这回，我一定喝得饱。'],{love:{man:50}},{go:'c2y_ge_bye'}],
+  c2y_m_letter:[['我','二师兄，路上饿了，就写信回来。'],['何满仓','……嗯。'],['何满仓','（他把手按在肚子上，按了很久）……不过，我想以后不会了。'],{love:{man:50}},{go:'c2y_ge_bye'}],
+  c2y_m_bag:[['旁白','你从他手里拿过那个被撕破的干粮袋，借了大师姐的针线，一针一针地缝好。'],['旁白','针脚歪歪扭扭的。'],['何满仓','（他捧着袋子，眼圈红了）……这下，装得住了。'],{love:{man:50}},{go:'c2y_ge_bye'}],
+});
+Object.defineProperty(SCRIPTS,'c2y_ge_bye',{configurable:true, get(){ return C2Y.geBye(); }});
+C2Y.geBye=()=>{ const F=S.flags, R=F.c2_ge_r; return [
+  ['旁白','顾长歌走到你身边。你们并肩站着，看太阳一点一点爬上山头。'],
+  ['顾长歌','……这十年，我每天早上醒来，想的第一件事，都是它在哪儿。'],
+  ['顾长歌','今天早上，我什么都没想。'],
+  ['我','那你现在在想什么？'],
+  ['顾长歌','（他看了你一眼）……在想，日出原来是这个颜色。'],
   ['顾长歌','{名}。'],
   ...(R==='side'?[['顾长歌','你说你陪我。……你做到了。'],['顾长歌','仇报不报，已经不重要了。可那句话，我记着。']]
     :R==='split'?[['顾长歌','谢谢你，替我说出那句话。'],['顾长歌','我恨了十年的东西，原来只是一个饿坏了的孩子。……我早该知道的。']]
     :R==='hand'?[['旁白','他低头，看了看自己的手。'],['顾长歌','那时候……你的手很暖。'],['顾长歌','我大概，会记很久。']]
     :[['顾长歌','谢谢你。']]),
-  ['顾长歌', F.ge_promise?'北边见。':'……以后，北边见。'],
+  ['顾长歌','那把剑，我背了十年。今天，好像轻了一点。'],
+  ...(F.ge_mask?[['顾长歌','可那张青铜面具……十年前那个晚上，戴着它站在火光里的，是一个人。'],['顾长歌','饕餮一直睡在满仓身体里。那个人是谁，我得弄清楚。']]:[['顾长歌','北边还有些事，我没弄清楚。']]),
+  ['顾长歌','我和满仓先往北走。'],
+  ['顾长歌', F.ge_promise?'等你修为稳了——北边见。':'……以后，北边见。'],
   {run:()=>{ C2Y.leaving=1; }},
   ['旁白','他转过身。晨光落在他的肩上，长发和剑穗一起，在风里扬了起来。'],
   ['旁白','走出很远，他停下来。没有回头，只是抬起手，挥了一下。'],
@@ -185,18 +210,44 @@ C2Y.win=()=>{ const F=S.flags, dan=S.sect==='dan', R=F.c2_ge_r; return [
   ['旁白','（第五幕「饿鬼洞」完。回营地，用传送阵离开秘境吧。）']]; };
 Object.defineProperty(SCRIPTS,'c2y_win',{configurable:true, get(){ return C2Y.win(); }});
 
-/* ---------- 尾声: back at the sect ---------- */
-C2Y.epilogue=function(){ PixCG.close(); enterMap(zongId(),3,14); RT.dir='down'; UI.hud(); Music.play(areaTheme(),true);
+/* ---------- 尾声: back at the sect — 师尊 at the gate (four went, two came back; he takes the mirror to seal it away), the sect
+   talking about it, your room, and in the morning 大师姐 ---------- */
+C2Y.epilogue=function(){ PixCG.close(); S.flags.c2_back=true; enterMap(zongId(),11,17); RT.dir='up'; UI.hud(); Music.play('calm',true);
+  const m=SECTS[S.sect].master.name, F=S.flags, k=S.look&&S.look.g==='f'?'师妹':'师弟';
   setTimeout(()=>UI.say([
     ['旁白','秘境的雾，在那天之后，就散了。'],
-    ['旁白','你和大师姐回到了宗门。'],
-    ['旁白','山门还是老样子。练功场上，外门弟子们还在说着闲话。'],
-    ['外门弟子','……听说了吗？陆师兄在秘境里失踪了。'],
-    ['外门弟子','何师兄跟一个散修走了，说是去北边……'],
-    ['外门弟子','那谢师姐呢？'],
-    ['旁白','没有人敢接这句话。'],
-    ['旁白','大师兄的房间空着，门上落了一层灰。'],
-    ['旁白','二师兄的房间也空了。床底下干干净净，一块点心都没剩下——他走之前，自己收拾好了。'],
+    ['旁白','你和大师姐走上山门的石阶。台阶还是那么长，山风还是那么凉。'],
+    ['旁白',`山门下站着一个人。是${m}。`],
+    [m,'……回来了。'],
+    ['旁白','师尊看着你们身后。山路上空荡荡的。'],
+    [m,'去了四个。'],
+    [m,'回来两个。'],
+    ['旁白','他沉默了很久，长长地，叹了一口气。'],
+    ['谢霁月','师尊，大师兄他……'],
+    [m,'我知道。'],
+    [m,'（他闭上眼睛）正衡那孩子，太要名声了。他心里那根刺，我早该看出来的。'],
+    ['谢霁月','满仓跟着一个散修，往北边去了。他说……要去赎罪。'],
+    [m,'……满仓。'],
+    [m,'当年我从丰年村的灰烬里把他抱出来，他手里攥着半个馒头，怎么掰都不肯松手。'],
+    [m,'我教了他十几年剑，从没教会他吃饱。'],
+    [m,'由他去吧。吃饱了的人，才走得动远路。'],
+    [m,'那面镜子，给我。'],
+    ['旁白','你把八卦镜递了过去。镜面冰凉。里面隐约有一个小小的影子，蜷着身子，睡得很沉。'],
+    [m,'穷奇照过它。霁月照过它。满仓也照过它。'],
+    [m,'这面镜子，照过太多人心里最怕的东西了。'],
+    [m,'我把它封进藏经阁最底下那一层。以后，谁也别再看它。'],
+    {run:()=>{ if(count(S,'c2_bagua')) addItem('c2_bagua',-count(S,'c2_bagua')); UI.toast('八卦镜交给了师尊'); }},
+    [m,'霁月。'],
+    ['谢霁月','弟子在。'],
+    [m,`从今往后，你就是这一门的大师姐了。真正的那种。带好你${k}。`],
+    ['谢霁月','（她低下头）……是。'],
+    [m,'{名}，你也辛苦了。回房好好睡一觉。'],
+    {flag:'c2_master_back'},
+    ['旁白','（宗门里的人都在说秘境里的事。走走看看，再回房间睡一觉。）']], ()=>{ enterMap(zongId(),S.x,S.y); UI.hud(); Story.check(); save(); }),500); };
+{ const _o=Portal.open; Portal.open=function(){ if(RT.mapId==='mj_camp'&&S.flags.c2_man_saved&&!S.flags.c2_back) return C2Y.epilogue(); return _o.apply(Portal,arguments); }; }
+// the morning after: 大师姐 on the practice ground
+C2Y.morning=function(){ enterMap(zongId(),12,10); RT.dir='up'; UI.hud();
+  setTimeout(()=>UI.say([
     ['旁白','第二天清早，你在练功场上遇见了大师姐。'],
     {run:()=>C2Y.morningCG()},
     ['谢霁月','……{称}。'],
@@ -209,13 +260,40 @@ C2Y.epilogue=function(){ PixCG.close(); enterMap(zongId(),3,14); RT.dir='down'; 
     {run:()=>PixCG.close()},
     {flag:'c2_done'},
     ['旁白','【第二章「秘境」完】'],
-    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章，敬请期待。）']], ()=>{ UI.hud(); Story.check(); save(); }),400); };
-{ const _o=Portal.open; Portal.open=function(){ if(RT.mapId==='mj_camp'&&S.flags.c2_man_saved&&!S.flags.c2_done) return C2Y.epilogue(); return _o.apply(Portal,arguments); }; }
+    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章，敬请期待。）']], ()=>{ UI.hud(); Story.check(); save(); }),900); };
+{ const _a=Dungeon.act; Dungeon.act=function(o){ if(o.act==='c2bed'&&S.flags.c2_master_back&&!S.flags.c2_done){ UI.confirm('回房休息，结束今天？', ()=>{ sleep(false); C2Y.morning(); }); return true; } return _a.call(Dungeon,o); }; }
+
+// the sect after: the disciples are still about, saying other things now; 大师姐 is back; 师尊 has the mirror
+C2L.on=s=>!!s.sect&&!!s.flags.c2_arrive&&(!s.flags.c2_depart||!!s.flags.c2_back);
+C2L.backDays=[
+  [[0,'陆师兄……真的没回来？'],[1,'听说是在秘境里出的事。'],[0,'那么厉害的一个人……'],[1,'……嘘。']],
+  [[0,'谢师姐回来了。'],[1,'她刚才……对我点了一下头。'],[0,'你看错了吧？'],[1,'真的！']],
+  [[0,'何师兄走了。'],[1,'屋里收拾得干干净净，一块点心都没剩。'],[0,'……以后膳堂的饭，怕是要剩了。']]];
+C2L.backTalks={
+  c2d_zhou:[['外门弟子·周小川','（压低了声音）你在秘境里……见到陆师兄最后一面了吗？'],['外门弟子·周小川','……算了，别说了。'],['外门弟子·吴阿蛮','我墙上抄的那句「名正言顺」，昨天撕了。']],
+  c2d_lin:()=>[['外门弟子·林巧儿','……那个，新来的。'],['外门弟子·林巧儿','以前那些话，你别跟谢师姐说是我说的。'],['外门弟子·孟大壮','（小声）她好像……也没那么凶。'],
+    ...(S.flags.c2_defend_xie?[['外门弟子·孟大壮','你那时候问我们亲眼看见没有。'],['外门弟子·孟大壮','……没有。我们谁都没看见过。']]:[])],
+  c2d_sun:[['外门弟子·孙小六','何师兄走的时候，给膳堂的大娘留了一封信。'],['外门弟子·柳青青','信上就一句话：「我吃饱了。谢谢大家这些年的饭。」'],['外门弟子·孙小六','……以前那么笑话他，怪不好意思的。']],
+  c2d_zhong:[['守门弟子·老钟','四个真传，回来两个。'],['守门弟子·老钟','我守了这山门三十年，这样的事，见过不止一回。'],['守门弟子·老钟','……活着回来的，就好好活着。']]};
+C2L.backTalks.c2d_wu=C2L.backTalks.c2d_zhou; C2L.backTalks.c2d_meng=C2L.backTalks.c2d_lin; C2L.backTalks.c2d_liu=C2L.backTalks.c2d_sun;
+{ const _t=Story.talk; Story.talk=function(id){ const F=S&&S.flags;
+    if(F&&F.c2_back&&/^zong_/.test(RT.mapId)){
+      const bt=C2L.backTalks[id]; if(bt) return UI.say(typeof bt==='function'?bt():bt);
+      if(id==='xie') return UI.say(F.c2_done?[['谢霁月','……早课，别迟到。']]:[['谢霁月','……早些歇着吧。'],['谢霁月','（她看了一眼大师兄和二师兄的房间，没有再说话。）']]);
+      if(id===SECTS[S.sect].master.id) return UI.say([[SECTS[S.sect].master.name,'镜子，我封好了。'],[SECTS[S.sect].master.name,'修道先修心。你们这一趟，修的就是心。']]); }
+    return _t.call(Story,id); }; }
+for(const k in SECTS){ const o=MAPS['zong_'+k].objects.find(o=>o.id==='xie'); if(o){ const c=o.cond; o.cond=s=>c(s)||(s.sect===k&&!!s.flags.c2_back); } }
+// what you overhear walking past: their talk after you came back
+{ const day0=C2L.pairs.map(p=>p.days); Object.defineProperty(C2L,'backOn',{get(){ return !!(S&&S.flags.c2_back); }});
+  C2L.pairs.forEach((p,i)=>{ const d=p.days; Object.defineProperty(p,'days',{configurable:true, get(){ return C2L.backOn?[C2L.backDays[i],C2L.backDays[i],C2L.backDays[i]]:d; }}); }); }
 
 /* ---------- the quests ---------- */
 { const q=QUESTS.find(q=>q.id==='c2h'), pr=q.progress, tg=q.target;
   q.progress=s=>s.flags.c2_awake&&!s.flags.c2_sealed?'打败饕餮，把二师兄救出来（和洞底的饕餮说话）':pr(s);
   q.target=s=>s.flags.c2_awake&&!s.flags.c2_sealed?(RT.mapId==='mj_cave'?['mj_cave',12,3,'饕餮']:['mj_south',11,17,'洞口']):tg(s);
   QUESTS.splice(QUESTS.indexOf(q)+1,0,
-    {id:'c2i', title:'尾声', desc:'二师兄跟着顾长歌走了。秘境的雾散了，该回宗门了。', check:s=>!!s.flags.c2_done, progress:()=>'回营地，用传送阵离开秘境', target:()=>['mj_camp',2,14,'传送阵']},
+    {id:'c2i', title:'尾声', desc:'二师兄跟着顾长歌走了。秘境的雾散了，该回宗门了。', check:s=>!!s.flags.c2_done, progress:s=>!s.flags.c2_back?'回营地，用传送阵离开秘境':'在宗门里走走，然后回房间睡一觉', target:s=>!s.flags.c2_back?['mj_camp',2,14,'传送阵']:[zongId(),3,14,'你的房间']},
     {id:'c2z', title:'第二章 完', desc:'第二章「秘境」完。第三章敬请期待。可以继续做日常、钓鱼、刷狂暴穷奇。', check:s=>false}); }
+
+// once it is sealed, the wood and the cave are quiet again
+{ const _at=areaTheme; areaTheme=function(){ if((RT.mapId==='mj_cave'||RT.mapId==='mj_south')&&S&&S.flags.c2_sealed) return 'calm'; return _at(); }; }
