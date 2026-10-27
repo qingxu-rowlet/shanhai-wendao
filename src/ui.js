@@ -67,9 +67,11 @@ const Battle = {
     if(B.boss && typeof SCENES!=='undefined' && SCENES[kind]) Cine.play(kind, ()=>Battle._begin(kind,cb));
     else Battle._begin(kind,cb);
   },
+  // once you have your sect's 绝学, 御剑术 becomes the cheap set-up: less damage, but it gathers 剑意 for the next 绝学 (+30%, one at a time)
+  skillMp(){ return S.sect&&SECTS[S.sect]?5:8; },
   actsHTML(B){
     const sc=S.sect&&SECTS[S.sect];
-    return `<button data-a="atk">剑击</button><button data-a="skill">御剑术<small>8灵力</small></button>${sc?`<button data-a="sect" class="sectb">${sc.skill.name}<small>${sc.skill.mp}灵力</small></button>`:''}
+    return `<button data-a="atk">剑击</button><button data-a="skill">御剑术<small>${Battle.skillMp()}灵力${sc?' · 蓄剑意':''}</small></button>${sc?`<button data-a="sect" class="sectb">${sc.skill.name}<small>${sc.skill.mp}灵力</small></button>`:''}
       <button data-a="guard">护体</button><button data-a="pill">丹药</button><button data-a="flee" ${B.boss?'disabled':''}>${B.boss?'—':'遁走'}</button>`;
   },
   _begin(kind, cb){
@@ -102,8 +104,8 @@ const Battle = {
     const txt={atk:`攻击 · 约 ${Math.max(1,a-st.def)}`, double:`连击 ×2`, charge:'蓄力中……', big:`重击！约 ${Math.round(a*2.4)}（快护体）`, roar:'怒吼（震散灵力）',
       charm:'魅惑（护体可抵挡）', fire:`狐火 · 约 ${Math.round(a*1.6)}`, wind:`风刃 · 约 ${Math.round(a*1.3)}（护体只挡一半）`}[it];
     $('#bIntent').textContent=(s.stun?'被定身 · ':'')+txt+(s.burn?`　灼烧×${s.burn}`:''); $('#bIntent').className='b-intent'+(!s.stun&&(it==='big'||it==='charm')?' warn':'');
-    const sk=$('#battle').querySelector('[data-a="skill"]'); if(sk) sk.disabled=S.mp<8;
-    const sb=$('#battle').querySelector('[data-a="sect"]'); if(sb) sb.disabled=S.mp<SECTS[S.sect].skill.mp;
+    const sk=$('#battle').querySelector('[data-a="skill"]'); if(sk) sk.disabled=S.mp<Battle.skillMp();
+    const sb=$('#battle').querySelector('[data-a="sect"]'); if(sb){ sb.disabled=S.mp<SECTS[S.sect].skill.mp; sb.classList.toggle('jianyi',!!s.jianyi); const sm=sb.querySelector('small'); if(sm) sm.textContent=`${SECTS[S.sect].skill.mp}灵力${s.jianyi?' · 剑意 +30%':''}`; }
   },
   log(t){ $('#bLog').textContent=t; },
   float(t,cls){ const f=document.createElement('div'); f.className='b-float '+(cls||''); f.textContent=t; $('#bFloats').appendChild(f); setTimeout(()=>f.remove(),900); },
@@ -115,7 +117,9 @@ const Battle = {
     if(a==='flee'){ if(s.B.boss) return; if(Math.random()<.65){ Battle.end('flee'); return; } Battle.log('没能逃掉！'); return Battle.enemyTurn(); }
     if(a==='guard'){ s.guard=true; S.mp=Math.min(st.mp,S.mp+5); Sound.guard(); Battle.log('你运转灵力护住全身。（灵力 +5）'); return Battle.enemyTurn(); }
     const rnd=()=>0.9+Math.random()*.2, def=s.B.def; let dmg=0, msg='';
-    if(a==='skill'){ if(S.mp<8) return; S.mp-=8; dmg=st.atk*2.2*Sect.spellMul()*rnd()-def/4; Sound.magic(); msg='御剑术！飞剑化作一道青光。'; }
+    if(a==='skill'){ const mp=Battle.skillMp(); if(S.mp<mp) return; S.mp-=mp; Sound.magic();
+      if(mp<8){ dmg=st.atk*1.6*Sect.spellMul()*rnd()-def/4; msg=s.jianyi?'御剑术！剑意已满，飞剑在你身侧低鸣。':'御剑术！飞剑化作一道青光——剑意凝聚。'; s.jianyi=1; }
+      else { dmg=st.atk*2.2*Sect.spellMul()*rnd()-def/4; msg='御剑术！飞剑化作一道青光。'; } }
     else if(a==='sect'){ const sc=SECTS[S.sect]; if(!sc||S.mp<sc.skill.mp) return; S.mp-=sc.skill.mp; Sound.magic();
       if(S.sect==='jian'){ dmg=st.atk*3*Sect.spellMul()*rnd()-def/4; msg='万剑归宗！漫天剑雨倾泻而下！'; BossBg.flash('rgba(170,210,255,.55)'); }
       if(S.sect==='dan'){ dmg=st.atk*2.2*Sect.spellMul()*rnd(); s.burn=3; msg='丹火！敌人被金色的火焰缠住了。'; BossBg.flash('rgba(255,170,60,.45)'); }
@@ -123,6 +127,7 @@ const Battle = {
       if(S.sect==='tianji'){ const wary=s.i<(s.stunGuard||0), ok=!wary&&Math.random()<(s.B.boss?.35:.7); dmg=st.atk*2.6*Sect.spellMul()*rnd()-def/4;   // it lands now and then, and never twice in a row
         if(ok){ s.stun=1; s.stunGuard=s.i+3; msg='定身符！敌人动弹不得。'; } else msg=wary?'敌人对定身符有了防备，符纸一贴上就烧成了灰。':'定身符被一股妖力震碎了！'; BossBg.flash('rgba(200,160,255,.45)'); } }
     else { dmg=st.atk*rnd()-def/2; Sound.hit(); msg='你挥剑斩去。'; }
+    if(a==='sect'&&s.jianyi){ s.jianyi=0; dmg*=1.3; msg='剑意加持——'+msg; }
     const crit=Math.random()<Sect.crit(); if(crit){ dmg*=1.8; msg+=' 暴击！'; }
     dmg=Math.max(1,Math.round(dmg)); s.hp-=dmg; Battle.float((crit?'暴击 ':'')+'-'+dmg, crit?'crit':''); Battle.hitFx();
     if(S.pet && s.hp>0){ const pd=Sect.petAtk(); s.hp-=pd; msg+=` ${BEASTS[S.pet.kind].name}追加攻击 ${pd}。`; setTimeout(()=>Battle.float('-'+pd,'pet'),260); }
