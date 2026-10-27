@@ -51,7 +51,7 @@ const Dodge = {
     const MD=Dodge.mods?Dodge.mods():{speed:1,inv:0,r:1,dur:1}, R=3.2*MD.r, SPEED=58*MD.speed, DUR=pat.dur*MD.dur; let t=0, last=performance.now(), ended=false;
     const segDist=(px,py,b)=>{ const dx=Math.cos(b.a), dy=Math.sin(b.a), qx=px-b.cx, qy=py-b.cy; return Math.abs(qx*dy-qy*dx); };
     const hitTest=b=>{
-      if(b.k==='feather'||b.k==='blade'||b.k==='orbit'||b.k==='fruit'||b.k==='ember'||b.k==='stone'||b.k==='word') return b.x!==undefined&&Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
+      if(b.k==='feather'||b.k==='blade'||b.k==='orbit'||b.k==='fruit'||b.k==='ember'||b.k==='stone'||b.k==='word'||b.k==='ghost') return b.x!==undefined&&Math.hypot(P.me.x-b.x,P.me.y-b.y)<R+b.r-.6;
       if(b.k==='slash') return b.t>b.warn && segDist(P.me.x,P.me.y,b)<b.w/2+R*.6;
       if(b.k==='band') return b.t>b.warn && Math.abs((b.dir==='h'?P.me.y:P.me.x)-b.at)<b.w/2+R*.4;
       if(b.k==='pillar') return b.t>b.warn && P.me.y<Math.min(1,(b.t-b.warn)/.12)*100+R && Math.abs(P.me.x-b.at)<b.w/2+R*.4;
@@ -72,7 +72,7 @@ const Dodge = {
         if(b.k==='ring') b.R+=b.vr*dt;
         if(b.k==='orbit'){ b.a+=b.va*dt; b.R+=b.vr*dt; b.x=50+Math.cos(b.a)*b.R; b.y=50+Math.sin(b.a)*b.R; }
         if(P.inv<=0 && hitTest(b)){ P.hits++; P.inv=.7+MD.inv; P.flash=.25; Sound.hurt(); ov.classList.remove('hurt'); void ov.offsetWidth; ov.classList.add('hurt'); } }
-      P.list=P.list.filter(b=>{ if(b.k==='slash'||b.k==='band'||b.k==='pillar') return b.t<b.warn+b.act; if(b.k==='ring') return b.R<80; if(b.k==='orbit') return b.R>3; return b.x>-10&&b.x<110&&b.y>-10&&b.y<110; });
+      P.list=P.list.filter(b=>{ if(b.ttl&&b.t>b.ttl) return false; if(b.k==='maw') return true; if(b.k==='slash'||b.k==='band'||b.k==='pillar') return b.t<b.warn+b.act; if(b.k==='ring') return b.R<80; if(b.k==='orbit') return b.R>3; return b.x>-10&&b.x<110&&b.y>-10&&b.y<110; });
       P.inv-=dt; P.flash-=dt;
       draw(); ov.querySelector('.dg-time i').style.width=Math.max(0,100-t/DUR*100)+'%';
       if(t>=DUR) return finish();
@@ -97,6 +97,10 @@ const Dodge = {
             g.globalAlpha=fade; g.fillStyle='rgba(255,200,90,.45)'; g.fillRect(x0-1.5,0,b.w+3,len); g.fillStyle='#ffe9a8'; g.fillRect(x0,0,b.w,len); g.fillStyle='#fffbea'; g.fillRect(b.at-b.w*.18,0,b.w*.36,len);
             g.fillStyle='rgba(150,100,30,.7)'; for(let y=6;y<len;y+=8) g.fillRect(x0+1,y,b.w-2,.6);       // the marks on a steelyard beam
             if(len>=100){ g.fillStyle='rgba(255,230,160,.6)'; g.beginPath(); g.ellipse(b.at,98,b.w*.9,3,0,0,7); g.fill(); } g.globalAlpha=1; } }
+        if(b.k==='ghost'){ const a=Math.atan2(b.vy,b.vx); g.save(); g.translate(b.x,b.y); g.fillStyle='rgba(200,220,210,.35)'; for(let k=1;k<4;k++){ g.beginPath(); g.arc(-Math.cos(a)*k*1.6,-Math.sin(a)*k*1.6+Math.sin(b.t*9+k)*.5,b.r*(1-k*.2),0,7); g.fill(); }
+          g.fillStyle='#d8eadc'; g.beginPath(); g.arc(0,0,b.r,0,7); g.fill(); g.fillStyle='#1a1416'; g.fillRect(-1.3,-1,.9,1.1); g.fillRect(.5,-1,.9,1.1); g.beginPath(); g.ellipse(0,1.1,.8,.6+.4*Math.abs(Math.sin(b.t*10)),0,0,7); g.fill(); g.restore(); }
+        if(b.k==='maw'){ g.save(); g.translate(b.x,b.y); const gr=g.createRadialGradient(0,0,0,0,0,b.r*1.6); gr.addColorStop(0,'rgba(20,4,4,.95)'); gr.addColorStop(.6,'rgba(90,16,10,.5)'); gr.addColorStop(1,'rgba(90,16,10,0)'); g.fillStyle=gr; g.beginPath(); g.arc(0,0,b.r*1.6,0,7); g.fill();
+          g.strokeStyle='rgba(200,80,50,.5)'; g.lineWidth=.6; for(let k=0;k<4;k++){ g.beginPath(); for(let j=0;j<=20;j++){ const u=j/20, ang=b.t*-3+k*Math.PI/2+u*4, rr=b.r*1.5*(1-u); j?g.lineTo(Math.cos(ang)*rr,Math.sin(ang)*rr):g.moveTo(Math.cos(ang)*rr,Math.sin(ang)*rr); } g.stroke(); } g.restore(); }
         if(b.k==='word'){ g.save(); g.translate(b.x,b.y); g.rotate(Math.sin(b.t*3+b.x)*.12); g.font=`${b.r*2.3}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.textBaseline='middle';
           g.lineWidth=1.1; g.strokeStyle='rgba(20,6,10,.9)'; g.strokeText(b.text,0,0); g.fillStyle=b.t<.25?'#ffd0d0':'#e8384a'; g.fillText(b.text,0,0); g.restore(); }   // 流言: a word thrown like a stone
         if(b.k==='orbit'&&b.x!==undefined){ g.save(); g.translate(b.x,b.y); g.rotate(b.a+Math.PI/2); g.fillStyle='#e8f2ff'; g.beginPath(); g.ellipse(0,0,4,1.5,0,0,7); g.fill(); g.fillStyle='#7fb2e8'; g.beginPath(); g.ellipse(2.4,0,1.5,1,0,0,7); g.fill(); g.restore(); }
@@ -128,6 +132,7 @@ const Dodge = {
         if(hits===0){ msg=`你避开了${pat.name}，毫发无伤！`; Battle.float('完美闪避','perfect'); }
         else { msg=`被${pat.name}击中 ${hits} 下。`; S.hp-=dmg; $('#battle').classList.remove('shake'); void $('#battle').offsetWidth; $('#battle').classList.add('shake'); Battle.float('-'+dmg,'me'); }
         if(pat.mp&&hits){ S.mp=Math.max(0,S.mp-pat.mp*hits); msg+=`灵力被震散 ${pat.mp*hits}。`; }
+        if(pat.after) msg+=pat.after(hits,s)||'';
         s.i++; let tail='';
         if(s.burn>0 && s.hp>0){ const bd=Math.max(1,Math.round(st.atk*.8)); s.hp-=bd; s.burn--; tail=` 丹火灼烧 ${bd}。`; setTimeout(()=>Battle.float('-'+bd,'burn'),200); }
         Battle.log(msg+(dmg?`（-${dmg}）`:'')+tail); s.busy=false; Battle.phaseCheck(); Battle.ui();

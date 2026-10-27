@@ -282,7 +282,7 @@ Object.assign(SCRIPTS, {
 { const q=QUESTS.find(q=>q.id==='c2h');
   Object.assign(q,{title:'饿鬼洞', desc:'二师兄不见了，锅底被舔得发亮。脚印和一道湿漉漉的痕迹往营地南边去了。',
     check:s=>!!s.flags.c2_man_saved,
-    progress:s=>{ const F=s.flags; return !F.c2_south_in?'顺着二师兄的脚印，往营地南边走':!F.c2_ge_met?'往南，去林子尽头的山坳':!F.c2_cave_in?'进洞':!F.c2_awake?'往洞里走，找到二师兄':'（第五幕后半正在制作中）'; },
+    progress:s=>{ const F=s.flags; return !F.c2_south_in?'顺着二师兄的脚印，往营地南边走':!F.c2_ge_met?'往南，去林子尽头的山坳':!F.c2_cave_in?'进洞':!F.c2_awake?'往洞里走，找到二师兄':'回营地'; },
     target:s=>{ const F=s.flags, m=RT.mapId;
       if(F.c2_awake) return null;
       if(m==='mj_cave') return ['mj_cave',12,3,'二师兄'];
