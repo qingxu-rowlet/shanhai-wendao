@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="41bba8ea53"><script>(function(){var B="41bba8ea53";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="829f74d188"><script>(function(){var B="829f74d188";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8574,7 +8574,7 @@ FineArt.carcass=function(){ return FineArt.cache.carcass3||(FineArt.cache.carcas
   P.cap(37,21.5,36,26,.6,Bl2); P.cap(44,21.5,45,27,.6,Bl); P.set(36,27,Bl2); P.set(45,28,Bl2); })); };
 // 饕餮: rising out of his shadow. A sheep's body in a heavy black fleece, a man's arms with long claws, a face of green
 // bronze cut with the 饕餮 scrollwork, great curled ram's horns, a mouth of tiger teeth — and its real eyes under its arms.
-FineArt.taotie=function(){ return FineArt.cache.taotie3||(FineArt.cache.taotie3=FineArt.paint(132,104,P=>{
+FineArt.taotie=function(){ return FineArt.cache.taotie6||(FineArt.cache.taotie6=FineArt.paint(132,104,P=>{
   const Fl='#2e2422', Fl2='#3d302c', Fl3='#4b3c36', B1='#7d8a58', B2='#5e6e47', B3='#44533a', B4='#2c3826', Bk='#1a2016', Gd='#d8b04c', Gd2='#9a7a30',
     Hn='#6b5a2e', Hn2='#a08848', Hn3='#3f3418', Mo='#240606', Mo2='#5a1410', Th='#f2ead8', Th2='#c8bea8', Ey='#ffcc33', Ey2='#e05020', Cl='#e6dcc4', Ar='#3a2e2a', Ar2='#56463e', cx=66;
   // arms first (behind the fleece at the shoulder): a man's arms raised high, the hands open, long pale claws
@@ -8590,21 +8590,20 @@ FineArt.taotie=function(){ return FineArt.cache.taotie3||(FineArt.cache.taotie3=
   for(let k=0;k<10;k++){ const x=cx-32+k*7, len=9+(k*5)%10; for(let j=0;j<len;j++){ const w=Math.max(.5,2.8-j*.22); P.cap(x+Math.sin(j*.5+k)*2,80+j,x+Math.sin(j*.5+k)*2,80+j,w,j>len*.6?'#1e1716':Fl); } }
   // its real eyes, in the hollows under the raised arms: huge, gold, slit like a goat's
   for(const s of [-1,1]){ const ex=cx+s*33, ey=60; P.ell(ex,ey,7,4.6,Mo); P.ell(ex,ey,6,3.6,Ey2); P.ell(ex,ey,4.4,2.8,Ey); P.rect(ex-3,ey-1,7,2,Mo); P.rect(ex-2,ey-1,5,2,'#120202'); P.set(ex-s*2,ey-2,'#fff6d0'); P.set(ex-s*3,ey-2,'#fff6d0'); }
-  // horns: ram's horns, ridged, curling out and down
-  for(const s of [-1,1]){ const pts=[], ox=cx+s*20, oy=14;
-    for(let k=0;k<=44;k++){ const t=k/44, ang=-Math.PI/2+s*t*Math.PI*1.7, rad=4+t*14; pts.push([ox+s*t*8+Math.cos(ang)*rad*s*.9*(s<0?-1:1)*-1*s, oy+t*6+Math.sin(ang)*rad*.85, 5.2*(1-t*.6)]); }
-    for(const [x,y,w] of pts) P.cap(x,y+1,x,y+1,w,Hn3); for(const [x,y,w] of pts) P.cap(x,y,x,y,w*.9,Hn);
-    pts.forEach(([x,y,w],k)=>{ if(k%4===0) P.cap(x-w*.55,y-w*.2,x+w*.55,y+w*.2,.5,Hn2); }); }
+  // horns: a pair of ram's horns, one the mirror of the other — each rises from the top of the head, sweeps out and down, and curls in
+  const horn=[]; for(let k=0;k<=46;k++){ const t=k/46, a=(-150+t*300)*Math.PI/180, r=14-9*t; horn.push([cx+28+Math.cos(a)*r, 19+Math.sin(a)*r*.9, 5.4-3.4*t]); }
+  for(const s of [-1,1]){ const pts=horn.map(([x,y,w])=>[cx+(x-cx)*s,y,w]);
+    for(const [x,y,w] of pts) P.cap(x,y+1,x,y+1,w,Hn3); for(const [x,y,w] of pts) P.cap(x,y,x,y,w*.88,Hn);
+    pts.forEach(([x,y,w],k)=>{ if(k%4===0&&k<44){ const nx=pts[Math.min(46,k+1)][0]-x, ny=pts[Math.min(46,k+1)][1]-y, d=Math.hypot(nx,ny)||1; P.cap(x-ny/d*w*.7,y+nx/d*w*.7,x+ny/d*w*.7,y-nx/d*w*.7,.45,Hn2); } }); }
   // the mask: broad at the brow, bronze darkening downward, a gold rim
   const mask=[[cx-26,12],[cx+26,12],[cx+29,24],[cx+24,40],[cx+14,48],[cx-14,48],[cx-24,40],[cx-29,24]];
   P.poly(mask.map(([x,y])=>[x+(x<cx?-1:1),y+(y>30?1:-1)]),Gd2); P.poly(mask,B2);
   P.poly([[cx-26,12],[cx+26,12],[cx+28,20],[cx-28,20]],B1); P.poly([[cx-24,40],[cx+24,40],[cx+14,48],[cx-14,48]],B3);
   // cloud-and-thunder scrolls: a round spiral on each cheek and over each brow, gold on dark bronze
   const spiral=(x0,y0,r,dir,turns)=>{ let px=x0, py=y0; for(let k=0;k<=40;k++){ const t=k/40, a=dir*t*Math.PI*2*turns, rr=r*(1-t*.85), x=x0+Math.cos(a)*rr, y=y0+Math.sin(a)*rr*.8; if(k) { P.cap(px,py,x,y,.9,Bk); P.cap(px,py-.6,x,y-.6,.35,Gd); } px=x; py=y; } };
-  for(const s of [-1,1]){ spiral(cx+s*20,32,6,s,1.6); spiral(cx+s*15,16,4,-s,1.4); P.cap(cx+s*3,14,cx+s*24,14,.8,Gd2);
-    // the eyes of the mask: bronze knobs, gold-rimmed, a slit of red light
-    const ex=cx+s*11, ey=26; P.ell(ex,ey,5.2,3.8,Bk); P.ell(ex,ey,4.4,3,Gd2); P.ell(ex,ey,3.6,2.4,B1); P.rect(ex,ey-2,1,5,'#c83018'); P.set(ex,ey-1,'#ff9050');
-    P.cap(cx+s*5,21,cx+s*16,19,1.1,Bk); P.cap(cx+s*16,19,cx+s*19,22,1,Bk); }
+  for(const s of [-1,1]){ spiral(cx+s*20,32,6,s,1.6); P.cap(cx+s*3,14,cx+s*24,14,.8,Gd2); P.cap(cx+s*5,18,cx+s*22,18,.5,Gd2);
+    // where a face would have its eyes, the mask has none — only a round gold boss, a spiral cast in the bronze
+    const ex=cx+s*12, ey=26; P.ell(ex,ey,4.6,3.2,B2); for(let k=0;k<3;k++) P.cap(ex-4+k*1.2,ey+3-k*2.6,ex+4-k*1.2,ey+3-k*2.6,.4,k%2?Gd2:B3); P.cap(ex-s*3,ey-3,ex+s*4,ey+2,.4,Gd2); }
   // the nose ridge with its flanges, the gold boss at the brow
   P.rect(cx-1,13,3,20,B1); P.rect(cx-1,13,1,20,Gd2); for(let y=16;y<32;y+=4){ P.rect(cx-3,y,7,1,B3); }
   P.ell(cx,12,4,2.6,Gd); P.set(cx,11,'#fff0b0'); P.cap(cx-6,34,cx+6,34,1.4,Bk);
