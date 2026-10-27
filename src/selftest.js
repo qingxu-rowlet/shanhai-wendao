@@ -75,4 +75,4 @@ const SelfTest = {
   },
 };
 addEventListener('error', e=>SelfTest.errors.push(e.message||String(e)));
-if(location.hash.includes('selftest')) setTimeout(()=>SelfTest.run(),600);
+if(location.hash==='#selftest') setTimeout(()=>SelfTest.run(),600);   // #selftest2 is chapter two (selftest2.js)
