@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="1602de8b26"><script>(function(){var B="1602de8b26";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="41bba8ea53"><script>(function(){var B="41bba8ea53";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8662,6 +8662,10 @@ C2Y.bareTree=(g,x,y,s,R,a=.9)=>{ const lean=(R()-.5)*s*.3, pts=[[x,y],[x+lean*.3
     g.lineWidth=s*.016; g.beginPath(); g.moveTo(bx,by); g.quadraticCurveTo(bx+dir*L*.5,by-L*.1,ex,ey); g.stroke();
     g.lineWidth=s*.008; g.beginPath(); g.moveTo(ex-dir*L*.3,ey+L*.15); g.lineTo(ex-dir*L*.15,ey-L*.25); g.stroke(); }
   g.fillStyle=`rgba(120,90,60,${a*.7})`; for(let k=0;k<5;k++) g.fillRect(x-s*.03+lean*.05,y-s*(.06+k*.035),s*.06,s*.008); };
+// the boy holding the half 馒头 his mother gave him: painted into his hands, so it stays there whatever his size
+C2Y.childBun=function(){ if(FineArt.cache.childbun) return FineArt.cache.childbun; const b=cgChibi(LOOK_MAN_SMALL,'hold',null,null,null,false), W=b.width, H=b.height, d=b.getContext('2d').getImageData(0,0,W,H).data;
+  return FineArt.cache.childbun=FineArt.paint(W,H,P=>{ for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=(y*W+x)*4; if(d[i+3]) P.set(x,y,'#'+[d[i],d[i+1],d[i+2]].map(v=>v.toString(16).padStart(2,'0')).join('')); }
+    P.rect(46,29,4,1,'#fffaf0'); P.rect(45,30,6,2,'#fffaf0'); P.rect(45,32,6,1,'#d8c4a0'); P.set(47,30,'#ffffff'); }); };
 C2Y.MEM=[
   // 丰年村 in the drought: a white sun, the bare hills, the houses, a dry well, stripped trees, dead stalks in cracked fields
   {title:'丰年村', ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#ead7a6'); Land.sky(g,W,H,['rgba(255,246,214,.95)','rgba(242,214,156,.65)','rgba(230,200,146,.25)']); Land.orb(g,W*.72,H*.15,Math.min(W,H)*.07,'#fffaf0',5);
@@ -8675,36 +8679,38 @@ C2Y.MEM=[
       g.strokeStyle='rgba(66,44,24,.6)'; g.lineWidth=Math.max(1,W*.0025); for(let k=0;k<46;k++){ let x=R()*W, y=H*(.76+R()*.24); g.beginPath(); g.moveTo(x,y); for(let j=0;j<4;j++){ x+=(R()-.5)*W*.06; y+=(R()-.3)*H*.025; g.lineTo(x,y); } g.stroke(); }
       for(let k=0;k<26;k++){ const x=W*(R()*.3+(k%2?.7:0)), y=H*(.88+R()*.1), h=H*(.04+R()*.04), b=(R()-.5)*W*.03; brush(g,[[x,y],[x+b*.3,y-h*.6],[x+b,y-h]],Math.max(1,W*.002),.55,'rgba(110,84,50,.7)'); }
       C2Y.bareTree(g,W*.05,H*.82,H*.42,R,.95); C2Y.bareTree(g,W*.95,H*.8,H*.36,R,.9); C2Y.bareTree(g,W*.27,H*.74,H*.24,R,.7); },
-    cast:P=>[{look:C2V[2], x:.12, pose:'reach', face:-1, s:P},{look:LOOK_MAN_MA, x:.45, pose:'kneel', face:1, mood:'sad', s:P},{look:LOOK_MAN_SMALL, x:.53, pose:'hold', face:-1, s:P*.72},
+    cast:P=>[{look:C2V[2], x:.12, pose:'reach', face:-1, s:P},{look:LOOK_MAN_MA, x:.45, pose:'kneel', face:1, mood:'sad', s:P},{cv:C2Y.childBun(), x:.53, face:-1, s:P*.72},
       {look:C2V[3], x:.74, pose:'crouch', face:-1, s:P},{look:C2V[4], x:.84, pose:'kneel', face:-1, s:P, mood:'sad'}]},
   // 别出声: the kitchen at dusk — plank walls, a beam with an empty basket, a red window, the cold stove, the cellar open in
   // the floor, and in the doorway the grown-ups against the light
   {title:'别出声', ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#7a6048'); g.fillStyle='rgba(44,30,20,.88)'; g.fillRect(0,0,W,H);
-      for(let x=0;x<W;x+=W/16){ g.fillStyle=`rgba(${70+((x*7)%20)},${50+((x*3)%14)},34,.55)`; g.fillRect(x,0,W/16-W*.004,H*.76); }
-      g.fillStyle='rgba(26,16,10,.95)'; g.fillRect(0,H*.1,W,H*.035); g.strokeStyle='rgba(26,16,10,.9)'; g.lineWidth=W*.003; g.beginPath(); g.moveTo(W*.42,H*.135); g.lineTo(W*.42,H*.2); g.stroke();
-      g.strokeStyle='rgba(120,90,56,.9)'; g.lineWidth=W*.004; g.beginPath(); g.ellipse(W*.42,H*.23,W*.04,H*.03,0,0,Math.PI); g.stroke(); g.beginPath(); g.moveTo(W*.38,H*.23); g.lineTo(W*.46,H*.23); g.stroke();
-      // the window: dusk red through a lattice
-      const wx=W*.2, wy=H*.22, ww=W*.14, wh=H*.14, gl=g.createRadialGradient(wx+ww/2,wy+wh/2,0,wx+ww/2,wy+wh/2,W*.3); gl.addColorStop(0,'rgba(230,110,60,.4)'); gl.addColorStop(1,'rgba(230,110,60,0)'); g.fillStyle=gl; g.fillRect(0,0,W*.7,H*.7);
-      g.fillStyle='rgba(236,120,64,.9)'; g.fillRect(wx,wy,ww,wh); g.strokeStyle='rgba(30,18,10,.95)'; g.lineWidth=W*.006; for(let k=0;k<=4;k++){ g.beginPath(); g.moveTo(wx+ww*k/4,wy); g.lineTo(wx+ww*k/4,wy+wh); g.stroke(); g.beginPath(); g.moveTo(wx,wy+wh*k/4); g.lineTo(wx+ww,wy+wh*k/4); g.stroke(); }
-      // the stove: mud brick, two pot holes, an empty pot, cold ash
-      g.fillStyle='rgba(120,92,66,.97)'; g.fillRect(W*.02,H*.5,W*.3,H*.26); g.fillStyle='rgba(150,118,86,.97)'; g.fillRect(W*.02,H*.48,W*.3,H*.035);
-      for(let k=0;k<4;k++) for(let j=0;j<3;j++){ g.strokeStyle='rgba(80,58,40,.6)'; g.lineWidth=1; g.strokeRect(W*(.02+k*.075+(j%2)*.03),H*(.53+j*.07),W*.075,H*.07); }
-      g.fillStyle='rgba(20,12,8,.95)'; g.beginPath(); g.ellipse(W*.17,H*.68,W*.04,H*.045,0,Math.PI,0); g.fill(); g.fillStyle='rgba(110,104,100,.6)'; g.fillRect(W*.14,H*.68,W*.06,H*.012);
-      g.fillStyle='rgba(40,36,34,.98)'; g.beginPath(); g.ellipse(W*.12,H*.47,W*.06,H*.035,0,0,Math.PI); g.fill(); g.fillStyle='rgba(70,66,62,1)'; g.beginPath(); g.ellipse(W*.12,H*.47,W*.06,H*.012,0,0,7); g.fill();
-      // the doorway: the last light, very bright
-      const dg=g.createLinearGradient(W*.76,0,W*.98,0); dg.addColorStop(0,'rgba(250,170,96,.95)'); dg.addColorStop(1,'rgba(255,214,150,.95)'); g.fillStyle=dg; g.fillRect(W*.76,H*.2,W*.22,H*.58);
-      g.fillStyle='rgba(30,18,10,.98)'; g.fillRect(W*.745,H*.17,W*.018,H*.61); g.fillRect(W*.975,H*.17,W*.025,H*.61); g.fillRect(W*.745,H*.17,W*.25,H*.03);
-      Land.ground(g,W,H,H*.76,.85,'#24180e'); g.strokeStyle='rgba(60,40,24,.6)'; g.lineWidth=1; for(let k=0;k<6;k++){ const y=H*(.8+k*.035); g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); } },
+      // everything at the size of the little people in the glass: the floor at .86, a grown-up stands about .2 high
+      for(let x=0;x<W;x+=W/22){ g.fillStyle=`rgba(${70+((x*7)%20)},${50+((x*3)%14)},34,.55)`; g.fillRect(x,H*.3,W/22-W*.003,H*.52); }
+      g.fillStyle='rgba(26,16,10,.95)'; g.fillRect(0,H*.27,W,H*.03); g.fillRect(0,H*.82,W,H*.012);
+      g.strokeStyle='rgba(26,16,10,.9)'; g.lineWidth=Math.max(1,W*.002); g.beginPath(); g.moveTo(W*.46,H*.3); g.lineTo(W*.46,H*.36); g.stroke();
+      g.strokeStyle='rgba(120,90,56,.9)'; g.lineWidth=Math.max(1,W*.003); g.beginPath(); g.ellipse(W*.46,H*.38,W*.022,H*.018,0,0,Math.PI); g.stroke(); g.beginPath(); g.moveTo(W*.438,H*.38); g.lineTo(W*.482,H*.38); g.stroke();
+      // the window, head-high: dusk red through a lattice
+      const wx=W*.27, wy=H*.5, ww=W*.075, wh=H*.075, gl=g.createRadialGradient(wx+ww/2,wy+wh/2,0,wx+ww/2,wy+wh/2,W*.18); gl.addColorStop(0,'rgba(230,110,60,.38)'); gl.addColorStop(1,'rgba(230,110,60,0)'); g.fillStyle=gl; g.fillRect(0,H*.3,W*.6,H*.56);
+      g.fillStyle='rgba(236,120,64,.9)'; g.fillRect(wx,wy,ww,wh); g.strokeStyle='rgba(30,18,10,.95)'; g.lineWidth=Math.max(1,W*.004); for(let k=0;k<=3;k++){ g.beginPath(); g.moveTo(wx+ww*k/3,wy); g.lineTo(wx+ww*k/3,wy+wh); g.stroke(); g.beginPath(); g.moveTo(wx,wy+wh*k/3); g.lineTo(wx+ww,wy+wh*k/3); g.stroke(); }
+      // the stove, waist-high: mud brick, the fire hole cold, an empty pot on top
+      const sx=W*.06, sw=W*.14, st=H*.77, sh=H*.09; g.fillStyle='rgba(120,92,66,.97)'; g.fillRect(sx,st,sw,sh); g.fillStyle='rgba(150,118,86,.97)'; g.fillRect(sx-W*.004,st-H*.012,sw+W*.008,H*.014);
+      g.strokeStyle='rgba(80,58,40,.6)'; g.lineWidth=1; for(let k=0;k<4;k++) for(let j=0;j<2;j++) g.strokeRect(sx+sw*(k/4)+(j%2)*sw*.12,st+sh*(j/2),sw/4,sh/2);
+      g.fillStyle='rgba(20,12,8,.95)'; g.beginPath(); g.ellipse(sx+sw*.5,st+sh,sw*.13,sh*.4,0,Math.PI,0); g.fill();
+      g.fillStyle='rgba(40,36,34,.98)'; g.beginPath(); g.ellipse(sx+sw*.3,st-H*.012,sw*.2,H*.014,0,0,Math.PI); g.fill(); g.fillStyle='rgba(70,66,62,1)'; g.beginPath(); g.ellipse(sx+sw*.3,st-H*.012,sw*.2,H*.005,0,0,7); g.fill();
+      // the doorway, a little taller than a grown-up: the last light, very bright
+      const dx=W*.79, dw=W*.17, dt=H*.58; const dg=g.createLinearGradient(dx,0,dx+dw,0); dg.addColorStop(0,'rgba(250,170,96,.95)'); dg.addColorStop(1,'rgba(255,214,150,.95)'); g.fillStyle=dg; g.fillRect(dx,dt,dw,H*.86-dt);
+      g.fillStyle='rgba(30,18,10,.98)'; g.fillRect(dx-W*.012,dt-H*.02,W*.012,H*.86-dt+H*.02); g.fillRect(dx+dw,dt-H*.02,W*.012,H*.86-dt+H*.02); g.fillRect(dx-W*.012,dt-H*.02,dw+W*.024,H*.02);
+      Land.ground(g,W,H,H*.83,.85,'#24180e'); g.strokeStyle='rgba(60,40,24,.6)'; g.lineWidth=1; for(let k=0;k<5;k++){ const y=H*(.86+k*.028); g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); } },
     stage:(g,W,H,fp,t)=>{ // the cellar mouth in the floor, black
-      g.fillStyle='#070404'; g.beginPath(); g.moveTo(W*.3,H*.83); g.lineTo(W*.5,H*.83); g.lineTo(W*.52,H*.93); g.lineTo(W*.28,H*.93); g.closePath(); g.fill();
-      g.strokeStyle='#5a4028'; g.lineWidth=fp*1.4; for(const x of [.35,.45]){ g.beginPath(); g.moveTo(W*x,H*.83); g.lineTo(W*(x-.01),H*.93); g.stroke(); } for(let k=0;k<3;k++){ g.beginPath(); g.moveTo(W*.345,H*(.86+k*.03)); g.lineTo(W*.445,H*(.86+k*.03)); g.stroke(); } },
-    cast:P=>[{look:LOOK_MAN_SMALL, x:.4, y:.96, pose:'reach', face:1, s:P*.72, mood:'sad'},{look:LOOK_MAN_MA, x:.5, pose:'reach', face:-1, mood:'sad', s:P},
-      {cv:C2Y.sil(C2V[2],'stand'), x:.82, s:P*1.4/1.2*1.2, face:-1},{cv:C2Y.sil(C2V[0],'stand'), x:.88, s:P*1.4/1.2*1.2, face:-1},{cv:C2Y.sil(C2V[3],'point'), x:.93, s:P*1.4/1.2*1.2, face:-1}],
+      g.fillStyle='#070404'; g.beginPath(); g.moveTo(W*.35,H*.86); g.lineTo(W*.46,H*.86); g.lineTo(W*.47,H*.93); g.lineTo(W*.34,H*.93); g.closePath(); g.fill();
+      g.strokeStyle='#5a4028'; g.lineWidth=fp; for(const x of [.38,.43]){ g.beginPath(); g.moveTo(W*x,H*.86); g.lineTo(W*(x-.005),H*.93); g.stroke(); } for(let k=0;k<2;k++){ g.beginPath(); g.moveTo(W*.378,H*(.88+k*.025)); g.lineTo(W*.428,H*(.88+k*.025)); g.stroke(); } },
+    cast:P=>[{look:LOOK_MAN_SMALL, x:.405, y:.95, pose:'reach', face:1, s:P*.72, mood:'sad'},{look:LOOK_MAN_MA, x:.52, pose:'reach', face:-1, mood:'sad', s:P},
+      {cv:C2Y.sil(C2V[2],'stand'), x:.835, s:P, face:-1},{cv:C2Y.sil(C2V[0],'stand'), x:.875, s:P, face:-1},{cv:C2Y.sil(C2V[3],'point'), x:.915, s:P, face:-1}],
     front:(g,W,H,fp,t)=>{ // the board, lifted; the floor in front of his legs
-      g.fillStyle='#2a1c10'; g.fillRect(W*.28,H*.93,W*.26,H*.07);
-      g.save(); g.translate(W*.3,H*.83); g.rotate(-1.35); g.fillStyle='#7a5a3a'; g.fillRect(0,-fp*2.2,H*.12,fp*2.2); g.fillStyle='#5a4028'; for(let k=1;k<4;k++) g.fillRect(H*.03*k,-fp*2.2,fp*.6,fp*2.2); g.restore();
+      g.fillStyle='#2a1c10'; g.fillRect(W*.33,H*.93,W*.15,H*.07);
+      g.save(); g.translate(W*.35,H*.86); g.rotate(-1.35); g.fillStyle='#7a5a3a'; g.fillRect(0,-fp*1.6,H*.08,fp*1.6); g.fillStyle='#5a4028'; for(let k=1;k<3;k++) g.fillRect(H*.027*k,-fp*1.6,fp*.6,fp*1.6); g.restore();
       // their eyes, in the dark of their faces
-      for(const [x,y] of [[.815,.635],[.875,.63],[.925,.64]]){ if((Math.floor(t*1.3+x*20)%9)===0) continue; g.fillStyle='rgba(255,236,190,.9)'; g.fillRect(W*x-fp*1.6,H*y,fp*1.2,fp*.8); g.fillRect(W*x+fp*.6,H*y,fp*1.2,fp*.8); } }},
+      for(const [x,y] of [[.83,.735],[.87,.73],[.91,.74]]){ if((Math.floor(t*1.3+x*20)%9)===0) continue; g.fillStyle='rgba(255,236,190,.9)'; g.fillRect(W*x-fp*1.6,H*y,fp*1.2,fp*.8); g.fillRect(W*x+fp*.6,H*y,fp*1.2,fp*.8); } }},
   // 大火: the cellar — earth walls, empty jars, a ladder to the board; the fire outside comes down through the cracks
   {title:'大火', ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#4a2c1e'); g.fillStyle='rgba(22,10,6,.9)'; g.fillRect(0,0,W,H);
       for(let k=0;k<70;k++){ const x=R()*W, y=H*(.14+R()*.66), w=W*(.02+R()*.06); g.fillStyle=`rgba(${70+R()*30|0},${40+R()*16|0},24,${.18+R()*.2})`; g.fillRect(x,y,w,H*.006); }
@@ -8737,7 +8743,7 @@ C2Y.memCG=function(i){ const sc=C2Y.MEM[i], P=.62;
   else { PixCG.swap({ink:sc.ink, cast:sc.cast(P)}); const tt=$('#cg .cg-title b'); if(tt) tt.textContent=sc.title; }
   const c=PixCG.cur; c.mem=1; c.gy=.86; c.stage=sc.stage||null;
   c.front=(g,W,H,fp,t)=>{ if(sc.front) sc.front(g,W,H,fp,t);
-    if(i===0){ const bx=Math.round(W*.552), by=Math.round(H*.8); FP.r(g,bx-fp*2,by-fp*2,4,2,fp,'#fffaf0'); FP.r(g,bx-fp*2,by,4,1,fp,'#d8c4a0'); FP.r(g,bx-fp,by-fp*3,2,1,fp,'#fffaf0');
+    if(i===0){
       for(let k=0;k<3;k++){ const a=t*.4+k*2.1, x=W*(.5+Math.cos(a)*.3), y=H*(.18+Math.sin(a*1.3)*.05), w=fp*(2+Math.sin(t*6+k)); g.strokeStyle='rgba(30,20,14,.8)'; g.lineWidth=fp*.7; g.beginPath(); g.moveTo(x-w*2,y-w); g.lineTo(x,y); g.lineTo(x+w*2,y-w); g.stroke(); }
       g.strokeStyle='rgba(255,250,230,.1)'; g.lineWidth=fp; for(let k=0;k<6;k++){ const y=H*(.32+k*.06); g.beginPath(); for(let x=0;x<=W;x+=W/30) g.lineTo(x,y+Math.sin(x*.03+t*2+k)*fp*1.5); g.stroke(); } }
     // the round mirror frame, as when it showed 大师兄's village
