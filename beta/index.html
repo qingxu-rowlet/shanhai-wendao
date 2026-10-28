@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5de3620a01"><script>(function(){var B="5de3620a01";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="842603b63b"><script>(function(){var B="842603b63b";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9149,6 +9149,20 @@ C2Y.epilogue=function(){ PixCG.close(); S.flags.c2_back=true; enterMap(zongId(),
     [m,'这面镜子，照过太多人心里最怕的东西了。'],
     [m,'我把它封进藏经阁最底下那一层。以后，谁也别再看它。'],
     {run:()=>{ if(count(S,'c2_bagua')) addItem('c2_bagua',-count(S,'c2_bagua')); UI.toast('八卦镜交给了师尊'); }},
+    // the way north: next spring's 宗门大比 in the capital, run by the court — by a man named 萧, out of the wolf hills
+    [m,'还有一件事。'],
+    [m,'京城来了信。明年开春，四宗的宗门大比改在京城办，由朝廷亲自主持。'],
+    [m,'各宗派最出挑的弟子去。我们这一门——霁月。'],
+    [m,'还有你，{名}。'],
+    ...(S.sect==='dan'?[[m,'谷里还会派小棠同去。'],['我','（小棠也去……）']]:[[m,'听说药王谷那边，派的是一个叫苏小棠的小丫头。'],['我','（小棠……）']]),
+    ['谢霁月','京城的大比，向来是礼部在办。这一回，为什么是朝廷亲自主持？'],
+    ['旁白',`${m}沉默了一会儿。`],
+    [m,'主持的是朝中一位新贵。姓萧。'],
+    [m,'听说是从北边狼山里走出来的年轻人。没有师门，没有来历，几年之间，就坐到了天子身边。'],
+    ['谢霁月','（她看了你一眼）……狼。'],
+    ['旁白','你想起白羽崖上，八卦镜里那个伏在草丛中的少年。他披着狼皮，一张一张地，记住那些人的脸。'],
+    ['旁白','最后，他隔着镜子，看了你一眼。'],
+    [m,'京城不比宗门。去了，多长一只眼睛。'],
     [m,'霁月。'],
     ['谢霁月','弟子在。'],
     [m,`从今往后，你就是这一门的大师姐了。真正的那种。带好你${k}。`],
@@ -9189,21 +9203,23 @@ C2Y.moEnd=[
     {run:()=>PixCG.close()},
     {flag:'c2_done'},
     ['旁白','【第二章「秘境」完】'],
-    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章，敬请期待。）']];
+    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章「京城」——北上，宗门大比，敬请期待。）']];
 { const _a=Dungeon.act; Dungeon.act=function(o){ if(o.act==='c2bed'&&S.flags.c2_master_back&&!S.flags.c2_done){ UI.confirm('回房休息，结束今天？', ()=>{ sleep(false); C2Y.morning(); }); return true; } return _a.call(Dungeon,o); }; }
 
 // the sect after: the disciples are still about, saying other things now; 大师姐 is back; 师尊 has the mirror
 C2L.on=s=>!!s.sect&&!!s.flags.c2_arrive&&(!s.flags.c2_depart||!!s.flags.c2_back);
 C2L.backDays=[
-  [[0,'陆师兄……真的没回来？'],[1,'听说是在秘境里出的事。'],[0,'那么厉害的一个人……'],[1,'……嘘。']],
+  [[0,'陆师兄……真的没回来？'],[1,'听说是在秘境里出的事。'],[0,'那么厉害的一个人……'],[1,'……嘘。'],[0,'听说了吗？明年开春，宗门大比改在京城办。'],[1,'京城？以前不都是四宗轮着办吗？'],[0,'这回是朝廷主持。那位萧大人……'],[1,'嘘——那个人的名字，最好别在外面提。']],
   [[0,'谢师姐回来了。'],[1,'她刚才……对我点了一下头。'],[0,'你看错了吧？'],[1,'真的！']],
   [[0,'何师兄走了。'],[1,'屋里收拾得干干净净，一块点心都没剩。'],[0,'……以后膳堂的饭，怕是要剩了。']]];
 C2L.backTalks={
-  c2d_zhou:[['外门弟子·周小川','（压低了声音）你在秘境里……见到陆师兄最后一面了吗？'],['外门弟子·周小川','……算了，别说了。'],['外门弟子·吴阿蛮','我墙上抄的那句「名正言顺」，昨天撕了。']],
+  c2d_zhou:[['外门弟子·周小川','（压低了声音）你在秘境里……见到陆师兄最后一面了吗？'],['外门弟子·周小川','……算了，别说了。'],['外门弟子·吴阿蛮','我墙上抄的那句「名正言顺」，昨天撕了。'],
+    ['外门弟子·周小川','听说你和谢师姐要去京城比试？'],['外门弟子·吴阿蛮','京城那位萧大人……听说一句话，就能让一个村子没了。'],['外门弟子·周小川','你小声点！']],
   c2d_lin:()=>[['外门弟子·林巧儿','……那个，新来的。'],['外门弟子·林巧儿','以前那些话，你别跟谢师姐说是我说的。'],['外门弟子·孟大壮','（小声）她好像……也没那么凶。'],
     ...(S.flags.c2_defend_xie?[['外门弟子·孟大壮','你那时候问我们亲眼看见没有。'],['外门弟子·孟大壮','……没有。我们谁都没看见过。']]:[])],
   c2d_sun:[['外门弟子·孙小六','何师兄走的时候，给膳堂的大娘留了一封信。'],['外门弟子·柳青青','信上就一句话：「我吃饱了。谢谢大家这些年的饭。」'],['外门弟子·孙小六','……以前那么笑话他，怪不好意思的。']],
-  c2d_zhong:[['守门弟子·老钟','四个真传，回来两个。'],['守门弟子·老钟','我守了这山门三十年，这样的事，见过不止一回。'],['守门弟子·老钟','……活着回来的，就好好活着。']]};
+  c2d_zhong:[['守门弟子·老钟','四个真传，回来两个。'],['守门弟子·老钟','我守了这山门三十年，这样的事，见过不止一回。'],['守门弟子·老钟','……活着回来的，就好好活着。'],
+    ['守门弟子·老钟','开春要去京城？'],['守门弟子·老钟','我年轻时去过一回。那地方，人比妖还会吃人。'],['守门弟子·老钟','去了，记得回来。']]};
 C2L.backTalks.c2d_wu=C2L.backTalks.c2d_zhou; C2L.backTalks.c2d_meng=C2L.backTalks.c2d_lin; C2L.backTalks.c2d_liu=C2L.backTalks.c2d_sun;
 { const _t=Story.talk; Story.talk=function(id){ const F=S&&S.flags;
     if(F&&F.c2_back&&/^zong_/.test(RT.mapId)){
@@ -10274,7 +10290,7 @@ const SelfTest2 = {
           const mirror=!count(S,'c2_bagua'), back=!!S.flags.c2_master_back; for(const id of ['c2d_zhou','c2d_lin','c2d_sun','c2d_zhong','xie',SECTS[k].master.id]){ Story.talk(id); await adv(); }
           const o=RT.map.objects.find(o=>o.act==='c2bed'); Dungeon.act(o); await adv(0); await W(1100); await adv(); for(let i=0;i<20&&QUESTS[S.quest].id!=='c2z';i++){ await W(150); Story.check(); }
           return {fail:!(mirror&&back&&S.flags.c2_done&&QUESTS[S.quest].id==='c2z')}; });
-        await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest2.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\bnull\b|\[object|制作中|敬请期待。）$/.test(l.text)&&!/第三章，敬请期待/.test(l.text));
+        await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest2.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\bnull\b|\[object|制作中|敬请期待。）$/.test(l.text)&&!/第三章/.test(l.text));   // the teaser for chapter three at the very end is meant to be there
           SelfTest2.issues.push(...bad); const others=other(k), cross=mine.filter(l=>others.some(w=>l.text.includes(w))); SelfTest2.cross.push(...cross);
           return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题${cross.length?`；提到别的宗门 ${cross.length} 处（人工看一下）`:''}`}; });
       }
