@@ -213,7 +213,7 @@ Object.defineProperty(SCRIPTS,'c2y_win',{configurable:true, get(){ return C2Y.wi
 /* ---------- 尾声: back at the sect — 师尊 at the gate (four went, two came back; he takes the mirror to seal it away), the sect
    talking about it, your room, and in the morning 大师姐 ---------- */
 C2Y.epilogue=function(){ PixCG.close(); S.flags.c2_back=true; enterMap(zongId(),11,17); RT.dir='up'; UI.hud(); Music.play('calm',true);
-  const m=SECTS[S.sect].master.name, F=S.flags, k=S.look&&S.look.g==='f'?'师妹':'师弟';
+  const M=SECTS[S.sect].master, m=M.name, F=S.flags, k=S.look&&S.look.g==='f'?'师妹':'师弟', ta=M.look&&M.look.g==='f'?'她':'他', teach={jian:'剑',dan:'医术',shou:'驯兽',tianji:'卜算'}[S.sect]||'剑';   // 苍姑 is a woman; each master taught him their own art
   setTimeout(()=>UI.say([
     ['旁白','秘境的雾，在那天之后，就散了。'],
     ['旁白','你和大师姐走上山门的石阶。台阶还是那么长，山风还是那么凉。'],
@@ -222,14 +222,14 @@ C2Y.epilogue=function(){ PixCG.close(); S.flags.c2_back=true; enterMap(zongId(),
     ['旁白','师尊看着你们身后。山路上空荡荡的。'],
     [m,'去了四个。'],
     [m,'回来两个。'],
-    ['旁白','他沉默了很久，长长地，叹了一口气。'],
+    ['旁白',`${ta}沉默了很久，长长地，叹了一口气。`],
     ['谢霁月','师尊，大师兄他……'],
     [m,'我知道。'],
-    [m,'（他闭上眼睛）正衡那孩子，太要名声了。他心里那根刺，我早该看出来的。'],
+    [m,`（${ta}闭上眼睛）正衡那孩子，太要名声了。他心里那根刺，我早该看出来的。`],
     ['谢霁月','满仓跟着一个散修，往北边去了。他说……要去赎罪。'],
     [m,'……满仓。'],
     [m,'当年我从丰年村的灰烬里把他抱出来，他手里攥着半个馒头，怎么掰都不肯松手。'],
-    [m,'我教了他十几年剑，从没教会他吃饱。'],
+    [m,`我教了他十几年${teach}，从没教会他吃饱。`],
     [m,'由他去吧。吃饱了的人，才走得动远路。'],
     [m,'那面镜子，给我。'],
     ['旁白','你把八卦镜递了过去。镜面冰凉。里面隐约有一个小小的影子，蜷着身子，睡得很沉。'],
@@ -297,3 +297,7 @@ for(const k in SECTS){ const o=MAPS['zong_'+k].objects.find(o=>o.id==='xie'); if
 
 // once it is sealed, the wood and the cave are quiet again
 { const _at=areaTheme; areaTheme=function(){ if((RT.mapId==='mj_cave'||RT.mapId==='mj_south')&&S&&S.flags.c2_sealed) return 'calm'; return _at(); }; }
+
+// outermost: a timer can land while the next fight's title card is up (no screen yet), or after the win (the result panel
+// has replaced the bars) — 大师姐's follow-up blow in the 穷奇 fight, for one
+{ const _u=Battle.ui; Battle.ui=function(){ if(!Battle.s||!$('#bEhp')||!$('#bPhp')) return; return _u.apply(Battle,arguments); }; }

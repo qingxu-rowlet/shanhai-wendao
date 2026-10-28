@@ -96,6 +96,7 @@ const Battle = {
   },
   intent(){ const s=Battle.s; return s.moves[s.i%s.moves.length]; },
   ui(){
+    if(!$('#bEhp')||!$('#bPhp')||!Battle.s) return;   // a timer can land while the next fight's title card is up, before its screen is drawn
     const s=Battle.s, st=stats();
     $('#bEhp').style.width=Math.max(0,s.hp/s.max*100)+'%';
     $('#bPhp').style.width=Math.max(0,S.hp/st.hp*100)+'%'; $('#bPhpT').textContent=`${Math.max(0,Math.ceil(S.hp))}/${st.hp}`;
