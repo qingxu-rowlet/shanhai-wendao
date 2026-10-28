@@ -35,7 +35,9 @@ const SelfTest2 = {
       for(let i=0;i<40&&!$('#bOk');i++){ bubbles(); await W(100); }
       const ok=$('#bOk'); if(ok) ok.click(); await W(400); Dev.god=false; return {won:!!ok, turns:n}; };
     // a scene to its end: the dialogue, a fight if one starts, what follows it; scenes that start a moment after a map loads too
-    const play=async(id,pick=0)=>{ cur=id; node(id).run(); await W(800); for(let k=0;k<12;k++){ await adv(pick); if(Battle.s){ await fight(); continue; } await W(700); if($('#dlg').hidden&&!Battle.s) break; } };
+    // 二师兄's dream: the well, the kitchen, the cellar, then the shard that looks at you (pick: 0 look, 1 not)
+    const dream=async(pick=0)=>{ for(const act of ['c2dwell','c2dhouse','c2dcellar','c2dshard']){ if(RT.mapId!=='mj_dream') return; const o=RT.map.objects.find(o=>o.act===act); if(!o) continue; Dungeon.act(o); await adv(pick); await W(500); } await adv(pick); };
+    const play=async(id,pick=0)=>{ cur=id; node(id).run(); await W(800); for(let k=0;k<12;k++){ await adv(pick); if(RT.mapId==='mj_dream'){ await dream(pick); continue; } if(Battle.s){ await fight(); continue; } await W(700); if($('#dlg').hidden&&!Battle.s) break; } };
     const backup=localStorage.getItem(slotKey(2)), realRandom=Math.random; Dev.god=false; Dodge.auto=true; SelfTest2.lines=[]; SelfTest2.issues=[]; SelfTest2.cross=[];
     const NODES=Review.NODES.filter(x=>x.group==='第二章');
     const other=k=>Object.keys(SECTS).filter(j=>j!==k).flatMap(j=>[SECTS[j].name, SECTS[j].master.name, ({jian:'青云',dan:'药王谷',shou:'万兽谷',tianji:'天机阁'})[j]]);
@@ -50,8 +52,9 @@ const SelfTest2 = {
           for(const nd of NODES){ try{ await play(nd.id); } catch(e){ bad.push(nd.id+'：'+e.message); } if(Battle.s) Battle.close(); PixCG.close(); }
           return {fail:bad.length>0, info:bad.length?bad.slice(0,3).join('；'):`${SelfTest2.lines.length-n0} 句`}; });
         await step('每个选项的分支都走一遍', async()=>{ const n0=SelfTest2.lines.length;
-          for(const [id,picks] of [['c2-mj2',[1]],['c2-fox',[1,2]],['c2-cave',[0,1]],['c2-act5end',[1,2]]]) for(const p of picks){ await play(id,p); if(Battle.s) Battle.close(); PixCG.close(); }
+          for(const [id,picks] of [['c2-mj2',[1]],['c2-fox',[1,2]],['c2-cave',[0,1]],['c2-dream',[0,1]],['c2-act5end',[1,2]]]) for(const p of picks){ await play(id,p); if(Battle.s) Battle.close(); PixCG.close(); }
           cur='c2-gossip'; node('c2-gossip').run(); await W(700); await adv(); for(const id of ['c2d_lin','c2d_zhou','c2d_sun','c2d_zhong']){ Story.talk(id); await adv(1); }
+          cur='c2-mjgo'; node('c2-mjgo').run(); await W(700); await adv(); Story.talk('lu'); await W(300); await adv(); await W(900); await adv();   // the morning at the gate: 苏小棠's packet
           return {info:`${SelfTest2.lines.length-n0} 句`}; });
         await step('宗门：替大师姐说话会被记住', async()=>{ cur='c2-gossip'; node('c2-gossip').run(); await W(700); await adv(); Story.talk('c2d_lin'); await adv(0); return {fail:!S.flags.c2_defend_xie}; });
         await step('宗门日常：三位师兄师姐各派一件事', async()=>{ cur='c2-jian'; node('c2-jian').run(); await W(700); await adv(); for(const w of ['lu','xie','man']){ Story.talk(w); await adv(); }
@@ -60,7 +63,7 @@ const SelfTest2 = {
         await step('三个 Boss 都能打完，剧情接得上', async()=>{ const r=[];
           cur='c2-boss1'; node('c2-boss1').run(); await W(800); await adv(); let f=await fight(); await adv(); r.push(f.won&&S.flags.c2_qq_sealed?`穷奇 ${f.turns}`:'穷奇 ✗');
           cur='c2-xinmo'; node('c2-xinmo').run(); await W(800); await adv(); f=await fight(); await adv(0); r.push(f.won&&S.flags.c2_xin_done&&count(S,'c2_bagua')?`心魔 ${f.turns}`:'心魔 ✗');
-          cur='c2-cave'; node('c2-cave').run(); await W(800); await adv(2); for(let i=0;i<200&&!Battle.s;i++) await W(100); f=await fight(); await adv(0); r.push(f.won&&S.flags.c2_man_saved&&RT.mapId==='mj_south'?`饕餮 ${f.turns}`:'饕餮 ✗');
+          cur='c2-cave'; node('c2-cave').run(); await W(800); await adv(2); await dream(1); await adv(2); for(let i=0;i<200&&!Battle.s;i++) await W(100); f=await fight(); await adv(0); r.push(f.won&&S.flags.c2_man_saved&&RT.mapId==='mj_south'?`饕餮 ${f.turns}`:'饕餮 ✗');
           return {fail:r.some(x=>x.includes('✗')), info:r.join('，')+' 回合'}; });
         await step('尾声：师尊收镜 → 外门弟子的新话 → 回房睡觉 → 早课，第二章完', async()=>{ cur='c2-epilogue'; node('c2-epilogue').run(); await W(800); S.inv.c2_bagua=1; Portal.open(); await W(700); await adv();
           const mirror=!count(S,'c2_bagua'), back=!!S.flags.c2_master_back; for(const id of ['c2d_zhou','c2d_lin','c2d_sun','c2d_zhong','xie',SECTS[k].master.id]){ Story.talk(id); await adv(); }

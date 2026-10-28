@@ -60,7 +60,7 @@ for(const k in SECTS){ const M=MAPS['zong_'+k], mine=s=>s.sect===k&&C2L.on(s);
 // what you overhear: a little speech bubble over whoever is talking, while you are close by
 { const _r=render; render=function(){ _r(); if(!RT.map||!/^zong_/.test(RT.mapId)||!S||!C2L.on(S)||UI.busy()) return;
     const g=ctx, Z=RT.scale*RT.dpr, T=TILE*Z, ox=Math.round(-RT.cam.x*Z), oy=Math.round(-RT.cam.y*Z), day=Math.min(2,S.c2&&S.c2.days||0);
-    for(const p of C2L.pairs){ if(!C2L.near(p)) continue; const lines=p.days[day], k=Math.floor(RT.t/3.2)%lines.length, [who,raw]=lines[k], text=raw.replace(/\{宗\}/g,zongName()), [x,y]=p.at[who];
+    for(const p of C2L.pairs){ if(!C2L.near(p)) continue; const lines=day?p.days[1].concat(p.days[2]):p.days[0].concat(p.days[1]), k=Math.floor(RT.t/3.2)%lines.length, [who,raw]=lines[k], text=raw.replace(/\{宗\}/g,zongName()), [x,y]=p.at[who];
       const u=(RT.t/3.2)%1, al=Math.min(1,u*6,(1-u)*6);
       g.save(); g.globalAlpha=al; g.font=`${Math.round(T*.34)}px "PingFang SC","Microsoft YaHei",sans-serif`; const w=g.measureText(text).width+T*.36, h=T*.56, bx=Math.round(ox+(x+.5)*T-w/2), by=Math.round(oy+y*T-T*.95);
       g.fillStyle='rgba(255,250,240,.95)'; g.strokeStyle='#2a1e1a'; g.lineWidth=Math.max(1,Z*.6); g.beginPath(); g.roundRect?g.roundRect(bx,by,w,h,h*.3):g.rect(bx,by,w,h); g.fill(); g.stroke();

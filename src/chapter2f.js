@@ -143,7 +143,8 @@ C2Y.win=()=>{ const F=S.flags, dan=S.sect==='dan', R=F.c2_ge_r; return [
   ['旁白','洞口传来急匆匆的脚步声。'],
   ['苏小棠','{名}！'],
   ['旁白','苏小棠背着药篓冲了进来。看见满地的骨头，她的脸一下子白了，可脚步一步也没停。'],
-  ...(dan?[['苏小棠','谷里的长老说秘境里有凶兽的气息，我跟着送药的队伍进来了……还好，还好赶上了。']]:[['苏小棠','我在药王谷听说秘境里出了事，求着长老让我跟着送药的队伍进来……还好，还好赶上了。']]),
+  ...(dan?[['苏小棠','谷里的长老说秘境里有凶兽的气息，我就跟着送药的队伍进来了。'],['苏小棠','我说过的——出了事，我就来找你。……还好，还好赶上了。']]
+    :[['苏小棠','谷里说秘境里出了事，我求着长老，跟着送药的队伍进来了。'],['苏小棠','字条上写的，你看了吧？我说过的——出了事，我就来找你。……还好，还好赶上了。']]),
   ['苏小棠','让开让开，我看看——'],
   ['旁白','她跪在二师兄身边，手指搭上他的脉。眉头越皱越紧，又慢慢松开了。'],
   ['苏小棠','……没事了。就是饿坏了，还有很多年的旧伤，要慢慢养。'],
@@ -195,7 +196,11 @@ C2Y.geBye=()=>{ const F=S.flags, R=F.c2_ge_r; return [
     :R==='hand'?[['旁白','他低头，看了看自己的手。'],['顾长歌','那时候……你的手很暖。'],['顾长歌','我大概，会记很久。']]
     :[['顾长歌','谢谢你。']]),
   ['顾长歌','那把剑，我背了十年。今天，好像轻了一点。'],
-  ...(F.ge_mask?[['顾长歌','可那张青铜面具……十年前那个晚上，戴着它站在火光里的，是一个人。'],['顾长歌','饕餮一直睡在满仓身体里。那个人是谁，我得弄清楚。']]:[['顾长歌','北边还有些事，我没弄清楚。']]),
+  ['顾长歌','可是有一件事，我想不通。'],
+  ['顾长歌','饕餮在满仓身体里睡了十几年。那十年前吞掉我师父的……三个月前吞掉北边那两个村子的……又是什么？'],
+  ['谢霁月','……难道，不止一个饕餮？'],
+  ['顾长歌','或者——有人借着它的样子。'],
+  ...(F.ge_mask?[['顾长歌','那张青铜面具……十年前那个晚上，戴着它站在火光里的，是一个人。'],['顾长歌','我得弄清楚，他是谁。']]:[['顾长歌','北边的事，我得弄清楚。']]),
   ['顾长歌','我和满仓先往北走。'],
   ['顾长歌', F.ge_promise?'等你修为稳了——北边见。':'……以后，北边见。'],
   {run:()=>{ C2Y.leaving=1; }},
@@ -248,6 +253,8 @@ C2Y.epilogue=function(){ PixCG.close(); S.flags.c2_back=true; enterMap(zongId(),
 // the morning after: 大师姐 on the practice ground
 C2Y.morning=function(){ enterMap(zongId(),12,10); RT.dir='up'; UI.hud();
   setTimeout(()=>UI.say([
+    ...(S.flags.c2_mc_looked?[['我','（梦里那面镜子照出来的，是一座空荡荡的山门。）'],['我','（四个人去，两个回。镜子没有说错。）'],['我','（可是——）']]
+      :S.flags.c2_mc_shard?[['我','（那天在梦里，你没有看那面镜子。）'],['我','（现在站在空了一半的宗门里，你好像知道它会照出什么了。）']]:[]),
     ['旁白','第二天清早，你在练功场上遇见了大师姐。'],
     {run:()=>C2Y.morningCG()},
     ['谢霁月','……{称}。'],
@@ -301,3 +308,86 @@ for(const k in SECTS){ const o=MAPS['zong_'+k].objects.find(o=>o.id==='xie'); if
 // outermost: a timer can land while the next fight's title card is up (no screen yet), or after the win (the result panel
 // has replaced the bars) — 大师姐's follow-up blow in the 穷奇 fight, for one
 { const _u=Battle.ui; Battle.ui=function(){ if(!Battle.s||!$('#bEhp')||!$('#bPhp')) return; return _u.apply(Battle,arguments); }; }
+
+/* ---------- 第三幕之后: the first night back at camp without 大师兄 — four bowls, one poured back; 大师姐 folding his clothes ---------- */
+C2Y.mourn=()=>[
+  ['旁白','回到营地的时候，天已经黑了。'],
+  ['旁白','篝火是二师兄生的。锅里煮着粥，他盛了四碗，摆在火边。'],
+  ['何满仓','大师兄，你的——'],
+  ['旁白','他的手停在半空。'],
+  ['旁白','过了很久，他把第四碗粥端起来，倒回锅里。勺子碰着锅沿，叮的一声。'],
+  ['何满仓','……我、我盛多了。'],
+  ['旁白','大师姐一个人进了大师兄的帐篷。'],
+  ['旁白','你掀开帘子。她跪坐在铺盖前，把大师兄的衣服一件一件叠好。叠得方方正正，一道褶子都没有——他最讲规矩。'],
+  ['谢霁月','……他第一天教我剑的时候，说过一句话。'],
+  ['谢霁月','「剑要正，人才能正。」'],
+  ...(count(S,'c2_lutoken')?[['旁白','你把那块「正」字玉牌拿了出来。她接过去，用袖子擦了很久，又放回你手里。'],['谢霁月','……你留着吧。']]:[]),
+  ['谢霁月','他自己，大概也是这么信的。信到最后，连自己都骗过去了。'],
+  ['我','大师姐……'],
+  ['谢霁月','没事。'],
+  ['谢霁月','早些睡吧。明天……还要往前走。'],
+  ['旁白','那一夜，营地里谁都没有说话。只有篝火噼啪地响。'],
+  {flag:'c2_lu_mourn'}];
+{ const _em=enterMap; enterMap=function(id,x,y){ const r=_em(id,x,y);
+    if(id==='mj_camp'&&S.flags.c2_qq_sealed&&!S.flags.c2_lu_mourn&&!S.flags.c2_xin_night) setTimeout(()=>{ if(RT.mapId==='mj_camp'&&!S.flags.c2_lu_mourn&&!UI.busy()) UI.say(C2Y.mourn(), ()=>{ UI.hud(); }); },400);
+    return r; }; }
+
+/* ---------- 满仓的梦: the mirror pulls you into 丰年村 as he remembers it — walk to the well, the kitchen, the cellar, and see
+   for yourself; then a shard of the mirror turns to you, and you choose whether to look at what you fear ---------- */
+Object.assign(SPR, {
+  mj_well:['................','................','................','................','.....nnnnnn.....','....n......n....','....n......n....','.....nnnnnn.....','..eeeeeeeeeeee..','.eEeeeeeeeeeEe..','.eekkkkkkkkkee..','.eEeeeeeeeeeEe..','..eeeeeeeeeeee..'],
+  mj_cellar:['................','................','................','................','................','................','..NN.NNN.NN.....','.NkkNkkkNkkN....','.NkNNkkNNkkN....','.NkkNkrkNkkN....','..NNNNNNNNN.....'],
+  mj_shard:['................','................','................','................','................','......ll........','.....lxll.......','....lllxll......','.....llll.......','......ll........'],
+});
+C2Y.DREAM=[[5,5,'c2dwell','枯井'],[13,6,'c2dhouse','满仓家的灶房'],[14,10,'c2dcellar','烧塌的地窖']];
+{ const W=20, H=14, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>(x===0||y===0||x===W-1||y===H-1)?'W':'D'));
+  for(let x=2;x<=17;x++) G[8][x]='='; for(let y=2;y<=12;y++) G[y][10]='='; for(let x=5;x<=10;x++) G[6][x]='=';
+  const objects=[
+    {type:'mj_well', x:5, y:5, spr:'mj_well', act:'c2dwell'},
+    {type:'building', x:11, y:3, w:5, h:3, style:'house', roof:['#2e2620','#463a30','#5a4a3a','#7a6a58'], label:'满仓家的灶房', door:[13,6], act:'c2dhouse'},
+    {type:'mj_cellar', x:14, y:10, spr:'mj_cellar', act:'c2dcellar'},
+    {type:'mj_shard', x:10, y:9, spr:'mj_shard', act:'c2dshard', cond:s=>!!(s.c2y&&s.c2y.dream&&s.c2y.dream.length>=3)&&!s.flags.c2_mc_shard},
+    {type:'npc', id:'c2_kid', x:7, y:5, look:LOOK_MAN_SMALL, name:'小满仓', act:'talk', cond:s=>!(s.c2y&&s.c2y.dream&&s.c2y.dream.length>=3)},
+  ];
+  for(const [x,y] of [[2,2],[3,11],[17,2],[17,12],[8,11],[16,7],[2,8]]) objects.push({type:'mj_deadtree', x, y, spr:'mj_deadtree'});
+  for(const [x,y] of [[4,10],[12,11],[7,2]]) objects.push({type:'building', x, y, w:3, h:2, style:'house', roof:['#26221e','#38322c','#4a4038','#6a5e52'], label:'没有人的屋子'});
+  MAPS.mj_dream={ name:'梦 · 丰年村', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[] }; }
+// the dream: washed out, ash drifting, the word 饿 in the air
+{ const _r=render; render=function(){ _r(); if(RT.mapId!=='mj_dream'||!RT.map) return;
+    const g=ctx, W=cv.width, H=cv.height, Z=RT.scale*RT.dpr, T=TILE*Z, ox=Math.round(-RT.cam.x*Z), oy=Math.round(-RT.cam.y*Z);
+    g.fillStyle='rgba(236,220,186,.28)'; g.fillRect(0,0,W,H);
+    for(let i=0;i<40;i++){ const u=(RT.t*.04+i*.071)%1, x=((i*97.3)%W)+Math.sin(RT.t+i)*T*.4, y=H*(1-u); g.fillStyle=`rgba(90,80,70,${Math.sin(u*Math.PI)*.5})`; g.fillRect(x,y,Math.max(2,Z*1.2),Math.max(2,Z*1.2)); }
+    for(let i=0;i<5;i++){ const u=(RT.t*.04+i*.2)%1, x=ox+(3+((i*3.7)%14))*T, y=oy+(3+((i*2.3)%8)-u*1.5)*T; g.save(); g.globalAlpha=Math.sin(u*Math.PI)*.3; g.font=`${Math.round(T*.6)}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.fillStyle='#6a4a3a'; g.fillText('饿',x,y); g.restore(); }
+    const vg=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.75); vg.addColorStop(0,'rgba(240,230,210,0)'); vg.addColorStop(1,'rgba(240,230,210,.75)'); g.fillStyle=vg; g.fillRect(0,0,W,H);
+    // the place the mirror is showing glimmers
+    for(const [x,y,act] of C2Y.DREAM){ const i=C2Y.DREAM.findIndex(d=>d[2]===act); if((S.c2y&&S.c2y.dream||[]).includes(i)) continue; if(i===2&&(S.c2y&&S.c2y.dream||[]).length<2) continue;
+      const a=.35+.25*Math.sin(RT.t*3), cx=ox+(x+.5)*T, cy=oy+(y+.5)*T, gr=g.createRadialGradient(cx,cy,0,cx,cy,T*1.4); gr.addColorStop(0,`rgba(200,230,255,${a})`); gr.addColorStop(1,'rgba(200,230,255,0)'); g.fillStyle=gr; g.fillRect(cx-T*1.4,cy-T*1.4,T*2.8,T*2.8); } }; }
+C2Y.enterDream=function(){ PixCG.close(); S.c2y=S.c2y||{}; S.c2y.dream=[]; S.flags.c2_dream_in=true; enterMap('mj_dream',10,12); RT.dir='up'; UI.hud(); Music.play('night',true);
+  setTimeout(()=>UI.say([
+    ['旁白','你站在一条土路上。'],
+    ['旁白','天是白的，地是裂的。风里有一股烧焦的味道。四周静得出奇——连你自己的脚步声都听不见。'],
+    ['谢霁月','（声音很远，像隔着一层水）{称}……你在哪儿？'],
+    ['顾长歌','（很远）别乱走——'],
+    ['旁白','这是二师兄的梦。'],
+    ['旁白','（在丰年村里走走。镜光亮着的地方，就是他最不敢想起的事。）']], ()=>{ UI.hud(); }),400); };
+C2Y.seeMem=function(i,after){ S.c2y=S.c2y||{dream:[]}; const seen=S.c2y.dream.includes(i);
+  UI.say([{run:()=>C2Y.memCG(i)}, ...C2Y.memLines(i), {run:()=>{ PixCG.close(); C2Y.eyes=0; if(!seen) S.c2y.dream.push(i); save(); enterMap('mj_dream',S.x,S.y); UI.hud(); }}, ...(after||[])]); };
+C2Y.leaveDream=function(){ enterMap('mj_cave',12,5); RT.dir='up'; UI.hud(); Music.play(areaTheme(),true); setTimeout(()=>UI.say(C2Y.found2()),300); };
+SCRIPTS.c2y_shard_look=[['旁白','你看着镜子。'],['旁白','镜子里是一座山门。台阶很长，长得望不到头。'],['旁白','大师兄不在。二师兄不在。大师姐也不在。'],['旁白','台阶上，只坐着一个人。'],['旁白','是你。你坐在那里等，从天亮等到天黑，一直等，一直等。'],
+  ['我','（……原来我最怕的，是这个。）'],['我','（一个一个，都走了。只剩我一个。）'],['旁白','镜子里的你抬起头，看了你一眼。然后，镜面碎了。'],{flag:'c2_mc_looked'},{flag:'c2_mc_shard'}];
+SCRIPTS.c2y_shard_no=[['旁白','你伸出手，把镜子扣了下去。'],['我','（不看。）'],['我','（至少现在……我还不想知道。）'],['旁白','手心里，镜子的背面烫了一下，又凉了。'],{flag:'c2_mc_shard'}];
+{ const _a=Dungeon.act; Dungeon.act=function(o){
+    if(o.act==='c2dwell'){ C2Y.seeMem(0); return true; }
+    if(o.act==='c2dhouse'){ C2Y.seeMem(1); return true; }
+    if(o.act==='c2dcellar'){ const n=(S.c2y&&S.c2y.dream||[]).filter(i=>i<2).length;
+      if(n<2) return UI.say([['旁白','地窖板烫得碰不得，缝里透出一点红光。'],['旁白','（先去村子里别的地方看看。）']]), true;
+      C2Y.seeMem(2,[['旁白','灰烬里，有什么东西亮了一下。']]); return true; }
+    if(o.act==='c2dshard'){ UI.say([['旁白','灰烬里躺着一片镜子的碎片，青白的光一闪一闪。'],['旁白','你蹲下去捡。镜面慢慢转了过来——这一次，它照的不是二师兄。'],['旁白','是你。'],
+        {choice:'镜子要照出你心里最怕的东西。你——', options:[{text:'看', go:'c2y_shard_look'},{text:'（把镜子扣过去）', go:'c2y_shard_no'}]}], ()=>C2Y.leaveDream()); return true; }
+    return _a.call(Dungeon,o); }; }
+{ const _t=Story.talk; Story.talk=function(id){ if(id==='c2_kid'&&RT.mapId==='mj_dream') return UI.say([['小满仓','娘说，藏好。谁也别给看见。'],['旁白','他把袖子攥得紧紧的，没有看你。']]); return _t.call(Story,id); }; }
+// the task while you are in the dream
+{ const q=QUESTS.find(q=>q.id==='c2h'), pr=q.progress, tg=q.target;
+  q.progress=s=>{ const F=s.flags; if(F.c2_dream_in&&!F.c2_mc_shard){ const n=(s.c2y&&s.c2y.dream||[]).length; return n<3?`在二师兄的梦里，找到镜光照着的地方 ${n}/3`:'灰烬里有一片镜子的碎片'; } return pr(s); };
+  q.target=s=>{ const F=s.flags; if(F.c2_dream_in&&!F.c2_mc_shard){ const d=(s.c2y&&s.c2y.dream)||[]; if(d.length>=3) return ['mj_dream',10,9,'镜子的碎片'];
+      const i=[0,1,2].find(i=>!d.includes(i)&&(i<2||d.length>=2)); const [x,y,,l]=C2Y.DREAM[i]; return ['mj_dream',x,y,l]; } return tg(s); }; }

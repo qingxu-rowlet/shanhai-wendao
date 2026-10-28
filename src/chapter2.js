@@ -168,9 +168,9 @@ const C2_LOCKED=!!window.CH2_LOCKED;   // the live site: no way into chapter 2 y
   else Object.assign(e, {title:'拜别桃源镇', desc:'第一章完。师尊在桃源镇广场等你——准备好了就去找师尊，随他回宗门（之后随时能用传送阵回来）。',
     check:s=>!!s.flags.c2_arrive, target:s=>s.sect?npcAt(SECTS[s.sect].master.id):['town',12,7,'测灵石']}); }
 QUESTS.push(
-  {id:'c2b', title:'宗门日常', desc:'大师兄、大师姐、二师兄每天会各派给你一件事。做完三天的功课，熟悉宗门。', check:s=>(s.c2&&s.c2.days||0)>=3,
-    progress:s=>`第 ${Math.min(3,(s.c2&&s.c2.days||0)+1)} 天 · 已完成 ${s.c2&&s.c2.days||0}/3 天`, target:s=>['zong_'+s.sect,15,5,'宗门']},
-  {id:'c2c', title:'师尊召见', desc:'三天的功课做完了。师尊在主殿前等你们。', start:'c2_summon', check:s=>!!s.flags.c2_order, target:s=>npcAt(SECTS[s.sect].master.id)},
+  {id:'c2b', title:'宗门日常', desc:'大师兄、大师姐、二师兄每天会各派给你一件事。做完两天的功课，熟悉宗门。', check:s=>(s.c2&&s.c2.days||0)>=2,
+    progress:s=>`第 ${Math.min(2,(s.c2&&s.c2.days||0)+1)} 天 · 已完成 ${s.c2&&s.c2.days||0}/2 天`, target:s=>['zong_'+s.sect,15,5,'宗门']},
+  {id:'c2c', title:'师尊召见', desc:'两天的功课做完了。师尊在主殿前等你们。', start:'c2_summon', check:s=>!!s.flags.c2_order, target:s=>npcAt(SECTS[s.sect].master.id)},
   {id:'c2d', title:'山门集合', desc:'师尊命你们四人去秘境历练。明日一早，到山门找大师兄集合。', check:s=>!!s.flags.c2_depart, target:s=>['zong_'+s.sect,12,16,'山门（找大师兄）']});
 
 const sectName=()=>SECTS[S.sect].name, master=()=>SECTS[S.sect].master.name;
@@ -204,7 +204,7 @@ const C2S={
     [m,'山门前那座传送阵，连着桃源镇。想家了，随时可以回去看看。'],
     ['旁白','（左上角的任务栏里是三位师兄师姐今天的吩咐。先去找他们说说话吧。）']]; },
 };
-SCRIPTS.c2_summon=[['旁白','三天的功课都做完了。一只纸鹤落在你肩上——是师尊的传召。'],['旁白','（去主殿前找师尊。）']];
+SCRIPTS.c2_summon=[['旁白','两天的功课都做完了。一只纸鹤落在你肩上——是师尊的传召。'],['旁白','（去主殿前找师尊。）']];
 const C2_ORDER=()=>{ const m=master(); return [
   [m,'都过来。'],
   [m,'这几日，你们带{称}熟悉宗门，为师都看在眼里。'],
@@ -259,7 +259,7 @@ const C2={
   allDone(){ return ['lu','xie','man'].every(k=>S.c2.got[k]===2); },
   // a new morning brings the next set of chores, once the last set is done
   // (in the 秘境 a new day's chores come with the morning scene instead)
-  refresh(){ if(!C2.on()||C2.inMJ()) return; const c=S.c2; if(C2.allDone()&&c.counted===c.n&&c.days<3&&S.day>c.doneDay){ c.n=c.days; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false}; UI.hud(); } },
+  refresh(){ if(!C2.on()||C2.inMJ()) return; const c=S.c2; if(C2.allDone()&&c.counted===c.n&&c.days<2&&S.day>c.doneDay){ c.n=c.days?2:0;   /* two days in the sect: the first set, then the third (界碑 claw marks, his room) */ c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false}; UI.hud(); } },
   where(t){ return t&&t[0]==='c2'?[zongId(),t[1],t[2],t[3]]:t; },
   items(){ if(!C2.on()) return []; C2.refresh(); const c=S.c2, out=[];
     if(C2.allDone()) return [C2.inMJ()?{key:'c2_rest', kind:'side', title:'今天的事做完了', progress:'回帐篷休息，明天还有新的吩咐', target:['mj_camp',4,11,'你的帐篷']}
@@ -290,7 +290,7 @@ const C2={
   check(){ const c=S.c2; if(!C2.allDone()||c.counted===c.n) return;   // each set of three chores counts once
     c.counted=c.n; c.days++; c.doneDay=S.day; save();
     if(C2.inMJ()) UI.say([['旁白','今天的事都做完了。天色暗下来，营地里只剩篝火的噼啪声。回帐篷休息吧。']]);
-    else if(c.days<3) UI.say([['旁白','今天的功课都做完了。回房间睡一觉，明天还有新的吩咐。']]); else Story.check(); },
+    else if(c.days<2) UI.say([['旁白','今天的功课都做完了。回房间睡一觉，明天还有新的吩咐。']]); else Story.check(); },
   master(){ const m=master(), q=Story.quest()?.id;
     if(q==='c2c'&&!S.flags.c2_order){ UI.say(C2_ORDER(), ()=>{ UI.hud(); Story.check(); }); return true; }
     if(Story.side(SECTS[S.sect].master.id)) return true;
