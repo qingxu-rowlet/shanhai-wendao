@@ -75,7 +75,7 @@ const SelfTest2 = {
       }
       sect='jian';
       await step('第二章的插画都能打开', async()=>{ const bad=[]; cur='c2-cave'; node('c2-cave').run(); await W(700); await adv(0,2); PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
-        const cgs={'镜中人':()=>C2L.nightCG(),'往事 ×3':()=>[0,1,2].forEach(i=>C2L.echoCG(i)),'九尾':()=>C2X.foxCG(),'洞口':()=>C2Y.meetCG(),'饿':()=>C2Y.caveCG(),'丰年村 / 别出声 / 大火':()=>[0,1,2].forEach(i=>C2Y.memCG(i)),'饕餮':()=>C2Y.wakeCG(),'镜收':()=>C2Y.sealCG(),'长歌':()=>C2Y.dawnCG(),'早课':()=>C2Y.morningCG()};
+        const cgs={'镜中人':()=>C2L.nightCG(),'往事 ×3':()=>[0,1,2].forEach(i=>C2L.echoCG(i)),'九尾':()=>C2X.foxCG(),'洞口':()=>C2Y.meetCG(),'饿':()=>C2Y.caveCG(),'丰年村 / 别出声 / 大火':()=>[0,1,2].forEach(i=>C2Y.memCG(i)),'饕餮':()=>C2Y.wakeCG(),'镜收':()=>C2Y.sealCG(),'长歌':()=>C2Y.dawnCG(),'早课':()=>C2Y.morningCG(),'镜中的你':()=>C2Y.shardCG('look'),'扣下':()=>C2Y.shardCG('no')};
         for(const c in cgs){ try{ cgs[c](); await W(120); if(!PixCG.on) bad.push(c); }catch(e){ bad.push(c+'：'+e.message); } PixCG.close(); }
         return {fail:bad.length>0, info:bad.length?bad.join('；'):`${Object.keys(cgs).length} 组`}; });
       await step('没有脚本错误', async()=>({fail:errs.length>0, info:errs.slice(0,2).join(' | ')}));

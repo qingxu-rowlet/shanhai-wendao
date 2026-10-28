@@ -253,8 +253,12 @@ C2Y.epilogue=function(){ PixCG.close(); S.flags.c2_back=true; enterMap(zongId(),
 // the morning after: 大师姐 on the practice ground
 C2Y.morning=function(){ enterMap(zongId(),12,10); RT.dir='up'; UI.hud();
   setTimeout(()=>UI.say([
-    ...(S.flags.c2_mc_looked?[['我','（梦里那面镜子照出来的，是一座空荡荡的山门。）'],['我','（四个人去，两个回。镜子没有说错。）'],['我','（可是——）']]
-      :S.flags.c2_mc_shard?[['我','（那天在梦里，你没有看那面镜子。）'],['我','（现在站在空了一半的宗门里，你好像知道它会照出什么了。）']]:[]),
+    ['旁白','那一夜，你躺在自己的房间里，很久都没有睡着。'],
+    ['旁白','隔壁大师兄的房间，再隔壁二师兄的房间，都没有灯。'],
+    ...(count(S,'c2_lutoken')?[['旁白','桌上放着那块「正」字玉牌。月光照着它的裂缝，像一道很细很细的伤。']]:[]),
+    ...(S.flags.c2_mc_looked?[['我','（梦里那面镜子照出来的，是一座空荡荡的山门。）'],['我','（四个人去，两个回。镜子没有说错。）'],['我','（可是——）'],['我','（台阶上，还有大师姐。）']]
+      :S.flags.c2_mc_shard?[['我','（那天在梦里，你没有看那面镜子。）'],['我','（现在躺在空了一半的宗门里，你好像知道它会照出什么了。）'],['我','（……明天，还会有早课吗？）']]
+      :[['我','（明天……还会有早课吗？）']]),
     ['旁白','第二天清早，你在练功场上遇见了大师姐。'],
     {run:()=>C2Y.morningCG()},
     ['谢霁月','……{称}。'],
@@ -263,11 +267,22 @@ C2Y.morning=function(){ enterMap(zongId(),12,10); RT.dir='up'; UI.hud();
     ['谢霁月','（没有回头）……别迟到。'],
     {run:()=>{ C2Y.morningSmile=1; }},
     ['旁白','你好像看见，她的嘴角弯了一下。'],
+    ...(S.flags.c2_mc_looked?[['我','（镜子里，台阶上只剩我一个人。）'],['我','（可现在，练功场上有两个人。）']]:[]),
+    {choice:'你对着大师姐的背影——', options:[
+      S.flags.c2_mc_looked?{text:'大师姐——你也别走', go:'c2y_mo_stay'}:{text:'大师姐，明天见', go:'c2y_mo_see'},
+      {text:'（什么也不说，跟上去）', go:'c2y_mo_follow'}]}], ()=>{ UI.hud(); Story.check(); save(); }),900); };
+Object.assign(SCRIPTS, {
+  c2y_mo_stay:[['我','大师姐——你也别走。'],['旁白','她的脚步停了。'],['旁白','过了很久，久到你以为她不会回答了。'],['谢霁月','（没有回头）……我不走。'],{love:{xie:30}},{go:'c2y_mo_end'}],
+  c2y_mo_see:[['我','大师姐，明天见。'],['谢霁月','（没有回头）……嗯。明天见。'],{love:{xie:20}},{go:'c2y_mo_end'}],
+  c2y_mo_follow:[['旁白','你什么也没说，小跑两步，跟在她身后。'],['旁白','晨光把两个人的影子拉得很长。她走得不快——像是在等你。'],{love:{xie:20}},{go:'c2y_mo_end'}],
+});
+Object.defineProperty(SCRIPTS,'c2y_mo_end',{configurable:true, get(){ return C2Y.moEnd; }});
+C2Y.moEnd=[
     {love:{xie:50}},
     {run:()=>PixCG.close()},
     {flag:'c2_done'},
     ['旁白','【第二章「秘境」完】'],
-    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章，敬请期待。）']], ()=>{ UI.hud(); Story.check(); save(); }),900); };
+    ['旁白','（大师姐的心动事件以后会加上；狂暴穷奇那里，还能听见大师兄和穷奇互相拆台。第三章，敬请期待。）']];
 { const _a=Dungeon.act; Dungeon.act=function(o){ if(o.act==='c2bed'&&S.flags.c2_master_back&&!S.flags.c2_done){ UI.confirm('回房休息，结束今天？', ()=>{ sleep(false); C2Y.morning(); }); return true; } return _a.call(Dungeon,o); }; }
 
 // the sect after: the disciples are still about, saying other things now; 大师姐 is back; 师尊 has the mirror
@@ -391,3 +406,41 @@ SCRIPTS.c2y_shard_no=[['旁白','你伸出手，把镜子扣了下去。'],['我
   q.progress=s=>{ const F=s.flags; if(F.c2_dream_in&&!F.c2_mc_shard){ const n=(s.c2y&&s.c2y.dream||[]).length; return n<3?`在二师兄的梦里，找到镜光照着的地方 ${n}/3`:'灰烬里有一片镜子的碎片'; } return pr(s); };
   q.target=s=>{ const F=s.flags; if(F.c2_dream_in&&!F.c2_mc_shard){ const d=(s.c2y&&s.c2y.dream)||[]; if(d.length>=3) return ['mj_dream',10,9,'镜子的碎片'];
       const i=[0,1,2].find(i=>!d.includes(i)&&(i<2||d.length>=2)); const [x,y,,l]=C2Y.DREAM[i]; return ['mj_dream',x,y,l]; } return tg(s); }; }
+
+/* ---------- 镜中的你: what the shard shows if you look — you alone on the long steps up to the sect gate at dusk, leaves
+   coming down; at the end the glass cracks. If you do not look: the shard face down in the ash, light at its edges ---------- */
+C2Y.shardBreak=0;
+C2Y.shardCG=function(mode){ C2Y.shardBreak=0; C2Y.breakT=0;
+  if(mode==='look') PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#e2d2bc'); Land.sky(g,W,H,['rgba(70,60,100,.92)','rgba(170,110,120,.8)','rgba(236,170,120,.6)','rgba(240,210,170,.3)']);
+      Land.peaks(g,W,H,R,{y:H*.36,amp:H*.16,n:5,a:.45,tint:'#4a3a58',pines:4}); Land.mist(g,W,H,H*.38,H*.1,.4);
+      // the gate at the top: two pillars, a beam, a tiled roof, the plaque — small and far
+      const gx=W*.5, gy=H*.3; g.fillStyle='rgba(60,40,36,.95)'; g.fillRect(gx-W*.07,gy,W*.012,H*.09); g.fillRect(gx+W*.058,gy,W*.012,H*.09); g.fillRect(gx-W*.08,gy+H*.012,W*.16,H*.01);
+      Land.roof(g,gx,gy,W*.2,H*.035,.9); g.fillStyle='rgba(150,40,30,.9)'; g.fillRect(gx-W*.025,gy+H*.022,W*.05,H*.016);
+      // the steps: long, narrowing toward the gate, each a little lighter at its edge
+      const N=22; for(let k=0;k<N;k++){ const u=k/N, y0=H*(.98-u*.62), y1=H*(.98-(k+1)/N*.62), w=W*(.92-u*.78);
+        g.fillStyle=`rgba(${120+k*2},${112+k*2},${104+k*2},.97)`; g.fillRect(gx-w/2,y1,w,y0-y1); g.fillStyle=`rgba(${190-k},${180-k},${166-k},.9)`; g.fillRect(gx-w/2,y1,w,Math.max(1,(y0-y1)*.22));
+        if(k%3===0){ g.fillStyle='rgba(90,110,70,.5)'; g.fillRect(gx-w/2+R()*w*.9,y1+(y0-y1)*.4,W*.012,Math.max(1,(y0-y1)*.3)); } }
+      // the pines on either side
+      for(const [x,s] of [[.08,.5],[.92,.46],[.18,.3],[.82,.28]]) Land.pine(g,W*x,H*(.98-s*.4),H*s,R,.7); },
+    cast:[{who:'me', x:.5, y:.86, pose:'sitedge', face:1, s:.6, mood:'sad'}], title:'镜中的你', small:'二师兄的梦', seed:5401});
+  else PixCG.open({ink:(g,W,H,R)=>{ Land.paper(g,W,H,R,'#cfc8bc'); g.fillStyle='rgba(70,64,60,.6)'; g.fillRect(0,0,W,H);
+      for(let k=0;k<160;k++){ const v=50+R()*70|0; g.fillStyle=`rgba(${v},${v-4},${v-8},${.3+R()*.5})`; g.beginPath(); g.ellipse(R()*W,R()*H,W*(.004+R()*.02),H*(.003+R()*.01),R()*3,0,7); g.fill(); } },
+    cast:[], title:'扣下', small:'二师兄的梦', seed:5402});
+  const c=PixCG.cur;
+  c.front=(g,W,H,fp,t)=>{
+    if(mode==='look'){
+      for(let k=0;k<16;k++){ const u=(t*.05+k*.0625)%1, x=W*(((k*.37)%1)+Math.sin(t*.7+k)*.04), y=H*u; g.save(); g.translate(x,y); g.rotate(t*1.5+k); g.fillStyle=k%2?'rgba(200,120,60,.85)':'rgba(220,170,80,.8)'; g.beginPath(); g.ellipse(0,0,fp*1.8,fp*.9,0,0,7); g.fill(); g.restore(); }
+      // the round glass: dark outside it, a pale rim; and the cracks when it breaks
+      const R0=Math.min(W,H)*.62, cx=W/2, cy=H*.52, vg=g.createRadialGradient(cx,cy,R0*.7,cx,cy,R0*1.05); vg.addColorStop(0,'rgba(10,8,14,0)'); vg.addColorStop(1,'rgba(10,8,14,.9)'); g.fillStyle=vg; g.fillRect(0,0,W,H);
+      g.strokeStyle=`rgba(200,225,255,${.35+.1*Math.sin(t*2)})`; g.lineWidth=Math.max(2,fp); g.beginPath(); g.arc(cx,cy,R0*.98,0,7); g.stroke();
+      if(C2Y.shardBreak){ C2Y.breakT=C2Y.breakT||t; const u=Math.min(1,(t-C2Y.breakT)/.6); g.strokeStyle='rgba(240,248,255,.9)'; g.lineWidth=Math.max(1.5,fp*.6);
+        for(let k=0;k<9;k++){ const a=k/9*Math.PI*2+.3, L=R0*(.5+((k*37)%10)/20)*u; g.beginPath(); g.moveTo(cx,cy); let x=cx, y=cy; for(let j=1;j<=4;j++){ x=cx+Math.cos(a+Math.sin(j*1.7+k)*.18)*L*j/4; y=cy+Math.sin(a+Math.sin(j*1.3+k)*.18)*L*j/4; g.lineTo(x,y); } g.stroke(); }
+        if(u<1){ g.fillStyle=`rgba(255,255,255,${(1-u)*.6})`; g.fillRect(0,0,W,H); } } }
+    else { // the shard face down; light leaking at its edges, breathing
+      const cx=W*.5, cy=H*.58, a=.45+.25*Math.sin(t*2.2), gl=g.createRadialGradient(cx,cy,0,cx,cy,W*.25); gl.addColorStop(0,`rgba(180,220,255,${a})`); gl.addColorStop(1,'rgba(180,220,255,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H);
+      g.save(); g.translate(cx,cy); g.rotate(-.25); g.fillStyle='#2a2830'; g.beginPath(); g.moveTo(-W*.12,-H*.02); g.lineTo(W*.02,-H*.09); g.lineTo(W*.13,H*.01); g.lineTo(W*.04,H*.08); g.lineTo(-W*.09,H*.06); g.closePath(); g.fill();
+      g.strokeStyle=`rgba(200,235,255,${.6+.3*Math.sin(t*2.2)})`; g.lineWidth=Math.max(2,fp*.8); g.stroke(); g.fillStyle='#3a3842'; g.fillRect(-W*.03,-H*.02,W*.05,H*.012); g.restore();
+    } }; };
+SCRIPTS.c2y_shard_look=[{run:()=>C2Y.shardCG('look')}, ...SCRIPTS.c2y_shard_look];
+{ const i=SCRIPTS.c2y_shard_look.findIndex(st=>Array.isArray(st)&&/镜面碎了/.test(st[1])); SCRIPTS.c2y_shard_look.splice(i,0,{run:()=>{ C2Y.shardBreak=1; }}); SCRIPTS.c2y_shard_look.push({run:()=>PixCG.close()}); }
+SCRIPTS.c2y_shard_no=[{run:()=>C2Y.shardCG('no')}, ...SCRIPTS.c2y_shard_no, {run:()=>PixCG.close()}];
