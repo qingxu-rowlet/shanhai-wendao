@@ -180,7 +180,7 @@ const Review = {
   ],
   // a fresh test character in save slot 3 with the given story state
   base(o){
-    RT.slot=SLOTS-1; S=newState(); S.name='审查员'; S.look={g:'f',skin:1,hair:4,hairColor:0,style:'qun',cloth:6}; S.root={els:['火','木','水'],n:3};
+    RT.slot=SLOTS-1; S=newState(); S.review=true; S.name='审查员'; S.look={g:'f',skin:1,hair:4,hairColor:0,style:'qun',cloth:6}; S.root={els:['火','木','水'],n:3};
     S.flags.intro_done=true; S.flags.chest=true; S.inv={slip:1, ...(o.inv||{})};
     const qi=QUESTS.findIndex(q=>q.id===o.quest); S.quest=qi; S.questStarted=qi;
     S.L=o.L||0; if(o.full) S.exp=expNeed(S.L); S.sect=o.sect===undefined?(S.L>=10&&o.quest!=='sect'?'jian':null):o.sect;

@@ -46,7 +46,7 @@ const Dev = {
       <h4>修改状态</h4><div class="devrow"><label>境界 ${sel('dvL',realms,S.L)}</label><label>门派 ${sel('dvSect',sects,S.sect||'')}</label>
         <label>灵根 ${sel('dvRoot',[[1,'天灵根'],[2,'双灵根'],[3,'三灵根'],[4,'伪灵根']],S.root?S.root.n:3)}</label></div>
       <div class="devg"><button class="btn mini" data-c="items">所有物品 ×10</button><button class="btn mini" data-c="stones">灵石 +1000</button><button class="btn mini" data-c="heal">回满状态</button>
-        <button class="btn mini" data-c="hearts">好感全满</button><button class="btn mini" data-c="god">${Dev.god?'关闭':'开启'}无敌</button><button class="btn mini" data-c="seen">图鉴全开</button></div>
+        <button class="btn mini" data-c="hearts">好感全满</button><button class="btn mini" data-c="god">${Dev.god?'关闭':'开启'}无敌</button><button class="btn mini" data-c="seen">图鉴全开</button><button class="btn mini" data-x="bosslow">战斗中：Boss 只剩一成血</button></div>
       <h4>时间与地点</h4><div class="devg"><button class="btn mini" data-t="6">清晨</button><button class="btn mini" data-t="12">中午</button><button class="btn mini" data-t="18">傍晚</button><button class="btn mini" data-t="22">深夜</button>
         <button class="btn mini" data-c="day">下一天</button>${Object.keys(MAPS).map(m=>`<button class="btn mini" data-map="${m}">去${MAPS[m].name.replace(/.*· /,'')}</button>`).join('')}</div>
       <p class="muted">提示：在链接后面加 #dev，或在标题画面连点「山海问道」5 次即可打开开发者模式。测试会自动用第 ${SLOTS} 个存档位。</p></div>`, b=>{
@@ -75,6 +75,7 @@ const Dev = {
   run(x){
     Dev.ensure();
     if(x.startsWith('cg:')){ const [,id,lv]=x.split(':'); const r=Social.rel(id); r.pts=Math.max(r.pts,+lv*100); for(const l of [2,4,6,8]) r.ev[l]=l<+lv; return Social.chat(id); }
+    if(x==='bosslow') return Dev.bossLow();
     if(x==='glow'){ S.glow=undefined; return UI.toast('金光水面已刷新（桃源镇池塘、青丘湖各一处）'); }
     if(x==='puppet'){ addItem('puppet'); Life.newDay(); return UI.toast('傀儡已就位，下一天清晨开始工作'); }
     if(x.startsWith('cine_')) return Cine.play(x.slice(5), ()=>Music.play(areaTheme()));
@@ -90,6 +91,12 @@ const Dev = {
     if(x==='heart_tang'||x==='heart_ge'){ const id=x.slice(6), r=Social.rel(id); r.pts=Math.max(r.pts,450); r.ev={}; return Social.chat(id); }
   },
 };
+// for testing a fight's end without playing it all: the enemy down to a tenth of its life (its own rules — 九尾狐 coming,
+// the pulling of 饕餮's soul — still apply on the next blow); on the battle screen in review saves and in dev mode
+Dev.bossLow=function(){ const s=Battle.s; if(!s) return UI.toast('现在不在战斗中'); s.hp=Math.max(1,Math.round(s.max*.1)); Battle.ui(); UI.toast(`${s.B.name} 只剩一成血了，再打一下`); };
+{ const _b=Battle._begin; Battle._begin=function(){ const r=_b.apply(Battle,arguments);
+    if(Dev.on()||(S&&S.review)){ const top=$('#battle .b-top'); if(top&&!$('#devBoss')){ const b=document.createElement('button'); b.id='devBoss'; b.className='btn mini'; b.textContent='测试：Boss 一成血'; b.style.cssText='position:absolute;right:8px;top:100%;margin-top:4px;z-index:5;opacity:.85'; b.onclick=e=>{ e.stopPropagation(); Dev.bossLow(); }; top.style.position=top.style.position||'relative'; top.appendChild(b); } }
+    return r; }; }
 // invincibility for testing
 { const _end=Battle.enemyTurn; Battle.enemyTurn=function(){ const r=_end.apply(this,arguments); if(Dev.god){ setTimeout(()=>{ const st=stats(); S.hp=st.hp; if(Battle.s) Battle.ui(); },700); } return r; }; }
 // ways in: #dev, five taps on the title, or the ` key
