@@ -70,6 +70,13 @@ Object.assign(SCRIPTS, {
     return _ct.call(C2,id); }; }
 // 大师姐 can come to love you, as 苏小棠 and 顾长歌 can: her hearts go to ten, and what she says warms as they rise
 NPCS.xie.romance=true;
+// what each of them says to a gift (they had no lines, so a gift came back as «undefined»)
+Object.assign(GIFT_LINES.love, {lu:'……聚气丹？（他咳了一声）我正缺这个。谢了，{称}。', xie:'……（她看了你很久）你怎么知道，我喜欢这个。', man:'给我的？！{称}你真是太好了！我、我先藏一半，留着明天吃！', zhishi:'哎哟，好酒！这个面子，许某记下了。'});
+Object.assign(GIFT_LINES.like, {lu:'嗯。用得上。', xie:'……收下了。', man:'嘿嘿，谢谢{称}！', zhishi:'有心了，有心了。'});
+Object.assign(GIFT_LINES.neutral, {lu:'嗯。', xie:'嗯。', man:'哦？谢谢……', zhishi:'放这儿吧。'});
+Object.assign(GIFT_LINES.hate, {lu:'这东西……你自己留着吧。', xie:'……拿走。', man:'这个……这个不能吃吧？', zhishi:'这玩意儿，小店可不收。'});
+// and if anyone is ever missing a line, they say something plain instead of «undefined»
+for(const k of ['love','like','neutral','hate']) GIFT_LINES[k]=new Proxy(GIFT_LINES[k], {get:(o,id)=>o[id]!==undefined?o[id]:({love:'……谢谢，我很喜欢。', like:'谢谢。', neutral:'嗯，谢谢。', hate:'……这个，还是算了吧。'})[k]});
 TALK.xie[2]=TALK.xie[2].concat(['今天的剑，比昨天稳。……我看得出来。','你要是累了，就歇会儿。我替你看着。']);
 TALK.xie[3]=TALK.xie[3].concat(['……别看了。我脸上又没有字。','（她把一颗朱果放进你手里）路上吃。']);
 

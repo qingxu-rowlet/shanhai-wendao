@@ -71,6 +71,10 @@ const SelfTest2 = {
           const mirror=!count(S,'c2_bagua'), back=!!S.flags.c2_master_back; for(const id of ['c2d_zhou','c2d_lin','c2d_sun','c2d_zhong','xie',SECTS[k].master.id]){ Story.talk(id); await adv(); }
           const o=RT.map.objects.find(o=>o.act==='c2bed'); Dungeon.act(o); await adv(0); await W(1100); await adv(); for(let i=0;i<20&&QUESTS[S.quest].id!=='c2z';i++){ await W(150); Story.check(); }
           return {fail:!(mirror&&back&&S.flags.c2_done&&QUESTS[S.quest].id==='c2z')}; });
+        await step('送礼：宗门里每个人收到喜欢 / 一般 / 讨厌的礼物都有回话', async()=>{ cur='c2-gift'; node('c2-'+k).run(); await W(500); await adv(); const n0=SelfTest2.lines.length;
+          for(const id of ['lu','xie','man','zhishi',SECTS[k].master.id,'tang','ge']){ const n=NPCS[id], pick=[n.loves[0], n.likes[0], n.hates[0], 'lingcao'].filter(Boolean);
+            for(const it of pick){ S.inv[it]=(S.inv[it]||0)+1; Social.rel(id).gifted=-1; Social.give(id,it); await adv(); } }
+          const bad=SelfTest2.lines.slice(n0).filter(l=>/undefined/.test(l.text)); return {fail:bad.length>0, info:bad.length?bad[0].text:`${SelfTest2.lines.length-n0} 句`}; });
         await step('来访：苏小棠（不是药王谷时）和顾长歌（饿鬼洞之后）每七天来山门一次', async()=>{ cur='c2-visit'; node('c2-'+k).run(); await W(500); await adv(); const v=C2Visit.st(S), r=[];
           S.day=v.arr+1; enterMap('zong_'+k,12,15); const tang=RT.ents.some(e=>e.id==='tang'&&e.x===10); if(k!=='dan'){ Story.talk('tang'); await adv(2); r.push(tang&&S.flags.c2v_tang?'苏小棠 ✓':'苏小棠 ✗'); }
           S.flags.c2_depart=true; S.flags.c2_master_back=true; v.back=S.day; S.day+=2; enterMap('zong_'+k,12,15); const ge=RT.ents.some(e=>e.id==='ge'); Story.talk('ge'); await adv(2); r.push(ge&&S.flags.c2v_ge?'顾长歌 ✓':'顾长歌 ✗');
