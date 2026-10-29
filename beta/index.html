@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="842603b63b"><script>(function(){var B="842603b63b";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="4edd78cd3b"><script>(function(){var B="4edd78cd3b";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9369,6 +9369,93 @@ SCRIPTS.c2y_shard_look=[{run:()=>C2Y.shardCG('look')}, ...SCRIPTS.c2y_shard_look
 SCRIPTS.c2y_shard_no=[{run:()=>C2Y.shardCG('no')}, ...SCRIPTS.c2y_shard_no, {run:()=>PixCG.close()}];
 
 /* ============================================================
+   山海问道 · 第二章 · 好感与修炼 — talking to 大师兄, 大师姐 and 二师兄 raises 好感 like everyone else, and at 2♥ and 4♥ each
+   says something they would not say to just anyone (大师兄 until 穷奇 takes him, 二师兄 until he leaves; 大师姐 is one of
+   the two you can come to love, so hers change the most). Talking to them in the middle of a chore no longer only asks
+   whether you have finished. And growing stronger: a 蒲团 in the sect and at the camp, 打坐 slowing right down after 筑基
+   (each realm takes days), the bosses' 修为 doing the real work, and a word after a lost fight about the 风穴.
+   ============================================================ */
+Object.assign(HEART_EVENTS, {
+  lu:{2:[['旁白','三更天，练功场上只有一个人。大师兄一剑一剑地练，汗水把衣服都湿透了。'],
+        ['陆正衡','……睡不着？'],
+        ['陆正衡','你知道我为什么每天三更起吗？'],
+        ['陆正衡','我爹是村里的教书先生。有一年，村长家丢了一块玉，全村都说是他偷的。'],
+        ['陆正衡','后来玉找到了，在村长儿子的枕头底下。可没有一个人来道歉。'],
+        ['陆正衡','我爹到死都没再进过学堂。'],
+        ['陆正衡','（他把剑收回鞘里）所以我要名声。要一个谁都说不出不是的名声。'],
+        ['陆正衡','……这话，你听过就忘了吧。'],
+        {love:{lu:30}}],
+      4:[['旁白','大师兄站在界碑旁边，看着北边的山，看了很久。'],
+        ['陆正衡','{称}。安平村的事，你听说过吧？我在那儿斩了一窝狼妖。'],
+        ['陆正衡','村民给我立了长生牌位。你知道吗，到现在，每年都有人去给它上香。'],
+        ['陆正衡','……可我有时候会梦见一只母狼。'],
+        ['陆正衡','它到死，都挡在一个草窝前面。'],
+        ['陆正衡','（他沉默了一会儿）它们是妖。妖，本来就该死。'],
+        ['陆正衡','{称}，你说——是不是只要大家都说你是对的，你就是对的？'],
+        {choice:'你——', options:[{text:'对不对，你自己心里知道', go:'c2g_lu_a'},{text:'（不知道该怎么回答）', go:'c2g_lu_b'}]}]},
+  xie:{2:[['旁白','夜里路过药圃，你看见大师姐坐在石阶上，膝盖上横着她的剑。'],
+        ['谢霁月','……你今天在药圃，听见他们说什么了吧。'],
+        ['谢霁月','我十三岁进山门。第一天，就有人说我是靠脸进来的。'],
+        ['谢霁月','那时候我还会笑。笑起来，他们说我狐媚；不笑，他们说我装清高。'],
+        ['谢霁月','后来我就不笑了。反正，怎么样都不对。'],
+        {choice:'你对大师姐说——', options:[{text:'我不信他们', go:'c2g_xie_a'},{text:'你笑起来一定很好看', go:'c2g_xie_b'}]}],
+      4:[['旁白','天刚亮，大师姐把你叫到练功场。她手里拿着两柄木剑。'],
+        ['谢霁月','握剑的时候，手腕要松。太紧了，剑就是死的。'],
+        ['旁白','她站到你身后，扶正你的手腕。她的手很凉。'],
+        ['谢霁月','……再来一遍。'],
+        ['旁白','你们练到太阳升起来。她收了木剑，看了你一眼。'],
+        ['谢霁月','这一招，我谁都没教过。'],
+        ['谢霁月','你是第一个。'],
+        {choice:'你——', options:[{text:'那我以后每天都来', go:'c2g_xie_c'},{text:'（认认真真地再练一遍）', go:'c2g_xie_d'}]}]},
+  man:{2:[['旁白','二师兄蹲在膳堂后面，对着一个空碗发呆。'],
+        ['何满仓','{称}，你吃过观音土吗？'],
+        ['何满仓','……没、没什么。我随便问问。'],
+        ['何满仓','我小时候，有一年什么吃的都没有。我什么都记不清了，只记得我娘的手，很凉，很凉。'],
+        ['何满仓','后来我就怕饿。一饿，就怕。'],
+        ['何满仓','（他挠挠头，又笑了）所以我才吃这么多嘛！哈哈……'],
+        {love:{man:30}}],
+      4:[['何满仓','{称}，给你看个东西。'],
+        ['旁白','他从袖子里掏出半个馒头，硬得像石头，边上都发黄了。'],
+        ['何满仓','我揣了很多年了。'],
+        ['何满仓','不能给你吃哦。但是……可以让你摸一下。'],
+        ['旁白','你碰了一下。真的很硬。'],
+        ['何满仓','我总觉得，只要它还在，我就不会饿死。'],
+        ['旁白','他把馒头小心地揣回袖子里，拍了拍，像是在哄一个睡着的小孩。'],
+        {love:{man:40}}]},
+});
+Object.assign(SCRIPTS, {
+  c2g_lu_a:[['我','对不对，你自己心里知道。'],['陆正衡','……'],['旁白','他看了你很久，没有说话。转身走了。'],['旁白','走出几步，他停下来：「……你比我当年胆子大。」'],{love:{lu:40}}],
+  c2g_lu_b:[['旁白','你不知道该怎么回答。'],['陆正衡','（他自嘲地笑了一下）……我也不知道。'],['陆正衡','回去睡吧。'],{love:{lu:30}}],
+  c2g_xie_a:[['我','我不信他们。'],['谢霁月','（她转过头，看了你一眼）……你才来几天。'],['我','几天就够了。'],['旁白','她没有再说话。可她膝盖上那柄剑，被她攥得没那么紧了。'],{love:{xie:50}}],
+  c2g_xie_b:[['我','你笑起来，一定很好看。'],['谢霁月','……胡说。'],['旁白','她把脸转开了。月光底下，你好像看见她的耳朵红了一点。'],{love:{xie:60}}],
+  c2g_xie_c:[['我','那我以后每天都来。'],['谢霁月','……随你。'],['旁白','她走了两步，又回头：「卯时。迟了，就不教了。」'],{love:{xie:60}}],
+  c2g_xie_d:[['旁白','你什么也没说，又认认真真地把那一招练了一遍。手腕松着，剑是活的。'],['谢霁月','（她看着，嘴角动了一下）……嗯。'],{love:{xie:50}}],
+});
+// mid-chore, talking to them is not only being asked whether you have finished
+{ const _ct=C2.talk; C2.talk=function(id){
+    if(C2.on()&&WHO[id]&&S.c2&&S.c2.got&&S.c2.got[id]===1&&!C2.def(id).need(S)){ const d=C2.def(id), n=NPCS[id], h=Social.hearts(id);
+      UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,(n.romance?10:8)-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:[
+        {text:'问问功课', fn:()=>UI.say([[WHO[id], {lu:'还没做完？',xie:'……还没好。',man:'不急不急，慢慢来～'}[id]], ['旁白','（'+d.goal+'：'+d.prog(S)+'）']])},
+        {text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}}]}]); return true; }
+    return _ct.call(C2,id); }; }
+// 大师姐 can come to love you, as 苏小棠 and 顾长歌 can: her hearts go to ten, and what she says warms as they rise
+NPCS.xie.romance=true;
+TALK.xie[2]=TALK.xie[2].concat(['今天的剑，比昨天稳。……我看得出来。','你要是累了，就歇会儿。我替你看着。']);
+TALK.xie[3]=TALK.xie[3].concat(['……别看了。我脸上又没有字。','（她把一颗朱果放进你手里）路上吃。']);
+
+/* ---------- growing stronger ---------- */
+// after 筑基, sitting still gives little: days for a realm, and the 风穴 and the bosses give far more
+{ const _b=Med.block; Med.block=L=>L>=10?Math.max(4,Math.round((14+4*L)*2*Sect.medMul()*(L===10?.2:.13))):_b(L); }
+{ const _o=Med.open; Med.open=function(){ const r=_o.apply(Med,arguments);
+    if(S.L>=10) setTimeout(()=>{ const p=document.querySelector('#panel .muted'); if(p&&!document.getElementById('medHint')) p.insertAdjacentHTML('afterend','<p class="muted" id="medHint">筑基之后，打坐一天比一天慢，一个境界要坐上好几天。想快些变强：用传送阵去风穴挑战狂暴穷奇，修为和灵石都来得快；打赢秘境里的强敌，修为也会涨一大截。</p>'); },30);
+    return r; }; }
+// a 蒲团 in the sect, beside your room, and one at the camp, beside your tent
+for(const k in SECTS) MAPS['zong_'+k].objects.push({type:'futon', x:2, y:15, act:'meditate'});
+MAPS.mj_camp.objects.push({type:'futon', x:6, y:11, act:'meditate'});
+// a lost fight in the 秘境 says where to get stronger
+for(const sc of [SCRIPTS.c2c_lose, SCRIPTS.c2x_lose, SCRIPTS.c2y_lose]) if(Array.isArray(sc)) sc.push(['旁白','（打不过的话：营地的传送阵能去风穴，挑战狂暴穷奇，修为和灵石都来得快。也可以在帐篷边的蒲团上打坐，只是筑基之后，打坐越来越慢。）']);
+
+/* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
    ============================================================ */
 const WORLD = { home:[0,0], town:[24,1], forest:[-3,17] };   // where each area sits on the world map (in tiles)
@@ -10082,7 +10169,7 @@ const Review = {
       run(){ Review.base({quest:'c2d', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3; S.c2.n=2; S.c2.counted=2; S.c2.got={lu:2,xie:2,man:2}; S.c2.orderDay=S.day-1; Review.at('zong_jian',12,13,'down'); }},
     ...[[1,'秘境第一天（插阵旗、采灵草、煮晚饭）',3],[2,'秘境第二天（饭少了一半、打妖兽、摘朱果、钓鱼）',4],[3,'秘境第三天（翅膀声之后：鸟兽全无、大师兄的纸条、干粮袋）',5]].map(([d,t,n])=>({id:'c2-mj'+d, group:'第二章', title:t, check:'在秘境营地，这一天的吩咐都还没接。做完三件事后回左下的帐篷休息，会有夜里的怪事和第二天早上的剧情。'+(d===3?'这一天做完再睡，第二天早上大师兄就不见了（第二幕结尾）。':''),
       run(){ Review.base({quest:'c2e', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3+d-1; S.c2.counted=n-1; S.c2.night=d-1; C2.nextSet(n); Review.at('mj_camp',10,12,'up'); }})),
-    ...(()=>{ const F={qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:5, juqi:2};
+    ...(()=>{ const F={qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:8, juqi:10};
       const go=(flags,map,x,y,dir,quest='c2f')=>{ Review.base({quest, L:11, sect:'jian', side:{zhenfeng:'active'}, flags:{...F,...flags}, inv:{...I}}); S.c2=C2.fresh(); S.c2.days=6; S.c2.night=3; S.c2.counted=5; Review.at(map,x,y,dir); };
       return [
       {id:'c2-cliff', group:'第二章', title:'第三幕：顺着白羽去白羽崖', check:'大师兄刚失踪，你在秘境营地。地上有一串白羽毛：穿过雾林，最北边的荆棘丛已经被撕开（寻路会带路）。上到白羽崖时有一段对话，山道边能捡到大师兄的「正」字玉牌。',
@@ -10108,7 +10195,7 @@ const Review = {
       {id:'c2-act4end', group:'第二章', title:'第四幕结尾：二师兄不见了', check:'从心镜湖回到营地：篝火灭了，锅底被舔得发亮，二师兄不见了（第五幕的开头）。',
         run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_xin_done:true},'mj_lake',2,8,'left',[0,1,2]); }},
       ...(()=>{ const A4={c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_xin_done:true, c2_man_gone:true},
-          act5=(flags,map,x,y,dir)=>{ go({...A3,...A4,...flags},map,x,y,dir,'c2h'); S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:[0,1,2]}; enterMap(map,x,y); RT.dir=dir; save(); };
+          act5=(flags,map,x,y,dir)=>{ go({...A3,...A4,...flags},map,x,y,dir,'c2h'); S.L=12; S.exp=0; { const st=stats(); S.hp=st.hp; S.mp=st.mp; } S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:[0,1,2]};   /* by act 5 the bosses have carried a player to 筑基后期 */ enterMap(map,x,y); RT.dir=dir; save(); };
         return [
         {id:'c2-south', group:'第二章', title:'第五幕：往南追（南边的林子）', check:'营地南边开了一条路。进林子：树皮都被啃光了；路边可以看看啃过的树、码好的骨头、被啃的石头；捡到二师兄掉的半个馒头。',
           run(){ act5({},'mj_camp',11,13,'down'); }},
@@ -10275,6 +10362,7 @@ const SelfTest2 = {
         await step('每个选项的分支都走一遍', async()=>{ const n0=SelfTest2.lines.length;
           for(const [id,picks] of [['c2-mj2',[1]],['c2-fox',[1,2]],['c2-cave',[0,1]],['c2-dream',[0,1]],['c2-act5end',[1,2]]]) for(const p of picks){ await play(id,p); if(Battle.s) Battle.close(); PixCG.close(); }
           cur='c2-gossip'; node('c2-gossip').run(); await W(700); await adv(); for(const id of ['c2d_lin','c2d_zhou','c2d_sun','c2d_zhong']){ Story.talk(id); await adv(1); }
+          cur='c2-jian'; for(const pick of [0,1]){ node('c2-jian').run(); await W(700); await adv(); for(const w of ['lu','xie','man']) for(const lv of [2,4]){ Social.rel(w).pts=lv*100; Social.rel(w).ev={}; for(let e=2;e<lv;e+=2) Social.rel(w).ev[e]=true; Social.chat(w); await adv(pick); } }   // the 好感 scenes, both answers
           cur='c2-mjgo'; node('c2-mjgo').run(); await W(700); await adv(); Story.talk('lu'); await W(300); await adv(); await W(900); await adv();   // the morning at the gate: 苏小棠's packet
           return {info:`${SelfTest2.lines.length-n0} 句`}; });
         await step('宗门：替大师姐说话会被记住', async()=>{ cur='c2-gossip'; node('c2-gossip').run(); await W(700); await adv(); Story.talk('c2d_lin'); await adv(0); return {fail:!S.flags.c2_defend_xie}; });

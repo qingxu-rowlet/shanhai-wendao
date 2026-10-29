@@ -54,6 +54,7 @@ const SelfTest2 = {
         await step('每个选项的分支都走一遍', async()=>{ const n0=SelfTest2.lines.length;
           for(const [id,picks] of [['c2-mj2',[1]],['c2-fox',[1,2]],['c2-cave',[0,1]],['c2-dream',[0,1]],['c2-act5end',[1,2]]]) for(const p of picks){ await play(id,p); if(Battle.s) Battle.close(); PixCG.close(); }
           cur='c2-gossip'; node('c2-gossip').run(); await W(700); await adv(); for(const id of ['c2d_lin','c2d_zhou','c2d_sun','c2d_zhong']){ Story.talk(id); await adv(1); }
+          cur='c2-jian'; for(const pick of [0,1]){ node('c2-jian').run(); await W(700); await adv(); for(const w of ['lu','xie','man']) for(const lv of [2,4]){ Social.rel(w).pts=lv*100; Social.rel(w).ev={}; for(let e=2;e<lv;e+=2) Social.rel(w).ev[e]=true; Social.chat(w); await adv(pick); } }   // the 好感 scenes, both answers
           cur='c2-mjgo'; node('c2-mjgo').run(); await W(700); await adv(); Story.talk('lu'); await W(300); await adv(); await W(900); await adv();   // the morning at the gate: 苏小棠's packet
           return {info:`${SelfTest2.lines.length-n0} 句`}; });
         await step('宗门：替大师姐说话会被记住', async()=>{ cur='c2-gossip'; node('c2-gossip').run(); await W(700); await adv(); Story.talk('c2d_lin'); await adv(0); return {fail:!S.flags.c2_defend_xie}; });

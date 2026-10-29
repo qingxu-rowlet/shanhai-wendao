@@ -124,7 +124,7 @@ const Review = {
       run(){ Review.base({quest:'c2d', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3; S.c2.n=2; S.c2.counted=2; S.c2.got={lu:2,xie:2,man:2}; S.c2.orderDay=S.day-1; Review.at('zong_jian',12,13,'down'); }},
     ...[[1,'秘境第一天（插阵旗、采灵草、煮晚饭）',3],[2,'秘境第二天（饭少了一半、打妖兽、摘朱果、钓鱼）',4],[3,'秘境第三天（翅膀声之后：鸟兽全无、大师兄的纸条、干粮袋）',5]].map(([d,t,n])=>({id:'c2-mj'+d, group:'第二章', title:t, check:'在秘境营地，这一天的吩咐都还没接。做完三件事后回左下的帐篷休息，会有夜里的怪事和第二天早上的剧情。'+(d===3?'这一天做完再睡，第二天早上大师兄就不见了（第二幕结尾）。':''),
       run(){ Review.base({quest:'c2e', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3+d-1; S.c2.counted=n-1; S.c2.night=d-1; C2.nextSet(n); Review.at('mj_camp',10,12,'up'); }})),
-    ...(()=>{ const F={qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:5, juqi:2};
+    ...(()=>{ const F={qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:8, juqi:10};
       const go=(flags,map,x,y,dir,quest='c2f')=>{ Review.base({quest, L:11, sect:'jian', side:{zhenfeng:'active'}, flags:{...F,...flags}, inv:{...I}}); S.c2=C2.fresh(); S.c2.days=6; S.c2.night=3; S.c2.counted=5; Review.at(map,x,y,dir); };
       return [
       {id:'c2-cliff', group:'第二章', title:'第三幕：顺着白羽去白羽崖', check:'大师兄刚失踪，你在秘境营地。地上有一串白羽毛：穿过雾林，最北边的荆棘丛已经被撕开（寻路会带路）。上到白羽崖时有一段对话，山道边能捡到大师兄的「正」字玉牌。',
@@ -150,7 +150,7 @@ const Review = {
       {id:'c2-act4end', group:'第二章', title:'第四幕结尾：二师兄不见了', check:'从心镜湖回到营地：篝火灭了，锅底被舔得发亮，二师兄不见了（第五幕的开头）。',
         run(){ act4({c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_xin_done:true},'mj_lake',2,8,'left',[0,1,2]); }},
       ...(()=>{ const A4={c2_xin_night:true, c2_xin_start:true, c2_lake_in:true, c2_xin_met:true, c2_xin_done:true, c2_man_gone:true},
-          act5=(flags,map,x,y,dir)=>{ go({...A3,...A4,...flags},map,x,y,dir,'c2h'); S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:[0,1,2]}; enterMap(map,x,y); RT.dir=dir; save(); };
+          act5=(flags,map,x,y,dir)=>{ go({...A3,...A4,...flags},map,x,y,dir,'c2h'); S.L=12; S.exp=0; { const st=stats(); S.hp=st.hp; S.mp=st.mp; } S.inv.c2_bagua=1; S.inv.c2_lutoken=1; S.c2x={echo:[0,1,2]};   /* by act 5 the bosses have carried a player to 筑基后期 */ enterMap(map,x,y); RT.dir=dir; save(); };
         return [
         {id:'c2-south', group:'第二章', title:'第五幕：往南追（南边的林子）', check:'营地南边开了一条路。进林子：树皮都被啃光了；路边可以看看啃过的树、码好的骨头、被啃的石头；捡到二师兄掉的半个馒头。',
           run(){ act5({},'mj_camp',11,13,'down'); }},
