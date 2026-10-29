@@ -4,13 +4,13 @@
    every branch of every choice, the gossip, the chores, the three bosses, 饿鬼洞 and the pulling of 饕餮's soul, the epilogue,
    and every picture. Every line that appears — dialogue, choices, the bubbles in battle, the battle log, the notices — is
    kept and checked: nothing left like {宗} or undefined, nothing «正在制作中», and no other sect's name where yours should
-   be. Takes a while (about 20 minutes). Uses save slot 3 and puts it back afterwards. (#selftest still plays chapter one.)
+   be. One sect picked at random takes about six minutes; #selftest2all plays all four (about 25 minutes). Uses save slot 3 and puts it back afterwards. (#selftest still plays chapter one.)
    ============================================================ */
 const SelfTest2 = {
   lines:[], issues:[], cross:[],
   async run(){
     const W=ms=>new Promise(r=>setTimeout(r,ms)), errs=[]; const onErr=e=>{ errs.push((e.message||String(e))+` @${e.lineno}:${e.colno}`); SelfTest2.errStacks=(SelfTest2.errStacks||[]).concat([(e.error&&e.error.stack||'').split(String.fromCharCode(10)).slice(0,4).join(' | ')]); }; addEventListener('error',onErr);
-    const el=document.createElement('div'); el.id='selftest'; el.innerHTML='<div class="st-box wood"><h3>第二章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">会用四个宗门各走一遍第二章，每句台词都会检查，大约需要二十分钟。</p></div>'; document.body.appendChild(el);
+    const el=document.createElement('div'); el.id='selftest'; el.innerHTML=`<div class="st-box wood"><h3>第二章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">${SelfTest2.all?'会用四个宗门各走一遍第二章，每句台词都会检查，大约需要二十五分钟。':'随机选一个宗门走一遍第二章，每句台词都会检查，大约需要六分钟。'}</p></div>`; document.body.appendChild(el);
     const list=$('#stList'); let pass=0, fail=0, sect='', cur='';
     const report=(name, ok, info='')=>{ ok?pass++:fail++; const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
     const step=async(name, fn, keep)=>{ try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)); } finally{ if(!keep){ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } } };
@@ -42,7 +42,8 @@ const SelfTest2 = {
     const NODES=Review.NODES.filter(x=>x.group==='第二章');
     const other=k=>Object.keys(SECTS).filter(j=>j!==k).flatMap(j=>[SECTS[j].name, SECTS[j].master.name, ({jian:'青云',dan:'药王谷',shou:'万兽谷',tianji:'天机阁'})[j]]);
     try{
-      for(const k of ['jian','dan','shou','tianji']){ sect=k; Review.sect=k;
+      const ALL=['jian','dan','shou','tianji'], SECTS_RUN=SelfTest2.all?ALL:[ALL[Math.floor(Math.random()*4)]];   // one sect picked at random; #selftest2all plays all four
+      for(const k of SECTS_RUN){ sect=k; Review.sect=k;
         await step('每个第二章审查点都能进入，任务栏有目标，寻路走得通', async()=>{ const bad=[];
           for(const nd of NODES){ try{ cur=nd.id; nd.run(); await W(350); await adv(0,40); if(Battle.s) Battle.close(); PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
               const tr=Nav.tracked(), g=Nav.goal(); if(!tr) bad.push(nd.id+'：没有任务'); else if(tr.target&&!g) bad.push(nd.id+'：找不到去的路'); else if(g&&!Nav.pathTo(g)) bad.push(nd.id+'：寻路走不通'); }
@@ -70,6 +71,10 @@ const SelfTest2 = {
           const mirror=!count(S,'c2_bagua'), back=!!S.flags.c2_master_back; for(const id of ['c2d_zhou','c2d_lin','c2d_sun','c2d_zhong','xie',SECTS[k].master.id]){ Story.talk(id); await adv(); }
           const o=RT.map.objects.find(o=>o.act==='c2bed'); Dungeon.act(o); await adv(0); await W(1100); await adv(); for(let i=0;i<20&&QUESTS[S.quest].id!=='c2z';i++){ await W(150); Story.check(); }
           return {fail:!(mirror&&back&&S.flags.c2_done&&QUESTS[S.quest].id==='c2z')}; });
+        await step('来访：苏小棠（不是药王谷时）和顾长歌（饿鬼洞之后）每七天来山门一次', async()=>{ cur='c2-visit'; node('c2-'+k).run(); await W(500); await adv(); const v=C2Visit.st(S), r=[];
+          S.day=v.arr+1; enterMap('zong_'+k,12,15); const tang=RT.ents.some(e=>e.id==='tang'&&e.x===10); if(k!=='dan'){ Story.talk('tang'); await adv(2); r.push(tang&&S.flags.c2v_tang?'苏小棠 ✓':'苏小棠 ✗'); }
+          S.flags.c2_depart=true; S.flags.c2_master_back=true; v.back=S.day; S.day+=2; enterMap('zong_'+k,12,15); const ge=RT.ents.some(e=>e.id==='ge'); Story.talk('ge'); await adv(2); r.push(ge&&S.flags.c2v_ge?'顾长歌 ✓':'顾长歌 ✗');
+          return {fail:r.some(x=>x.includes('✗')), info:r.join('，')}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest2.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\bnull\b|\[object|制作中|敬请期待。）$/.test(l.text)&&!/第三章/.test(l.text));   // the teaser for chapter three at the very end is meant to be there
           SelfTest2.issues.push(...bad); const others=other(k), cross=mine.filter(l=>others.some(w=>l.text.includes(w))); SelfTest2.cross.push(...cross);
           return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题${cross.length?`；提到别的宗门 ${cross.length} 处（人工看一下）`:''}`}; });
@@ -87,4 +92,4 @@ const SelfTest2 = {
     console.log(`[selftest2] ${pass} passed, ${fail} failed, ${SelfTest2.lines.length} lines`);
   },
 };
-if(location.hash==='#selftest2') setTimeout(()=>SelfTest2.run(),900);
+if(location.hash==='#selftest2'||location.hash==='#selftest2all'){ SelfTest2.all=location.hash==='#selftest2all'; setTimeout(()=>SelfTest2.run(),900); }

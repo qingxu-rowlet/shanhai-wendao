@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="47a921f5ee"><script>(function(){var B="47a921f5ee";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a88eaa2307"><script>(function(){var B="a88eaa2307";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9456,6 +9456,59 @@ MAPS.mj_camp.objects.push({type:'futon', x:6, y:11, act:'meditate'});
 for(const sc of [SCRIPTS.c2c_lose, SCRIPTS.c2x_lose, SCRIPTS.c2y_lose]) if(Array.isArray(sc)) sc.push(['旁白','（打不过的话：营地的传送阵能去风穴，挑战狂暴穷奇，修为和灵石都来得快。也可以在帐篷边的蒲团上打坐，只是筑基之后，打坐越来越慢。）']);
 
 /* ============================================================
+   山海问道 · 第二章 · 来访 — once you have gone with your master, 苏小棠 and 顾长歌 are no longer in 桃源镇; they come to
+   the sect instead, once a week. 苏小棠 comes to swap notes (药王谷's elder sends his disciples out to learn from other
+   sects; unless you are of 药王谷 yourself, then she is there every day). 顾长歌 says he was passing by — he never says
+   from where. He only starts after 饿鬼洞: before that he is off on 饕餮's trail, which is where you find him in act 5.
+   They stand by the gate on their day, and you can talk and give gifts as you could in town.
+   ============================================================ */
+const C2Visit={
+  // the day each of them comes: 苏小棠 the day after you arrive and every seventh day from then; 顾长歌 two days after you
+  // are back from the 秘境, and every seventh day from then
+  st(s){ s.c2v=s.c2v||{met:{}}; if(s.c2v.arr==null) s.c2v.arr=s.day; if(s.flags.c2_master_back&&s.c2v.back==null) s.c2v.back=s.day; return s.c2v; },
+  away:s=>!!s.flags.c2_depart&&!s.flags.c2_master_back,   // everyone is in the 秘境
+  here(id,s){ if(!s.flags.c2_arrive||C2Visit.away(s)) return false; const v=C2Visit.st(s);
+    if(id==='tang') return s.sect!=='dan'&&(s.day-v.arr)%7===1;
+    if(id==='ge') return v.back!=null&&s.day>v.back&&(s.day-v.back)%7===2;
+    return false; },
+  INTRO:{
+    tang:[['旁白','山门口探进来一个熟悉的脑袋，背上的药篓比她人还高。'],
+      ['苏小棠','{名}！找到你啦！'],
+      ['苏小棠','药尘长老说，闭门炼丹是炼不出好丹的，要我们多出去走走，跟别的宗门交流交流。'],
+      ['苏小棠','我……我就第一个想到你了。'],
+      ['苏小棠','（她把药篓往身后藏了藏）才、才不是特意来的！是长老让的！'],
+      ['苏小棠','以后我每七天来一次，就在山门这儿。你可别让我扑空呀。'],
+      {flag:'c2v_tang'}],
+    ge:[['旁白','山门边那棵老松底下，有人抱着剑靠着，像是已经站了很久。'],
+      ['顾长歌','……哟。'],
+      ['顾长歌','别多想。路过。'],
+      ['我','从哪儿能路过到我们山门口？'],
+      ['顾长歌','（他抬头看了看天）……东边。'],
+      ['顾长歌','饿鬼洞的伤，好了没有。'],
+      ['我','好了。你呢？'],
+      ['顾长歌','我又没伤。'],
+      ['旁白','他左手的袖子底下，还缠着一圈绷带。'],
+      ['顾长歌','……酒带了没有？没带就算了。我坐一会儿就走。'],
+      ['旁白','他没说下回什么时候来。可是七天以后，老松底下又多了一个抱着剑的人。'],
+      {flag:'c2v_ge'}]},
+};
+// they stand by the gate on their day
+for(const k in SECTS) MAPS['zong_'+k].objects.push(
+  {type:'npc', id:'tang', x:10, y:14, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>C2Visit.here('tang',s)},
+  {type:'npc', id:'ge',   x:14, y:14, look:LOOK_GE,   name:'顾长歌', act:'talk', cond:s=>C2Visit.here('ge',s)});
+// the first time, they say why they have come; after that it is talk and gifts as in town
+{ const _t=Story.talk; Story.talk=function(id){
+    if((id==='tang'||id==='ge')&&String(RT.mapId).startsWith('zong_')&&C2Visit.here(id,S)&&!S.flags['c2v_'+id]) return UI.say(C2Visit.INTRO[id], ()=>Social.menu(id));
+    return _t.call(Story,id); }; }
+// arriving in the sect on their day, you hear that someone is waiting at the gate
+{ const _em=enterMap; enterMap=function(id,x,y){ const r=_em(id,x,y);
+    if(String(id).startsWith('zong_')&&S.flags&&S.flags.c2_arrive){ const v=C2Visit.st(S); for(const w of ['tang','ge']) if(C2Visit.here(w,S)&&v.met[w]!==S.day){ v.met[w]=S.day;
+        setTimeout(()=>UI.toast(w==='tang'?'苏小棠来宗门找你了，在山门边。':'山门边的老松底下，好像站着一个人。'),900); } }
+    return r; }; }
+// the master says where they went, once you are in the sect
+{ const _a=C2S.arrive; if(typeof _a==='function') C2S.arrive=function(){ const r=_a.apply(C2S,arguments); return Array.isArray(r)?r.concat([['旁白',S.sect==='dan'?'（顾长歌又不知道去了哪儿，桃源镇里见不到他了。苏小棠倒是跟你进了同一个山门。）':'（苏小棠回药王谷去了，顾长歌又不知道去了哪儿。桃源镇里见不到他们了——不过，说不定他们会来宗门找你。）']]):r; }; }
+
+/* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
    ============================================================ */
 const WORLD = { home:[0,0], town:[24,1], forest:[-3,17] };   // where each area sits on the world map (in tiles)
@@ -9822,6 +9875,69 @@ const Carry = {
     $('#tImport').onclick=()=>{ Sound.tick(); Carry.form($('#tSaves'), [...Array(SLOTS)].findIndex((_,i)=>!readSlot(i))>=0?[...Array(SLOTS)].findIndex((_,i)=>!readSlot(i)):0, false); };
     const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
     if(ios&&!navigator.standalone){ const p=document.createElement('p'); p.className='tnote hs'; p.textContent='提示：在 Safari 里点「分享 → 添加到主屏幕」，以后从桌面图标进入。存档只存在当前浏览器里，Safari 长时间不打开时可能会清掉网页数据；从桌面图标进入就不会。也可以在「行囊 → 存档」里导出存档备份。'; note.after(p); } }; }
+
+/* ---------- a reminder to take a copy: every seven days, and when a chapter ends. Saves live only in this browser, and
+   some browsers clear them (Safari after a week away, the browser inside WeChat whenever it likes) ---------- */
+Carry.ask=function(why){ if(!S||S.review||document.getElementById('selftest')||!SaveSys.canSave()) return;
+  S.carryAsk=S.day; save();
+  UI.panel('备份一下存档？', `<p>${why}</p><p class="muted">存档只存在这个浏览器里。iPhone 的 Safari 七天没打开、微信里的浏览器清理缓存，都可能把它清掉。导出一份放在手机「文件」里或发给自己，丢了也能用「导入存档」找回来。</p><div id="cxAsk"></div>`,
+    p=>{ const d=$('#cxAsk',p); d.innerHTML=Carry.exportHTML(); Carry.bindExport(d); }); };
+{ const _d=UI.dayCard; UI.dayCard=function(){ const r=_d.apply(UI,arguments); if(!S||S.review) return r;
+    const F=S.flags||{}, why=F.c2_done&&!F.carry_c2d?(F.carry_c2d=true,'第二章打完了，恭喜！'):F.c2_arrive&&!F.carry_c2?(F.carry_c2=true,'第一章打完了，已经拜入宗门。'):S.day>=3&&S.day-(S.carryAsk||0)>=7?'又过了一阵子了。':null;
+    if(why){ let n=0; const t=setInterval(()=>{ if(++n>40) return clearInterval(t); if(!$('#dlg').hidden||!$('#panel').hidden||!$('#daycard').hidden||RT.fadeTo||(Battle.s&&!$('#battle').hidden)) return; clearInterval(t); Carry.ask(why); },1500); }
+    return r; }; }
+
+/* ============================================================
+   山海问道 · 从第二章开始 — for players who have played chapter one already (or lost that save): after making a character,
+   「从第二章开始」 tests the roots, picks a sect, asks who you were close to in 桃源镇, tells the story so far, and puts you
+   in the town square before your master at the end of chapter one: 筑基初期, the things a finished chapter one leaves you
+   with. 万兽谷 disciples start with 当康 as their companion. Not on the live site while chapter two is closed.
+   ============================================================ */
+const Skip1={
+  RECAP:[['旁白','（前情提要）'],
+    ['旁白','你在青丘山下的洞府里醒来，什么都不记得了。一位叫云游子的老人教你采灵草、打坐引气。'],
+    ['旁白','东边的桃源镇，住着卖面的阿禾、钱掌柜、还有采药的小姑娘苏小棠。'],
+    ['旁白','后来山林里有了怪声。穷奇从风穴里出来了——你和一个叫顾长歌的散修，在狐祠前把它打退。'],
+    ['旁白','你炼了筑基丹，在蒲团上破了境。又去狐祠看了狐火的来历，和那只九尾狐成了朋友。'],
+    ['旁白','测灵石前，各宗门的长老来收徒。你拜了师。'],
+    ['旁白','如今，师尊在桃源镇广场上等你。该回宗门了。']],
+  start(){ const name=(Creator.name||'').trim()||'无名';
+    RT.slot=Creator.slot; S=newState(); S.look={...Creator.look}; S.name=name; $('#title').hidden=true; clearInterval(Creator.timer);
+    S.flags.intro_done=true; S.flags.chest=true; S.flags.met_ahe=true; S.flags.sect_open=true; S.flags.qiongqi_done=true; S.flags.tang_sect=true; S.flags.huli_friend=true; S.flags.chapter1_done=true; S.flags.skip_c1=true;
+    S.L=10; S.quest=S.questStarted=QUESTS.findIndex(q=>q.id==='end');
+    enterMap('town',8,9); RT.dir='up'; UI.hud(); UI.sync();
+    Sect.rootTest(()=>Skip1.sect()); },
+  sect(){ const el=$('#minigame'); el.hidden=false; UI.fx=true; UI.sync();
+    el.innerHTML=`<div class="mg wood sects"><h3>你拜入了哪个宗门？</h3><p class="mg-tip">你的灵根：${Sect.rootName()}</p><div class="sect-list">${Object.entries(SECTS).map(([k,s])=>`<button class="sect-card" data-s="${k}">
+      <canvas class="px" data-m="${k}" width="18" height="22"></canvas><div><b>${s.name}</b><i>${s.motto}</i><p>${s.desc}</p>
+      <small>绝学：${s.skill.name}——${s.skill.desc}<br>天赋：${s.passive}</small>${k==='shou'?'<small><br>灵宠：默认是当康（3 级）。想换别的，可以去桃源镇外的山林里收服妖兽。</small>':''}</div></button>`).join('')}</div></div>`;
+    el.querySelectorAll('[data-m]').forEach(c=>drawCard(c, SECTS[c.dataset.m].master.look, 'bust'));
+    el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ Sound.tick(); const k=b.dataset.s, s=SECTS[k]; el.hidden=true; el.innerHTML=''; UI.fx=false;
+      S.sect=k; S.look={...S.look, cloth:s.cloth, style:S.look.style==='jin'?'jin':'robe'}; Sect.syncLooks(); if(k==='tianji') Sect.newDay();
+      if(k==='shou') S.pet={kind:'dangkang',lv:3,xp:0};
+      UI.sync(); Skip1.friends(); }); },
+  // who you were close to: their hearts, and the talks that come with those hearts counted as had
+  friends(){ const set=(id,h)=>{ const r=Social.rel(id); r.pts=h*100; r.ev=r.ev||{}; for(let e=2;e<=h;e+=2) r.ev[e]=true; };
+    UI.say([{choice:'第一章里，你和谁走得比较近？', options:[
+      {text:'苏小棠', fn:()=>{ set('tang',4); set('ge',1); Skip1.finish(); }},
+      {text:'顾长歌', fn:()=>{ set('ge',4); set('tang',1); Skip1.finish(); }},
+      {text:'两个都还不错', fn:()=>{ set('tang',2); set('ge',2); Skip1.finish(); }},
+      {text:'都不太熟', fn:()=>Skip1.finish()}]}]); },
+  finish(){
+    S.stones=600; S.inv={...S.inv, rod:1, hu_wei:1, huichun:5, juqi:3, lingcao:4, zhuguo:2};
+    const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min=9*60; save();
+    UI.say([...Skip1.RECAP,
+      ['旁白',`（已经替你准备好了：筑基初期、${SECTS[S.sect].name}弟子、灵石 600、回春丹 5、聚气丹 3、钓竿。${S.sect==='shou'?'灵宠是当康，想换可以去山林里收服别的妖兽。':''}）`],
+      ['旁白','（点广场上的师尊，就能随他回宗门，开始第二章。）']], ()=>{ UI.hud(); Story.check(); save(); }); },
+};
+// the second button on the character screen
+{ const _r=Creator.render; Creator.render=function(){ const r=_r.apply(Creator,arguments); if(window.CH2_LOCKED) return r;
+    const go=$('#crGo'); if(go&&!$('#crSkip')){ const b=document.createElement('button'); b.className='btn'; b.id='crSkip'; b.textContent='从第二章开始'; b.title='玩过第一章的，可以直接从第二章开始';
+      b.onclick=()=>{ Sound.unlock(); Sound.tick(); const box=b.parentElement;   // asked right here on the character screen
+        box.innerHTML='<p class="muted" style="flex-basis:100%;margin:0 0 6px">跳过第一章（新手教学、穷奇、筑基、拜师），直接以筑基初期的宗门弟子开始。第一次玩，建议从头开始。</p><button class="btn" id="crSkipNo">再想想</button><button class="btn main" id="crSkipYes">从第二章开始</button>';
+        box.style.flexWrap='wrap'; $('#crSkipNo').onclick=()=>{ Sound.tick(); Creator.render(); }; $('#crSkipYes').onclick=()=>Skip1.start(); };
+      go.before(b); }
+    return r; }; }
 
 /* ============================================================
    山海问道 · 往事回廊 — replay key story moments in a sandbox.
@@ -10321,13 +10437,13 @@ setTimeout(()=>Review.route(), 400);
    every branch of every choice, the gossip, the chores, the three bosses, 饿鬼洞 and the pulling of 饕餮's soul, the epilogue,
    and every picture. Every line that appears — dialogue, choices, the bubbles in battle, the battle log, the notices — is
    kept and checked: nothing left like {宗} or undefined, nothing «正在制作中», and no other sect's name where yours should
-   be. Takes a while (about 20 minutes). Uses save slot 3 and puts it back afterwards. (#selftest still plays chapter one.)
+   be. One sect picked at random takes about six minutes; #selftest2all plays all four (about 25 minutes). Uses save slot 3 and puts it back afterwards. (#selftest still plays chapter one.)
    ============================================================ */
 const SelfTest2 = {
   lines:[], issues:[], cross:[],
   async run(){
     const W=ms=>new Promise(r=>setTimeout(r,ms)), errs=[]; const onErr=e=>{ errs.push((e.message||String(e))+` @${e.lineno}:${e.colno}`); SelfTest2.errStacks=(SelfTest2.errStacks||[]).concat([(e.error&&e.error.stack||'').split(String.fromCharCode(10)).slice(0,4).join(' | ')]); }; addEventListener('error',onErr);
-    const el=document.createElement('div'); el.id='selftest'; el.innerHTML='<div class="st-box wood"><h3>第二章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">会用四个宗门各走一遍第二章，每句台词都会检查，大约需要二十分钟。</p></div>'; document.body.appendChild(el);
+    const el=document.createElement('div'); el.id='selftest'; el.innerHTML=`<div class="st-box wood"><h3>第二章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">${SelfTest2.all?'会用四个宗门各走一遍第二章，每句台词都会检查，大约需要二十五分钟。':'随机选一个宗门走一遍第二章，每句台词都会检查，大约需要六分钟。'}</p></div>`; document.body.appendChild(el);
     const list=$('#stList'); let pass=0, fail=0, sect='', cur='';
     const report=(name, ok, info='')=>{ ok?pass++:fail++; const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
     const step=async(name, fn, keep)=>{ try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)); } finally{ if(!keep){ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } } };
@@ -10359,7 +10475,8 @@ const SelfTest2 = {
     const NODES=Review.NODES.filter(x=>x.group==='第二章');
     const other=k=>Object.keys(SECTS).filter(j=>j!==k).flatMap(j=>[SECTS[j].name, SECTS[j].master.name, ({jian:'青云',dan:'药王谷',shou:'万兽谷',tianji:'天机阁'})[j]]);
     try{
-      for(const k of ['jian','dan','shou','tianji']){ sect=k; Review.sect=k;
+      const ALL=['jian','dan','shou','tianji'], SECTS_RUN=SelfTest2.all?ALL:[ALL[Math.floor(Math.random()*4)]];   // one sect picked at random; #selftest2all plays all four
+      for(const k of SECTS_RUN){ sect=k; Review.sect=k;
         await step('每个第二章审查点都能进入，任务栏有目标，寻路走得通', async()=>{ const bad=[];
           for(const nd of NODES){ try{ cur=nd.id; nd.run(); await W(350); await adv(0,40); if(Battle.s) Battle.close(); PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
               const tr=Nav.tracked(), g=Nav.goal(); if(!tr) bad.push(nd.id+'：没有任务'); else if(tr.target&&!g) bad.push(nd.id+'：找不到去的路'); else if(g&&!Nav.pathTo(g)) bad.push(nd.id+'：寻路走不通'); }
@@ -10387,6 +10504,10 @@ const SelfTest2 = {
           const mirror=!count(S,'c2_bagua'), back=!!S.flags.c2_master_back; for(const id of ['c2d_zhou','c2d_lin','c2d_sun','c2d_zhong','xie',SECTS[k].master.id]){ Story.talk(id); await adv(); }
           const o=RT.map.objects.find(o=>o.act==='c2bed'); Dungeon.act(o); await adv(0); await W(1100); await adv(); for(let i=0;i<20&&QUESTS[S.quest].id!=='c2z';i++){ await W(150); Story.check(); }
           return {fail:!(mirror&&back&&S.flags.c2_done&&QUESTS[S.quest].id==='c2z')}; });
+        await step('来访：苏小棠（不是药王谷时）和顾长歌（饿鬼洞之后）每七天来山门一次', async()=>{ cur='c2-visit'; node('c2-'+k).run(); await W(500); await adv(); const v=C2Visit.st(S), r=[];
+          S.day=v.arr+1; enterMap('zong_'+k,12,15); const tang=RT.ents.some(e=>e.id==='tang'&&e.x===10); if(k!=='dan'){ Story.talk('tang'); await adv(2); r.push(tang&&S.flags.c2v_tang?'苏小棠 ✓':'苏小棠 ✗'); }
+          S.flags.c2_depart=true; S.flags.c2_master_back=true; v.back=S.day; S.day+=2; enterMap('zong_'+k,12,15); const ge=RT.ents.some(e=>e.id==='ge'); Story.talk('ge'); await adv(2); r.push(ge&&S.flags.c2v_ge?'顾长歌 ✓':'顾长歌 ✗');
+          return {fail:r.some(x=>x.includes('✗')), info:r.join('，')}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest2.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\bnull\b|\[object|制作中|敬请期待。）$/.test(l.text)&&!/第三章/.test(l.text));   // the teaser for chapter three at the very end is meant to be there
           SelfTest2.issues.push(...bad); const others=other(k), cross=mine.filter(l=>others.some(w=>l.text.includes(w))); SelfTest2.cross.push(...cross);
           return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题${cross.length?`；提到别的宗门 ${cross.length} 处（人工看一下）`:''}`}; });
@@ -10404,7 +10525,7 @@ const SelfTest2 = {
     console.log(`[selftest2] ${pass} passed, ${fail} failed, ${SelfTest2.lines.length} lines`);
   },
 };
-if(location.hash==='#selftest2') setTimeout(()=>SelfTest2.run(),900);
+if(location.hash==='#selftest2'||location.hash==='#selftest2all'){ SelfTest2.all=location.hash==='#selftest2all'; setTimeout(()=>SelfTest2.run(),900); }
 
 </script>
 </body></html>

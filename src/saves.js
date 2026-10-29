@@ -125,3 +125,14 @@ const Carry = {
     $('#tImport').onclick=()=>{ Sound.tick(); Carry.form($('#tSaves'), [...Array(SLOTS)].findIndex((_,i)=>!readSlot(i))>=0?[...Array(SLOTS)].findIndex((_,i)=>!readSlot(i)):0, false); };
     const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
     if(ios&&!navigator.standalone){ const p=document.createElement('p'); p.className='tnote hs'; p.textContent='提示：在 Safari 里点「分享 → 添加到主屏幕」，以后从桌面图标进入。存档只存在当前浏览器里，Safari 长时间不打开时可能会清掉网页数据；从桌面图标进入就不会。也可以在「行囊 → 存档」里导出存档备份。'; note.after(p); } }; }
+
+/* ---------- a reminder to take a copy: every seven days, and when a chapter ends. Saves live only in this browser, and
+   some browsers clear them (Safari after a week away, the browser inside WeChat whenever it likes) ---------- */
+Carry.ask=function(why){ if(!S||S.review||document.getElementById('selftest')||!SaveSys.canSave()) return;
+  S.carryAsk=S.day; save();
+  UI.panel('备份一下存档？', `<p>${why}</p><p class="muted">存档只存在这个浏览器里。iPhone 的 Safari 七天没打开、微信里的浏览器清理缓存，都可能把它清掉。导出一份放在手机「文件」里或发给自己，丢了也能用「导入存档」找回来。</p><div id="cxAsk"></div>`,
+    p=>{ const d=$('#cxAsk',p); d.innerHTML=Carry.exportHTML(); Carry.bindExport(d); }); };
+{ const _d=UI.dayCard; UI.dayCard=function(){ const r=_d.apply(UI,arguments); if(!S||S.review) return r;
+    const F=S.flags||{}, why=F.c2_done&&!F.carry_c2d?(F.carry_c2d=true,'第二章打完了，恭喜！'):F.c2_arrive&&!F.carry_c2?(F.carry_c2=true,'第一章打完了，已经拜入宗门。'):S.day>=3&&S.day-(S.carryAsk||0)>=7?'又过了一阵子了。':null;
+    if(why){ let n=0; const t=setInterval(()=>{ if(++n>40) return clearInterval(t); if(!$('#dlg').hidden||!$('#panel').hidden||!$('#daycard').hidden||RT.fadeTo||(Battle.s&&!$('#battle').hidden)) return; clearInterval(t); Carry.ask(why); },1500); }
+    return r; }; }
