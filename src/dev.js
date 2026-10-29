@@ -95,7 +95,9 @@ const Dev = {
 // the pulling of 饕餮's soul — still apply on the next blow); on the battle screen in review saves and in dev mode
 Dev.bossLow=function(){ const s=Battle.s; if(!s) return UI.toast('现在不在战斗中'); s.hp=Math.max(1,Math.round(s.max*.1)); Battle.ui(); UI.toast(`${s.B.name} 只剩一成血了，再打一下`); };
 { const _b=Battle._begin; Battle._begin=function(){ const r=_b.apply(Battle,arguments);
-    if(Dev.on()||(S&&S.review)){ const top=$('#battle .b-top'); if(top&&!$('#devBoss')){ const b=document.createElement('button'); b.id='devBoss'; b.className='btn mini'; b.textContent='测试：Boss 一成血'; b.style.cssText='position:absolute;right:8px;top:100%;margin-top:4px;z-index:5;opacity:.85'; b.onclick=e=>{ e.stopPropagation(); Dev.bossLow(); }; top.style.position=top.style.position||'relative'; top.appendChild(b); } }
+    if(Dev.on()||(S&&S.review)){ const host=$('#battle'); if(host&&!$('#devBoss')){ const b=document.createElement('button'); b.id='devBoss'; b.className='btn mini'; b.textContent='测试：Boss 一成血';
+        b.style.cssText='position:absolute;right:10px;top:64px;z-index:60;opacity:.9';   /* on the battle screen itself, above the stage (which would swallow the click) */
+        b.onclick=e=>{ e.stopPropagation(); Dev.bossLow(); }; host.appendChild(b); } }
     return r; }; }
 // invincibility for testing
 { const _end=Battle.enemyTurn; Battle.enemyTurn=function(){ const r=_end.apply(this,arguments); if(Dev.god){ setTimeout(()=>{ const st=stats(); S.hp=st.hp; if(Battle.s) Battle.ui(); },700); } return r; }; }

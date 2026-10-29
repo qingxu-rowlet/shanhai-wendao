@@ -3,6 +3,13 @@
 每个版本先发布到**测试版** https://qingxu-rowlet.github.io/shanhai-wendao/beta/ ，审查通过后再更新到正式版 https://qingxu-rowlet.github.io/shanhai-wendao/ 。
 每个审查点都有直达链接（见下方清单，或打开 `#review`）。发布前都会跑自检：链接后加 `#selftest2`，游戏会自动走一遍第二章；加 `#selftest` 是第一章。两种都会给出 ✓/✗ 报告（使用第 3 个存档位，结束后恢复）。
 
+## v0.21.2（测试版）· 修：「Boss 一成血」按钮点了没反应
+
+- 按钮原来被战斗画面盖住了，点不到。现在挪到战斗画面最上层（右上角，血条下面），点一下敌人立刻只剩一成血。
+  - 试过：[#t-c2-taotie](https://qingxu-rowlet.github.io/shanhai-wendao/beta/#t-c2-taotie) 里真鼠标点按钮，饕餮 2300 → 230。
+
+第一章自检：21 项全部通过。
+
 ## v0.21.1（测试版）· 测试用：Boss 一成血
 
 - 用审查点进的存档（或开了开发者模式）打仗时，战斗画面右上角多了一个「测试：Boss 一成血」按钮：点一下，敌人只剩一成血，再打一下就能看后面的剧情。
