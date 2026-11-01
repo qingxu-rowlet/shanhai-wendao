@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="d0024349b2"><script>(function(){var B="d0024349b2";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="7c4428a756"><script>(function(){var B="7c4428a756";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9781,6 +9781,15 @@ const C3={
   F:()=>S.flags,
   dan:()=>S.sect==='dan',
   ta:()=>{ const M=SECTS[S.sect].master; return M.look&&M.look.g==='f'?'她':'他'; },
+  // set a flag and show its effect on the map at once: people and things whose cond depends on it come and go where you
+  // stand (a map only looks at conds when it is entered)
+  set(f){ S.flags[f]=true; C3.sync(); UI.hud(); save(); },
+  sync(){ if(!RT.map) return; for(const o of RT.map.objects){ if(!o.cond||o.type==='building'||o.type==='gather') continue; const want=!!o.cond(S), has=RT.ents.includes(o);
+      if(want&&!has){ RT.ents.push(o); RT.solid[o.y][o.x]=true; } else if(!want&&has){ RT.ents=RT.ents.filter(e=>e!==o); RT.solid[o.y][o.x]=false; } } },
+  // 大师姐 (and 苏小棠) on the road: what they have to say just now, and talk / gifts / hearts as anywhere else
+  menu(id,lines){ const n=NPCS[id], h=Social.hearts(id);
+    UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,(n.romance?10:8)-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:[
+      {text:'说说话', fn:()=>UI.say(lines)},{text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}}]}]); },
   // a scene, then a fade, then somewhere else at some hour, then maybe another scene
   move(map,x,y,dir,hour,after){ RT.paused=true; RT.fadeTo=()=>{ if(hour!=null) S.min=hour*60; enterMap(map,x,y); RT.dir=dir||'down'; RT.paused=false; UI.sync(); UI.hud(); save(); after&&after(); }; },
 };
@@ -9873,7 +9882,7 @@ C3.morning=()=>[
   ['谢霁月','大师兄从前在那儿斩过一窝狼妖。村里给他立了长生牌位，香火一年都没断过。'],
   ['谢霁月','……顺路。去看一眼吧。'],
   ['旁白','路上横着的那几根树，不知道什么时候已经被挪开了。'],
-  {flag:'c3_morning'}];
+  {run:()=>C3.set('c3_morning')}];   // the logs across the road go now, not next time you come
 
 /* ---------- 安平村 ---------- */
 On.enter(id=>{ if(id==='c3_anping'&&!S.flags.c3_anping_in) setTimeout(()=>{ if(RT.mapId==='c3_anping'&&!S.flags.c3_anping_in) UI.say(C3.village(),()=>{ UI.hud(); Story.check(); }); },350);
@@ -9910,7 +9919,7 @@ C3.shrine=()=>[
   ['谢霁月','（她伸手，想把牌位扶正。手停在半空，又收了回来）……走吧。'],
   ['谢霁月','这里没有人了。'],
   {run:()=>PixCG.close()},
-  {flag:'c3_shrine'},
+  {run:()=>C3.set('c3_shrine')},   // the old man is by the well now
   ['旁白','（出祠堂的时候，你看见村口的井边，好像坐着一个人。）']];
 On.talk(id=>{ if(id!=='c3_old') return false;
   if(S.flags.c3_old) UI.say([['老人','……往北。往京城的方向。'],['老人','你们要是到了京城，见着安平村的人，替我说一声：我还在这儿。']]);
@@ -9948,7 +9957,7 @@ C3.grave=()=>[
   ...(F=>F.c3_doubt?[['我','（「那几年，后山的狼，从来没有下山咬过人。」）']]:[])(S.flags),
   ['谢霁月','天要黑了。这村子不能住。'],
   ['谢霁月','回昨晚的营地。'],
-  {flag:'c3_grave'},
+  {run:()=>C3.set('c3_grave')},
   {run:()=>C3.move('c3_road',7,9,'up',20.5)}];
 
 /* ---------- the night: 猲狙 ---------- */
@@ -9990,8 +9999,8 @@ Object.defineProperty(SCRIPTS,'c3_raid_win',{configurable:true, get(){ return [
 
 /* ---------- people to talk to on the road ---------- */
 On.talk(id=>{ if(!String(RT.mapId).startsWith('c3_')) return false; const F=S.flags;
-  if(id==='xie'){ UI.say(F.c3_raid_won?[['谢霁月','……别想了。到了京城，他自己会来找你。']]:F.c3_grave?[['谢霁月','天黑之前，回营地。']]:F.c3_shrine?[['谢霁月','（她看着祠堂的方向）……大师兄知道了，会难过的。']]:F.c3_anping_in?[['谢霁月','别分开走。']]:F.c3_morning?[['谢霁月','往北走，就到安平村了。']]:[['谢霁月','柴火在林子边上，泉眼在溪边。']]); return true; }
-  if(id==='tang'&&C3.dan()){ UI.say(F.c3_raid_won?[['苏小棠','我、我刚才一点都没怕！……就一点点。']]:F.c3_anping_in?[['苏小棠','{名}，你看这些封条上的印，都是新的。']]:[['苏小棠','京城听说有好多好多药铺！到了，你陪我去逛好不好？']]); return true; }
+  if(id==='xie'){ C3.menu('xie',F.c3_raid_won?[['谢霁月','……别想了。到了京城，他自己会来找你。']]:F.c3_grave?[['谢霁月','天黑之前，回营地。']]:F.c3_shrine?[['谢霁月','（她看着祠堂的方向）……大师兄知道了，会难过的。']]:F.c3_anping_in?[['谢霁月','别分开走。']]:F.c3_morning?[['谢霁月','往北走，就到安平村了。']]:[['谢霁月','柴火在林子边上，泉眼在溪边。']]); return true; }
+  if(id==='tang'&&C3.dan()){ C3.menu('tang',F.c3_raid_won?[['苏小棠','我、我刚才一点都没怕！……就一点点。']]:F.c3_anping_in?[['苏小棠','{名}，你看这些封条上的印，都是新的。']]:[['苏小棠','京城听说有好多好多药铺！到了，你陪我去逛好不好？']]); return true; }
   return false; });
 // they walk with you: 大师姐 by the fire, 苏小棠 too if she is your fellow disciple
 MAPS.c3_road.objects.push(
@@ -11227,15 +11236,18 @@ const SelfTest3={
     // the whole act, as a player: picks = [dinner, old man]
     const play=async(picks)=>{ cur='出发'; node('c3-go').run(); await W(400); Story.talk(SECTS[sect].master.id); await adv('准备好'); await W(500); await adv();
       cur='第一夜'; for(const ti of [0,1,2]){ const o=RT.ents.find(e=>e.act==='c3twig'&&e.ti===ti); o&&Dungeon.act(o); } Dungeon.act(obj('c3water')); await adv();
+      const xieMenu=await (async()=>{ Story.talk('xie'); await W(150); const o=[...document.querySelectorAll('#dlg [data-i]')].map(c=>c.textContent); await adv(0); return o.includes('聊天')&&o.includes('送礼'); })();
       Dungeon.act(obj('c3pot')); await adv(picks[0]); Dungeon.act(obj('c3tent')); await adv(0); await W(1200); await adv();
+      const logsGone=!RT.ents.some(e=>e.act==='c3log');   // without leaving the map
       cur='安平村'; enterMap('c3_anping',11,16); await W(500); await adv(); Dungeon.act(obj('c3notice')); await adv();
       for(let i=0;i<4;i++){ Dungeon.act({act:'c3door',di:i}); await adv(); }
       Dungeon.act(obj('c3shrine')); await W(300); const cg1=PixCG.on; await adv();
-      enterMap('c3_anping',8,13); Story.talk('c3_old'); await adv(picks[1]); Dungeon.act(obj('c3grave')); await adv(); await W(600);
+      const oldThere=RT.ents.some(e=>e.id==='c3_old');   // by the well as soon as the shrine scene ends
+      Story.talk('c3_old'); await adv(picks[1]); Dungeon.act(obj('c3grave')); await adv(); await W(600);
       cur='夜袭'; await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); const f=await fight(); await W(300);
       let cg2=false; for(let i=0;i<300;i++){ if(PixCG.on) cg2=true; const d=$('#dlg'); if(d.hidden){ await W(80); if($('#dlg').hidden&&!RT.fadeTo&&i>20) break; continue; } if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); await W(10); }
       for(let i=0;i<20&&QUESTS[S.quest].id!=='c3z';i++){ await W(100); Story.check(); }
-      return {cg1, cg2, f}; };
+      return {cg1, cg2, f, xieMenu, logsGone, oldThere}; };
     const backup=localStorage.getItem(slotKey(2)); Dodge.auto=true; Dev.god=false; RT.slot=2;
     const ALL=['jian','dan','shou','tianji'], RUN=SelfTest3.all?ALL:[ALL[Math.floor(Math.random()*4)]];
     try{
@@ -11246,8 +11258,8 @@ const SelfTest3={
             catch(e){ bad.push(nd.id+'：'+e.message); } }
           return {fail:bad.length>0, info:bad.length?bad.slice(0,3).join('；'):`${NODES.length} 个审查点`}; });
         await step('第一幕从头走到尾：出发 → 营地 → 安平村 → 夜袭 → 山脊', async()=>{ const n0=SelfTest3.lines.length, r=await play([0,0]); const F=S.flags;
-          const ok=r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
-          return {fail:!ok, info:`${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+          const ok=r.xieMenu&&r.logsGone&&r.oldThere&&r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
+          return {fail:!ok, info:`${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('另一种选择：递粥 / 问「陆仙长真的是好人吗」', async()=>{ const n0=SelfTest3.lines.length; await play([1,1]); return {fail:!(S.flags.c3_doubt&&S.flags.c3_a1_done), info:`${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }

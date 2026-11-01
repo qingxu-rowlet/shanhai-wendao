@@ -30,15 +30,18 @@ const SelfTest3={
     // the whole act, as a player: picks = [dinner, old man]
     const play=async(picks)=>{ cur='出发'; node('c3-go').run(); await W(400); Story.talk(SECTS[sect].master.id); await adv('准备好'); await W(500); await adv();
       cur='第一夜'; for(const ti of [0,1,2]){ const o=RT.ents.find(e=>e.act==='c3twig'&&e.ti===ti); o&&Dungeon.act(o); } Dungeon.act(obj('c3water')); await adv();
+      const xieMenu=await (async()=>{ Story.talk('xie'); await W(150); const o=[...document.querySelectorAll('#dlg [data-i]')].map(c=>c.textContent); await adv(0); return o.includes('聊天')&&o.includes('送礼'); })();
       Dungeon.act(obj('c3pot')); await adv(picks[0]); Dungeon.act(obj('c3tent')); await adv(0); await W(1200); await adv();
+      const logsGone=!RT.ents.some(e=>e.act==='c3log');   // without leaving the map
       cur='安平村'; enterMap('c3_anping',11,16); await W(500); await adv(); Dungeon.act(obj('c3notice')); await adv();
       for(let i=0;i<4;i++){ Dungeon.act({act:'c3door',di:i}); await adv(); }
       Dungeon.act(obj('c3shrine')); await W(300); const cg1=PixCG.on; await adv();
-      enterMap('c3_anping',8,13); Story.talk('c3_old'); await adv(picks[1]); Dungeon.act(obj('c3grave')); await adv(); await W(600);
+      const oldThere=RT.ents.some(e=>e.id==='c3_old');   // by the well as soon as the shrine scene ends
+      Story.talk('c3_old'); await adv(picks[1]); Dungeon.act(obj('c3grave')); await adv(); await W(600);
       cur='夜袭'; await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); const f=await fight(); await W(300);
       let cg2=false; for(let i=0;i<300;i++){ if(PixCG.on) cg2=true; const d=$('#dlg'); if(d.hidden){ await W(80); if($('#dlg').hidden&&!RT.fadeTo&&i>20) break; continue; } if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); await W(10); }
       for(let i=0;i<20&&QUESTS[S.quest].id!=='c3z';i++){ await W(100); Story.check(); }
-      return {cg1, cg2, f}; };
+      return {cg1, cg2, f, xieMenu, logsGone, oldThere}; };
     const backup=localStorage.getItem(slotKey(2)); Dodge.auto=true; Dev.god=false; RT.slot=2;
     const ALL=['jian','dan','shou','tianji'], RUN=SelfTest3.all?ALL:[ALL[Math.floor(Math.random()*4)]];
     try{
@@ -49,8 +52,8 @@ const SelfTest3={
             catch(e){ bad.push(nd.id+'：'+e.message); } }
           return {fail:bad.length>0, info:bad.length?bad.slice(0,3).join('；'):`${NODES.length} 个审查点`}; });
         await step('第一幕从头走到尾：出发 → 营地 → 安平村 → 夜袭 → 山脊', async()=>{ const n0=SelfTest3.lines.length, r=await play([0,0]); const F=S.flags;
-          const ok=r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
-          return {fail:!ok, info:`${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+          const ok=r.xieMenu&&r.logsGone&&r.oldThere&&r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
+          return {fail:!ok, info:`${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('另一种选择：递粥 / 问「陆仙长真的是好人吗」', async()=>{ const n0=SelfTest3.lines.length; await play([1,1]); return {fail:!(S.flags.c3_doubt&&S.flags.c3_a1_done), info:`${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }

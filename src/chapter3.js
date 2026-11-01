@@ -15,6 +15,15 @@ const C3={
   F:()=>S.flags,
   dan:()=>S.sect==='dan',
   ta:()=>{ const M=SECTS[S.sect].master; return M.look&&M.look.g==='f'?'她':'他'; },
+  // set a flag and show its effect on the map at once: people and things whose cond depends on it come and go where you
+  // stand (a map only looks at conds when it is entered)
+  set(f){ S.flags[f]=true; C3.sync(); UI.hud(); save(); },
+  sync(){ if(!RT.map) return; for(const o of RT.map.objects){ if(!o.cond||o.type==='building'||o.type==='gather') continue; const want=!!o.cond(S), has=RT.ents.includes(o);
+      if(want&&!has){ RT.ents.push(o); RT.solid[o.y][o.x]=true; } else if(!want&&has){ RT.ents=RT.ents.filter(e=>e!==o); RT.solid[o.y][o.x]=false; } } },
+  // 大师姐 (and 苏小棠) on the road: what they have to say just now, and talk / gifts / hearts as anywhere else
+  menu(id,lines){ const n=NPCS[id], h=Social.hearts(id);
+    UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,(n.romance?10:8)-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:[
+      {text:'说说话', fn:()=>UI.say(lines)},{text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}}]}]); },
   // a scene, then a fade, then somewhere else at some hour, then maybe another scene
   move(map,x,y,dir,hour,after){ RT.paused=true; RT.fadeTo=()=>{ if(hour!=null) S.min=hour*60; enterMap(map,x,y); RT.dir=dir||'down'; RT.paused=false; UI.sync(); UI.hud(); save(); after&&after(); }; },
 };
@@ -107,7 +116,7 @@ C3.morning=()=>[
   ['谢霁月','大师兄从前在那儿斩过一窝狼妖。村里给他立了长生牌位，香火一年都没断过。'],
   ['谢霁月','……顺路。去看一眼吧。'],
   ['旁白','路上横着的那几根树，不知道什么时候已经被挪开了。'],
-  {flag:'c3_morning'}];
+  {run:()=>C3.set('c3_morning')}];   // the logs across the road go now, not next time you come
 
 /* ---------- 安平村 ---------- */
 On.enter(id=>{ if(id==='c3_anping'&&!S.flags.c3_anping_in) setTimeout(()=>{ if(RT.mapId==='c3_anping'&&!S.flags.c3_anping_in) UI.say(C3.village(),()=>{ UI.hud(); Story.check(); }); },350);
@@ -144,7 +153,7 @@ C3.shrine=()=>[
   ['谢霁月','（她伸手，想把牌位扶正。手停在半空，又收了回来）……走吧。'],
   ['谢霁月','这里没有人了。'],
   {run:()=>PixCG.close()},
-  {flag:'c3_shrine'},
+  {run:()=>C3.set('c3_shrine')},   // the old man is by the well now
   ['旁白','（出祠堂的时候，你看见村口的井边，好像坐着一个人。）']];
 On.talk(id=>{ if(id!=='c3_old') return false;
   if(S.flags.c3_old) UI.say([['老人','……往北。往京城的方向。'],['老人','你们要是到了京城，见着安平村的人，替我说一声：我还在这儿。']]);
@@ -182,7 +191,7 @@ C3.grave=()=>[
   ...(F=>F.c3_doubt?[['我','（「那几年，后山的狼，从来没有下山咬过人。」）']]:[])(S.flags),
   ['谢霁月','天要黑了。这村子不能住。'],
   ['谢霁月','回昨晚的营地。'],
-  {flag:'c3_grave'},
+  {run:()=>C3.set('c3_grave')},
   {run:()=>C3.move('c3_road',7,9,'up',20.5)}];
 
 /* ---------- the night: 猲狙 ---------- */
@@ -224,8 +233,8 @@ Object.defineProperty(SCRIPTS,'c3_raid_win',{configurable:true, get(){ return [
 
 /* ---------- people to talk to on the road ---------- */
 On.talk(id=>{ if(!String(RT.mapId).startsWith('c3_')) return false; const F=S.flags;
-  if(id==='xie'){ UI.say(F.c3_raid_won?[['谢霁月','……别想了。到了京城，他自己会来找你。']]:F.c3_grave?[['谢霁月','天黑之前，回营地。']]:F.c3_shrine?[['谢霁月','（她看着祠堂的方向）……大师兄知道了，会难过的。']]:F.c3_anping_in?[['谢霁月','别分开走。']]:F.c3_morning?[['谢霁月','往北走，就到安平村了。']]:[['谢霁月','柴火在林子边上，泉眼在溪边。']]); return true; }
-  if(id==='tang'&&C3.dan()){ UI.say(F.c3_raid_won?[['苏小棠','我、我刚才一点都没怕！……就一点点。']]:F.c3_anping_in?[['苏小棠','{名}，你看这些封条上的印，都是新的。']]:[['苏小棠','京城听说有好多好多药铺！到了，你陪我去逛好不好？']]); return true; }
+  if(id==='xie'){ C3.menu('xie',F.c3_raid_won?[['谢霁月','……别想了。到了京城，他自己会来找你。']]:F.c3_grave?[['谢霁月','天黑之前，回营地。']]:F.c3_shrine?[['谢霁月','（她看着祠堂的方向）……大师兄知道了，会难过的。']]:F.c3_anping_in?[['谢霁月','别分开走。']]:F.c3_morning?[['谢霁月','往北走，就到安平村了。']]:[['谢霁月','柴火在林子边上，泉眼在溪边。']]); return true; }
+  if(id==='tang'&&C3.dan()){ C3.menu('tang',F.c3_raid_won?[['苏小棠','我、我刚才一点都没怕！……就一点点。']]:F.c3_anping_in?[['苏小棠','{名}，你看这些封条上的印，都是新的。']]:[['苏小棠','京城听说有好多好多药铺！到了，你陪我去逛好不好？']]); return true; }
   return false; });
 // they walk with you: 大师姐 by the fire, 苏小棠 too if she is your fellow disciple
 MAPS.c3_road.objects.push(
