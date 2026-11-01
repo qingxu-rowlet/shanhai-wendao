@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="7c4428a756"><script>(function(){var B="7c4428a756";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="3926cbf431"><script>(function(){var B="3926cbf431";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9540,13 +9540,14 @@ for(const sc of [SCRIPTS.c2c_lose, SCRIPTS.c2x_lose, SCRIPTS.c2y_lose]) if(Array
      On.enter(fn)         fn(mapId, x, y) after a map is entered (start a scene, adjust the map)
      On.wake(fn)          fn(passedOut, fromMap) after a night's sleep or a lost fight: return true when it placed the player
      On.theme(fn)         fn(mapId) → a music theme for that map, or nothing
-     On.draw(fn)          fn({g, T, ox, oy}) after the map is drawn: g the canvas, T a tile in pixels, ox/oy the map's offset
+     On.draw(fn)          fn({g, T, ox, oy}) after the map is drawn (on top of everything): g the canvas, T a tile, ox/oy the offset
+     On.building(fn)      fn(o, canvas) → a canvas to draw for that building instead (paint something onto the house itself)
    Chapters 1 and 2 still use their own wrappers underneath; nothing of theirs changes.
    ============================================================ */
 const On={
-  _talk:[], _act:{}, _enter:[], _wake:[], _theme:[], _draw:[],
+  _talk:[], _act:{}, _enter:[], _wake:[], _theme:[], _draw:[], _bld:[],
   talk(fn){ On._talk.push(fn); }, act(name,fn){ (On._act[name]=On._act[name]||[]).push(fn); }, enter(fn){ On._enter.push(fn); },
-  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); }, draw(fn){ On._draw.push(fn); },
+  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); }, draw(fn){ On._draw.push(fn); }, building(fn){ On._bld.push(fn); },
 };
 { const _t=Story.talk; Story.talk=function(id){ for(const f of On._talk) if(f(id)===true) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ for(const f of (o&&On._act[o.act])||[]) if(f(o)!==false) return true; return _a.call(Dungeon,o); }; }
@@ -9554,6 +9555,7 @@ const On={
 { const _s=sleep; sleep=function(passedOut){ const from=RT.mapId; const r=_s(passedOut); for(const f of On._wake) if(f(passedOut,from)===true) break; return r; }; }
 { const _at=areaTheme; areaTheme=function(){ for(const f of On._theme){ const t=f(RT.mapId); if(t) return t; } return _at(); }; }
 { const _r=render; render=function(){ _r(); if(!RT.map||!On._draw.length) return; const Z=RT.scale*RT.dpr, v={g:ctx, T:TILE*Z, ox:Math.round(-RT.cam.x*Z), oy:Math.round(-RT.cam.y*Z)}; for(const f of On._draw) f(v); }; }
+{ const _b=building; building=function(o){ let c=_b(o); for(const f of On._bld) c=f(o,c)||c; return c; }; }
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 地图 — act 1 「北上」: a camp beside the road north (sticks to gather, a spring, the pot and
@@ -9594,7 +9596,7 @@ Object.assign(SPR, {
   for(let y=5;y<H;y++){ G[y][11]='='; G[y][12]='='; }                                     // the street in from the south gate
   for(let x=3;x<=20;x++) G[10][x]='=';                                                      // and across
   for(let y=4;y<=10;y++) G[y][20]='=';                                                      // the path up the back hill
-  const seal=(x,y,w,h,label,di)=>({type:'building', x, y, w, h, style:'house', roof:['#24221f','#33302c','#46423d','#6e6860'], label, door:[x+1,y+h], act:'c3door', di});
+  const seal=(x,y,w,h,label,di)=>({type:'building', x, y, w, h, style:'house', roof:['#24221f','#33302c','#46423d','#6e6860'], label, door:[x+1,y+h], act:'c3door', di, sealed:true});
   const objects=[
     {type:'building', x:9, y:2, w:6, h:3, style:'house', roof:['#3a1210','#561c17','#74281f','#a8483a'], label:'祠堂', door:[11,5], act:'c3shrine'},
     seal(3,6,4,3,'没有人的屋子',0), seal(3,12,4,3,'没有人的屋子',1), seal(15,6,4,3,'没有人的屋子',2), seal(15,12,4,3,'没有人的屋子',3),
@@ -9617,12 +9619,15 @@ for(const [id,seed] of [['c3_road',3101],['c3_anping',3102]]){ const m=MAPS[id],
     else if(edge>=2&&R()<.1) G[y][x]=R()<.5?',':':'; }
   m.ground=G.map(r=>r.join('')); }
 
-// the seals: two strips of paper crossed over each empty house's door, a red stamp where they cross
-On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='c3_anping') return;
-  for(const o of RT.map.objects){ if(o.act!=='c3door') continue; const cx=ox+(o.x+o.w/2)*T, by=oy+(o.y+o.h)*T, w=T*.9, h=T*.95;
-    g.save(); g.translate(cx,by-h*.5); for(const a of [-.62,.62]){ g.save(); g.rotate(a); g.fillStyle='rgba(238,232,214,.95)'; g.fillRect(-w*.75,-T*.09,w*1.5,T*.18);
-      g.fillStyle='rgba(60,50,40,.55)'; for(let k=-2;k<=2;k++) g.fillRect(k*w*.22-T*.03,-T*.04,T*.06,T*.08); g.restore(); }
-    g.fillStyle='rgba(176,40,32,.9)'; g.fillRect(-T*.13,-T*.13,T*.26,T*.26); g.restore(); } });
+// the seals: two strips of paper crossed over each empty house's door, a red stamp where they cross. Painted onto the
+// house itself, so whoever walks in front of the house walks in front of them too.
+On.building((o,c)=>{ if(!o.sealed) return c; if(o._sealBase===c) return o._sealed;
+  const d=document.createElement('canvas'); d.width=c.width; d.height=c.height; const g=d.getContext('2d'); g.drawImage(c,0,0);
+  const W=c.width, H=c.height, x0=W/2-10, x1=W/2+9, y0=H-25, y1=H-7, n=y1-y0;
+  for(const dir of [1,-1]) for(let i=0;i<=n;i++){ const x=Math.round(dir>0?x0+(x1-x0)*i/n:x1-(x1-x0)*i/n), y=y0+i;
+    g.fillStyle='#ece4cc'; g.fillRect(x-1,y,3,1); if(i%4===2){ g.fillStyle='#6a5a4a'; g.fillRect(x,y,1,1); } }
+  g.fillStyle='#b02820'; g.fillRect(W/2-2,y0+n/2-2,4,4); g.fillStyle='#e05040'; g.fillRect(W/2-1,y0+n/2-1,1,1);
+  o._sealBase=c; return o._sealed=d; });
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 妖兽 — 猲狙 (《北山经》：其状如狼，赤首鼠目，其音如豚，名曰猲狙，是食人): wolves with red
@@ -9734,23 +9739,55 @@ C3A.wolf=(g,x,y,s,face,R)=>{ // a sitting wolf, black against the sky, the head 
   g.fillStyle='#5a1414'; g.beginPath(); g.moveTo(-s*.12,-s*.9); g.lineTo(s*.45,-s*1.02); g.lineTo(s*.5,-s*.92); g.lineTo(s*.2,-s*.78); g.closePath(); g.fill();          // the red head, snout out
   g.beginPath(); g.moveTo(-s*.05,-s*.95); g.lineTo(0,-s*1.22); g.lineTo(s*.1,-s*.98); g.fill(); g.beginPath(); g.moveTo(s*.08,-s*.97); g.lineTo(s*.16,-s*1.2); g.lineTo(s*.22,-s*.96); g.fill();   // ears
   g.restore(); };
+C3A.ridgeY=u=>(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006);   // the near ridge's crest, 0..1 of the height
+// a range of mountains as one jagged silhouette; the side facing the moon (up and to the right) catches a thin light
+C3A.range=(g,W,H,R,base,amp,n,col,rim,jag)=>{ const pts=[]; for(let k=0;k<=n;k++){ const u=k/n; pts.push([W*u, H*(base-amp*(.35+.65*Math.abs(Math.sin(u*Math.PI*(1.3+R()*.4)+R()*3)))*(.55+R()*.45))]); }
+  const ys=[]; for(let k=0;k<=220;k++){ const x=W*k/220; const f=x/W*n, i=Math.min(n-1,Math.floor(f)), t=f-i, a=pts[i][1], b=pts[i+1][1]; ys.push([x,a+(b-a)*(t*t*(3-2*t))+(R()-.5)*H*jag]); }
+  g.fillStyle=col; g.beginPath(); g.moveTo(0,H); ys.forEach(([x,y])=>g.lineTo(x,y)); g.lineTo(W,H); g.closePath(); g.fill();
+  if(rim){ g.strokeStyle=rim; g.lineWidth=Math.max(1,W*.0018); g.beginPath(); for(let k=1;k<ys.length;k++){ const [x,y]=ys[k], [px,py]=ys[k-1]; if(py>y){ g.moveTo(px,py); g.lineTo(x,y); } } g.stroke(); } };
+// a pine as a dark shape: a thin trunk, tiers getting smaller towards the top
+C3A.pine=(g,x,y,h,col)=>{ g.fillStyle=col; g.fillRect(x-h*.025,y-h*.25,h*.05,h*.25);
+  for(let k=0;k<5;k++){ const ty=y-h*(.18+k*.17), w=h*(.32-k*.055); g.beginPath(); g.moveTo(x-w,ty); g.lineTo(x,ty-h*.26); g.lineTo(x+w,ty); g.closePath(); g.fill(); } };
 C3A.ridgeCG=function(){
-  PixCG.open({ink:(g,W,H,R)=>{ Land.sky(g,W,H,['#070912','#121830','#232a4c','#2e3254']);
-      for(let k=0;k<90;k++){ g.fillStyle=`rgba(230,230,255,${.2+R()*.6})`; g.fillRect(R()*W,R()*H*.55,R()<.1?2:1,R()<.1?2:1); }
-      const mx=W*.74, my=H*.24, mr=H*.11, mg=g.createRadialGradient(mx,my,mr*.8,mx,my,mr*3); mg.addColorStop(0,'rgba(240,234,210,.35)'); mg.addColorStop(1,'rgba(240,234,210,0)');
-      g.fillStyle=mg; g.fillRect(0,0,W,H); g.fillStyle='#f0ead2'; g.beginPath(); g.arc(mx,my,mr,0,7); g.fill(); g.fillStyle='rgba(200,194,170,.5)'; g.beginPath(); g.arc(mx-mr*.3,my+mr*.2,mr*.2,0,7); g.arc(mx+mr*.25,my-mr*.3,mr*.12,0,7); g.fill();
-      Land.peaks(g,W,H,R,{y:H*.5,amp:H*.18,n:6,a:.55,tint:'#1a1e34'}); Land.mist(g,W,H,H*.55,H*.08,.12);
-      // the near ridge: a long black line across, rising to the right where he stands
-      g.fillStyle='#07080e'; g.beginPath(); g.moveTo(0,H*.66); for(let x=0;x<=W;x+=W/40){ const u=x/W; g.lineTo(x,H*(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006)); } g.lineTo(W,H); g.lineTo(0,H); g.closePath(); g.fill();
+  PixCG.open({ink:(g,W,H,R)=>{ Land.sky(g,W,H,['#05070f','#0d1328','#1b2446','#2c3660','#3a4268']);
+      for(let k=0;k<140;k++){ const y=R()*H*.6; g.fillStyle=`rgba(230,232,255,${(.15+R()*.6)*(1-y/(H*.7))})`; g.fillRect(R()*W,y,R()<.08?2:1,R()<.08?2:1); }
+      // the moon, its halo, a thin cloud drifting across the lower half of it
+      const mx=W*.74, my=H*.22, mr=H*.1;
+      for(const [r,a] of [[mr*4.5,.08],[mr*2.4,.16],[mr*1.4,.22]]){ const mg=g.createRadialGradient(mx,my,mr*.9,mx,my,r); mg.addColorStop(0,`rgba(236,232,210,${a})`); mg.addColorStop(1,'rgba(236,232,210,0)'); g.fillStyle=mg; g.fillRect(0,0,W,H); }
+      g.fillStyle='#f2eed8'; g.beginPath(); g.arc(mx,my,mr,0,7); g.fill();
+      g.fillStyle='rgba(196,190,166,.55)'; for(const [dx,dy,r] of [[-.3,.2,.2],[.25,-.3,.13],[.1,.35,.1],[-.1,-.1,.08]]){ g.beginPath(); g.arc(mx+mr*dx,my+mr*dy,mr*r,0,7); g.fill(); }
+      for(let k=0;k<14;k++){ const cx=mx+W*(-.14+k*.022+(R()-.5)*.02), cy=my+mr*(.45+Math.sin(k*.9)*.18+(R()-.5)*.1), rx=W*(.03+R()*.03), ry=H*(.008+R()*.008);   // a thin cloud, soft at its edges
+        const cg=g.createRadialGradient(cx,cy,0,cx,cy,rx); cg.addColorStop(0,'rgba(34,40,72,.42)'); cg.addColorStop(1,'rgba(34,40,72,0)'); g.fillStyle=cg; g.save(); g.translate(cx,cy); g.scale(1,ry/rx); g.translate(-cx,-cy); g.beginPath(); g.arc(cx,cy,rx,0,7); g.fill(); g.restore(); }
+      // three ranges going back, each paler, mist lying in the valleys between them, the moon catching their crests
+      C3A.range(g,W,H,R,.5,.26,11,'#2a3358','rgba(200,206,236,.3)',.0012);
+      { const mg=g.createLinearGradient(0,H*.42,0,H*.56); mg.addColorStop(0,'rgba(170,180,215,0)'); mg.addColorStop(.6,'rgba(170,180,215,.22)'); mg.addColorStop(1,'rgba(170,180,215,0)'); g.fillStyle=mg; g.fillRect(0,H*.42,W,H*.14); }
+      C3A.range(g,W,H,R,.58,.18,13,'#181e38','rgba(180,188,224,.22)',.0015);
+      for(let k=0;k<26;k++){ const x=R()*W, y=H*(.5+R()*.07); if(R()<.6) C3A.pine(g,x,y,H*(.03+R()*.025),'#151a32'); }
+      { const mg=g.createLinearGradient(0,H*.52,0,H*.64); mg.addColorStop(0,'rgba(160,170,210,0)'); mg.addColorStop(.5,'rgba(160,170,210,.16)'); mg.addColorStop(1,'rgba(160,170,210,0)'); g.fillStyle=mg; g.fillRect(0,H*.52,W,H*.12); }
+      // the near ridge, rising to the right where he stands; a moonlit edge along its crest
+      const Y=u=>H*C3A.ridgeY(u);
+      g.fillStyle='#07080e'; g.beginPath(); g.moveTo(0,H); for(let x=0;x<=W;x+=W/120) g.lineTo(x,Y(x/W)); g.lineTo(W,H); g.closePath(); g.fill();
+      g.strokeStyle='rgba(150,162,210,.45)'; g.lineWidth=Math.max(1,W*.002); g.beginPath(); for(let x=W*.3;x<=W;x+=W/120){ const y=Y(x/W); x===W*.3?g.moveTo(x,y):g.lineTo(x,y); } g.stroke();
+      // the outcrop under him: broken rock, its tops lit
+      const bx=W*.715, by=Y(.715);
+      for(const [dx,w,h] of [[-.045,.035,.05],[.0,.05,.075],[.04,.03,.04],[.07,.025,.03]]){ const x=bx+W*dx, y=by+H*.01;
+        g.fillStyle='#0a0b12'; g.beginPath(); g.moveTo(x-W*w/2,y); g.lineTo(x-W*w*.35,y-H*h); g.lineTo(x+W*w*.1,y-H*h*1.08); g.lineTo(x+W*w/2,y-H*h*.5); g.lineTo(x+W*w/2,y); g.closePath(); g.fill();
+        g.strokeStyle='rgba(160,172,220,.5)'; g.lineWidth=Math.max(1,W*.0015); g.beginPath(); g.moveTo(x-W*w*.35,y-H*h); g.lineTo(x+W*w*.1,y-H*h*1.08); g.lineTo(x+W*w/2,y-H*h*.5); g.stroke(); }
+      // pines on the ridge, and long grass standing against the sky
+      for(const [u,h] of [[.4,.13],[.45,.09],[.97,.15],[.93,.1],[.33,.07]]) C3A.pine(g,W*u,Y(u)+H*.01,H*h,'#06070c');
+      g.strokeStyle='#07080e'; g.lineWidth=Math.max(1,W*.0012); for(let k=0;k<70;k++){ const u=.3+R()*.7, x=W*u, y=Y(u); if(Math.abs(u-.715)<.06) continue; const h=H*(.008+R()*.018), l=(R()-.5)*W*.01;
+        g.beginPath(); g.moveTo(x,y+1); g.quadraticCurveTo(x+l*.3,y-h*.6,x+l,y-h); g.stroke(); }
       // the pack along the ridge, sitting
-      const ridgeY=u=>H*(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006);
-      for(const [u,s,f] of [[.56,.06,1],[.62,.07,1],[.81,.065,-1],[.87,.055,-1],[.92,.05,-1]]) C3A.wolf(g,W*u,ridgeY(u)+H*.004,H*s,f,R);
-      // below: the dark slope down to the camp, the fire a small warm point
-      const fx=W*.2, fy=H*.9, fg=g.createRadialGradient(fx,fy,0,fx,fy,W*.25); fg.addColorStop(0,'rgba(255,150,70,.45)'); fg.addColorStop(1,'rgba(255,150,70,0)'); g.fillStyle=fg; g.fillRect(0,0,W,H); },
+      for(const [u,sz,f] of [[.56,.06,1],[.62,.07,1],[.81,.065,-1],[.87,.055,-1],[.92,.05,-1]]) C3A.wolf(g,W*u,Y(u)+H*.004,H*sz,f,R);
+      // the slope down to the camp: faint folds, a tent lit on one side by the fire
+      for(let k=0;k<8;k++){ const x=R()*W, y=H*(.72+R()*.24); g.strokeStyle='rgba(40,46,70,.28)'; g.lineWidth=Math.max(1,W*.001); g.beginPath(); g.moveTo(x,y); g.quadraticCurveTo(x+W*.04,y-H*.01,x+W*.09,y+H*.004); g.stroke(); }
+      const tx=W*.33, ty=H*.86; g.fillStyle='#0c0b10'; g.beginPath(); g.moveTo(tx-W*.05,ty); g.lineTo(tx,ty-H*.085); g.lineTo(tx+W*.05,ty); g.closePath(); g.fill();
+      g.fillStyle='rgba(200,110,50,.2)'; g.beginPath(); g.moveTo(tx-W*.05,ty); g.lineTo(tx,ty-H*.085); g.lineTo(tx-W*.012,ty); g.closePath(); g.fill();
+      const fx=W*.19, fy=H*.86, fg=g.createRadialGradient(fx,fy,0,fx,fy,W*.28); fg.addColorStop(0,'rgba(255,150,70,.42)'); fg.addColorStop(.4,'rgba(255,130,60,.12)'); fg.addColorStop(1,'rgba(255,150,70,0)'); g.fillStyle=fg; g.fillRect(0,0,W,H); },
     cast:[{who:'me', x:.12, pose:'stand', face:1, s:.8},{look:LOOK_XIE, x:.24, pose:'sword', prop:'sword', face:1, s:.8},
       {get cv(){ return C3A.sil(LOOK_XIAO,'stand'); }, x:.715, y:.455, s:.85, face:-1}],
     title:'山脊', small:'第三章 · 北上', seed:6102});
-  const c=PixCG.cur, ridgeY=u=>(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006);
+  const c=PixCG.cur, ridgeY=C3A.ridgeY;
   c.front=(g,W,H,fp,t)=>{
     // the wolves' eyes: small red points that come and go
     for(const [u,s,f,k] of [[.56,.06,1,0],[.62,.07,1,1],[.81,.065,-1,2],[.87,.055,-1,3],[.92,.05,-1,4]]){ if(Math.sin(t*1.3+k*2.1)<-.85) continue;

@@ -60,23 +60,55 @@ C3A.wolf=(g,x,y,s,face,R)=>{ // a sitting wolf, black against the sky, the head 
   g.fillStyle='#5a1414'; g.beginPath(); g.moveTo(-s*.12,-s*.9); g.lineTo(s*.45,-s*1.02); g.lineTo(s*.5,-s*.92); g.lineTo(s*.2,-s*.78); g.closePath(); g.fill();          // the red head, snout out
   g.beginPath(); g.moveTo(-s*.05,-s*.95); g.lineTo(0,-s*1.22); g.lineTo(s*.1,-s*.98); g.fill(); g.beginPath(); g.moveTo(s*.08,-s*.97); g.lineTo(s*.16,-s*1.2); g.lineTo(s*.22,-s*.96); g.fill();   // ears
   g.restore(); };
+C3A.ridgeY=u=>(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006);   // the near ridge's crest, 0..1 of the height
+// a range of mountains as one jagged silhouette; the side facing the moon (up and to the right) catches a thin light
+C3A.range=(g,W,H,R,base,amp,n,col,rim,jag)=>{ const pts=[]; for(let k=0;k<=n;k++){ const u=k/n; pts.push([W*u, H*(base-amp*(.35+.65*Math.abs(Math.sin(u*Math.PI*(1.3+R()*.4)+R()*3)))*(.55+R()*.45))]); }
+  const ys=[]; for(let k=0;k<=220;k++){ const x=W*k/220; const f=x/W*n, i=Math.min(n-1,Math.floor(f)), t=f-i, a=pts[i][1], b=pts[i+1][1]; ys.push([x,a+(b-a)*(t*t*(3-2*t))+(R()-.5)*H*jag]); }
+  g.fillStyle=col; g.beginPath(); g.moveTo(0,H); ys.forEach(([x,y])=>g.lineTo(x,y)); g.lineTo(W,H); g.closePath(); g.fill();
+  if(rim){ g.strokeStyle=rim; g.lineWidth=Math.max(1,W*.0018); g.beginPath(); for(let k=1;k<ys.length;k++){ const [x,y]=ys[k], [px,py]=ys[k-1]; if(py>y){ g.moveTo(px,py); g.lineTo(x,y); } } g.stroke(); } };
+// a pine as a dark shape: a thin trunk, tiers getting smaller towards the top
+C3A.pine=(g,x,y,h,col)=>{ g.fillStyle=col; g.fillRect(x-h*.025,y-h*.25,h*.05,h*.25);
+  for(let k=0;k<5;k++){ const ty=y-h*(.18+k*.17), w=h*(.32-k*.055); g.beginPath(); g.moveTo(x-w,ty); g.lineTo(x,ty-h*.26); g.lineTo(x+w,ty); g.closePath(); g.fill(); } };
 C3A.ridgeCG=function(){
-  PixCG.open({ink:(g,W,H,R)=>{ Land.sky(g,W,H,['#070912','#121830','#232a4c','#2e3254']);
-      for(let k=0;k<90;k++){ g.fillStyle=`rgba(230,230,255,${.2+R()*.6})`; g.fillRect(R()*W,R()*H*.55,R()<.1?2:1,R()<.1?2:1); }
-      const mx=W*.74, my=H*.24, mr=H*.11, mg=g.createRadialGradient(mx,my,mr*.8,mx,my,mr*3); mg.addColorStop(0,'rgba(240,234,210,.35)'); mg.addColorStop(1,'rgba(240,234,210,0)');
-      g.fillStyle=mg; g.fillRect(0,0,W,H); g.fillStyle='#f0ead2'; g.beginPath(); g.arc(mx,my,mr,0,7); g.fill(); g.fillStyle='rgba(200,194,170,.5)'; g.beginPath(); g.arc(mx-mr*.3,my+mr*.2,mr*.2,0,7); g.arc(mx+mr*.25,my-mr*.3,mr*.12,0,7); g.fill();
-      Land.peaks(g,W,H,R,{y:H*.5,amp:H*.18,n:6,a:.55,tint:'#1a1e34'}); Land.mist(g,W,H,H*.55,H*.08,.12);
-      // the near ridge: a long black line across, rising to the right where he stands
-      g.fillStyle='#07080e'; g.beginPath(); g.moveTo(0,H*.66); for(let x=0;x<=W;x+=W/40){ const u=x/W; g.lineTo(x,H*(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006)); } g.lineTo(W,H); g.lineTo(0,H); g.closePath(); g.fill();
+  PixCG.open({ink:(g,W,H,R)=>{ Land.sky(g,W,H,['#05070f','#0d1328','#1b2446','#2c3660','#3a4268']);
+      for(let k=0;k<140;k++){ const y=R()*H*.6; g.fillStyle=`rgba(230,232,255,${(.15+R()*.6)*(1-y/(H*.7))})`; g.fillRect(R()*W,y,R()<.08?2:1,R()<.08?2:1); }
+      // the moon, its halo, a thin cloud drifting across the lower half of it
+      const mx=W*.74, my=H*.22, mr=H*.1;
+      for(const [r,a] of [[mr*4.5,.08],[mr*2.4,.16],[mr*1.4,.22]]){ const mg=g.createRadialGradient(mx,my,mr*.9,mx,my,r); mg.addColorStop(0,`rgba(236,232,210,${a})`); mg.addColorStop(1,'rgba(236,232,210,0)'); g.fillStyle=mg; g.fillRect(0,0,W,H); }
+      g.fillStyle='#f2eed8'; g.beginPath(); g.arc(mx,my,mr,0,7); g.fill();
+      g.fillStyle='rgba(196,190,166,.55)'; for(const [dx,dy,r] of [[-.3,.2,.2],[.25,-.3,.13],[.1,.35,.1],[-.1,-.1,.08]]){ g.beginPath(); g.arc(mx+mr*dx,my+mr*dy,mr*r,0,7); g.fill(); }
+      for(let k=0;k<14;k++){ const cx=mx+W*(-.14+k*.022+(R()-.5)*.02), cy=my+mr*(.45+Math.sin(k*.9)*.18+(R()-.5)*.1), rx=W*(.03+R()*.03), ry=H*(.008+R()*.008);   // a thin cloud, soft at its edges
+        const cg=g.createRadialGradient(cx,cy,0,cx,cy,rx); cg.addColorStop(0,'rgba(34,40,72,.42)'); cg.addColorStop(1,'rgba(34,40,72,0)'); g.fillStyle=cg; g.save(); g.translate(cx,cy); g.scale(1,ry/rx); g.translate(-cx,-cy); g.beginPath(); g.arc(cx,cy,rx,0,7); g.fill(); g.restore(); }
+      // three ranges going back, each paler, mist lying in the valleys between them, the moon catching their crests
+      C3A.range(g,W,H,R,.5,.26,11,'#2a3358','rgba(200,206,236,.3)',.0012);
+      { const mg=g.createLinearGradient(0,H*.42,0,H*.56); mg.addColorStop(0,'rgba(170,180,215,0)'); mg.addColorStop(.6,'rgba(170,180,215,.22)'); mg.addColorStop(1,'rgba(170,180,215,0)'); g.fillStyle=mg; g.fillRect(0,H*.42,W,H*.14); }
+      C3A.range(g,W,H,R,.58,.18,13,'#181e38','rgba(180,188,224,.22)',.0015);
+      for(let k=0;k<26;k++){ const x=R()*W, y=H*(.5+R()*.07); if(R()<.6) C3A.pine(g,x,y,H*(.03+R()*.025),'#151a32'); }
+      { const mg=g.createLinearGradient(0,H*.52,0,H*.64); mg.addColorStop(0,'rgba(160,170,210,0)'); mg.addColorStop(.5,'rgba(160,170,210,.16)'); mg.addColorStop(1,'rgba(160,170,210,0)'); g.fillStyle=mg; g.fillRect(0,H*.52,W,H*.12); }
+      // the near ridge, rising to the right where he stands; a moonlit edge along its crest
+      const Y=u=>H*C3A.ridgeY(u);
+      g.fillStyle='#07080e'; g.beginPath(); g.moveTo(0,H); for(let x=0;x<=W;x+=W/120) g.lineTo(x,Y(x/W)); g.lineTo(W,H); g.closePath(); g.fill();
+      g.strokeStyle='rgba(150,162,210,.45)'; g.lineWidth=Math.max(1,W*.002); g.beginPath(); for(let x=W*.3;x<=W;x+=W/120){ const y=Y(x/W); x===W*.3?g.moveTo(x,y):g.lineTo(x,y); } g.stroke();
+      // the outcrop under him: broken rock, its tops lit
+      const bx=W*.715, by=Y(.715);
+      for(const [dx,w,h] of [[-.045,.035,.05],[.0,.05,.075],[.04,.03,.04],[.07,.025,.03]]){ const x=bx+W*dx, y=by+H*.01;
+        g.fillStyle='#0a0b12'; g.beginPath(); g.moveTo(x-W*w/2,y); g.lineTo(x-W*w*.35,y-H*h); g.lineTo(x+W*w*.1,y-H*h*1.08); g.lineTo(x+W*w/2,y-H*h*.5); g.lineTo(x+W*w/2,y); g.closePath(); g.fill();
+        g.strokeStyle='rgba(160,172,220,.5)'; g.lineWidth=Math.max(1,W*.0015); g.beginPath(); g.moveTo(x-W*w*.35,y-H*h); g.lineTo(x+W*w*.1,y-H*h*1.08); g.lineTo(x+W*w/2,y-H*h*.5); g.stroke(); }
+      // pines on the ridge, and long grass standing against the sky
+      for(const [u,h] of [[.4,.13],[.45,.09],[.97,.15],[.93,.1],[.33,.07]]) C3A.pine(g,W*u,Y(u)+H*.01,H*h,'#06070c');
+      g.strokeStyle='#07080e'; g.lineWidth=Math.max(1,W*.0012); for(let k=0;k<70;k++){ const u=.3+R()*.7, x=W*u, y=Y(u); if(Math.abs(u-.715)<.06) continue; const h=H*(.008+R()*.018), l=(R()-.5)*W*.01;
+        g.beginPath(); g.moveTo(x,y+1); g.quadraticCurveTo(x+l*.3,y-h*.6,x+l,y-h); g.stroke(); }
       // the pack along the ridge, sitting
-      const ridgeY=u=>H*(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006);
-      for(const [u,s,f] of [[.56,.06,1],[.62,.07,1],[.81,.065,-1],[.87,.055,-1],[.92,.05,-1]]) C3A.wolf(g,W*u,ridgeY(u)+H*.004,H*s,f,R);
-      // below: the dark slope down to the camp, the fire a small warm point
-      const fx=W*.2, fy=H*.9, fg=g.createRadialGradient(fx,fy,0,fx,fy,W*.25); fg.addColorStop(0,'rgba(255,150,70,.45)'); fg.addColorStop(1,'rgba(255,150,70,0)'); g.fillStyle=fg; g.fillRect(0,0,W,H); },
+      for(const [u,sz,f] of [[.56,.06,1],[.62,.07,1],[.81,.065,-1],[.87,.055,-1],[.92,.05,-1]]) C3A.wolf(g,W*u,Y(u)+H*.004,H*sz,f,R);
+      // the slope down to the camp: faint folds, a tent lit on one side by the fire
+      for(let k=0;k<8;k++){ const x=R()*W, y=H*(.72+R()*.24); g.strokeStyle='rgba(40,46,70,.28)'; g.lineWidth=Math.max(1,W*.001); g.beginPath(); g.moveTo(x,y); g.quadraticCurveTo(x+W*.04,y-H*.01,x+W*.09,y+H*.004); g.stroke(); }
+      const tx=W*.33, ty=H*.86; g.fillStyle='#0c0b10'; g.beginPath(); g.moveTo(tx-W*.05,ty); g.lineTo(tx,ty-H*.085); g.lineTo(tx+W*.05,ty); g.closePath(); g.fill();
+      g.fillStyle='rgba(200,110,50,.2)'; g.beginPath(); g.moveTo(tx-W*.05,ty); g.lineTo(tx,ty-H*.085); g.lineTo(tx-W*.012,ty); g.closePath(); g.fill();
+      const fx=W*.19, fy=H*.86, fg=g.createRadialGradient(fx,fy,0,fx,fy,W*.28); fg.addColorStop(0,'rgba(255,150,70,.42)'); fg.addColorStop(.4,'rgba(255,130,60,.12)'); fg.addColorStop(1,'rgba(255,150,70,0)'); g.fillStyle=fg; g.fillRect(0,0,W,H); },
     cast:[{who:'me', x:.12, pose:'stand', face:1, s:.8},{look:LOOK_XIE, x:.24, pose:'sword', prop:'sword', face:1, s:.8},
       {get cv(){ return C3A.sil(LOOK_XIAO,'stand'); }, x:.715, y:.455, s:.85, face:-1}],
     title:'山脊', small:'第三章 · 北上', seed:6102});
-  const c=PixCG.cur, ridgeY=u=>(.66-.22*Math.max(0,Math.sin(u*Math.PI*.95-.2))+Math.sin(u*31)*.006);
+  const c=PixCG.cur, ridgeY=C3A.ridgeY;
   c.front=(g,W,H,fp,t)=>{
     // the wolves' eyes: small red points that come and go
     for(const [u,s,f,k] of [[.56,.06,1,0],[.62,.07,1,1],[.81,.065,-1,2],[.87,.055,-1,3],[.92,.05,-1,4]]){ if(Math.sin(t*1.3+k*2.1)<-.85) continue;

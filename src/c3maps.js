@@ -37,7 +37,7 @@ Object.assign(SPR, {
   for(let y=5;y<H;y++){ G[y][11]='='; G[y][12]='='; }                                     // the street in from the south gate
   for(let x=3;x<=20;x++) G[10][x]='=';                                                      // and across
   for(let y=4;y<=10;y++) G[y][20]='=';                                                      // the path up the back hill
-  const seal=(x,y,w,h,label,di)=>({type:'building', x, y, w, h, style:'house', roof:['#24221f','#33302c','#46423d','#6e6860'], label, door:[x+1,y+h], act:'c3door', di});
+  const seal=(x,y,w,h,label,di)=>({type:'building', x, y, w, h, style:'house', roof:['#24221f','#33302c','#46423d','#6e6860'], label, door:[x+1,y+h], act:'c3door', di, sealed:true});
   const objects=[
     {type:'building', x:9, y:2, w:6, h:3, style:'house', roof:['#3a1210','#561c17','#74281f','#a8483a'], label:'祠堂', door:[11,5], act:'c3shrine'},
     seal(3,6,4,3,'没有人的屋子',0), seal(3,12,4,3,'没有人的屋子',1), seal(15,6,4,3,'没有人的屋子',2), seal(15,12,4,3,'没有人的屋子',3),
@@ -60,9 +60,12 @@ for(const [id,seed] of [['c3_road',3101],['c3_anping',3102]]){ const m=MAPS[id],
     else if(edge>=2&&R()<.1) G[y][x]=R()<.5?',':':'; }
   m.ground=G.map(r=>r.join('')); }
 
-// the seals: two strips of paper crossed over each empty house's door, a red stamp where they cross
-On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='c3_anping') return;
-  for(const o of RT.map.objects){ if(o.act!=='c3door') continue; const cx=ox+(o.x+o.w/2)*T, by=oy+(o.y+o.h)*T, w=T*.9, h=T*.95;
-    g.save(); g.translate(cx,by-h*.5); for(const a of [-.62,.62]){ g.save(); g.rotate(a); g.fillStyle='rgba(238,232,214,.95)'; g.fillRect(-w*.75,-T*.09,w*1.5,T*.18);
-      g.fillStyle='rgba(60,50,40,.55)'; for(let k=-2;k<=2;k++) g.fillRect(k*w*.22-T*.03,-T*.04,T*.06,T*.08); g.restore(); }
-    g.fillStyle='rgba(176,40,32,.9)'; g.fillRect(-T*.13,-T*.13,T*.26,T*.26); g.restore(); } });
+// the seals: two strips of paper crossed over each empty house's door, a red stamp where they cross. Painted onto the
+// house itself, so whoever walks in front of the house walks in front of them too.
+On.building((o,c)=>{ if(!o.sealed) return c; if(o._sealBase===c) return o._sealed;
+  const d=document.createElement('canvas'); d.width=c.width; d.height=c.height; const g=d.getContext('2d'); g.drawImage(c,0,0);
+  const W=c.width, H=c.height, x0=W/2-10, x1=W/2+9, y0=H-25, y1=H-7, n=y1-y0;
+  for(const dir of [1,-1]) for(let i=0;i<=n;i++){ const x=Math.round(dir>0?x0+(x1-x0)*i/n:x1-(x1-x0)*i/n), y=y0+i;
+    g.fillStyle='#ece4cc'; g.fillRect(x-1,y,3,1); if(i%4===2){ g.fillStyle='#6a5a4a'; g.fillRect(x,y,1,1); } }
+  g.fillStyle='#b02820'; g.fillRect(W/2-2,y0+n/2-2,4,4); g.fillStyle='#e05040'; g.fillRect(W/2-1,y0+n/2-1,1,1);
+  o._sealBase=c; return o._sealed=d; });
