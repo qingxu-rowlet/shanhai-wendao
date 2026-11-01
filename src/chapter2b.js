@@ -125,7 +125,7 @@ C2_TASKS.man.push(
     tgt:s=>s.c2.p.mj.bag?null:WOOD(21,15,'雾林东边'), done:[['何满仓','空、空的？'],['何满仓','谁会偷我的干粮……'],['旁白','他把撕破的袋子叠好，揣进怀里，一句话也没再说。']]},
 );
 // the daily set grows to six, and the morning scene (not the calendar) starts the next one in the 秘境
-C2.nextSet=n=>{ const c=S.c2; c.n=n; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false, mj:{}}; UI.hud(); save(); };
+C2.nextSet=n=>{ const c=S.c2; if(!c) return;   /* a morning's timer can land after another save was loaded */ c.n=n; c.got={lu:0,xie:0,man:0}; c.p={dummy:0, leaves:[], steles:[], room:false, mj:{}}; UI.hud(); save(); };
 { const _f=C2.fresh; C2.fresh=()=>{ const c=_f(); c.p.mj={}; return c; }; }
 
 /* ---------- scenes ---------- */

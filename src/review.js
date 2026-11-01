@@ -99,7 +99,7 @@ const Review = {
         S.mail=[{id:'tang',from:'苏小棠',li:2,day:S.day,read:false,taken:false},{id:'ge',from:'顾长歌',li:2,day:S.day,read:false,taken:false},{id:'ahe',from:'阿禾',li:0,day:S.day,read:false,taken:false}]; Review.at('home',8,6,'up'); }},
     // 存档与回放
     {id:'replay', group:'存档', title:'往事回廊：重温拜师大典', check:'这个存档已拜入青云剑宗。重温时选别的门派，结束后打开行囊确认门派还是青云剑宗。',
-      run(){ Review.base({quest:'end', L:10, sect:'jian', flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true}}); Review.at('town',12,11,'down'); setTimeout(()=>{ UI._tab='replay'; UI.menu('replay'); },400); }},
+      run(){ Review.base({quest:'end', L:10, sect:'jian', flags:{...Chapters.C1.flags}}); Review.at('town',12,11,'down'); setTimeout(()=>{ UI._tab='replay'; UI.menu('replay'); },400); }},
     {id:'reroll', group:'存档', title:'刷灵根（读「测灵根前」）', check:'测完灵根后，打开 行囊 → 存档，读取「测灵根前」，能不能重测出不同的结果？',
       run(){ Review.NODES.find(n=>n.id==='prologue').run(); }},
     {id:'oldsave', group:'存档', title:'老存档迁移（种田退款）', check:'模拟一个有锄头、种子、灵泉阵、播种傀儡的老存档：读档后应提示退还灵石，背包里没有种田道具。',
@@ -108,23 +108,23 @@ const Review = {
         const before=S.stones; localStorage.setItem(slotKey(RT.slot),JSON.stringify(S)); S=loadSave(RT.slot); Sect.migrate(); $('#title').hidden=true; enterMap(S.map,S.x,S.y); UI.hud(); UI.sync(); SaveSys.resume();
         UI.toast(`退还后灵石：${before} → ${S.stones}`); }},
     {id:'carry', group:'存档', title:'带走存档（导出 / 导入）', check:'打开的是「存档」页。最下面有「导出存档文件」「复制存档码」「导入存档」。在另一个浏览器（比如微信里打开）的标题画面点「导入存档」，粘贴存档码或选存档文件，选一个存档位导入。iPhone 用 Safari 打开时，标题画面会提示「添加到主屏幕」。',
-      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{rod:1, hu_wei:1}}); Review.at('town',12,10,'down'); setTimeout(()=>SaveSys.panel(),500); }},
+      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags}, inv:{rod:1, hu_wei:1}}); Review.at('town',12,10,'down'); setTimeout(()=>SaveSys.panel(),500); }},
     {id:'end', group:'剧情', title:'第一章结束后的自由时间', check:'第一章完成后能否继续逛、做支线、钓鱼、重温往事。',
-      run(){ Review.base({quest:'end', L:10, sect:'dan', flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{rod:1}}); Review.at('home',11,6,'down'); }},
+      run(){ Review.base({quest:'end', L:10, sect:'dan', flags:{...Chapters.C1.flags}, inv:{rod:1}}); Review.at('home',11,6,'down'); }},
     // 第二章 第一幕
     {id:'c2-depart', group:'第二章', title:'拜别桃源镇', check:'第一章已完成、已拜入青云剑宗，站在桃源镇广场的师尊面前。点师尊：可以选「再等等」或「跟师尊走」。跟走后有送行、传送，到宗门后见到大师兄、大师姐、二师兄。',
-      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{hu_wei:1}}); Review.at('town',8,9,'up'); }},
+      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags}, inv:{hu_wei:1}}); Review.at('town',8,9,'up'); }},
     ...['jian','dan','shou','tianji'].map(k=>({id:'c2-'+k, group:'第二章', title:'宗门第一天（'+SECTS[k].name+'）', check:'四个宗门布局一样，屋顶颜色、地面和摆设不一样'+(k==='dan'?'；苏小棠也在药王谷，药圃旁边能找到她':'')+'。左上角是三位师兄师姐今天的吩咐：先找他们说话接任务，做完回去交差。三件都做完后回房间睡觉，第二天有新的吩咐。山门旁的传送阵能去桃源镇、洞府、风眼。',
-      run(){ Review.base({quest:'c2b', L:10, sect:k, side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_'+k,12,15,'up'); }})),
+      run(){ Review.base({quest:'c2b', L:10, sect:k, side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_'+k,12,15,'up'); }})),
     {id:'c2-gossip', group:'第二章', title:'宗门里的闲话（外门弟子）', check:'刚到宗门的第一天。练功场、药圃、膳堂门口各有两个外门弟子在说悄悄话，走近就能听见头顶冒出的对话（每天说的不一样）；点他们能聊更多。药圃那两个说大师姐的闲话时可以选「你们亲眼看见了？」，第四幕大师姐会记得。山门旁还有一位守门的老弟子。',
-      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_jian',20,7,'up'); }},
+      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags, c2_arrive:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); Review.at('zong_jian',20,7,'up'); }},
     {id:'c2-day3', group:'第二章', title:'宗门第二天（界碑抓痕、二师兄的房间）', check:'第二天（宗门里的最后一天）的吩咐：大师兄让你看三块界碑（第三块底下有狼爪痕），大师姐要两颗朱果，二师兄请你收拾房间（发霉的点心，两种选择）。三件都交差后，师尊会传召。',
-      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true}, inv:{rod:1, hu_wei:1, zhuguo:2}}); S.c2=C2.fresh(); S.c2.n=2; S.c2.days=1; S.c2.counted=0; Review.at('zong_jian',12,15,'up'); }},
+      run(){ Review.base({quest:'c2b', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags, c2_arrive:true}, inv:{rod:1, hu_wei:1, zhuguo:2}}); S.c2=C2.fresh(); S.c2.n=2; S.c2.days=1; S.c2.counted=0; Review.at('zong_jian',12,15,'up'); }},
     {id:'c2-mjgo', group:'第二章', title:'山门集合 → 秘境', check:'第一幕已完成，是师尊下令的第二天早上。去山门找大师兄（寻路会带你去），出发去秘境、扎营。',
-      run(){ Review.base({quest:'c2d', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3; S.c2.n=2; S.c2.counted=2; S.c2.got={lu:2,xie:2,man:2}; S.c2.orderDay=S.day-1; Review.at('zong_jian',12,13,'down'); }},
+      run(){ Review.base({quest:'c2d', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags, c2_arrive:true, c2_order:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3; S.c2.n=2; S.c2.counted=2; S.c2.got={lu:2,xie:2,man:2}; S.c2.orderDay=S.day-1; Review.at('zong_jian',12,13,'down'); }},
     ...[[1,'秘境第一天（插阵旗、采灵草、煮晚饭）',3],[2,'秘境第二天（饭少了一半、打妖兽、摘朱果、钓鱼）',4],[3,'秘境第三天（翅膀声之后：鸟兽全无、大师兄的纸条、干粮袋）',5]].map(([d,t,n])=>({id:'c2-mj'+d, group:'第二章', title:t, check:'在秘境营地，这一天的吩咐都还没接。做完三件事后回左下的帐篷休息，会有夜里的怪事和第二天早上的剧情。'+(d===3?'这一天做完再睡，第二天早上大师兄就不见了（第二幕结尾）。':''),
-      run(){ Review.base({quest:'c2e', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3+d-1; S.c2.counted=n-1; S.c2.night=d-1; C2.nextSet(n); Review.at('mj_camp',10,12,'up'); }})),
-    ...(()=>{ const F={qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:8, juqi:10};
+      run(){ Review.base({quest:'c2e', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags, c2_arrive:true, c2_order:true, c2_depart:true}, inv:{rod:1, hu_wei:1}}); S.c2=C2.fresh(); S.c2.days=3+d-1; S.c2.counted=n-1; S.c2.night=d-1; C2.nextSet(n); Review.at('mj_camp',10,12,'up'); }})),
+    ...(()=>{ const F={...Chapters.C1.flags, c2_arrive:true, c2_order:true, c2_depart:true, lu_gone:true}, I={rod:1, hu_wei:1, mj_feather:1, huichun:8, juqi:10};
       const go=(flags,map,x,y,dir,quest='c2f')=>{ Review.base({quest, L:11, sect:'jian', side:{zhenfeng:'active'}, flags:{...F,...flags}, inv:{...I}}); S.c2=C2.fresh(); S.c2.days=6; S.c2.night=3; S.c2.counted=5; Review.at(map,x,y,dir); };
       return [
       {id:'c2-cliff', group:'第二章', title:'第三幕：顺着白羽去白羽崖', check:'大师兄刚失踪，你在秘境营地。地上有一串白羽毛：穿过雾林，最北边的荆棘丛已经被撕开（寻路会带路）。上到白羽崖时有一段对话，山道边能捡到大师兄的「正」字玉牌。',
@@ -176,7 +176,7 @@ const Review = {
         run(){ go({c2_cliff_in:true, c2_token:true, c2_mirror:true, c2_qq_sealed:true},'fx3',8,8,'up'); }},
       ]; })(),
     {id:'c2-portal', group:'第二章', title:'传送阵（直达风眼打狂暴穷奇）', check:'桃源镇广场东边的传送阵：已经筑基、拜师、打过穷奇，就能直接传送到风眼打狂暴穷奇；风眼里也有传送阵可以回来。到了第二章，还能去宗门。',
-      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{qiongqi_done:true, tang_sect:true, chapter1_done:true, huli_friend:true}, inv:{huichun:4, hu_wei:1}}); Review.at('town',21,7,'up'); }},
+      run(){ Review.base({quest:'end', L:10, sect:'jian', side:{zhenfeng:'active'}, flags:{...Chapters.C1.flags}, inv:{huichun:4, hu_wei:1}}); Review.at('town',21,7,'up'); }},
   ],
   // a fresh test character in save slot 3 with the given story state
   base(o){
@@ -188,13 +188,14 @@ const Review = {
     if(S.sect==='shou'&&!S.pet) S.pet={kind:'dangkang',lv:3,xp:0};                 // 万兽谷 disciples fight with a companion
     if(S.quest>QUESTS.findIndex(q=>q.id==='q3')) S.flags.met_ahe=true;
     Object.assign(S.flags, o.flags||{}); Object.assign(S.side, o.side||{}); if(o.kills) S.st.kills=o.kills;
+    if(S.flags.chapter1_done) Chapters.C1.ensure(S,{sect:S.sect});                  // a save past chapter one has everything chapter one leaves (the handoff in chapters.js)
     // review characters have already picked their techniques and seen the tips, so nothing pops up over what is being checked
     S.tips={move:1,quest:1,talk:1,bag:1,med:1,dodge:1};
     const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min=S.min||9*60; Dev.god=false;
   },
   at(map,x,y,dir){
     if(Review.sect&&/^zong_/.test(map)) map='zong_'+Review.sect;
-    $('#title').hidden=true; clearInterval(Creator.timer); Mini.close&&Mini.close(); Battle.s&&Battle.close(); UI.dlgQ=null; $('#dlg').hidden=true; $('#panel').hidden=true; $('#cg').hidden=true;
+    $('#title').hidden=true; clearInterval(Creator.timer); RT.fadeTo=null; RT.fade=0; Mini.close&&Mini.close(); Battle.s&&Battle.close(); UI.dlgQ=null; $('#dlg').hidden=true; $('#panel').hidden=true; $('#cg').hidden=true;
     enterMap(map,x,y); RT.dir=dir||'down'; UI.hud(); UI.sync(); save(); Music.play(areaTheme());
   },
   sect:null,

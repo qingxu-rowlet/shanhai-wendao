@@ -11,12 +11,12 @@ const SelfTest2 = {
   async run(){
     const W=ms=>new Promise(r=>setTimeout(r,ms)), errs=[]; const onErr=e=>{ errs.push((e.message||String(e))+` @${e.lineno}:${e.colno}`); SelfTest2.errStacks=(SelfTest2.errStacks||[]).concat([(e.error&&e.error.stack||'').split(String.fromCharCode(10)).slice(0,4).join(' | ')]); }; addEventListener('error',onErr);
     const el=document.createElement('div'); el.id='selftest'; el.innerHTML=`<div class="st-box wood"><h3>第二章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">${SelfTest2.all?'会用四个宗门各走一遍第二章，每句台词都会检查，大约需要二十五分钟。':'随机选一个宗门走一遍第二章，每句台词都会检查，大约需要六分钟。'}</p></div>`; document.body.appendChild(el);
-    const list=$('#stList'); let pass=0, fail=0, sect='', cur='';
-    const report=(name, ok, info='')=>{ ok?pass++:fail++; const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
+    const list=$('#stList'); let pass=0, fail=0, sect='', cur=''; TestLog.begin(SelfTest2.all?'第二章（四个宗门）':'第二章');
+    const report=(name, ok, info='')=>{ ok?pass++:fail++; TestLog.item(name,ok,info); const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
     const step=async(name, fn, keep)=>{ try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)); } finally{ if(!keep){ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } } };
     const node=id=>{ const n=Review.NODES.find(x=>x.id===id); if(!n) throw new Error('没有审查点 '+id); return n; };
     // every line that shows is kept, with the sect and the scene it came from
-    const rec=(kind,text)=>{ text=String(text||'').replace(/\s*▼\s*$/,'').trim(); if(text) SelfTest2.lines.push({sect, node:cur, kind, text}); };
+    const rec=(kind,text)=>{ text=String(text||'').replace(/\s*▼\s*$/,'').trim(); if(text){ SelfTest2.lines.push({sect, node:cur, kind, text}); TestLog.line((SECTS[sect]?SECTS[sect].name+' · ':'')+cur,kind,text); } };
     const _log=Battle.log, _toast=UI.toast; Battle.log=function(t){ const r=_log.apply(Battle,arguments); rec('战斗',$('#bLog')&&$('#bLog').textContent); return r; }; UI.toast=function(t){ const r=_toast.apply(UI,arguments); rec('提示',$('#toast')&&$('#toast').textContent); return r; };   // what actually shows, after the game fills in {宗} and the rest
     const bubbles=()=>document.querySelectorAll('#battle .b-talk').forEach(b=>{ rec('战斗对话',b.innerText.replace(/\n+/g,'：')); b.click(); });
     // dialogue: finish each line, keep it, go on (pick = which option to take at a choice)
@@ -75,7 +75,7 @@ const SelfTest2 = {
           for(const id of ['lu','xie','man','zhishi',SECTS[k].master.id,'tang','ge']){ const n=NPCS[id], pick=[n.loves[0], n.likes[0], n.hates[0], 'lingcao'].filter(Boolean);
             for(const it of pick){ S.inv[it]=(S.inv[it]||0)+1; Social.rel(id).gifted=-1; Social.give(id,it); await adv(); } }
           const bad=SelfTest2.lines.slice(n0).filter(l=>/undefined/.test(l.text)); return {fail:bad.length>0, info:bad.length?bad[0].text:`${SelfTest2.lines.length-n0} 句`}; });
-        await step('来访：苏小棠（不是药王谷时）和顾长歌（饿鬼洞之后）每七天来山门一次', async()=>{ cur='c2-visit'; node('c2-'+k).run(); await W(500); await adv(); const v=C2Visit.st(S), r=[];
+        await step('来访：苏小棠（不是药王谷时）和顾长歌（饿鬼洞之后）每七天来山门一次', async()=>{ cur='c2-visit'; node('c2-'+k).run(); await W(500); await adv(); const v=SectLife.visit.st(S), r=[];
           S.day=v.arr+1; enterMap('zong_'+k,12,15); const tang=RT.ents.some(e=>e.id==='tang'&&e.x===10); if(k!=='dan'){ Story.talk('tang'); await adv(2); r.push(tang&&S.flags.c2v_tang?'苏小棠 ✓':'苏小棠 ✗'); }
           S.flags.c2_depart=true; S.flags.c2_master_back=true; v.back=S.day; S.day+=2; enterMap('zong_'+k,12,15); const ge=RT.ents.some(e=>e.id==='ge'); Story.talk('ge'); await adv(2); r.push(ge&&S.flags.c2v_ge?'顾长歌 ✓':'顾长歌 ✗');
           return {fail:r.some(x=>x.includes('✗')), info:r.join('，')}; });
@@ -83,6 +83,19 @@ const SelfTest2 = {
           SelfTest2.issues.push(...bad); const others=other(k), cross=mine.filter(l=>others.some(w=>l.text.includes(w))); SelfTest2.cross.push(...cross);
           return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题${cross.length?`；提到别的宗门 ${cross.length} 处（人工看一下）`:''}`}; });
       }
+      // a new player who starts at chapter two: the character screen → roots → sect → who they were close to → the master → the sect
+      sect=SECTS_RUN[0];
+      await step('「从第二章开始」：捏脸 → 测灵根 → 选宗门 → 前情 → 随师尊回宗门', async()=>{ const k=sect; cur='从第二章开始'; await W(2500); RT.fadeTo=null; RT.fade=0;   /* let the last scene's timers finish, and drop a fade the last scene left waiting */ RT.slot=2; localStorage.removeItem(slotKey(2));
+        Creator.open(2); await W(60); $('#crSkip').click(); await W(40); $('#crSkipYes').click(); await W(200);
+        $('#rtGo').click(); for(let i=0;i<60&&$('#rtGo')&&$('#rtGo').textContent!=='继续';i++) await W(100); $('#rtGo').click(); await W(300);
+        document.querySelector(`[data-s="${k}"]`).click(); await W(300); await adv(0);                       // 「苏小棠」
+        const pre={L:S.L, tang:Social.hearts('tang'), pet:S.pet&&S.pet.kind, root:!!S.root, q:QUESTS[S.quest].id};
+        Story.talk(SECTS[k].master.id); for(let i=0;i<300;i++){ if(RT.fadeTo) update(.1);   /* the fade to the sect runs on the frame loop, which stops in a hidden window */
+          const d=$('#dlg'); if(d.hidden){ await W(120); if($('#dlg').hidden&&RT.mapId==='zong_'+k) break; continue; }
+          const ch=[...d.querySelectorAll('[data-i]')]; if(ch.length){ rec('选项',ch.map(c=>c.textContent).join(' / ')); (ch.find(c=>/走|准备好/.test(c.textContent))||ch[0]).click(); } else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(15); }
+        await W(800); await adv();
+        const ok=pre.L>=10&&pre.tang===4&&pre.root&&pre.q==='end'&&(k!=='shou'||pre.pet==='dangkang')&&RT.mapId==='zong_'+k&&QUESTS[S.quest].id==='c2b'&&S.flags.chapter1_done&&!!S.c2;
+        return {fail:!ok, info:`${SECTS[k].name}，${realmName(pre.L)}，苏小棠 ${pre.tang}♥${pre.pet?'，灵宠当康':''} → ${RT.mapId} · ${QUESTS[S.quest].id}`}; });
       sect='jian';
       await step('第二章的插画都能打开', async()=>{ const bad=[]; cur='c2-cave'; node('c2-cave').run(); await W(700); await adv(0,2); PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
         const cgs={'镜中人':()=>C2L.nightCG(),'往事 ×3':()=>[0,1,2].forEach(i=>C2L.echoCG(i)),'九尾':()=>C2X.foxCG(),'洞口':()=>C2Y.meetCG(),'饿':()=>C2Y.caveCG(),'丰年村 / 别出声 / 大火':()=>[0,1,2].forEach(i=>C2Y.memCG(i)),'饕餮':()=>C2Y.wakeCG(),'镜收':()=>C2Y.sealCG(),'长歌':()=>C2Y.dawnCG(),'早课':()=>C2Y.morningCG(),'镜中的你':()=>C2Y.shardCG('look'),'扣下':()=>C2Y.shardCG('no')};
@@ -92,7 +105,8 @@ const SelfTest2 = {
     } finally { Battle.log=_log; UI.toast=_toast; Review.sect=null; Dodge.auto=false; Math.random=realRandom; Dev.god=false; removeEventListener('error',onErr); if(Battle.s) Battle.close(); PixCG.close();
       try{ if(backup) localStorage.setItem(slotKey(2),backup); else localStorage.removeItem(slotKey(2)); }catch(e){} }
     el.querySelector('h3').textContent=`第二章自检完成：${pass} 项通过${fail?`，${fail} 项失败`:''}（共检查 ${SelfTest2.lines.length} 句）`; el.querySelector('.st-box').classList.add(fail?'bad':'ok');
-    $('#stNote').innerHTML=`<button class="btn mini" id="stClose">关闭</button>　第 3 个存档位已恢复原样。`; $('#stClose').onclick=()=>{ el.remove(); UI.title(); };
+    SelfTest2.issues.forEach(l=>TestLog.issue(`${SECTS[l.sect]?SECTS[l.sect].name:''} ${l.node}「${l.text.slice(0,40)}」`)); SelfTest2.cross.forEach(l=>TestLog.issue(`（提到别的宗门，人工看一下）${SECTS[l.sect]?SECTS[l.sect].name:''} ${l.node}「${l.text.slice(0,40)}」`));
+    errs.forEach(e=>TestLog.issue('脚本错误：'+e)); TestLog.end(pass,fail); TestLog.buttons($('#stNote'), ()=>{ el.remove(); UI.title(); });
     console.log(`[selftest2] ${pass} passed, ${fail} failed, ${SelfTest2.lines.length} lines`);
   },
 };

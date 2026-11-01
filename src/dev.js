@@ -20,7 +20,7 @@ const Dev = {
     if(point==='qiongqi'){ S.L=5; S.sect=null; S.quest=idx('q6'); S.questStarted=S.quest; base(); S.inv.huichun=3; S.st.kills=Math.max(S.st.kills,3); }
     if(point==='zhuji'){ S.L=9; S.exp=expNeed(9); S.sect=null; S.flags.qiongqi_done=true; S.quest=idx('q7'); S.questStarted=S.quest; base(); S.inv.zhuji=1; S.inv.huichun=3; S.inv.qq_yu=0; }
     if(point==='huli'){ S.L=10; S.exp=0; S.sect=S.sect||'jian'; S.flags.tang_sect=true; S.flags.qiongqi_done=true; S.quest=idx('q8'); S.questStarted=S.quest; base(); S.inv.huichun=4; }
-    if(point==='end'){ S.L=10; S.sect=S.sect||'jian'; S.flags.tang_sect=true; S.flags.qiongqi_done=true; S.flags.chapter1_done=true; S.quest=idx('end'); S.questStarted=S.quest; base(); }
+    if(point==='end'){ Chapters.C1.end(S); base(); }
     const st=stats(); S.hp=st.hp; S.mp=st.mp; S.min=9*60;
     const at={sect:['town',12,10],forest:['forest',14,3],qiongqi:['forest',15,19],zhuji:['home',16,5],huli:['forest',15,19],end:['home',11,6]}[point];
     UI.closePanel(); $('#dlg').hidden=true; UI.dlgQ=null; enterMap(...at); UI.hud(); UI.sync(); save(); UI.toast('已跳到：'+Dev.POINTS[point]);

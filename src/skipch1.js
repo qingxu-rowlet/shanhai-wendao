@@ -14,8 +14,7 @@ const Skip1={
     ['旁白','如今，师尊在桃源镇广场上等你。该回宗门了。']],
   start(){ const name=(Creator.name||'').trim()||'无名';
     RT.slot=Creator.slot; S=newState(); S.look={...Creator.look}; S.name=name; $('#title').hidden=true; clearInterval(Creator.timer);
-    S.flags.intro_done=true; S.flags.chest=true; S.flags.met_ahe=true; S.flags.sect_open=true; S.flags.qiongqi_done=true; S.flags.tang_sect=true; S.flags.huli_friend=true; S.flags.chapter1_done=true; S.flags.skip_c1=true;
-    S.L=10; S.quest=S.questStarted=QUESTS.findIndex(q=>q.id==='end');
+    Chapters.C1.end(S); S.flags.skip_c1=true; S.root=null; S.sect=null; S.pet=null;   // the roots and the sect are the player's to pick next
     enterMap('town',8,9); RT.dir='up'; UI.hud(); UI.sync();
     Sect.rootTest(()=>Skip1.sect()); },
   sect(){ const el=$('#minigame'); el.hidden=false; UI.fx=true; UI.sync();

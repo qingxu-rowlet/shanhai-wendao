@@ -7,10 +7,14 @@ const SelfTest = {
   async run(){
     const W=ms=>new Promise(r=>setTimeout(r,ms));
     const el=document.createElement('div'); el.id='selftest'; el.innerHTML='<div class="st-box wood"><h3>自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">会自动完成整章流程，大约需要两分钟。</p></div>'; document.body.appendChild(el);
-    const list=$('#stList'); let pass=0, fail=0;
-    const report=(name, ok, info='')=>{ ok?pass++:fail++; const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
-    const step=async(name, fn)=>{ try{ const r=await fn(); report(name, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(name,false,String(e&&e.message||e)); } };
-    const adv=async(pick=0)=>{ for(let i=0;i<120;i++){ const d=$('#dlg'); if(d.hidden) return; const ch=d.querySelectorAll('[data-i]'); if(ch.length) ch[Math.min(pick,ch.length-1)].click(); else if(d.onclick){ d.onclick(); d.onclick&&d.onclick(); } await W(15); } };
+    const list=$('#stList'); let pass=0, fail=0, cur='开局'; TestLog.begin('第一章'); SelfTest.lines=[];
+    // every line that shows is kept for the log and checked at the end
+    const rec=(kind,text)=>{ text=String(text||'').replace(/\s*▼\s*$/,'').trim(); if(!text) return; SelfTest.lines.push({node:cur, text}); TestLog.line(cur,kind,text); };
+    const seen=()=>{ const d=$('#dlg'); if(d.hidden) return; const ch=d.querySelectorAll('[data-i]'); if(ch.length) rec('选项',(d.querySelector('.dtext p')?.textContent||'')+' → '+[...ch].map(c=>c.textContent).join(' / '));
+      else rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); };
+    const report=(name, ok, info='')=>{ ok?pass++:fail++; TestLog.item(name,ok,info); const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
+    const step=async(name, fn)=>{ cur=name; try{ const r=await fn(); report(name, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(name,false,String(e&&e.message||e)); } };
+    const adv=async(pick=0)=>{ for(let i=0;i<120;i++){ const d=$('#dlg'); if(d.hidden) return; const ch=d.querySelectorAll('[data-i]'); if(ch.length){ seen(); ch[Math.min(pick,ch.length-1)].click(); } else if(d.onclick){ if(UI.typing) d.onclick(); seen(); d.onclick&&d.onclick(); } await W(15); } };
     const fight=async()=>{ let n=0; while(Battle.s&&!Battle.s.over&&n<80){ if(Battle.s.busy){ await W(60); continue; } const it=Battle.intent(), st=stats();
         if(S.hp<st.hp*.4&&S.inv.huichun){ $('[data-a="pill"]').click(); await W(5); const p=$('[data-p="huichun"]'); p&&p.click(); }
         else if(it==='big'||it==='charm') Battle.act('guard'); else if(S.sect&&S.mp>=SECTS[S.sect].skill.mp) Battle.act('sect'); else if(S.mp>=8) Battle.act('skill'); else Battle.act('atk');
@@ -64,14 +68,17 @@ const SelfTest = {
       await step('存档：手动存 → 改动 → 读取复原', async()=>{ SaveSys.write('m1'); const st=S.stones; S.stones+=9999; SaveSys.load(2,'m1'); await W(50); await adv(); return {fail:S.stones!==st}; });
       await step('往事回廊：重温讨伐穷奇后回到现在', async()=>{ const st=S.stones, L=S.L; Dev.god=true; Replay.start('qiongqi'); await W(1100); await adv(); await W(1500); $('#cine').click(); await W(150); await fight(); Dev.god=false; await adv(); await W(1200);
         return {fail:!(Replay.active===null&&S.L===L&&S.stones===st&&S.flags.qiongqi_done)}; });
+      await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const bad=SelfTest.lines.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|null|\[object|制作中/.test(l.text)&&!/第二章|敬请期待/.test(l.text));
+        bad.forEach(l=>TestLog.issue(`${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${SelfTest.lines.length} 句都没问题`}; });
       await step('没有脚本错误', async()=>({fail:SelfTest.errors.length>0, info:SelfTest.errors.slice(0,2).join(' | ')}));
     } finally { Dodge.auto=false;
       Math.random=realRandom; Dev.god=false;
       try{ if(backup) localStorage.setItem(slotKey(2),backup); else localStorage.removeItem(slotKey(2)); }catch(e){}
     }
     el.querySelector('h3').textContent=`自检完成：${pass} 项通过${fail?`，${fail} 项失败`:''}`; el.querySelector('.st-box').classList.add(fail?'bad':'ok');
-    $('#stNote').innerHTML=`<button class="btn mini" id="stClose">关闭</button>　第 3 个存档位已恢复原样。`; $('#stClose').onclick=()=>{ el.remove(); UI.title(); };
-    console.log(`[selftest] ${pass} passed, ${fail} failed`);
+    SelfTest.errors.forEach(e=>TestLog.issue('脚本错误：'+e)); TestLog.end(pass,fail);
+    TestLog.buttons($('#stNote'), ()=>{ el.remove(); UI.title(); });
+    console.log(`[selftest] ${pass} passed, ${fail} failed, ${SelfTest.lines.length} lines`);
   },
 };
 addEventListener('error', e=>SelfTest.errors.push(e.message||String(e)));
