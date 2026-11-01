@@ -1,0 +1,71 @@
+/* ============================================================
+   山海问道 · 第三章自检 — open the game with #selftest3 and it plays chapter three (so far: act 1 「北上」) by itself, as a
+   disciple of one sect picked at random (#selftest3all: all four). It starts from chapter two's end (Chapters.C2) and plays
+   it as a player would: the master, the camp, the village, the night, both answers of every choice, 大师兄's question in
+   the 风眼, both pictures. Every line is kept and checked, and the run is saved to the test log (#testlog).
+   Uses save slot 3 and puts it back afterwards.
+   ============================================================ */
+const SelfTest3={
+  lines:[],
+  async run(){
+    const W=ms=>new Promise(r=>setTimeout(r,ms)), errs=[]; const onErr=e=>errs.push((e.message||String(e))+` @${e.lineno}:${e.colno}`); addEventListener('error',onErr);
+    const el=document.createElement('div'); el.id='selftest'; el.innerHTML=`<div class="st-box wood"><h3>第三章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">${SelfTest3.all?'四个宗门各走一遍':'随机选一个宗门走一遍'}第三章，每句台词都会检查。</p></div>`; document.body.appendChild(el);
+    const list=$('#stList'); let pass=0, fail=0, sect='', cur=''; TestLog.begin(SelfTest3.all?'第三章（四个宗门）':'第三章'); SelfTest3.lines=[];
+    const report=(name,ok,info='')=>{ ok?pass++:fail++; TestLog.item(name,ok,info); const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
+    const step=async(name,fn)=>{ try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)); } finally{ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } };
+    const rec=(kind,text)=>{ text=String(text||'').replace(/\s*▼\s*$/,'').trim(); if(text){ SelfTest3.lines.push({sect,node:cur,text}); TestLog.line(SECTS[sect].name+' · '+cur,kind,text); } };
+    // dialogue to its end; pick = an option's index, or words it contains. Fades run on the frame loop, which stops in a
+    // hidden window, so they are stepped here.
+    const adv=async(pick=0,max=600)=>{ let idle=0; for(let i=0;i<max;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg');
+        if(d.hidden){ await W(60); if($('#dlg').hidden&&!RT.fadeTo&&++idle>6) return; continue; } idle=0;
+        const ch=[...d.querySelectorAll('[data-i]')]; if(ch.length){ rec('选项',ch.map(c=>c.textContent).join(' / ')); const c=typeof pick==='string'?(ch.find(c=>c.textContent.includes(pick))||ch[0]):ch[Math.min(pick,ch.length-1)]; c.click(); }
+        else if(d.onclick){ if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); }
+        await W(10); } };
+    const fight=async()=>{ Dev.god=true; let n=0; for(let i=0;i<150&&!(Battle.s&&!Battle.s.busy);i++){ document.querySelectorAll('.boss-intro,#bossIntro').forEach(e=>e.click()); await W(80); }
+      while(Battle.s&&!Battle.s.over&&n<90){ const s=Battle.s, st=stats(); S.hp=Math.max(S.hp,st.hp*.6|0); if(s.busy){ await W(50); continue; }
+        if(S.sect&&s.jianyi&&S.mp>=SECTS[S.sect].skill.mp) Battle.act('sect'); else if(S.mp>=Battle.skillMp()) Battle.act('skill'); else { S.mp=st.mp; Battle.act('atk'); } n++; await W(200); }
+      for(let i=0;i<40&&!$('#bOk');i++) await W(100); const ok=$('#bOk'); if(ok) ok.click(); await W(400); Dev.god=false; return {won:!!ok, turns:n}; };
+    const node=id=>Review.NODES.find(x=>x.id===id);
+    const obj=act=>RT.ents.find(e=>e.act===act)||RT.map.objects.find(e=>e.act===act);
+    // the whole act, as a player: picks = [dinner, old man]
+    const play=async(picks)=>{ cur='出发'; node('c3-go').run(); await W(400); Story.talk(SECTS[sect].master.id); await adv('准备好'); await W(500); await adv();
+      cur='第一夜'; for(const ti of [0,1,2]){ const o=RT.ents.find(e=>e.act==='c3twig'&&e.ti===ti); o&&Dungeon.act(o); } Dungeon.act(obj('c3water')); await adv();
+      Dungeon.act(obj('c3pot')); await adv(picks[0]); Dungeon.act(obj('c3tent')); await adv(0); await W(1200); await adv();
+      cur='安平村'; enterMap('c3_anping',11,16); await W(500); await adv(); Dungeon.act(obj('c3notice')); await adv();
+      for(let i=0;i<4;i++){ Dungeon.act({act:'c3door',di:i}); await adv(); }
+      Dungeon.act(obj('c3shrine')); await W(300); const cg1=PixCG.on; await adv();
+      enterMap('c3_anping',8,13); Story.talk('c3_old'); await adv(picks[1]); Dungeon.act(obj('c3grave')); await adv(); await W(600);
+      cur='夜袭'; await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); const f=await fight(); await W(300);
+      let cg2=false; for(let i=0;i<300;i++){ if(PixCG.on) cg2=true; const d=$('#dlg'); if(d.hidden){ await W(80); if($('#dlg').hidden&&!RT.fadeTo&&i>20) break; continue; } if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); await W(10); }
+      for(let i=0;i<20&&QUESTS[S.quest].id!=='c3z';i++){ await W(100); Story.check(); }
+      return {cg1, cg2, f}; };
+    const backup=localStorage.getItem(slotKey(2)); Dodge.auto=true; Dev.god=false; RT.slot=2;
+    const ALL=['jian','dan','shou','tianji'], RUN=SelfTest3.all?ALL:[ALL[Math.floor(Math.random()*4)]];
+    try{
+      for(const k of RUN){ sect=k; Review.sect=k;
+        await step('每个第三章审查点都能进入，任务栏有目标，寻路走得通', async()=>{ const bad=[], NODES=Review.NODES.filter(n=>n.group==='第三章');
+          for(const nd of NODES){ try{ cur=nd.id; nd.run(); await W(400); await adv(0,60); if(Battle.s) Battle.close(); PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
+              const tr=Nav.tracked(), g=Nav.goal(); if(!tr) bad.push(nd.id+'：没有任务'); else if(tr.target&&!g) bad.push(nd.id+'：找不到去的路'); else if(g&&!Nav.pathTo(g)) bad.push(nd.id+'：寻路走不通'); }
+            catch(e){ bad.push(nd.id+'：'+e.message); } }
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,3).join('；'):`${NODES.length} 个审查点`}; });
+        await step('第一幕从头走到尾：出发 → 营地 → 安平村 → 夜袭 → 山脊', async()=>{ const n0=SelfTest3.lines.length, r=await play([0,0]); const F=S.flags;
+          const ok=r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
+          return {fail:!ok, info:`${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('另一种选择：递粥 / 问「陆仙长真的是好人吗」', async()=>{ const n0=SelfTest3.lines.length; await play([1,1]); return {fail:!(S.flags.c3_doubt&&S.flags.c3_a1_done), info:`${SelfTest3.lines.length-n0} 句`}; });
+        await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
+            Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
+          return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
+        await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
+          bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
+      }
+      await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
+        return {fail:bad.length>0, info:bad.length?bad.join('；'):'2 张'}; });
+      await step('没有脚本错误', async()=>({fail:errs.length>0, info:errs.slice(0,2).join(' | ')}));
+    } finally { Review.sect=null; Dodge.auto=false; Dev.god=false; removeEventListener('error',onErr); if(Battle.s) Battle.close(); PixCG.close();
+      try{ if(backup) localStorage.setItem(slotKey(2),backup); else localStorage.removeItem(slotKey(2)); }catch(e){} }
+    el.querySelector('h3').textContent=`第三章自检完成：${pass} 项通过${fail?`，${fail} 项失败`:''}（共检查 ${SelfTest3.lines.length} 句）`; el.querySelector('.st-box').classList.add(fail?'bad':'ok');
+    errs.forEach(e=>TestLog.issue('脚本错误：'+e)); TestLog.end(pass,fail); TestLog.buttons($('#stNote'), ()=>{ el.remove(); UI.title(); });
+    console.log(`[selftest3] ${pass} passed, ${fail} failed, ${SelfTest3.lines.length} lines`);
+  },
+};
+if(location.hash==='#selftest3'||location.hash==='#selftest3all'){ SelfTest3.all=location.hash==='#selftest3all'; setTimeout(()=>SelfTest3.run(),900); }

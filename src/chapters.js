@@ -14,6 +14,7 @@ const Chapters={
     ensure(s,o={}){ Object.assign(s.flags, Chapters.C1.flags); for(const k in Chapters.C1.inv) if(!s.inv[k]) s.inv[k]=Chapters.C1.inv[k];
       s.L=Math.max(s.L||0,10); s.root=s.root||{els:['火','木','水'],n:3}; s.sect=o.sect||s.sect||'jian';
       if(s.sect==='shou'&&!s.pet) s.pet={kind:'dangkang',lv:3,xp:0};       // 万兽谷 disciples have a companion by then
+      s.side=s.side||{}; if(!s.side.zhenfeng&&!s.flags.fx_rematch) s.side.zhenfeng='active';   // the master's 传音 about 狂暴穷奇 comes right after 拜师
       return s; },
     // a save standing at the end of chapter one, before the master in the square
     end(s,o){ Chapters.C1.ensure(s,o); s.quest=s.questStarted=QUESTS.findIndex(q=>q.id==='end'); s.track='main'; return s; },

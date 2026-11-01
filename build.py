@@ -2,7 +2,7 @@
 import os
 here = os.path.dirname(os.path.abspath(__file__))
 src = lambda f: open(os.path.join(here, 'src', f), encoding='utf-8').read()
-js = '\n'.join(src(f) for f in ('data.js', 'player.js', 'engine.js', 'art.js', 'ui.js', 'social.js', 'music.js', 'boss.js', 'dodge.js', 'sect.js', 'mini.js', 'qiyu.js', 'life.js', 'romance.js', 'mail.js', 'bounty.js', 'inkbg.js', 'pixcg.js', 'chibi.js', 'med.js', 'dungeon.js', 'skillfx.js', 'guide.js', 'beasts2.js', 'chapter2.js', 'chapter2b.js', 'mjbeasts.js', 'mjhorror.js', 'chapter2c.js', 'chapter2d.js', 'c2lore.js', 'chapter2e.js', 'c2art5.js', 'chapter2f.js', 'sectlife.js', 'c2grow.js', 'on.js', 'nav.js', 'chapter2nav.js', 'chapters.js', 'saves.js', 'skipch1.js', 'replay.js', 'dev.js', 'testlog.js', 'selftest.js', 'review.js', 'selftest2.js'))
+js = '\n'.join(src(f) for f in ('data.js', 'player.js', 'engine.js', 'art.js', 'ui.js', 'social.js', 'music.js', 'boss.js', 'dodge.js', 'sect.js', 'mini.js', 'qiyu.js', 'life.js', 'romance.js', 'mail.js', 'bounty.js', 'inkbg.js', 'pixcg.js', 'chibi.js', 'med.js', 'dungeon.js', 'skillfx.js', 'guide.js', 'beasts2.js', 'chapter2.js', 'chapter2b.js', 'mjbeasts.js', 'mjhorror.js', 'chapter2c.js', 'chapter2d.js', 'c2lore.js', 'chapter2e.js', 'c2art5.js', 'chapter2f.js', 'sectlife.js', 'c2grow.js', 'on.js', 'c3maps.js', 'c3beasts.js', 'c3art.js', 'chapter3.js', 'nav.js', 'chapter2nav.js', 'chapters.js', 'saves.js', 'skipch1.js', 'replay.js', 'dev.js', 'testlog.js', 'selftest.js', 'review.js', 'c3review.js', 'selftest2.js', 'selftest3.js'))
 page = src('page.html').replace('__JS__', js)
 open(os.path.join(here, 'shanhai.html'), 'w', encoding='utf-8').write(page)
 HEAD = ('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
@@ -26,6 +26,8 @@ open(os.path.join(here, 'beta', 'index.html'), 'w', encoding='utf-8').write(HEAD
 if 'release' in sys.argv:
     # chapter 2 is open on the live game too (it was closed with window.CH2_LOCKED until v0.22.1); a chapter still being made
     # can be closed again by adding '<script>window.CH2_LOCKED=true</script>' to the head here
-    open(os.path.join(here, 'index.html'), 'w', encoding='utf-8').write(HEAD + page + '</body></html>')
+    # chapter 3 is still being made: the live game keeps its door shut (saves at the end of chapter 2 wait there)
+    LOCK = '<script>window.CH3_LOCKED=true</script>'
+    open(os.path.join(here, 'index.html'), 'w', encoding='utf-8').write(HEAD.replace('</head>', LOCK + '</head>') + page + '</body></html>')
     print('released to index.html')
 print('built', len(page), 'bytes')

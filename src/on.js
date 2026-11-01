@@ -6,15 +6,17 @@
      On.enter(fn)         fn(mapId, x, y) after a map is entered (start a scene, adjust the map)
      On.wake(fn)          fn(passedOut, fromMap) after a night's sleep or a lost fight: return true when it placed the player
      On.theme(fn)         fn(mapId) → a music theme for that map, or nothing
+     On.draw(fn)          fn({g, T, ox, oy}) after the map is drawn: g the canvas, T a tile in pixels, ox/oy the map's offset
    Chapters 1 and 2 still use their own wrappers underneath; nothing of theirs changes.
    ============================================================ */
 const On={
-  _talk:[], _act:{}, _enter:[], _wake:[], _theme:[],
+  _talk:[], _act:{}, _enter:[], _wake:[], _theme:[], _draw:[],
   talk(fn){ On._talk.push(fn); }, act(name,fn){ (On._act[name]=On._act[name]||[]).push(fn); }, enter(fn){ On._enter.push(fn); },
-  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); },
+  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); }, draw(fn){ On._draw.push(fn); },
 };
 { const _t=Story.talk; Story.talk=function(id){ for(const f of On._talk) if(f(id)===true) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ for(const f of (o&&On._act[o.act])||[]) if(f(o)!==false) return true; return _a.call(Dungeon,o); }; }
 { const _em=enterMap; enterMap=function(id,x,y){ const r=_em(id,x,y); for(const f of On._enter) f(id,x,y); return r; }; }
 { const _s=sleep; sleep=function(passedOut){ const from=RT.mapId; const r=_s(passedOut); for(const f of On._wake) if(f(passedOut,from)===true) break; return r; }; }
 { const _at=areaTheme; areaTheme=function(){ for(const f of On._theme){ const t=f(RT.mapId); if(t) return t; } return _at(); }; }
+{ const _r=render; render=function(){ _r(); if(!RT.map||!On._draw.length) return; const Z=RT.scale*RT.dpr, v={g:ctx, T:TILE*Z, ox:Math.round(-RT.cam.x*Z), oy:Math.round(-RT.cam.y*Z)}; for(const f of On._draw) f(v); }; }
