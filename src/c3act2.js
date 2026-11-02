@@ -32,7 +32,9 @@ JC.gate=()=>[
   ['旁白','他看了一眼文书上的印，又看了一眼大师姐，眼睛停了一下。'],
   ['守城兵','……进去吧。四方馆在西边，过了十字街往西走。'],
   ['守城兵','天黑以前找好落脚的地方。萧大人有令，入夜宵禁。'],
-  ...(JC.dan()?[['苏小棠','好多人……{名}，你看那边！有卖糖葫芦的！']]:[['我','（城里飘出来一股糖的甜味。……对了，吴阿蛮要一串糖葫芦。）']]),
+  ['旁白','城门里飘出来一股熬糖的甜味。'],
+  ...(JC.dan()?[['苏小棠','好多人……{名}，你看那边！有卖糖葫芦的！']]:[]),
+  ...(S.flags.c3_wu_hulu?[['我','（……对了。答应过吴阿蛮，给他带一串糖葫芦。）']]:[]),
   ['谢霁月','跟紧了。'],
   {flag:'c3_jc_in'},
   ['旁白','（进城看看。十字街口有告示，四方馆在西边。）']];
@@ -66,6 +68,12 @@ Object.assign(ITEMS, {
 });
 NPCS.tang.loves.push('jc_hulu'); NPCS.xie.likes.push('jc_hulu'); NPCS.ge.likes.push('jc_bao');
 
+/* ---------- 吴阿蛮's 糖葫芦: promised at the gate of the sect, kept when you go back ---------- */
+On.talk(id=>{ if(id!=='c2d_wu'||!S.flags.c3_wu_hulu||S.flags.c3_wu_done||!count(S,'jc_hulu')) return false;
+  addItem('jc_hulu',-1); S.flags.c3_wu_done=true; UI.say([
+    ['外门弟子·吴阿蛮','{称}！你回来了！'],['旁白','你把糖葫芦递给他。'],['外门弟子·吴阿蛮','（他举着看了半天）……没有鸡蛋那么大嘛。'],
+    ['外门弟子·吴阿蛮','（他咬了一口，眼睛一下子亮了）……可是好甜！'],['外门弟子·吴阿蛮','我留一颗给老钟！'],{stones:20},['旁白','（老钟后来说，那颗山楂他舍不得吃，晒干了挂在门房里。）']]); return true; });
+
 /* ---------- the street's things ---------- */
 const JC_SHOPS={
   jiulou:[['旁白','醉仙居。二楼的窗子里，传出划拳和笑声。'],['旁白','门口停着一顶轿子。']],
@@ -95,10 +103,12 @@ On.theme(id=>id&&id.startsWith('jc_')?'village':null);
 On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')||!$('#dlg').hidden) return;
   const near=RT.ents.filter(o=>o.type==='npc'&&JC.CHAT[o.id]&&Math.abs(o.x-RT.fx)+Math.abs(o.y-RT.fy)<=4);
   for(const o of near){ const lines=JC.CHAT[o.id], k=Math.floor((RT.t+o.x*1.7)/4)%(lines.length+1); if(k===lines.length) continue; const text=lines[k];
-    g.font=`${Math.round(T*.34)}px "Noto Serif SC","Songti SC",serif`; const w=g.measureText(text).width+T*.4, x=ox+(o.x+.5)*T-w/2, y=oy+(o.y-1.35)*T;
-    g.fillStyle='rgba(255,250,236,.92)'; g.fillRect(x,y,w,T*.5); g.fillStyle='rgba(60,40,30,.6)'; g.fillRect(x,y+T*.5,w,Math.max(1,T*.03));
-    g.beginPath(); g.moveTo(ox+(o.x+.5)*T-T*.1,y+T*.5); g.lineTo(ox+(o.x+.5)*T,y+T*.65); g.lineTo(ox+(o.x+.5)*T+T*.1,y+T*.5); g.fillStyle='rgba(255,250,236,.92)'; g.fill();
-    g.fillStyle='#3a2a20'; g.textAlign='center'; g.fillText(text,ox+(o.x+.5)*T,y+T*.37); } });
+    // a slip of 宣纸 with an ink edge, written with a brush (the font of the pictures' titles)
+    g.font=`${Math.round(T*.42)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; const cx=ox+(o.x+.5)*T, w=g.measureText(text).width+T*.5, h=T*.62, x=cx-w/2, y=oy+(o.y-1.45)*T, rr=T*.14;
+    g.beginPath(); g.moveTo(x+rr,y); g.lineTo(x+w-rr,y); g.quadraticCurveTo(x+w,y,x+w,y+rr); g.lineTo(x+w,y+h-rr); g.quadraticCurveTo(x+w,y+h,x+w-rr,y+h);
+    g.lineTo(cx+T*.12,y+h); g.lineTo(cx,y+h+T*.16); g.lineTo(cx-T*.12,y+h); g.lineTo(x+rr,y+h); g.quadraticCurveTo(x,y+h,x,y+h-rr); g.lineTo(x,y+rr); g.quadraticCurveTo(x,y,x+rr,y); g.closePath();
+    g.fillStyle='rgba(246,236,212,.95)'; g.fill(); g.strokeStyle='rgba(70,46,30,.85)'; g.lineWidth=Math.max(1,T*.05); g.stroke();
+    g.fillStyle='#2a1c14'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,cx,y+h*.54); g.textBaseline='alphabetic'; } });
 
 /* ---------- the quests ---------- */
 QUESTS.push(

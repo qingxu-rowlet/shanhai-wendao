@@ -5,7 +5,7 @@
 { const A=['c3_go','c3_cooked','c3_dinner','c3_morning','c3_anping_in','c3_notice','c3_shrine','c3_old','c3_grave','c3_night'];
   const upto=f=>Object.fromEntries(A.slice(0,A.indexOf(f)+1).map(k=>[k,true]));
   const go=(flags,map,x,y,dir,quest,hour)=>{ Review.base({quest, L:12, sect:'jian'}); Chapters.C2.ensure(S); Object.assign(S.flags,flags);
-    S.c3={wood:flags.c3_cooked?[0,1,2]:[], water:flags.c3_cooked?1:0}; if(flags.c3_go) S.inv.c2_bagua=1; S.min=(hour||10)*60; Review.at(map,x,y,dir); Story.check(); };
+    S.c3={wood:flags.c3_cooked?[0,1,2]:[], water:flags.c3_cooked?1:0}; if(flags.c3_go){ S.inv.c2_bagua=1; S.flags.c3_wu_hulu=true; } S.min=(hour||10)*60; Review.at(map,x,y,dir); Story.check(); };
   const N=(id,title,check,run)=>({id:'c3-'+id, group:'第三章', title, check, run});
   Review.NODES.push(
     N('go','开春：师尊交镜，出发北上','第二章已经打完，站在师尊面前。点师尊：「弟子准备好了」/「再等等」。准备好了：师尊把解开一面的八卦镜交给你，外门弟子送行（药王谷弟子：苏小棠一起走），黑屏后到官道边的营地。',

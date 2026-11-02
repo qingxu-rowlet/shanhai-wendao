@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="2c0f25a884"><script>(function(){var B="2c0f25a884";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b068b76dc9"><script>(function(){var B="b068b76dc9";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9858,7 +9858,14 @@ Object.defineProperty(SCRIPTS,'c3_go',{configurable:true, get(){ const m=master(
   ['谢霁月','是。'],
   ['旁白','山门口，外门弟子们都来了。'],
   ['外门弟子·周小川','师姐、{称}，把头名拿回来！'],
-  ['外门弟子·吴阿蛮','京城的糖葫芦，给我带一串！'],
+  ['外门弟子·吴阿蛮','{称}！{称}！等一下——'],
+  ['旁白','吴阿蛮从人堆里挤出来，跑得气喘吁吁。'],
+  ['外门弟子·吴阿蛮','我听山下的货郎说，京城的糖葫芦，一颗山楂有鸡蛋那么大！'],
+  ['外门弟子·吴阿蛮','我这辈子还没出过山……你给我带一串回来，好不好？'],
+  ['我','（……鸡蛋那么大？）'],
+  ['我','好。'],
+  ['外门弟子·吴阿蛮','说好了！拉钩！'],
+  {flag:'c3_wu_hulu'},
   ['守门弟子·老钟','……去了，记得回来。'],
   ...(C3.dan()?[['苏小棠','{名}！等等我——'],['苏小棠','长老说，谷里派去大比的就是我们俩。路上，我们一起走！'],['谢霁月','（她看了苏小棠一眼）……跟紧了。']]:[]),
   ['旁白','你们沿着官道，一路往北。'],
@@ -10152,9 +10159,9 @@ const JA={
     P.rect(4,10,11,13,'#ece4cc'); P.rect(17,10,9,11,'#e8d8a8'); P.rect(28,11,8,8,'#e4dcc4'); P.rect(28,19,8,2,'#c8a888');                    // three notices, one torn
     for(let k=0;k<5;k++){ P.rect(6,12+k*2,7,1,'#5a4a3a'); } for(let k=0;k<4;k++){ P.rect(19,12+k*2,5,1,'#5a4a3a'); } P.rect(30,13,4,1,'#5a4a3a'); P.rect(30,15,3,1,'#5a4a3a');
     P.rect(10,20,3,2,'#b02820'); P.rect(22,18,3,2,'#b02820'); P.rect(1,26,38,3,'#4a443c'); }); },
-  flag(text){ const c=FineArt.paint(18,44,P=>{ P.rect(2,2,2,41,'#5e3a20'); P.rect(4,4,12,22,'#d8c8a0'); P.rect(4,4,12,2,'#b02820'); P.rect(4,24,12,2,'#b02820');
+  flag(){ const c=FineArt.paint(18,44,P=>{ P.rect(2,2,2,41,'#5e3a20'); P.rect(4,4,12,22,'#d8c8a0'); P.rect(4,4,12,2,'#b02820'); P.rect(4,24,12,2,'#b02820');
     P.poly([[4,26],[8,26],[6,30]],'#d8c8a0'); P.poly([[12,26],[16,26],[14,30]],'#d8c8a0'); });
-    const g=c.getContext('2d'); g.fillStyle='#2a1e1a'; g.font='bold 10px "Ma Shan Zheng",KaiTi,serif'; g.textAlign='center'; g.fillText(text,11,19); return c; },
+    return c; },
   barrels(){ return FineArt.paint(30,22,P=>{ for(const [x,y] of [[7,18],[17,18],[12,11]]){ P.ell(x,y,5,3,'#6a4a2a'); P.rect(x-5,y-7,10,7,'#8a5a36'); P.ell(x,y-7,5,2.4,'#a87a4c'); P.rect(x-5,y-5,10,1,'#3a2a1a'); P.rect(x-5,y-2,10,1,'#3a2a1a'); }
     P.rect(21,12,8,8,'#a8804c'); P.rect(21,12,8,1,'#c8a06c'); P.line(21,12,28,19,'#6a4a2a'); }); },
   barrier(){ return FineArt.paint(34,18,P=>{ for(const x of [4,29]){ P.rect(x-1,4,3,13,'#5e3a20'); } P.rect(1,6,32,3,'#c8302a'); P.rect(1,11,32,3,'#c8302a');
@@ -10178,6 +10185,62 @@ On.draw(({g,T,ox,oy})=>{ if(!RT.map||!String(RT.mapId).startsWith('jc_')) return
   for(const o of RT.ents) if(o.spr==='jc_steamer'||o.spr==='jc_stall_bao'){ for(let k=0;k<3;k++){ const u=(RT.t*.5+k/3)%1, x=ox+(o.x+.5)*T+Math.sin(RT.t*2+k*2)*T*.12, y=oy+(o.y-.4-u*.9)*T;
       g.fillStyle=`rgba(255,255,255,${.35*Math.sin(u*Math.PI)})`; g.beginPath(); g.ellipse(x,y,T*(.12+u*.12),T*(.08+u*.06),0,0,7); g.fill(); } } });
 
+/* ---------- shop fronts: each building of the capital its own face ----------
+   A building with fa:{…} keeps the town house's roof (curved tile rows, upturned eaves, in its own colours) and gets its
+   own front under it: the wall (plaster, wood, brick), windows or none, the door open on a lit room or shut, and what
+   makes it itself (a balcony with lanterns, a huge 当, bolts of cloth, a wall of medicine drawers, bamboo blinds, lanterns
+   marked 客, wine jars). Two-storey ones have their roof lifted and an upper floor put in with a balcony and a narrow eave.
+   The lettering on signs and flags is drawn on top at screen resolution (On.draw below), so it stays sharp. */
+JA.facade=function(o,c){ const fa=o.fa, W=c.width, H0=c.height, wt=Math.round(H0*.42), up=fa.storeys>1?28:0, H=H0+up;
+  const d=document.createElement('canvas'); d.width=W; d.height=H; const g=d.getContext('2d'), r=(x,y,w,h,col)=>{ g.fillStyle=col; g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h)); };
+  const pillar=fa.pillar||'#6a2a22', wallCol={plaster:['#ece0c6','#d4c6a8'], wood:['#8a5a36','#6e4428'], brick:['#7a746a','#5e5850']}[fa.wall];
+  const win=(x,y,w,h,lit)=>{ r(x-1,y-1,w+2,h+2,'#3a2418'); r(x,y,w,h,lit?'#f4d890':'#e8dcc4'); for(let i=x+3;i<x+w;i+=4) r(i,y,1,h,'#7a5a38'); for(let j=y+3;j<y+h;j+=4) r(x,j,w,1,'#7a5a38'); r(x-2,y+h,w+4,2,'#8a5a36'); };
+  d.signs=[];
+  if(up){ g.drawImage(c,0,0,W,wt+6,0,0,W,wt+6);                                   // the roof, lifted
+    r(6,wt+4,W-12,up+2,wallCol[0]); for(const x of [6,W-10]) r(x,wt+4,4,up+2,pillar);
+    for(let k=0;k<3;k++) win(16+k*((W-48)/2),wt+8,16,11,fa.lit);
+    if((fa.deco||[]).includes('blinds')) for(let k=0;k<3;k++){ const x=16+k*((W-48)/2); for(let j=0;j<6;j++) r(x,wt+8+j,16,1,j%2?'#c8a868':'#a8884a'); }
+    r(4,wt+up-1,W-8,2,'#6a2a22'); for(let x=6;x<W-6;x+=4) r(x,wt+up-6,1,5,'#6a2a22'); r(4,wt+up-7,W-8,1,'#8a3a2a');   // the balcony rail
+    g.drawImage(c,0,wt-4,W,10,0,wt+up,W,10);                                       // a narrow eave between the floors (the roof's lowest rows)
+    g.drawImage(c,0,wt+6,W,H0-wt-6,0,wt+up+6,W,H0-wt-6); }                         // the ground floor below
+  else g.drawImage(c,0,0);
+  // the ground floor's front, painted over the house's plaster
+  const LT=(up?wt+up+10:wt+4), FB=H-6;
+  r(5,LT,W-10,FB-LT,wallCol[0]);
+  if(fa.wall==='brick') for(let y=LT;y<FB;y+=4) for(let x=5+((y-LT)/4%2?4:0);x<W-6;x+=8) r(x,y,7,3,'#8a847a');
+  if(fa.wall==='wood') for(let x=8;x<W-8;x+=5) r(x,LT,1,FB-LT,wallCol[1]);
+  for(const x of [4,W-8]) r(x,LT-2,4,FB-LT+2,pillar);
+  const dw=22, dx=W/2-11, dy=FB-21;
+  r(dx-2,dy-2,dw+4,23,'#3a2418'); r(dx,dy,dw,21,fa.open?'#2a160c':'#7a4a2a');
+  if(fa.open){ const gl=g.createLinearGradient(0,dy,0,FB); gl.addColorStop(0,'rgba(255,190,110,.6)'); gl.addColorStop(1,'rgba(255,160,80,.18)'); g.fillStyle=gl; g.fillRect(dx,dy,dw,21); r(dx+3,dy+12,6,9,'rgba(60,30,16,.6)'); }
+  else { r(W/2-1,dy,1,21,'#4a2a18'); for(let y=dy+3;y<FB-2;y+=4){ r(dx+2,y,7,1,'#5e3a20'); r(W/2+2,y,7,1,'#5e3a20'); } r(W/2-4,dy+10,2,2,'#e8b84a'); r(W/2+2,dy+10,2,2,'#e8b84a'); }
+  if(fa.windows!==false) for(const x of [12,W-28]) win(x,LT+5,16,12,fa.lit);
+  if(fa.sign){ const sw=Math.max(26,fa.sign.length*10+8), sx=W/2-sw/2, sy=dy-12; r(sx-1,sy-1,sw+2,11,'#c8a050'); r(sx,sy,sw,9,fa.signBg||'#1e1a18'); d.signs.push({x:sx,y:sy,w:sw,h:9,text:fa.sign,ink:fa.signInk||'#f0d080'}); }
+  const lantern=(x,y,text)=>{ r(x,y,1,3,'#3a2418'); r(x-3,y+3,7,8,'#c8302a'); r(x-3,y+3,7,1,'#f0c050'); r(x-3,y+10,7,1,'#f0c050'); r(x-1,y+11,3,2,'#f0c050'); if(text) d.signs.push({x:x-3,y:y+4,w:7,h:6,text,ink:'#fff0c0',plain:true}); };
+  for(const k of fa.deco||[]){
+    if(k==='balconyLanterns'&&up) for(let i=0;i<4;i++) lantern(14+i*(W-28)/3,wt+up+1);
+    if(k==='doorLanterns') for(const x of [W/2-18,W/2+18]) lantern(x,dy-4,fa.lanternText);
+    if(k==='bigDang'){ r(9,LT+3,24,24,'#f4ecd8'); r(9,LT+3,24,1,'#3a2418'); r(9,LT+26,24,1,'#3a2418'); d.signs.push({x:9,y:LT+3,w:24,h:24,text:'当',ink:'#1a1410',big:true}); }
+    if(k==='bars') for(let x=W-30;x<W-10;x+=3) r(x,LT+6,1,14,'#2a2420');
+    if(k==='cloth'){ r(6,LT+1,W-12,1,'#5e3a20'); const cols=['#c8413b','#4a6fa5','#e8b84a','#5d9b4a','#8b5bc5','#f2a0b0']; let n=0; for(let x=10;x<W-14;x+=12){ if(x>dx-10&&x<dx+dw+2) continue; r(x,LT+2,9,16+(n%2)*5,cols[n%6]); r(x,LT+2,9,1,'#ffffff66'); r(x+8,LT+2,1,16+(n%2)*5,'rgba(0,0,0,.25)'); n++; } }
+    if(k==='drawers'){ r(8,LT+3,30,22,'#5a3a20'); for(let j=0;j<4;j++) for(let i=0;i<5;i++){ r(9+i*6,LT+4+j*5,5,4,'#a8784a'); r(11+i*6,LT+6+j*5,1,1,'#e8b84a'); } }
+    if(k==='gourd'){ const x=W-16, y=LT-1; r(x,y,1,4,'#3a2418'); g.fillStyle='#c89040'; g.beginPath(); g.arc(x+.5,y+7,3,0,7); g.arc(x+.5,y+12,4,0,7); g.fill(); r(x-2,y+9,5,1,'#c8302a'); }
+    if(k==='moon'){ g.fillStyle='#3a2418'; g.beginPath(); g.arc(W-22,LT+12,9,0,7); g.fill(); g.fillStyle='#f4d890'; g.beginPath(); g.arc(W-22,LT+12,7.5,0,7); g.fill(); g.fillStyle='#7a5a38'; for(let i=-6;i<=6;i+=3) g.fillRect(W-22+i,LT+5,1,14); }
+    if(k==='jars') for(const x of [dx-12,dx+dw+5]){ g.fillStyle='#6a3a20'; g.beginPath(); g.ellipse(x+3,FB-4,4,5,0,0,7); g.fill(); r(x+1,FB-10,4,2,'#3a2418'); r(x+1,FB-6,4,2,'#e8d8a8'); }
+    if(k==='post'){ r(W-6,FB-16,2,16,'#5e3a20'); r(W-8,FB-14,6,1,'#5e3a20'); }
+  }
+  d.bottom=H; return d; };
+On.building((o,c)=>{ if(!o.fa) return c; if(o._faBase!==c){ o._faBase=c; o._fa=JA.facade(o,c); } return o._fa; });
+// sharp lettering: signs, the big 当, lanterns marked 客, the wine and medicine flags
+On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')) return; const Z=T/16;
+  for(const o of RT.ents){
+    if(o._fa&&o._fa.signs){ const bx=ox+o.x*T, by=oy+(o.y+o.h)*T-o._fa.height*Z;
+      for(const s of o._fa.signs){ const fs=s.big?s.h*Z*.82:s.plain?s.h*Z*.95:s.h*Z*.9; g.font=`${Math.round(fs)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle=s.ink; g.textAlign='center'; g.textBaseline='middle';
+        g.fillText(s.text, bx+(s.x+s.w/2)*Z, by+(s.y+s.h/2+.5)*Z); } }
+    if(o.flagText){ const c=SPRC[o.spr]; if(!c) continue; const lx=ox+(o.x+.5)*T-c.width*Z/2, ty=oy+(o.y+1)*T-c.bottom*Z;
+      g.font=`${Math.round(11*Z)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle='#2a1e1a'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(o.flagText,lx+11*Z,ty+16*Z); } }
+  g.textBaseline='alphabetic'; });
+
 /* ============================================================
    山海问道 · 第三章「京城」 · 地图一：朱雀门 · 朱雀大街 — you come in through the south gate: outside, the road, willows
    and two stone lions; the wall, and over its gate the 朱雀门 tower; inside, the avenue running north to the palace, with
@@ -10195,39 +10258,47 @@ On.draw(({g,T,ox,oy})=>{ if(!RT.map||!String(RT.mapId).startsWith('jc_')) return
   for(let y=24;y<=26;y++) for(const [a,b] of [[1,9],[18,26]]) for(let x=a;x<=b;x++) G[y][x]=(x+y)%5?'.':':';   // two small greens inside the wall
   G[H-1][13]='P'; G[H-1][14]='P';
   const roofs={grey:['#22262c','#2e343c','#3e4650','#68727e'], green:['#1c3028','#28423a','#36584c','#5e8a78'], brown:['#2c2018','#3e2e22','#56402e','#86684c'], red:['#3a1612','#561e18','#742a20','#a84a3a']};
-  const shop=(x,y,w,h,label,id,roof,style)=>({type:'building', x, y, w, h, style:style||'shop', roof:roofs[roof], label, door:[x+Math.floor(w/2),y+h], act:'jcshop', id});
+  const shop=(x,y,w,h,label,id,roof,fa)=>({type:'building', x, y, w, h, style:'shop', roof:roofs[roof], label, door:[x+Math.floor(w/2),y+h], act:'jcshop', id, fa:{...fa, roof:roofs[roof]}});
   const P=(id,x,y,name,look,extra)=>({type:'npc', id, x, y, look, name, act:'talk', ...(extra||{})});
+  // fw: how many tiles either side a wide thing also takes up, so what you see is what stops you
   const objects=[
-    shop(2,2,8,4,'醉仙居 · 酒楼','jiulou','red'), shop(2,8,8,4,'当铺','dang','grey','house'), shop(2,17,8,4,'锦绣布庄','bu','brown'),
-    shop(18,2,8,4,'回春堂 · 药铺','yao','green'), shop(18,8,8,4,'听雨轩 · 茶楼','cha','green'), shop(18,17,8,4,'悦来客栈','kezhan','grey','house'),
-    {type:'jc_flag', x:10, y:3, spr:'jc_flag_jiu'}, {type:'jc_flag', x:17, y:3, spr:'jc_flag_yao'},
-    {type:'jc_sedan', x:11, y:9, spr:'jc_sedan', act:'jcsedan'}, {type:'jc_barrels', x:10, y:11, spr:'jc_barrels'},
-    {type:'jc_stall', x:4, y:12, spr:'jc_stall_bao', act:'jcbao'}, {type:'jc_steamer', x:5, y:12, spr:'jc_steamer', act:'jcbao'},
-    {type:'jc_stall', x:9, y:16, spr:'jc_stall_cloth', act:'jcstall', si:0}, {type:'jc_stall', x:21, y:16, spr:'jc_stall_trinket', act:'jcstall', si:1},
-    {type:'jc_stall', x:24, y:12, spr:'jc_stall_fruit', act:'jcstall', si:2},
+    shop(2,2,8,4,'醉仙居 · 酒楼','jiulou','red',{storeys:2, wall:'wood', sign:'醉仙居', lit:true, open:true, deco:['balconyLanterns','jars']}),
+    shop(2,8,8,4,'当铺','dang','grey',{wall:'brick', sign:'当铺', signBg:'#f0e8d8', signInk:'#1a1410', pillar:'#3a3632', deco:['bigDang','bars'], windows:false}),
+    shop(2,17,8,4,'锦绣布庄','bu','brown',{wall:'wood', sign:'锦绣布庄', open:true, deco:['cloth'], windows:false}),
+    shop(18,2,8,4,'回春堂 · 药铺','yao','green',{wall:'plaster', sign:'回春堂', pillar:'#2a4a3a', open:true, deco:['drawers','gourd']}),
+    shop(18,8,8,4,'听雨轩 · 茶楼','cha','green',{storeys:2, wall:'plaster', sign:'听雨轩', pillar:'#2a4a3a', lit:true, deco:['blinds','moon']}),
+    shop(18,17,8,4,'悦来客栈','kezhan','grey',{storeys:2, wall:'wood', sign:'悦来客栈', lit:true, open:true, lanternText:'客', deco:['doorLanterns','post']}),
+    {type:'jc_flag', x:10, y:4, spr:'jc_flag_jiu', flagText:'酒'}, {type:'jc_flag', x:17, y:4, spr:'jc_flag_yao', flagText:'药'},
+    {type:'jc_sedan', x:4, y:7, spr:'jc_sedan', act:'jcsedan', fw:1}, {type:'jc_barrels', x:10, y:7, spr:'jc_barrels'},
+    {type:'jc_stall', x:3, y:12, spr:'jc_stall_bao', act:'jcbao', fw:1},
+    {type:'jc_stall', x:9, y:16, spr:'jc_stall_cloth', act:'jcstall', si:0, fw:1}, {type:'jc_stall', x:21, y:16, spr:'jc_stall_trinket', act:'jcstall', si:1, fw:1},
+    {type:'jc_stall', x:24, y:12, spr:'jc_stall_fruit', act:'jcstall', si:2, fw:1},
     {type:'jc_hulu', x:16, y:20, spr:'jc_hulu', act:'jchulu'},
-    {type:'jc_board', x:19, y:13, spr:'jc_board', act:'jcboard'},
+    {type:'jc_board', x:19, y:13, spr:'jc_board', act:'jcboard', fw:1},
     {type:'lantern', x:11, y:6}, {type:'lantern', x:16, y:6}, {type:'lantern', x:11, y:22}, {type:'lantern', x:16, y:22},
     {type:'jc_willow', x:3, y:25, spr:'jc_willow'}, {type:'jc_willow', x:8, y:25, spr:'jc_willow'}, {type:'jc_willow', x:19, y:25, spr:'jc_willow'}, {type:'jc_willow', x:24, y:25, spr:'jc_willow'},
-    {type:'jc_willow', x:4, y:31, spr:'jc_willow'}, {type:'jc_willow', x:23, y:31, spr:'jc_willow'}, {type:'jc_willow', x:8, y:30, spr:'jc_willow'},
+    {type:'jc_willow', x:4, y:31, spr:'jc_willow'}, {type:'jc_willow', x:23, y:31, spr:'jc_willow'}, {type:'jc_willow', x:7, y:31, spr:'jc_willow'},
     {type:'jc_lion', x:10, y:30, spr:'jc_lionL'}, {type:'jc_lion', x:17, y:30, spr:'jc_lionR'},
     {type:'jc_barrier', x:1, y:14, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:15, spr:'jc_barrier', act:'jcway', way:'west'},
     {type:'jc_barrier', x:26, y:14, spr:'jc_barrier', act:'jcway', way:'east'}, {type:'jc_barrier', x:26, y:15, spr:'jc_barrier', act:'jcway', way:'east'},
     {type:'jc_barrier', x:13, y:1, spr:'jc_barrier', act:'jcway', way:'north'}, {type:'jc_barrier', x:14, y:1, spr:'jc_barrier', act:'jcway', way:'north'},
     {type:'c2_portal', x:2, y:31, spr:'c2_portal', act:'portal'},
+    // the gatehouse and its tower, drawn in order with everything else (it stands on the wall's tile at x 9: the wall is solid
+    // there anyway); seen from behind, inside the city, it goes half see-through
+    {type:'jc_gate', x:9, y:28, get spr(){ return typeof RT!=='undefined'&&RT.fx>=8&&RT.fx<=19&&RT.fy>=20&&RT.fy<=27?'jc_gate_dim':'jc_gate'; }},
     // people
     P('jc_guard1',11,31,'守城兵',{g:'m',skin:2,hair:0,hairColor:0,style:'jin',cloth:7,face:'small'}),
     P('jc_guard2',16,31,'守城兵',{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:7,face:'small'}),
     P('jc_patrol',14,12,'巡街兵丁',{g:'m',skin:3,hair:0,hairColor:0,style:'jin',cloth:7,face:'mid'}),
-    P('jc_baoniang',3,13,'包子铺老板娘',{g:'f',skin:2,hair:3,hairColor:0,style:'qun',cloth:0,face:'mid'}),
+    P('jc_baoniang',2,13,'包子铺老板娘',{g:'f',skin:2,hair:3,hairColor:0,style:'qun',cloth:0,face:'mid'}),
     P('jc_hulu',17,21,'卖糖葫芦的老汉',{g:'m',skin:2,hair:0,hairColor:3,style:'robe',cloth:5,face:'small',beard:'#d8d4cc'}),
     P('jc_huolang',23,14,'货郎',{g:'m',skin:3,hair:1,hairColor:1,style:'jin',cloth:3,face:'mid'}),
     P('jc_suanming',25,16,'算命先生',{g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:4,face:'small',beard:'#ece8e0'}),
     P('jc_kid1',6,15,'小孩',{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:1,face:'small'}),
     P('jc_kid2',7,16,'小孩',{g:'f',skin:0,hair:3,hairColor:0,style:'qun',cloth:4,face:'small'}),
     P('jc_scholar',19,15,'书生',{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:2,face:'small'}),
-    P('jc_bearer1',10,8,'轿夫',{g:'m',skin:3,hair:0,hairColor:0,style:'jin',cloth:6,face:'mid'}),
-    P('jc_bearer2',12,10,'轿夫',{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
+    P('jc_bearer1',2,7,'轿夫',{g:'m',skin:3,hair:0,hairColor:0,style:'jin',cloth:6,face:'mid'}),
+    P('jc_bearer2',7,7,'轿夫',{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
     P('jc_traveler',15,32,'赶路的人',{g:'f',skin:1,hair:4,hairColor:1,style:'qun',cloth:3,face:'mid'}),
   ];
   MAPS.jc_zhuque={ name:'京城 · 朱雀大街', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[] }; }
@@ -10250,14 +10321,21 @@ JA.gateface=()=>JA._gf||(JA._gf=FineArt.paint(150,32,P=>{ const br='#5a5550', br
   P.rect(43,12,64,20,dk); P.ell(75,12,32,10,dk); P.rect(43,30,64,2,'#2a2420');                         // the arch, dark inside
   for(let k=0;k<9;k++){ const a=Math.PI*(k/8), x=75-Math.cos(a)*34, y=12-Math.sin(a)*11; P.rect(x-2,y-1,4,3,'#9a948a'); }   // its voussoirs
   P.rect(72,0,6,4,'#b8b0a2'); }));
-On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_zhuque') return; const tw=JA.tower(), gf=JA.gateface(), Z=T/16, cx=ox+14*T, x=cx-tw.width*Z/2, y=oy+27*T-tw.height*Z;
-  const behind=RT.fx>=9&&RT.fx<=18&&RT.fy>=21&&RT.fy<=28; g.save(); if(behind) g.globalAlpha=.45; g.imageSmoothingEnabled=false;
-  g.drawImage(gf,cx-gf.width*Z/2,oy+27*T,gf.width*Z,gf.height*Z); g.drawImage(tw,x,y,tw.width*Z,tw.height*Z);
-  if(!behind){ g.fillStyle='#e8d090'; g.font=`${Math.round(T*.42)}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.fillText('朱雀门',ox+14*T,y+24*Z); } g.restore();
+// the gatehouse sprite: tower on top, brick front with the arch below; drawn on tile (9,28), so it is padded on the left
+// by 144px to bring its middle to x 14 (the gate's middle)
+JA.gate=dim=>{ const tw=JA.tower(), gf=JA.gateface(), c=document.createElement('canvas'); c.width=144+150; c.height=tw.height+gf.height; const g=c.getContext('2d');
+  if(dim) g.globalAlpha=.45; g.drawImage(tw,144,0); g.drawImage(gf,144,tw.height);
+  g.globalAlpha=dim?.45:1; g.fillStyle='#e8d090'; g.font='9px "Ma Shan Zheng",KaiTi,serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('朱雀门',144+75,22);
+  c.bottom=c.height; return c; };
+SPR.jc_gate=['x']; SPR.jc_gate_dim=['x']; SPRC.jc_gate=JA.gate(false); SPRC.jc_gate_dim=JA.gate(true);
+On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_zhuque') return; const Z=T/16;
   // lanterns strung across the avenue on two lines, swaying a little
   for(const row of [6.6,19.6]){ const x0=ox+11*T, x1=ox+17*T, y0=oy+row*T-T*1.1; g.strokeStyle='rgba(40,30,24,.8)'; g.lineWidth=Math.max(1,Z*.6); g.beginPath(); g.moveTo(x0,y0); g.quadraticCurveTo((x0+x1)/2,y0+T*.5,x1,y0); g.stroke();
     for(let k=1;k<6;k++){ const u=k/6, lx=x0+(x1-x0)*u+Math.sin(RT.t*1.5+k)*Z, ly=y0+T*.5*4*u*(1-u)*.5+T*.15; g.fillStyle='rgba(255,170,80,.25)'; g.beginPath(); g.arc(lx,ly+T*.12,T*.32,0,7); g.fill();
       g.fillStyle='#c8302a'; g.fillRect(lx-T*.13,ly,T*.26,T*.28); g.fillStyle='#f0c050'; g.fillRect(lx-T*.13,ly,T*.26,T*.04); g.fillRect(lx-T*.13,ly+T*.24,T*.26,T*.04); g.fillRect(lx-T*.02,ly+T*.28,T*.04,T*.1); } } });
+
+// wide things take up every tile they cover
+On.enter(id=>{ if(!String(id).startsWith('jc_')) return; for(const o of RT.ents) if(o.fw) for(let x=o.x-o.fw;x<=o.x+o.fw;x++) if(RT.solid[o.y]&&x>=0&&x<RT.map.w) RT.solid[o.y][x]=true; });
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 第二幕「京城」 — so far: the road's last day and 朱雀门. The guards look at the sect's papers
@@ -10293,7 +10371,9 @@ JC.gate=()=>[
   ['旁白','他看了一眼文书上的印，又看了一眼大师姐，眼睛停了一下。'],
   ['守城兵','……进去吧。四方馆在西边，过了十字街往西走。'],
   ['守城兵','天黑以前找好落脚的地方。萧大人有令，入夜宵禁。'],
-  ...(JC.dan()?[['苏小棠','好多人……{名}，你看那边！有卖糖葫芦的！']]:[['我','（城里飘出来一股糖的甜味。……对了，吴阿蛮要一串糖葫芦。）']]),
+  ['旁白','城门里飘出来一股熬糖的甜味。'],
+  ...(JC.dan()?[['苏小棠','好多人……{名}，你看那边！有卖糖葫芦的！']]:[]),
+  ...(S.flags.c3_wu_hulu?[['我','（……对了。答应过吴阿蛮，给他带一串糖葫芦。）']]:[]),
   ['谢霁月','跟紧了。'],
   {flag:'c3_jc_in'},
   ['旁白','（进城看看。十字街口有告示，四方馆在西边。）']];
@@ -10327,6 +10407,12 @@ Object.assign(ITEMS, {
 });
 NPCS.tang.loves.push('jc_hulu'); NPCS.xie.likes.push('jc_hulu'); NPCS.ge.likes.push('jc_bao');
 
+/* ---------- 吴阿蛮's 糖葫芦: promised at the gate of the sect, kept when you go back ---------- */
+On.talk(id=>{ if(id!=='c2d_wu'||!S.flags.c3_wu_hulu||S.flags.c3_wu_done||!count(S,'jc_hulu')) return false;
+  addItem('jc_hulu',-1); S.flags.c3_wu_done=true; UI.say([
+    ['外门弟子·吴阿蛮','{称}！你回来了！'],['旁白','你把糖葫芦递给他。'],['外门弟子·吴阿蛮','（他举着看了半天）……没有鸡蛋那么大嘛。'],
+    ['外门弟子·吴阿蛮','（他咬了一口，眼睛一下子亮了）……可是好甜！'],['外门弟子·吴阿蛮','我留一颗给老钟！'],{stones:20},['旁白','（老钟后来说，那颗山楂他舍不得吃，晒干了挂在门房里。）']]); return true; });
+
 /* ---------- the street's things ---------- */
 const JC_SHOPS={
   jiulou:[['旁白','醉仙居。二楼的窗子里，传出划拳和笑声。'],['旁白','门口停着一顶轿子。']],
@@ -10356,10 +10442,12 @@ On.theme(id=>id&&id.startsWith('jc_')?'village':null);
 On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')||!$('#dlg').hidden) return;
   const near=RT.ents.filter(o=>o.type==='npc'&&JC.CHAT[o.id]&&Math.abs(o.x-RT.fx)+Math.abs(o.y-RT.fy)<=4);
   for(const o of near){ const lines=JC.CHAT[o.id], k=Math.floor((RT.t+o.x*1.7)/4)%(lines.length+1); if(k===lines.length) continue; const text=lines[k];
-    g.font=`${Math.round(T*.34)}px "Noto Serif SC","Songti SC",serif`; const w=g.measureText(text).width+T*.4, x=ox+(o.x+.5)*T-w/2, y=oy+(o.y-1.35)*T;
-    g.fillStyle='rgba(255,250,236,.92)'; g.fillRect(x,y,w,T*.5); g.fillStyle='rgba(60,40,30,.6)'; g.fillRect(x,y+T*.5,w,Math.max(1,T*.03));
-    g.beginPath(); g.moveTo(ox+(o.x+.5)*T-T*.1,y+T*.5); g.lineTo(ox+(o.x+.5)*T,y+T*.65); g.lineTo(ox+(o.x+.5)*T+T*.1,y+T*.5); g.fillStyle='rgba(255,250,236,.92)'; g.fill();
-    g.fillStyle='#3a2a20'; g.textAlign='center'; g.fillText(text,ox+(o.x+.5)*T,y+T*.37); } });
+    // a slip of 宣纸 with an ink edge, written with a brush (the font of the pictures' titles)
+    g.font=`${Math.round(T*.42)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; const cx=ox+(o.x+.5)*T, w=g.measureText(text).width+T*.5, h=T*.62, x=cx-w/2, y=oy+(o.y-1.45)*T, rr=T*.14;
+    g.beginPath(); g.moveTo(x+rr,y); g.lineTo(x+w-rr,y); g.quadraticCurveTo(x+w,y,x+w,y+rr); g.lineTo(x+w,y+h-rr); g.quadraticCurveTo(x+w,y+h,x+w-rr,y+h);
+    g.lineTo(cx+T*.12,y+h); g.lineTo(cx,y+h+T*.16); g.lineTo(cx-T*.12,y+h); g.lineTo(x+rr,y+h); g.quadraticCurveTo(x,y+h,x,y+h-rr); g.lineTo(x,y+rr); g.quadraticCurveTo(x,y,x+rr,y); g.closePath();
+    g.fillStyle='rgba(246,236,212,.95)'; g.fill(); g.strokeStyle='rgba(70,46,30,.85)'; g.lineWidth=Math.max(1,T*.05); g.stroke();
+    g.fillStyle='#2a1c14'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,cx,y+h*.54); g.textBaseline='alphabetic'; } });
 
 /* ---------- the quests ---------- */
 QUESTS.push(
@@ -11386,7 +11474,7 @@ setTimeout(()=>Review.route(), 400);
 { const A=['c3_go','c3_cooked','c3_dinner','c3_morning','c3_anping_in','c3_notice','c3_shrine','c3_old','c3_grave','c3_night'];
   const upto=f=>Object.fromEntries(A.slice(0,A.indexOf(f)+1).map(k=>[k,true]));
   const go=(flags,map,x,y,dir,quest,hour)=>{ Review.base({quest, L:12, sect:'jian'}); Chapters.C2.ensure(S); Object.assign(S.flags,flags);
-    S.c3={wood:flags.c3_cooked?[0,1,2]:[], water:flags.c3_cooked?1:0}; if(flags.c3_go) S.inv.c2_bagua=1; S.min=(hour||10)*60; Review.at(map,x,y,dir); Story.check(); };
+    S.c3={wood:flags.c3_cooked?[0,1,2]:[], water:flags.c3_cooked?1:0}; if(flags.c3_go){ S.inv.c2_bagua=1; S.flags.c3_wu_hulu=true; } S.min=(hour||10)*60; Review.at(map,x,y,dir); Story.check(); };
   const N=(id,title,check,run)=>({id:'c3-'+id, group:'第三章', title, check, run});
   Review.NODES.push(
     N('go','开春：师尊交镜，出发北上','第二章已经打完，站在师尊面前。点师尊：「弟子准备好了」/「再等等」。准备好了：师尊把解开一面的八卦镜交给你，外门弟子送行（药王谷弟子：苏小棠一起走），黑屏后到官道边的营地。',
@@ -11604,6 +11692,13 @@ const SelfTest3={
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
+        await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+            while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
+            const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
+            for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
+              if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'3 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }
