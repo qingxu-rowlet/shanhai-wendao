@@ -106,6 +106,7 @@ On.act('c3fire',o=>{ const F=S.flags; if(F.c3_night&&!F.c3_raid_won) return UI.s
   UI.say([['旁白',F.c3_cooked?'篝火噼啪作响，火光照得人脸上发烫。':'篝火刚刚生起来，还没有架锅。']]); });
 // waking (after a night, or after being knocked down): back at the camp
 On.wake((passedOut,from)=>{ if(!String(from).startsWith('c3_')) return false; const F=S.flags;
+  if(!passedOut&&F.c3_a1_done&&!F.c3_jc_go){ F.c3_jc_go=true; enterMap('c3_road',4,11); RT.dir='down'; UI.hud(); save(); setTimeout(()=>UI.say(JC.toCity(),()=>{ UI.hud(); Story.check(); }),700); return true; }
   if(passedOut&&F.c3_night&&!F.c3_raid_won){ S.min=21*60; enterMap('c3_road',7,9); RT.dir='up'; UI.hud(); save(); setTimeout(()=>UI.say(C3.raidLose),400); return true; }
   enterMap('c3_road',4,11); RT.dir='down'; UI.hud(); save();
   if(F.c3_dinner&&!F.c3_morning) setTimeout(()=>UI.say(C3.morning(),()=>{ UI.hud(); Story.check(); }),900);
@@ -229,7 +230,7 @@ Object.defineProperty(SCRIPTS,'c3_raid_win',{configurable:true, get(){ return [
   ['谢霁月','睡吧。明天，进京。'],
   {flag:'c3_a1_done'},
   ['旁白','【第三章 第一幕「北上」完】'],
-  ['旁白','（第二幕「京城」正在制作中，敬请期待。）']]; }});
+  ['旁白','（回帐篷睡一觉。天亮，进京。）']]; }});
 
 /* ---------- people to talk to on the road ---------- */
 On.talk(id=>{ if(!String(RT.mapId).startsWith('c3_')) return false; const F=S.flags;
@@ -279,4 +280,5 @@ Object.defineProperty(SCRIPTS,'c3_lu_b',{configurable:true, get(){ return [
     check:s=>!!s.flags.c3_a1_done,
     progress:s=>s.flags.c3_night?'篝火边，迎战猲狙头狼':'回昨晚的营地',
     target:s=>T('c3_road',7,8,'篝火')},
-  {id:'c3z', title:'第三章 · 第一幕 完', desc:'第三章第一幕「北上」完。第二幕「京城」正在制作中，敬请期待。可以回宗门、去风穴，或者在营地歇着。', check:s=>false}); }
+  {id:'c3z', title:'第三章 · 第一幕 完', desc:'第一幕「北上」完。睡一觉，天亮就进京。', check:s=>!!s.flags.c3_jc_go,
+    progress:s=>'回帐篷睡一觉，天亮进京', target:s=>T('c3_road',4,10,'你的帐篷')}); }

@@ -40,21 +40,33 @@ const SelfTest3={
       Story.talk('c3_old'); await adv(picks[1]); Dungeon.act(obj('c3grave')); await adv(); await W(600);
       cur='夜袭'; await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); const f=await fight(); await W(300);
       let cg2=false; for(let i=0;i<300;i++){ if(PixCG.on) cg2=true; const d=$('#dlg'); if(d.hidden){ await W(80); if($('#dlg').hidden&&!RT.fadeTo&&i>20) break; continue; } if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); await W(10); }
-      for(let i=0;i<20&&QUESTS[S.quest].id!=='c3z';i++){ await W(100); Story.check(); }
+      for(let i=0;i<60&&QUESTS[S.quest].id!=='c3z';i++){ await adv(); UI.sync(); Story.check(); await W(100); }   // a check put off while something was on screen runs once it closes
       return {cg1, cg2, f, xieMenu, logsGone, oldThere}; };
     const backup=localStorage.getItem(slotKey(2)); Dodge.auto=true; Dev.god=false; RT.slot=2;
     const ALL=['jian','dan','shou','tianji'], RUN=SelfTest3.all?ALL:[ALL[Math.floor(Math.random()*4)]];
     try{
       for(const k of RUN){ sect=k; Review.sect=k;
         await step('每个第三章审查点都能进入，任务栏有目标，寻路走得通', async()=>{ const bad=[], NODES=Review.NODES.filter(n=>n.group==='第三章');
-          for(const nd of NODES){ try{ cur=nd.id; nd.run(); await W(400); await adv(0,60); if(Battle.s) Battle.close(); PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
+          for(const nd of NODES){ try{ cur=nd.id; nd.run(); await W(400); await adv(0,60);
+              // a scene that ends in a fight opens it after its title card: wait for it, then close it, so it is not left open behind the next save
+              for(let i=0;i<30&&!Battle.s&&(UI.fx||!$('#battle').hidden||document.querySelector('.boss-intro,#bossIntro'));i++){ document.querySelectorAll('.boss-intro,#bossIntro').forEach(e=>e.click()); await W(100); }
+              if(Battle.s) Battle.close(); $('#battle').hidden=true; PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
               const tr=Nav.tracked(), g=Nav.goal(); if(!tr) bad.push(nd.id+'：没有任务'); else if(tr.target&&!g) bad.push(nd.id+'：找不到去的路'); else if(g&&!Nav.pathTo(g)) bad.push(nd.id+'：寻路走不通'); }
             catch(e){ bad.push(nd.id+'：'+e.message); } }
           return {fail:bad.length>0, info:bad.length?bad.slice(0,3).join('；'):`${NODES.length} 个审查点`}; });
         await step('第一幕从头走到尾：出发 → 营地 → 安平村 → 夜袭 → 山脊', async()=>{ const n0=SelfTest3.lines.length, r=await play([0,0]); const F=S.flags;
           const ok=r.xieMenu&&r.logsGone&&r.oldThere&&r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
-          return {fail:!ok, info:`${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+          const miss=['c3_go','c3_dinner','c3_morning','c3_notice','c3_shrine','c3_old','c3_grave','c3_raid_won','c3_a1_done'].filter(f=>!F[f]);
+          return {fail:!ok, info:`${miss.length?'没走到：'+miss.join(' ')+'，':''}${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('另一种选择：递粥 / 问「陆仙长真的是好人吗」', async()=>{ const n0=SelfTest3.lines.length; await play([1,1]); return {fail:!(S.flags.c3_doubt&&S.flags.c3_a1_done), info:`${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：天亮进京 → 朱雀门 → 告示，街上每个人都能说话', async()=>{ const n0=SelfTest3.lines.length; cur='进京';
+          node('c3-tocity').run(); await W(400); Dungeon.act(obj('c3tent')); await adv(0); await W(1500); await adv(); for(let i=0;i<40&&RT.mapId!=='jc_zhuque';i++){ if(RT.fadeTo) update(.1); await W(60); }
+          await W(800); await adv(); const inCity=RT.mapId==='jc_zhuque'&&S.flags.c3_jc_in&&QUESTS[S.quest].id==='c3e';
+          cur='朱雀大街'; S.stones=Math.max(S.stones,100); const bad=[];
+          for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv(0); }
+          for(const act of ['jcshop','jcsedan','jcstall','jcway']) for(const o of RT.map.objects.filter(o=>o.act===act)){ Dungeon.act(o); await adv(); }
+          Dungeon.act(obj('jcboard')); await adv(); const hulu=count(S,'jc_hulu')>0;
+          return {fail:!(inCity&&S.flags.c3_jc_board&&hulu&&!bad.length), info:`${inCity?'进城':'进城 ✗'}，${S.flags.c3_jc_board?'告示':'告示 ✗'}，${hulu?'糖葫芦':'糖葫芦 ✗'}${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

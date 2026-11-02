@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="3926cbf431"><script>(function(){var B="3926cbf431";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="2c0f25a884"><script>(function(){var B="2c0f25a884";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9542,12 +9542,13 @@ for(const sc of [SCRIPTS.c2c_lose, SCRIPTS.c2x_lose, SCRIPTS.c2y_lose]) if(Array
      On.theme(fn)         fn(mapId) → a music theme for that map, or nothing
      On.draw(fn)          fn({g, T, ox, oy}) after the map is drawn (on top of everything): g the canvas, T a tile, ox/oy the offset
      On.building(fn)      fn(o, canvas) → a canvas to draw for that building instead (paint something onto the house itself)
+     On.tile(ch, fn, solid) a new ground tile: fn(g, R, v, frame) paints its 16×16; solid tiles cannot be walked on
    Chapters 1 and 2 still use their own wrappers underneath; nothing of theirs changes.
    ============================================================ */
 const On={
-  _talk:[], _act:{}, _enter:[], _wake:[], _theme:[], _draw:[], _bld:[],
+  _talk:[], _act:{}, _enter:[], _wake:[], _theme:[], _draw:[], _bld:[], _tile:{},
   talk(fn){ On._talk.push(fn); }, act(name,fn){ (On._act[name]=On._act[name]||[]).push(fn); }, enter(fn){ On._enter.push(fn); },
-  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); }, draw(fn){ On._draw.push(fn); }, building(fn){ On._bld.push(fn); },
+  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); }, draw(fn){ On._draw.push(fn); }, building(fn){ On._bld.push(fn); }, tile(ch,fn,solid){ On._tile[ch]={fn,solid}; },
 };
 { const _t=Story.talk; Story.talk=function(id){ for(const f of On._talk) if(f(id)===true) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ for(const f of (o&&On._act[o.act])||[]) if(f(o)!==false) return true; return _a.call(Dungeon,o); }; }
@@ -9556,6 +9557,9 @@ const On={
 { const _at=areaTheme; areaTheme=function(){ for(const f of On._theme){ const t=f(RT.mapId); if(t) return t; } return _at(); }; }
 { const _r=render; render=function(){ _r(); if(!RT.map||!On._draw.length) return; const Z=RT.scale*RT.dpr, v={g:ctx, T:TILE*Z, ox:Math.round(-RT.cam.x*Z), oy:Math.round(-RT.cam.y*Z)}; for(const f of On._draw) f(v); }; }
 { const _b=building; building=function(o){ let c=_b(o); for(const f of On._bld) c=f(o,c)||c; return c; }; }
+{ const _tc=tileCanvas; tileCanvas=function(ch,v,frame){ const t=On._tile[ch]; if(!t) return _tc(ch,v,frame); const key=ch+v+(frame||0); if(TILEC[key]) return TILEC[key];
+    const c=document.createElement('canvas'); c.width=c.height=TILE; t.fn(c.getContext('2d'), rng(ch.charCodeAt(0)*977+v*131+(frame||0)*7), v, frame||0); return TILEC[key]=c; }; }
+On.enter(()=>{ const m=RT.map; if(!m) return; for(let y=0;y<m.h;y++) for(let x=0;x<m.w;x++){ const t=On._tile[m.ground[y][x]]; if(t&&t.solid) RT.solid[y][x]=true; } });
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 地图 — act 1 「北上」: a camp beside the road north (sticks to gather, a spring, the pot and
@@ -9909,6 +9913,7 @@ On.act('c3fire',o=>{ const F=S.flags; if(F.c3_night&&!F.c3_raid_won) return UI.s
   UI.say([['旁白',F.c3_cooked?'篝火噼啪作响，火光照得人脸上发烫。':'篝火刚刚生起来，还没有架锅。']]); });
 // waking (after a night, or after being knocked down): back at the camp
 On.wake((passedOut,from)=>{ if(!String(from).startsWith('c3_')) return false; const F=S.flags;
+  if(!passedOut&&F.c3_a1_done&&!F.c3_jc_go){ F.c3_jc_go=true; enterMap('c3_road',4,11); RT.dir='down'; UI.hud(); save(); setTimeout(()=>UI.say(JC.toCity(),()=>{ UI.hud(); Story.check(); }),700); return true; }
   if(passedOut&&F.c3_night&&!F.c3_raid_won){ S.min=21*60; enterMap('c3_road',7,9); RT.dir='up'; UI.hud(); save(); setTimeout(()=>UI.say(C3.raidLose),400); return true; }
   enterMap('c3_road',4,11); RT.dir='down'; UI.hud(); save();
   if(F.c3_dinner&&!F.c3_morning) setTimeout(()=>UI.say(C3.morning(),()=>{ UI.hud(); Story.check(); }),900);
@@ -10032,7 +10037,7 @@ Object.defineProperty(SCRIPTS,'c3_raid_win',{configurable:true, get(){ return [
   ['谢霁月','睡吧。明天，进京。'],
   {flag:'c3_a1_done'},
   ['旁白','【第三章 第一幕「北上」完】'],
-  ['旁白','（第二幕「京城」正在制作中，敬请期待。）']]; }});
+  ['旁白','（回帐篷睡一觉。天亮，进京。）']]; }});
 
 /* ---------- people to talk to on the road ---------- */
 On.talk(id=>{ if(!String(RT.mapId).startsWith('c3_')) return false; const F=S.flags;
@@ -10082,7 +10087,287 @@ Object.defineProperty(SCRIPTS,'c3_lu_b',{configurable:true, get(){ return [
     check:s=>!!s.flags.c3_a1_done,
     progress:s=>s.flags.c3_night?'篝火边，迎战猲狙头狼':'回昨晚的营地',
     target:s=>T('c3_road',7,8,'篝火')},
-  {id:'c3z', title:'第三章 · 第一幕 完', desc:'第三章第一幕「北上」完。第二幕「京城」正在制作中，敬请期待。可以回宗门、去风穴，或者在营地歇着。', check:s=>false}); }
+  {id:'c3z', title:'第三章 · 第一幕 完', desc:'第一幕「北上」完。睡一觉，天亮就进京。', check:s=>!!s.flags.c3_jc_go,
+    progress:s=>'回帐篷睡一觉，天亮进京', target:s=>T('c3_road',4,10,'你的帐篷')}); }
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 城里的东西 — what the capital is built of, for every 京城 map: 青石板 paving, the city wall
+   (its walk on top and its brick face), the dark passage through a gate; and the things in its streets: market stalls
+   under striped awnings, a straw post bristling with 糖葫芦, steamer baskets with steam coming off, a sedan chair, willows,
+   a pair of stone lions, a notice wall, a wine flag, barrels and crates, a barrier across a closed street. The gate tower
+   is drawn over the wall (jc_zhuque's own, in jcmaps.js).
+   ============================================================ */
+// ---------- ground ----------
+On.tile('P',(g,R,v)=>{ // 青石板: big grey flags in staggered rows, dark joints, a little moss in some
+  g.fillStyle='#8c877d'; g.fillRect(0,0,16,16);
+  for(let r=0;r<2;r++){ const off=(r+v)%2?4:0; for(let k=-1;k<3;k++){ const x=k*8+off, y=r*8; const sh=R()*14-7|0;
+      g.fillStyle=`rgb(${140+sh},${135+sh},${125+sh})`; g.fillRect(x+1,y+1,7,7); g.fillStyle=`rgba(255,255,240,.18)`; g.fillRect(x+1,y+1,7,1);
+      g.fillStyle='#6a665e'; g.fillRect(x,y,8,1); g.fillRect(x,y,1,8); } }
+  if(R()<.25){ g.fillStyle='rgba(90,120,70,.55)'; g.fillRect(R()*14|0,R()*14|0,2,1); } if(R()<.3){ g.fillStyle='rgba(60,56,50,.35)'; g.fillRect(R()*14|0,R()*14|0,1,1); } });
+On.tile('X',(g,R,v)=>{ // the wall walk, seen from above: big pale bricks, the outer edge a little darker
+  g.fillStyle='#7d776d'; g.fillRect(0,0,16,16);
+  for(let r=0;r<4;r++) for(let k=-1;k<3;k++){ const x=k*8+(r%2?4:0), y=r*4, sh=R()*12-6|0; g.fillStyle=`rgb(${128+sh},${121+sh},${110+sh})`; g.fillRect(x+1,y+1,7,3); }
+  g.fillStyle='rgba(40,34,28,.25)'; g.fillRect(0,14,16,2); },true);
+On.tile('Y',(g,R,v)=>{ // the wall's face: dark brick, tall, the courses picked out, a stain or two; shadow at its foot
+  g.fillStyle='#4e4a45'; g.fillRect(0,0,16,16);
+  for(let r=0;r<5;r++) for(let k=-1;k<3;k++){ const x=k*8+(r%2?4:0), y=r*3+1, sh=R()*10-5|0; g.fillStyle=`rgb(${92+sh},${86+sh},${78+sh})`; g.fillRect(x+1,y,7,2); }
+  if(R()<.35){ g.fillStyle='rgba(30,40,24,.35)'; g.fillRect(R()*12|0,R()*8|0,2,5); }
+  g.fillStyle='rgba(0,0,0,.35)'; g.fillRect(0,14,16,2); },true);
+On.tile('A',(g,R,v)=>{ // the passage through a gate: worn flags in the shadow of the arch
+  g.fillStyle='#4a4640'; g.fillRect(0,0,16,16); for(let r=0;r<2;r++) for(let k=-1;k<3;k++){ const x=k*8+(r%2?4:0), sh=R()*10-5|0; g.fillStyle=`rgb(${84+sh},${80+sh},${72+sh})`; g.fillRect(x+1,r*8+1,7,7); }
+  g.fillStyle='rgba(10,8,6,.35)'; g.fillRect(0,0,16,16); });
+
+// ---------- things in the streets (painted, outlined like the bosses; SPR holds a stand-in so the map knows them) ----------
+const JA={
+  // a market stall: a plank counter, posts, a striped awning; what it sells on top
+  stall(c1,c2,goods){ return FineArt.paint(34,34,P=>{ const wood='#8a5a36', dk='#5e3a20', lt='#b07a4c';
+    P.rect(3,10,2,20,dk); P.rect(29,10,2,20,dk);                                                   // posts
+    for(let k=0;k<8;k++){ P.poly([[1+k*4,4],[5+k*4,4],[5+k*4,11],[1+k*4,11]],k%2?c2:c1); } P.rect(1,11,32,1,'#00000055');   // awning
+    for(let k=0;k<8;k++) P.poly([[1+k*4,11],[5+k*4,11],[3+k*4,14]],k%2?c2:c1);                     // its scalloped edge
+    P.rect(2,22,30,4,wood); P.rect(2,22,30,1,lt); P.rect(2,26,30,6,dk); P.rect(4,27,26,1,wood);   // counter
+    goods&&goods(P); }); },
+  hulu(){ return FineArt.paint(16,34,P=>{ P.rect(7,8,2,24,'#7a5a3a'); P.ell(8,10,6,5,'#d8c070'); P.ell(8,9,5,3,'#ecd890');   // a straw bundle on a pole
+    for(const [x,y,a] of [[2,4,-.5],[14,4,.5],[1,10,-1],[15,10,1],[3,15,-.6],[13,15,.6],[8,2,0]]){ P.line(8,10,x,y,'#c8b080');
+      for(let k=0;k<3;k++){ const t=.45+k*.18, cx=8+(x-8)*t, cy=10+(y-10)*t; P.ell(cx,cy,1.4,1.4,'#d0302a'); P.set(cx-.5,cy-.6,'#ff8a70'); } }
+    P.rect(5,31,6,2,'#5e3a20'); }); },
+  steamer(){ return FineArt.paint(22,24,P=>{ for(let k=0;k<3;k++){ const y=19-k*5; P.ell(11,y,9,3,'#c8a46a'); P.rect(2,y-3,18,3,'#b08850'); P.ell(11,y-3,9,3,'#d8b47a'); for(let i=0;i<6;i++) P.set(4+i*3,y-1,'#8a6a3a'); }
+    P.ell(11,4,8,2.6,'#e0c48a'); P.ell(11,3.6,2,1,'#8a6a3a'); }); },
+  sedan(){ return FineArt.paint(40,34,P=>{ const r='#8a2420', rl='#b03a30', rk='#5a1410', gd='#d8b048';
+    P.rect(0,22,40,2,'#5e3a20');                                                                    // the carrying poles
+    P.rect(10,10,20,18,r); P.rect(10,10,20,2,rl); P.rect(12,13,16,12,rk); P.rect(13,14,14,10,'#2a1210');   // the box, a curtained window
+    for(let k=0;k<4;k++) P.rect(14+k*3,14,1,10,'#6a1c18');
+    P.poly([[7,10],[20,2],[33,10]],'#2a2830'); P.poly([[9,9],[20,3],[31,9]],'#3c3a44'); P.set(20,1,gd); P.rect(19,2,2,1,gd);   // roof, a gold knob
+    P.rect(10,27,20,2,rk); P.rect(9,9,22,1,gd); }); },
+  willow(){ return FineArt.paint(40,48,P=>{ P.cap(20,46,19,26,2.4,'#5a4030'); P.cap(19,30,12,20,1.4,'#5a4030'); P.cap(20,28,28,19,1.4,'#5a4030');
+    for(let k=0;k<20;k++){ const x=5+k*1.6, top=10+Math.abs(k-10)*.6, len=16+((k*7)%9); for(let y=0;y<len;y++) P.set(x+Math.sin(y*.3+k)*.8,top+y,y>len-4?'#9ac070':k%3?'#6a9a48':'#7aae58'); }
+    P.ell(20,12,14,6,'#5a8a40'); P.ell(18,10,10,4,'#6fa04c'); }); },
+  lion(face){ const c=FineArt.paint(20,28,P=>{ const st='#a8a294', sd='#7a756a', lt='#c8c2b4';
+    P.rect(2,22,16,5,sd); P.rect(2,22,16,1,lt);                                                       // plinth
+    P.ell(9,17,6,5,st); P.cap(5,21,5,15,2,st); P.cap(13,21,13,16,2,st);                              // body, legs
+    P.ell(10,9,6.5,6,sd); for(let k=0;k<10;k++){ const a=k/10*Math.PI*2; P.ell(10+Math.cos(a)*5,9+Math.sin(a)*5,1.6,1.6,sd); }   // the curled mane
+    P.ell(11,10,4,3.6,st); P.set(10,9,'#2a2420'); P.set(13,9,'#2a2420'); P.rect(10,12,4,1,'#4a443c'); P.set(14,11,lt);   // face
+    P.ell(15,20,2.4,2,lt); });                                                                         // a ball under its paw
+    if(face>0) return c; const d=document.createElement('canvas'); d.width=c.width; d.height=c.height; const g=d.getContext('2d'); g.translate(c.width,0); g.scale(-1,1); g.drawImage(c,0,0); d.bottom=c.bottom; d.fine=true; return d; },
+  board(){ return FineArt.paint(40,30,P=>{ P.rect(1,6,38,20,'#6a645c'); P.rect(1,6,38,2,'#8a847a'); P.poly([[0,6],[20,1],[40,6]],'#3c3a44');   // a little wall with a tiled top
+    P.rect(4,10,11,13,'#ece4cc'); P.rect(17,10,9,11,'#e8d8a8'); P.rect(28,11,8,8,'#e4dcc4'); P.rect(28,19,8,2,'#c8a888');                    // three notices, one torn
+    for(let k=0;k<5;k++){ P.rect(6,12+k*2,7,1,'#5a4a3a'); } for(let k=0;k<4;k++){ P.rect(19,12+k*2,5,1,'#5a4a3a'); } P.rect(30,13,4,1,'#5a4a3a'); P.rect(30,15,3,1,'#5a4a3a');
+    P.rect(10,20,3,2,'#b02820'); P.rect(22,18,3,2,'#b02820'); P.rect(1,26,38,3,'#4a443c'); }); },
+  flag(text){ const c=FineArt.paint(18,44,P=>{ P.rect(2,2,2,41,'#5e3a20'); P.rect(4,4,12,22,'#d8c8a0'); P.rect(4,4,12,2,'#b02820'); P.rect(4,24,12,2,'#b02820');
+    P.poly([[4,26],[8,26],[6,30]],'#d8c8a0'); P.poly([[12,26],[16,26],[14,30]],'#d8c8a0'); });
+    const g=c.getContext('2d'); g.fillStyle='#2a1e1a'; g.font='bold 10px "Ma Shan Zheng",KaiTi,serif'; g.textAlign='center'; g.fillText(text,11,19); return c; },
+  barrels(){ return FineArt.paint(30,22,P=>{ for(const [x,y] of [[7,18],[17,18],[12,11]]){ P.ell(x,y,5,3,'#6a4a2a'); P.rect(x-5,y-7,10,7,'#8a5a36'); P.ell(x,y-7,5,2.4,'#a87a4c'); P.rect(x-5,y-5,10,1,'#3a2a1a'); P.rect(x-5,y-2,10,1,'#3a2a1a'); }
+    P.rect(21,12,8,8,'#a8804c'); P.rect(21,12,8,1,'#c8a06c'); P.line(21,12,28,19,'#6a4a2a'); }); },
+  barrier(){ return FineArt.paint(34,18,P=>{ for(const x of [4,29]){ P.rect(x-1,4,3,13,'#5e3a20'); } P.rect(1,6,32,3,'#c8302a'); P.rect(1,11,32,3,'#c8302a');
+    for(let k=0;k<4;k++){ P.rect(4+k*8,6,4,3,'#ece4cc'); P.rect(8+k*8,11,4,3,'#ece4cc'); } }); },
+};
+// stalls by what they sell
+const JA_GOODS={
+  bao:P=>{ for(let k=0;k<3;k++){ P.ell(9+k*8,20,3.4,2.2,'#f4ecd8'); P.set(9+k*8,19,'#d8c8a8'); } P.ell(26,18,4,3,'#c8a46a'); },
+  cloth:P=>{ for(const [x,c] of [[5,'#4a6fa5'],[11,'#c8413b'],[17,'#5d9b4a'],[23,'#e8b84a']]){ P.rect(x,16,5,6,c); P.rect(x,16,5,1,'#ffffff55'); } },
+  trinket:P=>{ for(let k=0;k<7;k++){ P.ell(6+k*4,20,1.4,1.4,['#e8b84a','#9fd3ef','#f2a0b0','#5d9b4a'][k%4]); } P.rect(5,17,24,1,'#8a5a36'); },
+  fruit:P=>{ for(let k=0;k<6;k++) P.ell(7+k*4,20,2,1.8,k%2?'#e07b39':'#c8413b'); for(let k=0;k<5;k++) P.ell(9+k*4,18,2,1.8,'#e8b84a'); },
+};
+Object.assign(SPR, {jc_stall_bao:['x'], jc_stall_cloth:['x'], jc_stall_trinket:['x'], jc_stall_fruit:['x'], jc_hulu:['x'], jc_steamer:['x'], jc_sedan:['x'], jc_willow:['x'], jc_lionL:['x'], jc_lionR:['x'], jc_board:['x'], jc_flag_jiu:['x'], jc_flag_yao:['x'], jc_barrels:['x'], jc_barrier:['x']});
+Object.assign(SPRC, {
+  jc_stall_bao:JA.stall('#c8413b','#f0e6d0',JA_GOODS.bao), jc_stall_cloth:JA.stall('#4a6fa5','#f0e6d0',JA_GOODS.cloth),
+  jc_stall_trinket:JA.stall('#8b5bc5','#f0e6d0',JA_GOODS.trinket), jc_stall_fruit:JA.stall('#5d9b4a','#f0e6d0',JA_GOODS.fruit),
+  jc_hulu:JA.hulu(), jc_steamer:JA.steamer(), jc_sedan:JA.sedan(), jc_willow:JA.willow(), jc_lionL:JA.lion(1), jc_lionR:JA.lion(-1), jc_board:JA.board(),
+  jc_flag_jiu:JA.flag('酒'), jc_flag_yao:JA.flag('药'), jc_barrels:JA.barrels(), jc_barrier:JA.barrier()});
+// steam off the baskets and the 包子 stall
+On.draw(({g,T,ox,oy})=>{ if(!RT.map||!String(RT.mapId).startsWith('jc_')) return;
+  for(const o of RT.ents) if(o.spr==='jc_steamer'||o.spr==='jc_stall_bao'){ for(let k=0;k<3;k++){ const u=(RT.t*.5+k/3)%1, x=ox+(o.x+.5)*T+Math.sin(RT.t*2+k*2)*T*.12, y=oy+(o.y-.4-u*.9)*T;
+      g.fillStyle=`rgba(255,255,255,${.35*Math.sin(u*Math.PI)})`; g.beginPath(); g.ellipse(x,y,T*(.12+u*.12),T*(.08+u*.06),0,0,7); g.fill(); } } });
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 地图一：朱雀门 · 朱雀大街 — you come in through the south gate: outside, the road, willows
+   and two stone lions; the wall, and over its gate the 朱雀门 tower; inside, the avenue running north to the palace, with
+   酒楼, 当铺, 布庄 on the west, 药铺, the 听雨轩 teahouse and an inn on the east, stalls along the cross street, a 糖葫芦
+   post, steamer baskets, a sedan waiting with its bearers, lanterns strung over the street, and people with things to
+   say. The cross street runs west (西市, 四方馆) and east (东市), the avenue north (皇城): those are the next maps; for now
+   barriers stand across them.
+   ============================================================ */
+{ const W=28, H=34, G=[...Array(H)].map(()=>Array(W).fill('P'));
+  for(let y=0;y<27;y++){ G[y][0]='X'; G[y][W-1]='X'; } for(let x=0;x<W;x++) G[0][x]='X';
+  for(const y of [14,15]){ G[y][0]='P'; G[y][W-1]='P'; } for(let x=12;x<=15;x++) G[0][x]='P';      // the streets run on, to maps still to come
+  for(let x=0;x<W;x++){ G[27][x]='X'; G[28][x]='Y'; } for(let x=12;x<=15;x++){ G[27][x]='A'; G[28][x]='A'; }   // the wall, and the gate through it
+  for(let y=29;y<H;y++) for(let x=0;x<W;x++) G[y][x]=(x===0||x===W-1||y===H-1)?'W':(x>=12&&x<=15)?'P':'.';
+  for(let y=29;y<H-1;y++) for(const x of [11,16]) G[y][x]=',';
+  for(let y=24;y<=26;y++) for(const [a,b] of [[1,9],[18,26]]) for(let x=a;x<=b;x++) G[y][x]=(x+y)%5?'.':':';   // two small greens inside the wall
+  G[H-1][13]='P'; G[H-1][14]='P';
+  const roofs={grey:['#22262c','#2e343c','#3e4650','#68727e'], green:['#1c3028','#28423a','#36584c','#5e8a78'], brown:['#2c2018','#3e2e22','#56402e','#86684c'], red:['#3a1612','#561e18','#742a20','#a84a3a']};
+  const shop=(x,y,w,h,label,id,roof,style)=>({type:'building', x, y, w, h, style:style||'shop', roof:roofs[roof], label, door:[x+Math.floor(w/2),y+h], act:'jcshop', id});
+  const P=(id,x,y,name,look,extra)=>({type:'npc', id, x, y, look, name, act:'talk', ...(extra||{})});
+  const objects=[
+    shop(2,2,8,4,'醉仙居 · 酒楼','jiulou','red'), shop(2,8,8,4,'当铺','dang','grey','house'), shop(2,17,8,4,'锦绣布庄','bu','brown'),
+    shop(18,2,8,4,'回春堂 · 药铺','yao','green'), shop(18,8,8,4,'听雨轩 · 茶楼','cha','green'), shop(18,17,8,4,'悦来客栈','kezhan','grey','house'),
+    {type:'jc_flag', x:10, y:3, spr:'jc_flag_jiu'}, {type:'jc_flag', x:17, y:3, spr:'jc_flag_yao'},
+    {type:'jc_sedan', x:11, y:9, spr:'jc_sedan', act:'jcsedan'}, {type:'jc_barrels', x:10, y:11, spr:'jc_barrels'},
+    {type:'jc_stall', x:4, y:12, spr:'jc_stall_bao', act:'jcbao'}, {type:'jc_steamer', x:5, y:12, spr:'jc_steamer', act:'jcbao'},
+    {type:'jc_stall', x:9, y:16, spr:'jc_stall_cloth', act:'jcstall', si:0}, {type:'jc_stall', x:21, y:16, spr:'jc_stall_trinket', act:'jcstall', si:1},
+    {type:'jc_stall', x:24, y:12, spr:'jc_stall_fruit', act:'jcstall', si:2},
+    {type:'jc_hulu', x:16, y:20, spr:'jc_hulu', act:'jchulu'},
+    {type:'jc_board', x:19, y:13, spr:'jc_board', act:'jcboard'},
+    {type:'lantern', x:11, y:6}, {type:'lantern', x:16, y:6}, {type:'lantern', x:11, y:22}, {type:'lantern', x:16, y:22},
+    {type:'jc_willow', x:3, y:25, spr:'jc_willow'}, {type:'jc_willow', x:8, y:25, spr:'jc_willow'}, {type:'jc_willow', x:19, y:25, spr:'jc_willow'}, {type:'jc_willow', x:24, y:25, spr:'jc_willow'},
+    {type:'jc_willow', x:4, y:31, spr:'jc_willow'}, {type:'jc_willow', x:23, y:31, spr:'jc_willow'}, {type:'jc_willow', x:8, y:30, spr:'jc_willow'},
+    {type:'jc_lion', x:10, y:30, spr:'jc_lionL'}, {type:'jc_lion', x:17, y:30, spr:'jc_lionR'},
+    {type:'jc_barrier', x:1, y:14, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:15, spr:'jc_barrier', act:'jcway', way:'west'},
+    {type:'jc_barrier', x:26, y:14, spr:'jc_barrier', act:'jcway', way:'east'}, {type:'jc_barrier', x:26, y:15, spr:'jc_barrier', act:'jcway', way:'east'},
+    {type:'jc_barrier', x:13, y:1, spr:'jc_barrier', act:'jcway', way:'north'}, {type:'jc_barrier', x:14, y:1, spr:'jc_barrier', act:'jcway', way:'north'},
+    {type:'c2_portal', x:2, y:31, spr:'c2_portal', act:'portal'},
+    // people
+    P('jc_guard1',11,31,'守城兵',{g:'m',skin:2,hair:0,hairColor:0,style:'jin',cloth:7,face:'small'}),
+    P('jc_guard2',16,31,'守城兵',{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:7,face:'small'}),
+    P('jc_patrol',14,12,'巡街兵丁',{g:'m',skin:3,hair:0,hairColor:0,style:'jin',cloth:7,face:'mid'}),
+    P('jc_baoniang',3,13,'包子铺老板娘',{g:'f',skin:2,hair:3,hairColor:0,style:'qun',cloth:0,face:'mid'}),
+    P('jc_hulu',17,21,'卖糖葫芦的老汉',{g:'m',skin:2,hair:0,hairColor:3,style:'robe',cloth:5,face:'small',beard:'#d8d4cc'}),
+    P('jc_huolang',23,14,'货郎',{g:'m',skin:3,hair:1,hairColor:1,style:'jin',cloth:3,face:'mid'}),
+    P('jc_suanming',25,16,'算命先生',{g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:4,face:'small',beard:'#ece8e0'}),
+    P('jc_kid1',6,15,'小孩',{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:1,face:'small'}),
+    P('jc_kid2',7,16,'小孩',{g:'f',skin:0,hair:3,hairColor:0,style:'qun',cloth:4,face:'small'}),
+    P('jc_scholar',19,15,'书生',{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:2,face:'small'}),
+    P('jc_bearer1',10,8,'轿夫',{g:'m',skin:3,hair:0,hairColor:0,style:'jin',cloth:6,face:'mid'}),
+    P('jc_bearer2',12,10,'轿夫',{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
+    P('jc_traveler',15,32,'赶路的人',{g:'f',skin:1,hair:4,hairColor:1,style:'qun',cloth:3,face:'mid'}),
+  ];
+  MAPS.jc_zhuque={ name:'京城 · 朱雀大街', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[] }; }
+
+/* ---------- the gate tower over 朱雀门, and lanterns strung across the avenue ---------- */
+JA.tower=()=>JA._tower||(JA._tower=FineArt.paint(150,92,P=>{ const br='#6a645c', brl='#8a847a', red='#9a2a22', redk='#6a1a14', rf='#2c3038', rfl='#454c58', rfk='#1c1e24', gd='#d8b048';
+  P.rect(8,66,134,26,br); for(let r=0;r<6;r++) for(let k=0;k<17;k++) P.rect(9+k*8+(r%2?4:0),68+r*4,7,3,brl);       // the platform on the wall
+  P.rect(8,64,134,3,'#4e4a45'); for(let k=0;k<17;k++) P.rect(9+k*8,61,5,3,br);                                        // its parapet
+  P.rect(22,40,106,24,'#3a2a24'); for(const x of [24,44,64,84,104,124]) P.rect(x,40,4,24,red);                       // lower storey: red pillars, dark lattice
+  for(let k=0;k<5;k++) for(let y=44;y<62;y+=4) P.rect(29+k*20,y,14,1,redk);
+  P.rect(20,58,110,3,'#8a2a22'); for(let x=22;x<128;x+=4) P.rect(x,55,1,3,'#8a2a22');                                // the railing
+  P.poly([[2,42],[18,30],[132,30],[148,42],[138,40],[12,40]],rf); P.poly([[10,38],[22,31],[128,31],[140,38]],rfl); P.rect(18,30,114,2,rfk);   // the lower roof, eaves turned up
+  P.rect(40,14,70,17,'#3a2a24'); for(const x of [42,60,86,104]) P.rect(x,14,4,17,red); P.rect(62,17,26,9,'#1e1e44'); P.rect(63,18,24,7,'#2a2a5a');   // upper storey, the plaque
+  P.poly([[24,16],[40,4],[110,4],[126,16],[116,14],[34,14]],rf); P.poly([[32,13],[44,5],[106,5],[118,13]],rfl); P.rect(40,3,70,2,rfk);         // the upper roof
+  P.poly([[40,3],[36,0],[44,2]],rfk); P.poly([[110,3],[114,0],[106,2]],rfk); P.set(75,1,gd); P.rect(73,2,5,1,gd); }));
+// the gatehouse's front: brick, two tiles tall over the wall, the arched passage through it
+JA.gateface=()=>JA._gf||(JA._gf=FineArt.paint(150,32,P=>{ const br='#5a5550', brl='#7a746a', dk='#14100e';
+  P.rect(0,0,150,32,br); for(let r=0;r<8;r++) for(let k=-1;k<19;k++) P.rect(1+k*8+(r%2?4:0),1+r*4,7,3,brl);
+  P.rect(0,0,150,2,'#8a847a');
+  P.rect(43,12,64,20,dk); P.ell(75,12,32,10,dk); P.rect(43,30,64,2,'#2a2420');                         // the arch, dark inside
+  for(let k=0;k<9;k++){ const a=Math.PI*(k/8), x=75-Math.cos(a)*34, y=12-Math.sin(a)*11; P.rect(x-2,y-1,4,3,'#9a948a'); }   // its voussoirs
+  P.rect(72,0,6,4,'#b8b0a2'); }));
+On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_zhuque') return; const tw=JA.tower(), gf=JA.gateface(), Z=T/16, cx=ox+14*T, x=cx-tw.width*Z/2, y=oy+27*T-tw.height*Z;
+  const behind=RT.fx>=9&&RT.fx<=18&&RT.fy>=21&&RT.fy<=28; g.save(); if(behind) g.globalAlpha=.45; g.imageSmoothingEnabled=false;
+  g.drawImage(gf,cx-gf.width*Z/2,oy+27*T,gf.width*Z,gf.height*Z); g.drawImage(tw,x,y,tw.width*Z,tw.height*Z);
+  if(!behind){ g.fillStyle='#e8d090'; g.font=`${Math.round(T*.42)}px "Ma Shan Zheng",KaiTi,serif`; g.textAlign='center'; g.fillText('朱雀门',ox+14*T,y+24*Z); } g.restore();
+  // lanterns strung across the avenue on two lines, swaying a little
+  for(const row of [6.6,19.6]){ const x0=ox+11*T, x1=ox+17*T, y0=oy+row*T-T*1.1; g.strokeStyle='rgba(40,30,24,.8)'; g.lineWidth=Math.max(1,Z*.6); g.beginPath(); g.moveTo(x0,y0); g.quadraticCurveTo((x0+x1)/2,y0+T*.5,x1,y0); g.stroke();
+    for(let k=1;k<6;k++){ const u=k/6, lx=x0+(x1-x0)*u+Math.sin(RT.t*1.5+k)*Z, ly=y0+T*.5*4*u*(1-u)*.5+T*.15; g.fillStyle='rgba(255,170,80,.25)'; g.beginPath(); g.arc(lx,ly+T*.12,T*.32,0,7); g.fill();
+      g.fillStyle='#c8302a'; g.fillRect(lx-T*.13,ly,T*.26,T*.28); g.fillStyle='#f0c050'; g.fillRect(lx-T*.13,ly,T*.26,T*.04); g.fillRect(lx-T*.13,ly+T*.24,T*.26,T*.04); g.fillRect(lx-T*.02,ly+T*.28,T*.04,T*.1); } } });
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 第二幕「京城」 — so far: the road's last day and 朱雀门. The guards look at the sect's papers
+   and then at 大师姐; inside, the avenue is loud and full; on the notice wall at the crossroads: the 大比 (三月十五，贡院前),
+   萧大人's curfew, and a torn notice for a lost child. You can buy a 糖葫芦 (吴阿蛮 asked for one) and a 包子, and talk
+   to everyone. 四方馆 is west across the cross street — the next map.
+   ============================================================ */
+const JC={
+  dan:()=>S.sect==='dan',
+  // people say things over their heads as you pass
+  CHAT:{
+    jc_guard1:['下一个！','路引！路引拿出来！'], jc_guard2:['大比的往西走。','天黑之前进城，宵禁不等人。'],
+    jc_patrol:['都让让！','……今天又少了一个。'], jc_baoniang:['包子——刚出笼的包子——','肉馅的五文，素的三文！'],
+    jc_hulu:['糖葫芦——又甜又脆的糖葫芦——'], jc_huolang:['针头线脑，胭脂花粉——','小娘子，看看这把梳子？'],
+    jc_suanming:['看相，测字，不准不要钱。','这位，你印堂……嗯，还行。'], jc_kid1:['抓不着我！'], jc_kid2:['等等我——'],
+    jc_scholar:['……三年一考，三年一考啊。'], jc_bearer1:['大人在里面喝茶，咱们等着。'], jc_bearer2:['腿都站麻了……'], jc_traveler:['总算到了。'],
+  },
+};
+
+/* ---------- the road's last day, and the gate ---------- */
+JC.toCity=()=>[
+  ['旁白','天亮了。大师姐已经收好了帐篷。昨晚那个人站过的山脊上，什么也没有。'],
+  ['谢霁月','走吧。'],
+  {run:()=>C3.move('jc_zhuque',13,32,'up',16.5)}];
+On.enter(id=>{ if(id==='jc_zhuque'&&!S.flags.c3_jc_in) setTimeout(()=>{ if(RT.mapId==='jc_zhuque'&&!S.flags.c3_jc_in) UI.say(JC.gate(),()=>{ UI.hud(); Story.check(); }); },500); });
+JC.gate=()=>[
+  ['旁白','傍晚，京城的城墙出现在官道的尽头。'],
+  ['旁白','城墙比青云山的山门还要高。城楼上挂着一块匾：「朱雀门」。'],
+  ['旁白','城门口排着长长的队：挑担的，赶车的，骑马的，抬轿的……吵吵嚷嚷，一直排到护城的柳树底下。'],
+  ['守城兵','站住。哪儿来的？'],
+  ['谢霁月',`（她递上文书）${sectName()}，进京赴大比。`],
+  ['守城兵','大比的？'],
+  ['旁白','他看了一眼文书上的印，又看了一眼大师姐，眼睛停了一下。'],
+  ['守城兵','……进去吧。四方馆在西边，过了十字街往西走。'],
+  ['守城兵','天黑以前找好落脚的地方。萧大人有令，入夜宵禁。'],
+  ...(JC.dan()?[['苏小棠','好多人……{名}，你看那边！有卖糖葫芦的！']]:[['我','（城里飘出来一股糖的甜味。……对了，吴阿蛮要一串糖葫芦。）']]),
+  ['谢霁月','跟紧了。'],
+  {flag:'c3_jc_in'},
+  ['旁白','（进城看看。十字街口有告示，四方馆在西边。）']];
+// 大师姐 (and 苏小棠) walk with you in the city too
+MAPS.jc_zhuque.objects.push(
+  {type:'npc', id:'xie', x:14, y:24, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in},
+  {type:'npc', id:'tang', x:12, y:20, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>s.sect==='dan'&&!!s.flags.c3_jc_in});
+On.talk(id=>{ if(!String(RT.mapId).startsWith('jc_')) return false; const F=S.flags;
+  if(id==='xie'){ C3.menu('xie',F.c3_jc_board?[['谢霁月','宵禁……'],['谢霁月','（她看了一眼天色）先去四方馆。']]:[['谢霁月','京城……比上一回来的时候，人多了。'],['谢霁月','十字街口有告示，去看看。']]); return true; }
+  if(id==='tang'&&JC.dan()){ C3.menu('tang',[['苏小棠','回春堂！京城最大的药铺！我、我能进去看一眼吗？'],['苏小棠','……就一眼！']]); return true; }
+  const L=JC.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L); return true; });
+JC.TALK={
+  jc_guard1:[['守城兵','大比的往西走，四方馆。别在大街上乱晃。']],
+  jc_guard2:[['守城兵','最近夜里不太平。'],['守城兵','……别问。宵禁就是宵禁。']],
+  jc_patrol:()=>[['巡街兵丁','让让，让让——'],['旁白','他走过去的时候，你听见他压低声音对同伴说：'],['巡街兵丁','西市那边，昨晚又少了一个。'],{flag:'c3_jc_heard'}],
+  jc_baoniang:()=>[['包子铺老板娘','客官，来两个包子？刚出笼的！'],{choice:'买包子吗？（5 灵石）', options:[{text:'来两个', fn:()=>JC.buy('jc_bao',5,'包子',2)},{text:'不了', fn:()=>{}}]}],
+  jc_hulu:()=>[['卖糖葫芦的老汉','糖葫芦——又甜又脆的糖葫芦——'],{choice:'买一串糖葫芦吗？（10 灵石）', options:[{text:'买一串', fn:()=>JC.buy('jc_hulu',10,'糖葫芦',1)},{text:'不了', fn:()=>{}}]}],
+  jc_huolang:[['货郎','胭脂花粉、针头线脑，要不要看看？'],['货郎','……听说没有？大比今年改在贡院前头比，萧大人亲自看。']],
+  jc_suanming:()=>[['算命先生','这位小友，留步。'],['旁白','他眯着眼睛，盯着你的脸看了好一会儿。'],['算命先生','……你这面相，命里有一劫。'],['算命先生','不在刀剑，在人心。'],['算命先生','十文钱，我给你细说？'],['旁白','你摇摇头。他也不恼，又眯起了眼睛。']],
+  jc_kid1:[['小孩','你是仙人吗？你会飞吗？'],['小孩','我娘说，晚上不许出门，会被抓走的。']],
+  jc_kid2:[['小孩','阿秀姐姐也是晚上出门，就没回来了……'],['旁白','另一个孩子赶紧拉了拉她的袖子。']],
+  jc_scholar:[['书生','（他手里攥着一卷书，嘴里念念有词）……'],['书生','啊，失礼。在下进京赶考，三年了。'],['书生','听说今年的大比，萧大人也要去看。那位大人，从前也是……唉，算了。']],
+  jc_bearer1:[['轿夫','我们大人在醉仙居里头喝茶呢。'],['轿夫','哪位大人？……这可不能说。']],
+  jc_bearer2:[['轿夫','（他揉着肩膀）抬了一天了。'],['轿夫','京城的大人，一个比一个沉。']],
+  jc_traveler:[['赶路的人','我是从北边来的。我们那儿……好几个村子都空了。'],['赶路的人','我来京城投亲戚。也不知道，亲戚还在不在。']],
+};
+JC.buy=(item,price,name,n)=>{ if(S.stones<price) return UI.say([['旁白',`灵石不够了。（要 ${price} 灵石）`]]); S.stones-=price; addItem(item,n); Sound.coin(); UI.hud(); save(); UI.toast(`买了${n>1?n+'个':'一串'}${name}`); };
+Object.assign(ITEMS, {
+  jc_hulu:{name:'糖葫芦', icon:'i_zhuguo', sell:4, desc:'京城朱雀大街上买的糖葫芦，糖衣又薄又脆。吴阿蛮要过一串。'},
+  jc_bao:{name:'包子', icon:'i_zhuguo', sell:2, desc:'朱雀大街上刚出笼的肉包子，还烫手。可以送人。'},
+});
+NPCS.tang.loves.push('jc_hulu'); NPCS.xie.likes.push('jc_hulu'); NPCS.ge.likes.push('jc_bao');
+
+/* ---------- the street's things ---------- */
+const JC_SHOPS={
+  jiulou:[['旁白','醉仙居。二楼的窗子里，传出划拳和笑声。'],['旁白','门口停着一顶轿子。']],
+  dang:[['旁白','当铺的柜台比人还高。'],['旁白','柜台后面的朝奉头也不抬：「当什么？」'],['旁白','（你什么也没当。）']],
+  bu:[['旁白','锦绣布庄。门口挂着一匹红绸子，被风吹得一飘一飘的。']],
+  yao:()=>[['旁白','回春堂。一进门就是一股苦香。整面墙的小抽屉，每一格上都写着药名。'],...(JC.dan()?[['苏小棠','（她眼睛都亮了）……']]:[])],
+  cha:[['旁白','听雨轩。门半掩着，里面醒木一拍：'],['旁白','「……上回说到，那一年宗门大比，有一位女弟子，生得是闭月羞花——」'],['谢霁月','……'],['旁白','（茶楼是之后的地图，到时候可以进去听书。）']],
+  kezhan:[['旁白','悦来客栈。掌柜在门口打着算盘：「打尖还是住店？」'],['旁白','（大比的弟子都住四方馆。）']],
+};
+On.act('jcshop',o=>{ const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
+On.act('jcsedan',o=>UI.say([['旁白','一顶红呢大轿。轿帘放着，里面没有人。'],['旁白','轿杠上，刻着一个小小的「萧」字。'],{flag:'c3_jc_sedan'}]));
+On.act('jcbao',o=>Story.talk('jc_baoniang'));
+On.act('jchulu',o=>Story.talk('jc_hulu'));
+On.act('jcstall',o=>UI.say([[['旁白','布摊上摆着一匹一匹的花布，摊主忙着给一位大娘量尺寸。']],[['旁白','首饰摊上的簪子、耳坠，在灯笼底下一闪一闪的。']],[['旁白','水果摊上堆着橘子和柿子。北边来的果子，比桃源镇的小一圈。']]][o.si||0]));
+On.act('jcboard',o=>{ const first=!S.flags.c3_jc_board; UI.say([
+  ['旁白','十字街口的墙上，贴着三张告示。'],
+  ['旁白','第一张：「四宗大比，三月十五起，于贡院前设擂。四宗弟子，凭宗门文书至礼部报名。——礼部」'],
+  ['旁白','第二张：「京畿近有妖患。钦差萧大人令：入夜宵禁，违者拘押。」'],
+  ['旁白','第三张被撕掉了一半，只剩几行字：「寻人：小女阿秀，七岁，正月里在西市走失。身穿红袄，左耳下有一颗痣……」'],
+  ...(first?[['谢霁月','（她看着第三张，看了很久）……'],['谢霁月','走吧。先去四方馆。'],{flag:'c3_jc_board'},['旁白','（四方馆在西边：沿着十字街往西走。）']]:[])], ()=>{ UI.hud(); Story.check(); }); });
+On.act('jcway',o=>UI.say([['旁白',{west:'往西：西市、四方馆。',east:'往东：东市。',north:'往北：皇城。'}[o.way]],
+  ['旁白',{west:'（四方馆是下一张地图，做好以后从这里走。）',east:'（东市是之后的地图。）',north:'（皇城只有大比开幕那天才能进。）'}[o.way]]]));
+On.theme(id=>id&&id.startsWith('jc_')?'village':null);
+{ const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_jc_in&&RT.mapId!=='jc_zhuque') l.push({name:'京城 · 朱雀门', map:'jc_zhuque', x:3, y:31}); return l; }; }
+
+/* ---------- what people say over their heads as you pass ---------- */
+On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')||!$('#dlg').hidden) return;
+  const near=RT.ents.filter(o=>o.type==='npc'&&JC.CHAT[o.id]&&Math.abs(o.x-RT.fx)+Math.abs(o.y-RT.fy)<=4);
+  for(const o of near){ const lines=JC.CHAT[o.id], k=Math.floor((RT.t+o.x*1.7)/4)%(lines.length+1); if(k===lines.length) continue; const text=lines[k];
+    g.font=`${Math.round(T*.34)}px "Noto Serif SC","Songti SC",serif`; const w=g.measureText(text).width+T*.4, x=ox+(o.x+.5)*T-w/2, y=oy+(o.y-1.35)*T;
+    g.fillStyle='rgba(255,250,236,.92)'; g.fillRect(x,y,w,T*.5); g.fillStyle='rgba(60,40,30,.6)'; g.fillRect(x,y+T*.5,w,Math.max(1,T*.03));
+    g.beginPath(); g.moveTo(ox+(o.x+.5)*T-T*.1,y+T*.5); g.lineTo(ox+(o.x+.5)*T,y+T*.65); g.lineTo(ox+(o.x+.5)*T+T*.1,y+T*.5); g.fillStyle='rgba(255,250,236,.92)'; g.fill();
+    g.fillStyle='#3a2a20'; g.textAlign='center'; g.fillText(text,ox+(o.x+.5)*T,y+T*.37); } });
+
+/* ---------- the quests ---------- */
+QUESTS.push(
+  {id:'c3d', title:'第二幕 · 进京', desc:'北上的最后一段路。傍晚，京城的城墙出现在官道尽头。', check:s=>!!s.flags.c3_jc_in,
+    progress:s=>'走到朱雀门', target:s=>['jc_zhuque',13,30,'朱雀门']},
+  {id:'c3e', title:'京城', desc:'京城比桃源镇大一百倍。十字街口贴着告示，四方馆在西边。', check:s=>false,
+    progress:s=>!s.flags.c3_jc_board?'看看十字街口的告示':'去四方馆（往西，下一张地图）',
+    target:s=>!s.flags.c3_jc_board?['jc_zhuque',19,14,'十字街口的告示']:['jc_zhuque',2,14,'往西的十字街']});
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -11122,6 +11407,12 @@ setTimeout(()=>Review.route(), 400);
       ()=>go(upto('c3_grave'),'c3_road',7,10,'up','c3c',20.5)),
     N('ridge','打完之后：山脊上的人（插画「山脊」）','头狼倒下，山脊上一声口哨，狼群退走。插画「山脊」：月亮底下，一个披大氅的人和他的狼。大师姐：「他一直在看你。」第一幕完。',
       ()=>{ go(upto('c3_night'),'c3_road',7,9,'up','c3c',21); setTimeout(()=>UI.say(SCRIPTS.c3_raid_win,()=>{ UI.hud(); Story.check(); }),400); }),
+    N('tocity','第二幕：天亮进京','打完猲狙的那一夜，站在帐篷前。回帐篷睡觉：第二天早上收拾上路，黑屏后到京城朱雀门外，守城兵查文书。',
+      ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true},'c3_road',4,11,'up','c3z',21)),
+    N('gate','朱雀门：进城','傍晚，朱雀门外。城门楼、石狮子、守门的兵；守城兵看文书时多看了大师姐一眼，提醒「萧大人有令，入夜宵禁」。',
+      ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true},'jc_zhuque',13,32,'up','c3d',16.5)),
+    N('city','朱雀大街：逛一逛、看告示','城里，朱雀大街。两边是酒楼、当铺、布庄、药铺、茶楼、客栈；十字街上有包子摊、布摊、首饰摊、水果摊，糖葫芦（10 灵石，吴阿蛮要的）、包子（5 灵石）能买；走近的人头顶会冒出一句话；每个人都能说话。十字街口的告示：大比、宵禁、寻人。西边、东边、北边的路口暂时拦着（之后的地图）。',
+      ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true},'jc_zhuque',13,22,'up','c3e',16.5)),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -11283,21 +11574,33 @@ const SelfTest3={
       Story.talk('c3_old'); await adv(picks[1]); Dungeon.act(obj('c3grave')); await adv(); await W(600);
       cur='夜袭'; await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); const f=await fight(); await W(300);
       let cg2=false; for(let i=0;i<300;i++){ if(PixCG.on) cg2=true; const d=$('#dlg'); if(d.hidden){ await W(80); if($('#dlg').hidden&&!RT.fadeTo&&i>20) break; continue; } if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); await W(10); }
-      for(let i=0;i<20&&QUESTS[S.quest].id!=='c3z';i++){ await W(100); Story.check(); }
+      for(let i=0;i<60&&QUESTS[S.quest].id!=='c3z';i++){ await adv(); UI.sync(); Story.check(); await W(100); }   // a check put off while something was on screen runs once it closes
       return {cg1, cg2, f, xieMenu, logsGone, oldThere}; };
     const backup=localStorage.getItem(slotKey(2)); Dodge.auto=true; Dev.god=false; RT.slot=2;
     const ALL=['jian','dan','shou','tianji'], RUN=SelfTest3.all?ALL:[ALL[Math.floor(Math.random()*4)]];
     try{
       for(const k of RUN){ sect=k; Review.sect=k;
         await step('每个第三章审查点都能进入，任务栏有目标，寻路走得通', async()=>{ const bad=[], NODES=Review.NODES.filter(n=>n.group==='第三章');
-          for(const nd of NODES){ try{ cur=nd.id; nd.run(); await W(400); await adv(0,60); if(Battle.s) Battle.close(); PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
+          for(const nd of NODES){ try{ cur=nd.id; nd.run(); await W(400); await adv(0,60);
+              // a scene that ends in a fight opens it after its title card: wait for it, then close it, so it is not left open behind the next save
+              for(let i=0;i<30&&!Battle.s&&(UI.fx||!$('#battle').hidden||document.querySelector('.boss-intro,#bossIntro'));i++){ document.querySelectorAll('.boss-intro,#bossIntro').forEach(e=>e.click()); await W(100); }
+              if(Battle.s) Battle.close(); $('#battle').hidden=true; PixCG.close(); UI.closeDlg&&UI.closeDlg(false);
               const tr=Nav.tracked(), g=Nav.goal(); if(!tr) bad.push(nd.id+'：没有任务'); else if(tr.target&&!g) bad.push(nd.id+'：找不到去的路'); else if(g&&!Nav.pathTo(g)) bad.push(nd.id+'：寻路走不通'); }
             catch(e){ bad.push(nd.id+'：'+e.message); } }
           return {fail:bad.length>0, info:bad.length?bad.slice(0,3).join('；'):`${NODES.length} 个审查点`}; });
         await step('第一幕从头走到尾：出发 → 营地 → 安平村 → 夜袭 → 山脊', async()=>{ const n0=SelfTest3.lines.length, r=await play([0,0]); const F=S.flags;
           const ok=r.xieMenu&&r.logsGone&&r.oldThere&&r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
-          return {fail:!ok, info:`${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+          const miss=['c3_go','c3_dinner','c3_morning','c3_notice','c3_shrine','c3_old','c3_grave','c3_raid_won','c3_a1_done'].filter(f=>!F[f]);
+          return {fail:!ok, info:`${miss.length?'没走到：'+miss.join(' ')+'，':''}${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('另一种选择：递粥 / 问「陆仙长真的是好人吗」', async()=>{ const n0=SelfTest3.lines.length; await play([1,1]); return {fail:!(S.flags.c3_doubt&&S.flags.c3_a1_done), info:`${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：天亮进京 → 朱雀门 → 告示，街上每个人都能说话', async()=>{ const n0=SelfTest3.lines.length; cur='进京';
+          node('c3-tocity').run(); await W(400); Dungeon.act(obj('c3tent')); await adv(0); await W(1500); await adv(); for(let i=0;i<40&&RT.mapId!=='jc_zhuque';i++){ if(RT.fadeTo) update(.1); await W(60); }
+          await W(800); await adv(); const inCity=RT.mapId==='jc_zhuque'&&S.flags.c3_jc_in&&QUESTS[S.quest].id==='c3e';
+          cur='朱雀大街'; S.stones=Math.max(S.stones,100); const bad=[];
+          for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv(0); }
+          for(const act of ['jcshop','jcsedan','jcstall','jcway']) for(const o of RT.map.objects.filter(o=>o.act===act)){ Dungeon.act(o); await adv(); }
+          Dungeon.act(obj('jcboard')); await adv(); const hulu=count(S,'jc_hulu')>0;
+          return {fail:!(inCity&&S.flags.c3_jc_board&&hulu&&!bad.length), info:`${inCity?'进城':'进城 ✗'}，${S.flags.c3_jc_board?'告示':'告示 ✗'}，${hulu?'糖葫芦':'糖葫芦 ✗'}${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
