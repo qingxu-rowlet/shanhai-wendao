@@ -36,7 +36,6 @@
     {type:'jc_willow', x:3, y:25, spr:'jc_willow'}, {type:'jc_willow', x:8, y:25, spr:'jc_willow'}, {type:'jc_willow', x:19, y:25, spr:'jc_willow'}, {type:'jc_willow', x:24, y:25, spr:'jc_willow'},
     {type:'jc_willow', x:4, y:31, spr:'jc_willow'}, {type:'jc_willow', x:23, y:31, spr:'jc_willow'}, {type:'jc_willow', x:7, y:31, spr:'jc_willow'},
     {type:'jc_lion', x:10, y:30, spr:'jc_lionL'}, {type:'jc_lion', x:17, y:30, spr:'jc_lionR'},
-    {type:'jc_barrier', x:1, y:14, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:15, spr:'jc_barrier', act:'jcway', way:'west'},
     {type:'jc_barrier', x:26, y:14, spr:'jc_barrier', act:'jcway', way:'east'}, {type:'jc_barrier', x:26, y:15, spr:'jc_barrier', act:'jcway', way:'east'},
     {type:'jc_barrier', x:13, y:1, spr:'jc_barrier', act:'jcway', way:'north'}, {type:'jc_barrier', x:14, y:1, spr:'jc_barrier', act:'jcway', way:'north'},
     {type:'c2_portal', x:2, y:31, spr:'c2_portal', act:'portal'},
@@ -58,7 +57,7 @@
     P('jc_bearer2',7,7,'轿夫',{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
     P('jc_traveler',15,32,'赶路的人',{g:'f',skin:1,hair:4,hairColor:1,style:'qun',cloth:3,face:'mid'}),
   ];
-  MAPS.jc_zhuque={ name:'京城 · 朱雀大街', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[] }; }
+  MAPS.jc_zhuque={ name:'京城 · 朱雀大街', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:0,y:14,to:'jc_sifang',tx:28,ty:22},{x:0,y:15,to:'jc_sifang',tx:28,ty:23}] }; }
 
 /* ---------- the gate tower over 朱雀门, and lanterns strung across the avenue ---------- */
 JA.tower=()=>JA._tower||(JA._tower=FineArt.paint(150,92,P=>{ const br='#6a645c', brl='#8a847a', red='#9a2a22', redk='#6a1a14', rf='#2c3038', rfl='#454c58', rfk='#1c1e24', gd='#d8b048';
@@ -93,3 +92,49 @@ On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_zhuque') return; const Z=T/16;
 
 // wide things take up every tile they cover
 On.enter(id=>{ if(!String(id).startsWith('jc_')) return; for(const o of RT.ents) if(o.fw) for(let x=o.x-o.fw;x<=o.x+o.fw;x++) if(RT.solid[o.y]&&x>=0&&x<RT.map.w) RT.solid[o.y][x]=true; });
+
+/* ============================================================
+   地图二：四方馆 — the walled courtyard where the four sects' entrants lodge, at the west end of the cross street. Through
+   the gatehouse: a swept brick yard, the main hall where the 礼部's clerk keeps the register, four wings (one for each
+   sect, its banner before the door), a great old 槐树, a stone table where two disciples are at 围棋, pots of flowers, and
+   in the south-west a moon gate into a small back courtyard with a 太湖石 and a cushion (where you will sit for 结丹).
+   The street outside runs east back to 朱雀大街 and west to 西市 (the next map).
+   ============================================================ */
+const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          // each sect's wing (its door is below the middle)
+{ const W=30, H=26, G=[...Array(H)].map(()=>Array(W).fill('S'));
+  for(let y=0;y<=19;y++){ G[y][0]='Q'; G[y][W-1]='Q'; } for(let x=0;x<W;x++){ G[0][x]='Q'; G[20][x]='Q'; G[21][x]='R'; }
+  for(const x of [14,15]){ G[20][x]='S'; G[21][x]='S'; }                             // the gate
+  for(let x=1;x<=8;x++) G[15][x]='Q'; G[15][4]='S';                                // the back courtyard's wall, and its moon gate
+  for(let y=16;y<=19;y++) for(let x=1;x<=8;x++) G[y][x]=(x*3+y)%4?'.':':';           // a little garden in there
+  for(let y=9;y<=13;y++) for(let x=12;x<=18;x++) if(Math.abs(x-15)+Math.abs(y-11)<=3) G[y][x]=(x+y)%3?'.':',';   // earth round the 槐树
+  for(let y=22;y<=24;y++) for(let x=0;x<W;x++) G[y][x]='P'; for(let x=0;x<W;x++) G[25][x]='Q';
+  const roofs={grey:['#22262c','#2e343c','#3e4650','#68727e'], red:['#3a1612','#561e18','#742a20','#a84a3a']};
+  const wing=(k)=>{ const [x,y]=SF_WING[k]; return {type:'building', x, y, w:6, h:3, style:'shop', roof:roofs.grey, label:SECTS[k].name+'的厢房', door:[x+3,y+3], act:'sfroom', sect:k,
+    fa:{wall:'plaster', pillar:'#5e3a20', sign:SECTS[k].name, lit:true, roof:roofs.grey}}; };
+  const P=(id,x,y,name,look,cond)=>({type:'npc', id, x, y, look, name, act:'talk', cond});
+  const not=k=>s=>s.sect!==k;
+  const objects=[
+    {type:'building', x:10, y:1, w:10, h:4, style:'shop', roof:roofs.red, label:'四方馆 · 正厅', door:[15,5], act:'sfhall', fa:{wall:'wood', pillar:'#8a2a22', sign:'四方馆', open:true, lit:true, lanternText:'礼', deco:['doorLanterns'], roof:roofs.red}},
+    wing('jian'), wing('dan'), wing('shou'), wing('tianji'),
+    ...Object.keys(SF_WING).map(k=>{ const [x,y]=SF_WING[k]; return {type:'jc_banner', x:x<10?x+6:x-1, y:y+3, spr:'jc_banner_'+k, flagText:SECT_CH[k], flagInk:'#f8f0d8', flagX:12.5, flagY:21}; }),
+    {type:'jc_huai', x:15, y:11, spr:'jc_huai', act:'sftree'},
+    {type:'jc_chess', x:19, y:17, spr:'jc_chess', act:'sfchess', fw:1},
+    {type:'jc_pot', x:12, y:6, spr:'jc_pot'}, {type:'jc_pot', x:18, y:6, spr:'jc_pot'}, {type:'jc_pot', x:10, y:18, spr:'jc_pot'}, {type:'jc_pot', x:27, y:18, spr:'jc_pot'},
+    {type:'lantern', x:13, y:18}, {type:'lantern', x:16, y:18},
+    {type:'jc_moongate', x:3, y:15, spr:'jc_moongate'},
+    {type:'jc_rock', x:2, y:17, spr:'jc_rock'}, {type:'jc_futon', x:6, y:18, spr:'jc_futon', act:'sffuton'},
+    {type:'jc_sgate', x:13, y:21, get spr(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'jc_sgate_dim':'jc_sgate'; }, get flagText(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'':'四方馆'; }, flagInk:'#e8c870', flagX:86, flagY:17.5, flagSize:6.5},
+    {type:'jc_barrier', x:1, y:22, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:23, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:24, spr:'jc_barrier', act:'jcway', way:'west'},
+    {type:'jc_willow', x:6, y:24, spr:'jc_willow'}, {type:'jc_willow', x:23, y:24, spr:'jc_willow'},
+    // people: the 礼部's clerk, and the other sects' entrants (your own sect's are you and 大师姐)
+    P('sf_clerk',15,7,'礼部小吏',{g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:2,face:'small'}),
+    P('sf_lin',8,8,'林沧',{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:0,face:'small'},not('jian')),
+    P('sf_cheng',21,17,'程小剑',{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:0,face:'small'},not('jian')),
+    P('sf_wulan',21,8,'乌兰',{g:'f',skin:3,hair:3,hairColor:1,style:'jin',cloth:3,face:'mid'},not('shou')),
+    {type:'jc_pet', x:20, y:8, spr:'xingxing', cond:not('shou'), act:'sfpet'},
+    P('sf_wenxuan',21,15,'温玄',{g:'m',skin:0,hair:5,hairColor:5,style:'robe',cloth:4,face:'small'},not('tianji')),
+    P('sf_bu',17,17,'卜小鱼',{g:'f',skin:0,hair:3,hairColor:0,style:'qun',cloth:4,face:'small'},not('tianji')),
+    P('tang',8,12,'苏小棠',LOOK_TANG,s=>true),
+    P('xie',12,9,'谢霁月',LOOK_XIE,s=>true),
+  ];
+  MAPS.jc_sifang={ name:'京城 · 四方馆', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:29,y:22,to:'jc_zhuque',tx:1,ty:14},{x:29,y:23,to:'jc_zhuque',tx:1,ty:15}] }; }

@@ -32,6 +32,12 @@
       ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true},'jc_zhuque',13,32,'up','c3d',16.5)),
     N('city','朱雀大街：逛一逛、看告示','城里，朱雀大街。两边是酒楼、当铺、布庄、药铺、茶楼、客栈；十字街上有包子摊、布摊、首饰摊、水果摊，糖葫芦（10 灵石，吴阿蛮要的）、包子（5 灵石）能买；走近的人头顶会冒出一句话；每个人都能说话。十字街口的告示：大比、宵禁、寻人。西边、东边、北边的路口暂时拦着（之后的地图）。',
       ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true},'jc_zhuque',13,22,'up','c3e',16.5)),
+    N('sifang','四方馆：登记入住','四方馆门口。进门：礼部小吏登记，写到「谢霁月」时停了一下；四宗的厢房、老槐树、下棋的两个人、后院的月洞门。',
+      ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true},'jc_sifang',15,19,'up','c3e',17)),
+    N('yard','四方馆：苏小棠和别的宗门','已经登记。找苏小棠（不管哪个宗门都在药王谷的厢房；药王谷弟子是另一段）；和别的宗门的参赛弟子说话：林沧、乌兰（她的狌狌闻到你身上有狼味）、温玄（「有什么东西在吃星星」）；下棋的两个人。',
+      ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true},'jc_sifang',12,15,'up','c3f',17)),
+    N('jiedan','槐树底下：大师姐说结丹','苏小棠和别的宗门都见过了。去槐树底下找大师姐：上一回她能拿头名，是因为比别人高一个境界——离大比十天，结丹。然后去找苏小棠要丹方（三味主药），宵禁的梆子响，回自己宗门的厢房睡觉，第二天早上苏小棠拉你去西市。',
+      ()=>{ go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true},'jc_sifang',12,11,'up','c3f',18); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan']; Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }

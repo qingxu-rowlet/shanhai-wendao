@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b068b76dc9"><script>(function(){var B="b068b76dc9";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="57dbf815c3"><script>(function(){var B="57dbf815c3";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10238,8 +10238,78 @@ On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')) return; const Z
       for(const s of o._fa.signs){ const fs=s.big?s.h*Z*.82:s.plain?s.h*Z*.95:s.h*Z*.9; g.font=`${Math.round(fs)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle=s.ink; g.textAlign='center'; g.textBaseline='middle';
         g.fillText(s.text, bx+(s.x+s.w/2)*Z, by+(s.y+s.h/2+.5)*Z); } }
     if(o.flagText){ const c=SPRC[o.spr]; if(!c) continue; const lx=ox+(o.x+.5)*T-c.width*Z/2, ty=oy+(o.y+1)*T-c.bottom*Z;
-      g.font=`${Math.round(11*Z)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle='#2a1e1a'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(o.flagText,lx+11*Z,ty+16*Z); } }
+      g.font=`${Math.round((o.flagSize||11)*Z)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle=o.flagInk||'#2a1e1a'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(o.flagText,lx+(o.flagX||11)*Z,ty+(o.flagY||16)*Z); } }
   g.textBaseline='alphabetic'; });
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 城里的东西（二）：院子 — what a walled courtyard compound (四方馆) is built of: the white
+   plastered compound wall with its grey tile coping, a gatehouse with open red doors and a plaque, a great old 槐树, a
+   stone table set for 围棋 with four drum stools, sect banners in their own colours, potted plants, a 太湖石 rock, and a
+   moon gate into a back courtyard.
+   ============================================================ */
+On.tile('Q',(g,R,v)=>{ // the wall's top: grey half-round tiles in a row, seen from above
+  g.fillStyle='#4a4e56'; g.fillRect(0,0,16,16); for(let x=0;x<16;x+=4){ g.fillStyle='#5e646e'; g.fillRect(x,1,3,13); g.fillStyle='#7a828e'; g.fillRect(x,1,1,13); }
+  g.fillStyle='#2e3238'; g.fillRect(0,14,16,2); },true);
+On.tile('R',(g,R,v)=>{ // the wall's face: white plaster, a grey band at the foot, the coping's shadow at the top
+  g.fillStyle='#ece6da'; g.fillRect(0,0,16,16); g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(0,0,16,3);
+  for(let i=0;i<4;i++){ g.fillStyle='rgba(120,110,90,.12)'; g.fillRect(R()*14|0,3+R()*9|0,2,1); }
+  g.fillStyle='#8a8478'; g.fillRect(0,12,16,4); g.fillStyle='#a8a296'; g.fillRect(0,12,16,1); },true);
+On.tile('S',(g,R,v)=>{ // a courtyard's swept brick floor, laid in a herringbone
+  g.fillStyle='#a49a88'; g.fillRect(0,0,16,16);
+  for(let y=0;y<16;y+=4) for(let x=0;x<16;x+=8){ const o=(y/4)%2?4:0; g.fillStyle='#b4aa96'; g.fillRect((x+o)%16,y,7,3); g.fillStyle='#8e8474'; g.fillRect((x+o+7)%16,y,1,3); }
+  if(R()<.2){ g.fillStyle='rgba(90,110,70,.4)'; g.fillRect(R()*14|0,R()*14|0,2,1); } });
+
+const JA2={
+  // the compound's gatehouse: a tiled roof on red posts, the two doors standing open, a black plaque with gold letters
+  gate(){ return FineArt.paint(76,60,P=>{ const rf='#3a3e48', rfl='#565c68', rfk='#22252c', red='#9a2a22', redk='#6a1a14';
+    P.rect(6,26,64,32,'#ece6da'); P.rect(6,52,64,6,'#8a8478');                                      // the gate's white walls
+    P.rect(22,24,32,34,'#2a1810');                                                                    // the opening
+    P.rect(18,22,4,36,red); P.rect(54,22,4,36,red);                                                    // posts
+    P.rect(22,26,6,30,redk); P.rect(48,26,6,30,redk); for(let y=30;y<54;y+=5){ P.set(25,y,'#e8b84a'); P.set(51,y,'#e8b84a'); }   // the doors, swung open
+    P.rect(24,48,28,10,'#4a3a2a');                                                                    // the threshold step inside
+    P.rect(26,13,24,9,'#1a1614'); P.rect(27,14,22,7,'#22201c'); P.rect(25,12,26,1,'#c8a050'); P.rect(25,22,26,1,'#c8a050');   // plaque (letters drawn sharp)
+    P.poly([[0,24],[10,12],[66,12],[76,24],[70,22],[6,22]],rf); P.poly([[8,20],[14,13],[62,13],[68,20]],rfl); P.rect(10,10,56,3,rfk);
+    P.poly([[10,10],[6,6],[13,9]],rfk); P.poly([[66,10],[70,6],[63,9]],rfk); }); },
+  huai(){ return FineArt.paint(80,84,P=>{ const tr='#4a3426', tm='#5e4432', tl='#7a5a40', sh='#2e4a28', g1='#3e6a34', g2='#548a44', g3='#6ea456', fl='#f0ead0', fl2='#d8d0a8';   // a great old 槐树
+    // the trunk: thick, leaning, split into big limbs; roots gripping the ground
+    P.cap(40,82,38,52,5.2,tr); P.cap(39,80,39,56,2,tm); P.cap(37,60,34,58,1,tl);
+    for(const [x,y] of [[30,83],[50,83],[25,81],[55,81]]) P.cap(40,79,x,y,1.8,tr);
+    P.cap(38,54,22,34,3,tr); P.cap(40,52,58,32,3,tr); P.cap(39,50,40,26,2.6,tr); P.cap(24,36,14,30,1.6,tr); P.cap(56,34,66,28,1.6,tr);
+    // the canopy: clumps, dark first then lighter on top and to the left (the light comes from the upper left)
+    const R=rng(83), clumps=[]; for(let k=0;k<34;k++){ const a=R()*Math.PI*2, d=Math.sqrt(R()), cx=40+Math.cos(a)*30*d, cy=28+Math.sin(a)*20*d; clumps.push([cx,cy,6+R()*5]); }
+    for(const [x,y,r] of clumps) P.ell(x,y+1.5,r,r*.8,sh);
+    for(const [x,y,r] of clumps) P.ell(x,y,r*.92,r*.72,g1);
+    for(const [x,y,r] of clumps) P.ell(x-r*.25,y-r*.25,r*.62,r*.48,g2);
+    for(const [x,y,r] of clumps) if(R()<.6) P.ell(x-r*.4,y-r*.4,r*.32,r*.26,g3);
+    // a few gaps where the limbs show through
+    for(const [x,y] of [[28,38],[52,36],[40,40]]){ P.ell(x,y,3,2,sh); P.set(x,y,tr); }
+    // clusters of its small cream flowers hanging in the leaves
+    for(let k=0;k<30;k++){ const [x,y,r]=clumps[k%clumps.length], fx=x+(R()-.5)*r, fy=y+(R()-.3)*r*.6; P.set(fx,fy,fl); P.set(fx+1,fy,fl2); P.set(fx,fy+1,fl2); } }); },
+  chess(){ return FineArt.paint(44,28,P=>{ const st='#a8a294', sd='#7a756a';
+    for(const [x,y] of [[6,20],[38,20],[22,26],[22,8]]){ P.ell(x,y,4,2.6,sd); P.rect(x-4,y-5,8,5,st); P.ell(x,y-5,4,2.4,'#c4beb0'); }   // drum stools
+    P.ell(22,16,14,7,sd); P.rect(8,8,28,8,st); P.ell(22,8,14,6,'#c8c2b4');                                                  // the table
+    for(let i=-3;i<=3;i++){ P.line(13,8+i*1.4,31,8+i*1.4,'#8a8478'); } for(let i=-4;i<=4;i++) P.line(22+i*2.2,4,22+i*2.2,12,'#8a8478');   // the board's lines
+    for(const [x,y,c] of [[16,6,'#1a1a1a'],[20,9,'#f4f4f0'],[24,7,'#1a1a1a'],[27,10,'#f4f4f0'],[18,11,'#1a1a1a'],[29,6,'#f4f4f0']]) P.ell(x,y,1.2,1,c); }); },
+  banner(col){ return FineArt.paint(20,52,P=>{ P.rect(3,2,2,48,'#5e3a20'); P.set(4,1,'#e8b84a'); P.rect(5,6,13,30,col); P.rect(5,6,13,2,'#e8b84a'); P.rect(5,34,13,2,'#e8b84a');
+    P.poly([[5,36],[11,36],[8,42]],col); P.poly([[12,36],[18,36],[15,42]],col); P.rect(1,48,6,3,'#4a3a2a'); }); },
+  pot(){ return FineArt.paint(20,26,P=>{ P.ell(10,22,7,3,'#5a3a24'); P.rect(4,15,12,7,'#8a5a36'); P.ell(10,15,6,2,'#3a2418');
+    for(const [x,y,r] of [[10,9,6],[6,11,4],[14,11,4],[10,5,4]]) P.ell(x,y,r,r*.8,'#4e8040'); P.ell(9,6,2.4,2,'#6aa050'); for(const [x,y] of [[7,8],[13,9],[10,4]]) P.set(x,y,'#e86060'); }); },
+  rock(){ return FineArt.paint(30,34,P=>{ const a='#8a8a8e', b='#6a6a70', c='#a8a8ae';   // 太湖石: a tall pitted rock
+    P.poly([[6,32],[4,22],[8,12],[6,4],[14,1],[20,6],[24,14],[22,22],[26,32]],a); P.poly([[8,24],[10,14],[14,8],[18,12],[16,22]],c);
+    for(const [x,y,r] of [[12,10,2],[18,18,2.4],[10,24,1.8],[16,28,1.6]]) P.ell(x,y,r,r,b); P.rect(2,32,26,2,'#5a5a60'); }); },
+  moongate(){ return FineArt.paint(48,44,P=>{ P.rect(0,4,48,40,'#ece6da'); P.rect(0,4,48,3,'#4a4e56'); P.rect(0,40,48,4,'#8a8478');
+    P.ell(24,26,15,17,'#2a2a24'); P.ell(24,26,13,15,'#4e6a40'); P.ell(24,34,13,6,'#6a8a50'); for(let k=0;k<20;k++){ const a=k/20*Math.PI*2; P.set(24+Math.cos(a)*15,26+Math.sin(a)*17,'#a8a296'); } }); },
+  futon(){ return FineArt.paint(18,12,P=>{ P.ell(9,7,8,4,'#8a6a3a'); P.ell(9,6,7,3,'#b08850'); for(let k=0;k<4;k++) P.ell(9,6,6-k*1.4,2.6-k*.6,k%2?'#c8a060':'#a8804c'); }); },
+};
+const SECT_COL={jian:'#3a6ea8', dan:'#3a8a5a', shou:'#a86a2a', tianji:'#6a4aa8'}, SECT_CH={jian:'剑', dan:'药', shou:'兽', tianji:'机'};
+Object.assign(SPR,{jc_sgate:['x'], jc_huai:['x'], jc_chess:['x'], jc_pot:['x'], jc_rock:['x'], jc_moongate:['x'], jc_futon:['x']});
+for(const k in SECT_COL){ SPR['jc_banner_'+k]=['x']; SPRC['jc_banner_'+k]=JA2.banner(SECT_COL[k]); }
+Object.assign(SPRC,{jc_huai:JA2.huai(), jc_chess:JA2.chess(), jc_pot:JA2.pot(), jc_rock:JA2.rock(), jc_futon:JA2.futon()});
+// the moon gate stands on the wall's tile at x 3; padded by 32px so its opening falls on x 4, the way through
+{ const g0=JA2.moongate(), c=document.createElement('canvas'); c.width=32+g0.width; c.height=g0.height; c.getContext('2d').drawImage(g0,32,0); c.bottom=c.height; SPRC.jc_moongate=c; }
+// the gatehouse stands on the wall's tile at x 13 (solid anyway); padded on the left by 48px so its middle falls on x 15
+for(const dim of [0,1]){ const g0=JA2.gate(), c=document.createElement('canvas'); c.width=48+g0.width; c.height=g0.height; const g=c.getContext('2d'); if(dim) g.globalAlpha=.45; g.drawImage(g0,48,0); c.bottom=c.height; SPRC[dim?'jc_sgate_dim':'jc_sgate']=c; }
+SPR.jc_sgate_dim=['x'];
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 地图一：朱雀门 · 朱雀大街 — you come in through the south gate: outside, the road, willows
@@ -10279,7 +10349,6 @@ On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')) return; const Z
     {type:'jc_willow', x:3, y:25, spr:'jc_willow'}, {type:'jc_willow', x:8, y:25, spr:'jc_willow'}, {type:'jc_willow', x:19, y:25, spr:'jc_willow'}, {type:'jc_willow', x:24, y:25, spr:'jc_willow'},
     {type:'jc_willow', x:4, y:31, spr:'jc_willow'}, {type:'jc_willow', x:23, y:31, spr:'jc_willow'}, {type:'jc_willow', x:7, y:31, spr:'jc_willow'},
     {type:'jc_lion', x:10, y:30, spr:'jc_lionL'}, {type:'jc_lion', x:17, y:30, spr:'jc_lionR'},
-    {type:'jc_barrier', x:1, y:14, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:15, spr:'jc_barrier', act:'jcway', way:'west'},
     {type:'jc_barrier', x:26, y:14, spr:'jc_barrier', act:'jcway', way:'east'}, {type:'jc_barrier', x:26, y:15, spr:'jc_barrier', act:'jcway', way:'east'},
     {type:'jc_barrier', x:13, y:1, spr:'jc_barrier', act:'jcway', way:'north'}, {type:'jc_barrier', x:14, y:1, spr:'jc_barrier', act:'jcway', way:'north'},
     {type:'c2_portal', x:2, y:31, spr:'c2_portal', act:'portal'},
@@ -10301,7 +10370,7 @@ On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')) return; const Z
     P('jc_bearer2',7,7,'轿夫',{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
     P('jc_traveler',15,32,'赶路的人',{g:'f',skin:1,hair:4,hairColor:1,style:'qun',cloth:3,face:'mid'}),
   ];
-  MAPS.jc_zhuque={ name:'京城 · 朱雀大街', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[] }; }
+  MAPS.jc_zhuque={ name:'京城 · 朱雀大街', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:0,y:14,to:'jc_sifang',tx:28,ty:22},{x:0,y:15,to:'jc_sifang',tx:28,ty:23}] }; }
 
 /* ---------- the gate tower over 朱雀门, and lanterns strung across the avenue ---------- */
 JA.tower=()=>JA._tower||(JA._tower=FineArt.paint(150,92,P=>{ const br='#6a645c', brl='#8a847a', red='#9a2a22', redk='#6a1a14', rf='#2c3038', rfl='#454c58', rfk='#1c1e24', gd='#d8b048';
@@ -10336,6 +10405,52 @@ On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_zhuque') return; const Z=T/16;
 
 // wide things take up every tile they cover
 On.enter(id=>{ if(!String(id).startsWith('jc_')) return; for(const o of RT.ents) if(o.fw) for(let x=o.x-o.fw;x<=o.x+o.fw;x++) if(RT.solid[o.y]&&x>=0&&x<RT.map.w) RT.solid[o.y][x]=true; });
+
+/* ============================================================
+   地图二：四方馆 — the walled courtyard where the four sects' entrants lodge, at the west end of the cross street. Through
+   the gatehouse: a swept brick yard, the main hall where the 礼部's clerk keeps the register, four wings (one for each
+   sect, its banner before the door), a great old 槐树, a stone table where two disciples are at 围棋, pots of flowers, and
+   in the south-west a moon gate into a small back courtyard with a 太湖石 and a cushion (where you will sit for 结丹).
+   The street outside runs east back to 朱雀大街 and west to 西市 (the next map).
+   ============================================================ */
+const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          // each sect's wing (its door is below the middle)
+{ const W=30, H=26, G=[...Array(H)].map(()=>Array(W).fill('S'));
+  for(let y=0;y<=19;y++){ G[y][0]='Q'; G[y][W-1]='Q'; } for(let x=0;x<W;x++){ G[0][x]='Q'; G[20][x]='Q'; G[21][x]='R'; }
+  for(const x of [14,15]){ G[20][x]='S'; G[21][x]='S'; }                             // the gate
+  for(let x=1;x<=8;x++) G[15][x]='Q'; G[15][4]='S';                                // the back courtyard's wall, and its moon gate
+  for(let y=16;y<=19;y++) for(let x=1;x<=8;x++) G[y][x]=(x*3+y)%4?'.':':';           // a little garden in there
+  for(let y=9;y<=13;y++) for(let x=12;x<=18;x++) if(Math.abs(x-15)+Math.abs(y-11)<=3) G[y][x]=(x+y)%3?'.':',';   // earth round the 槐树
+  for(let y=22;y<=24;y++) for(let x=0;x<W;x++) G[y][x]='P'; for(let x=0;x<W;x++) G[25][x]='Q';
+  const roofs={grey:['#22262c','#2e343c','#3e4650','#68727e'], red:['#3a1612','#561e18','#742a20','#a84a3a']};
+  const wing=(k)=>{ const [x,y]=SF_WING[k]; return {type:'building', x, y, w:6, h:3, style:'shop', roof:roofs.grey, label:SECTS[k].name+'的厢房', door:[x+3,y+3], act:'sfroom', sect:k,
+    fa:{wall:'plaster', pillar:'#5e3a20', sign:SECTS[k].name, lit:true, roof:roofs.grey}}; };
+  const P=(id,x,y,name,look,cond)=>({type:'npc', id, x, y, look, name, act:'talk', cond});
+  const not=k=>s=>s.sect!==k;
+  const objects=[
+    {type:'building', x:10, y:1, w:10, h:4, style:'shop', roof:roofs.red, label:'四方馆 · 正厅', door:[15,5], act:'sfhall', fa:{wall:'wood', pillar:'#8a2a22', sign:'四方馆', open:true, lit:true, lanternText:'礼', deco:['doorLanterns'], roof:roofs.red}},
+    wing('jian'), wing('dan'), wing('shou'), wing('tianji'),
+    ...Object.keys(SF_WING).map(k=>{ const [x,y]=SF_WING[k]; return {type:'jc_banner', x:x<10?x+6:x-1, y:y+3, spr:'jc_banner_'+k, flagText:SECT_CH[k], flagInk:'#f8f0d8', flagX:12.5, flagY:21}; }),
+    {type:'jc_huai', x:15, y:11, spr:'jc_huai', act:'sftree'},
+    {type:'jc_chess', x:19, y:17, spr:'jc_chess', act:'sfchess', fw:1},
+    {type:'jc_pot', x:12, y:6, spr:'jc_pot'}, {type:'jc_pot', x:18, y:6, spr:'jc_pot'}, {type:'jc_pot', x:10, y:18, spr:'jc_pot'}, {type:'jc_pot', x:27, y:18, spr:'jc_pot'},
+    {type:'lantern', x:13, y:18}, {type:'lantern', x:16, y:18},
+    {type:'jc_moongate', x:3, y:15, spr:'jc_moongate'},
+    {type:'jc_rock', x:2, y:17, spr:'jc_rock'}, {type:'jc_futon', x:6, y:18, spr:'jc_futon', act:'sffuton'},
+    {type:'jc_sgate', x:13, y:21, get spr(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'jc_sgate_dim':'jc_sgate'; }, get flagText(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'':'四方馆'; }, flagInk:'#e8c870', flagX:86, flagY:17.5, flagSize:6.5},
+    {type:'jc_barrier', x:1, y:22, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:23, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:24, spr:'jc_barrier', act:'jcway', way:'west'},
+    {type:'jc_willow', x:6, y:24, spr:'jc_willow'}, {type:'jc_willow', x:23, y:24, spr:'jc_willow'},
+    // people: the 礼部's clerk, and the other sects' entrants (your own sect's are you and 大师姐)
+    P('sf_clerk',15,7,'礼部小吏',{g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:2,face:'small'}),
+    P('sf_lin',8,8,'林沧',{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:0,face:'small'},not('jian')),
+    P('sf_cheng',21,17,'程小剑',{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:0,face:'small'},not('jian')),
+    P('sf_wulan',21,8,'乌兰',{g:'f',skin:3,hair:3,hairColor:1,style:'jin',cloth:3,face:'mid'},not('shou')),
+    {type:'jc_pet', x:20, y:8, spr:'xingxing', cond:not('shou'), act:'sfpet'},
+    P('sf_wenxuan',21,15,'温玄',{g:'m',skin:0,hair:5,hairColor:5,style:'robe',cloth:4,face:'small'},not('tianji')),
+    P('sf_bu',17,17,'卜小鱼',{g:'f',skin:0,hair:3,hairColor:0,style:'qun',cloth:4,face:'small'},not('tianji')),
+    P('tang',8,12,'苏小棠',LOOK_TANG,s=>true),
+    P('xie',12,9,'谢霁月',LOOK_XIE,s=>true),
+  ];
+  MAPS.jc_sifang={ name:'京城 · 四方馆', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:29,y:22,to:'jc_zhuque',tx:1,ty:14},{x:29,y:23,to:'jc_zhuque',tx:1,ty:15}] }; }
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 第二幕「京城」 — so far: the road's last day and 朱雀门. The guards look at the sect's papers
@@ -10381,7 +10496,7 @@ JC.gate=()=>[
 MAPS.jc_zhuque.objects.push(
   {type:'npc', id:'xie', x:14, y:24, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in},
   {type:'npc', id:'tang', x:12, y:20, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>s.sect==='dan'&&!!s.flags.c3_jc_in});
-On.talk(id=>{ if(!String(RT.mapId).startsWith('jc_')) return false; const F=S.flags;
+On.talk(id=>{ if(RT.mapId!=='jc_zhuque') return false; const F=S.flags;
   if(id==='xie'){ C3.menu('xie',F.c3_jc_board?[['谢霁月','宵禁……'],['谢霁月','（她看了一眼天色）先去四方馆。']]:[['谢霁月','京城……比上一回来的时候，人多了。'],['谢霁月','十字街口有告示，去看看。']]); return true; }
   if(id==='tang'&&JC.dan()){ C3.menu('tang',[['苏小棠','回春堂！京城最大的药铺！我、我能进去看一眼吗？'],['苏小棠','……就一眼！']]); return true; }
   const L=JC.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L); return true; });
@@ -10433,8 +10548,8 @@ On.act('jcboard',o=>{ const first=!S.flags.c3_jc_board; UI.say([
   ['旁白','第二张：「京畿近有妖患。钦差萧大人令：入夜宵禁，违者拘押。」'],
   ['旁白','第三张被撕掉了一半，只剩几行字：「寻人：小女阿秀，七岁，正月里在西市走失。身穿红袄，左耳下有一颗痣……」'],
   ...(first?[['谢霁月','（她看着第三张，看了很久）……'],['谢霁月','走吧。先去四方馆。'],{flag:'c3_jc_board'},['旁白','（四方馆在西边：沿着十字街往西走。）']]:[])], ()=>{ UI.hud(); Story.check(); }); });
-On.act('jcway',o=>UI.say([['旁白',{west:'往西：西市、四方馆。',east:'往东：东市。',north:'往北：皇城。'}[o.way]],
-  ['旁白',{west:'（四方馆是下一张地图，做好以后从这里走。）',east:'（东市是之后的地图。）',north:'（皇城只有大比开幕那天才能进。）'}[o.way]]]));
+On.act('jcway',o=>UI.say([['旁白',{west:'往西：西市。',east:'往东：东市。',north:'往北：皇城。'}[o.way]],
+  ['旁白',{west:'（西市是下一张地图，做好以后从这里走。）',east:'（东市是之后的地图。）',north:'（皇城只有大比开幕那天才能进。）'}[o.way]]]));
 On.theme(id=>id&&id.startsWith('jc_')?'village':null);
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_jc_in&&RT.mapId!=='jc_zhuque') l.push({name:'京城 · 朱雀门', map:'jc_zhuque', x:3, y:31}); return l; }; }
 
@@ -10456,6 +10571,133 @@ QUESTS.push(
   {id:'c3e', title:'京城', desc:'京城比桃源镇大一百倍。十字街口贴着告示，四方馆在西边。', check:s=>false,
     progress:s=>!s.flags.c3_jc_board?'看看十字街口的告示':'去四方馆（往西，下一张地图）',
     target:s=>!s.flags.c3_jc_board?['jc_zhuque',19,14,'十字街口的告示']:['jc_zhuque',2,14,'往西的十字街']});
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 第二幕 · 四方馆 — the 礼部's clerk writes you into the register (and looks twice at 大师姐);
+   the other sects' entrants are in the yard: 林沧 of 青云剑宗 (the fastest sword of his generation, and knows it), 乌兰 of
+   万兽谷 and her 狌狌 阿毛 (who smells wolf on you), 温玄 of 天机阁 (whose coins say something is eating the stars);
+   苏小棠 is here for 药王谷, whatever your sect. Toward evening 大师姐, under the 槐树, says why she was first last time:
+   she was a realm above everyone. Ten days to the 大比 — 结丹. 苏小棠 has 药尘长老's recipe: 龙血竭 (西市), 千年石钟乳
+   (回春堂), 九转还魂草 (only at the auction). The curfew drum sounds; you sleep in your sect's wing.
+   ============================================================ */
+const SF={
+  st(){ const c=C3.st(); c.met=c.met||[]; return c; },
+  met(id){ const c=SF.st(); if(!c.met.includes(id)) c.met.push(id); },
+  rivals:()=>['sf_lin','sf_wulan','sf_wenxuan'].filter(id=>{ const o=MAPS.jc_sifang.objects.find(o=>o.id===id); return !o.cond||o.cond(S); }),
+  ready:()=>!!S.flags.c3_sf_tang&&SF.st().met.filter(id=>SF.rivals().includes(id)).length>=Math.min(2,SF.rivals().length),
+  wing:()=>SF_WING[S.sect],
+};
+// your own wing's door is your room: sleep there; elsewhere a word about whose it is
+On.act('sfroom',o=>{ if(o.sect!==S.sect) return UI.say([['旁白',`${SECTS[o.sect].name}的厢房。门关着，里面有人在低声说话。`]]);
+  if(!S.flags.c3_sf_recipe) return UI.say([['旁白','你们的厢房。被褥是新晒过的，有一股太阳的味道。'],['旁白','（天还没黑。先在院子里走走。）']]);
+  UI.confirm('回厢房睡觉？', ()=>sleep(false)); });
+On.wake((passedOut,from)=>{ if(!String(from).startsWith('jc_')) return false; const [x,y]=SF.wing(); enterMap('jc_sifang',x+3,y+3); RT.dir='down'; UI.hud(); save();
+  if(S.flags.c3_sf_recipe&&!S.flags.c3_sf_morning){ S.flags.c3_sf_morning=true; setTimeout(()=>UI.say(SF.morning(),()=>{ UI.hud(); Story.check(); }),900); } return true; });
+On.act('sfhall',o=>UI.say([['旁白','四方馆的正厅。案上摊着一本厚厚的名册，四宗弟子的名字一行一行写在上面。'],['旁白','墙上挂着一幅字：「四方来贺」。']]));
+On.act('sftree',o=>UI.say([['旁白','一棵老槐树，树干要两个人才抱得过来。'],['旁白','树上开着一串一串的小白花，风一吹，落了一地。']]));
+On.act('sfchess',o=>UI.say([['旁白','石桌上画着棋盘，黑子白子下了半盘。'],['旁白','看样子，白子要输了。']]));
+On.act('sfpet',o=>UI.say([['旁白','一只白耳朵的狌狌，蹲在乌兰脚边，正歪着头看你。'],['旁白','它冲你嗅了嗅，忽然往后一缩。']]));
+On.act('sffuton',o=>UI.say(S.flags.c3_sf_recipe?[['旁白','后院僻静，一块太湖石，一个蒲团。'],['旁白','（等结丹丹炼好了，就在这里闭关。）']]:[['旁白','后院僻静，一块太湖石，一个蒲团。没有人来。']]));
+
+/* ---------- arriving ---------- */
+On.enter(id=>{ if(id==='jc_sifang'&&!S.flags.c3_sf_in) setTimeout(()=>{ if(RT.mapId==='jc_sifang'&&!S.flags.c3_sf_in) UI.say(SF.arrive(),()=>{ UI.hud(); Story.check(); }); },500); });
+SF.arrive=()=>{ const sn=SECTS[S.sect].name, w=S.sect==='jian'||S.sect==='dan'?'西':'东'; return [
+  ['旁白','四方馆是礼部给四宗弟子安排的住处。一进门，是一个四四方方的大院子，一棵老槐树开得正好。'],
+  ['礼部小吏','（他从正厅里迎出来，手里捧着一本名册）哪个宗门的？'],
+  ['谢霁月',`${sn}。谢霁月，${S.name}。`],
+  ['礼部小吏',`${sn}……${w}厢。`],
+  ['旁白','他提笔写名字，写到「谢霁月」三个字时，笔尖停了一下，抬头看了大师姐一眼。'],
+  ['礼部小吏','……上一届的魁首。久仰。'],
+  ['旁白','他的语气很客气。可那一眼，和城门口那个守城兵一模一样。'],
+  ['礼部小吏','馆里有规矩：天黑以后，不许出馆门。萧大人的令。'],
+  ['谢霁月','……知道了。'],
+  {flag:'c3_sf_in'},
+  ['旁白','（四宗的弟子都住在这里。在院子里走走，见见别的宗门的人。）'],
+  ...(S.sect==='dan'?[]:[['旁白','（药王谷的厢房在西南边。）']])]; };
+
+/* ---------- 苏小棠 ---------- */
+SF.tangMeet=()=>S.sect==='dan'?[
+  ['苏小棠','{名}，我们的屋子在这边！'],
+  ['苏小棠','我刚才去看过了，隔壁住的是天机阁的人。神神秘秘的，一直在屋里摇铜钱……'],
+  ['苏小棠','（她压低声音）还有万兽谷那个姐姐，带了一只猴子！会作揖的！'],
+  {flag:'c3_sf_tang'}]:[
+  ['苏小棠','{名}——！'],
+  ['旁白','她从药王谷的厢房里冲出来，差点撞翻门口的花盆。'],
+  ['苏小棠',`我就知道你会来！长老说${SECTS[S.sect].name}派的是谢师姐，还有一个新弟子——我一猜就是你！`],
+  ['苏小棠','我们药王谷就来了我一个。长老说，让我来见见世面。'],
+  ['苏小棠','……'],
+  ['苏小棠','其实，我是想来看你比武的。'],
+  {love:{tang:30}},{flag:'c3_sf_tang'}];
+SF.recipe=()=>[
+  ['苏小棠','结丹丹？'],
+  ['苏小棠','（她眼睛一下子亮了）我带了！长老的方子，我偷偷抄了一份，就压在枕头底下！'],
+  ['旁白','她跑回厢房，拿出一张折得方方正正的纸。'],
+  ['苏小棠','三味主药。'],
+  ['苏小棠','「龙血竭」——西市的药材行就有。'],
+  ['苏小棠','「千年石钟乳」——要那种一滴一滴，滴了一千年的。回春堂兴许有，就是贵。'],
+  ['苏小棠','还有一味最难的……「九转还魂草」。'],
+  ['苏小棠','这个我只在书上见过。京城里，只有拍卖会上才可能有。'],
+  ['苏小棠','药材凑齐了，我帮你炼！我看火候，可准了。'],
+  {give:{c3_recipe:1}},{flag:'c3_sf_recipe'},
+  ['旁白','外面传来一声梆子响。天黑了。'],
+  ['苏小棠','宵禁了……{名}，快回去睡吧。明天，我陪你去西市！']];
+Object.assign(ITEMS,{c3_recipe:{name:'结丹丹方', icon:'i_slip', quest:true, keep:true, desc:'苏小棠从药尘长老那里抄来的结丹丹方。三味主药：龙血竭（西市药材行）、千年石钟乳（回春堂）、九转还魂草（拍卖会）。'}});
+
+/* ---------- 大师姐 under the 槐树: 结丹 ---------- */
+SF.jiedan=()=>{ const R=SF.rivals(), who={sf_lin:['谢霁月','林沧。剑宗这一辈里最快的剑。他自己也知道。'], sf_wulan:['谢霁月','乌兰。带着灵兽上台，一个人当两个人用。'], sf_wenxuan:['谢霁月','温玄……天机阁的人，你永远不知道他们在算什么。']}; return [
+  ['旁白','天快黑了。大师姐坐在槐树底下，剑横在膝上。槐花落在她的剑鞘上。'],
+  ['谢霁月','都见过了？'],
+  ...R.map(id=>who[id]),
+  ['谢霁月','他们都是筑基后期。和你一样。'],
+  ['谢霁月','上一回我能拿头名，不是因为我的剑比别人快。'],
+  ['谢霁月','是因为那时候，我已经比他们高一个境界。'],
+  ['我','……结丹？'],
+  ['谢霁月','离大比还有十天。够了。'],
+  ['谢霁月','结丹丹的方子，药王谷有。'],
+  ['谢霁月',S.sect==='dan'?'你那位同门小师妹，应该知道。':'你那位小棠姑娘，应该知道。'],
+  {flag:'c3_sf_jiedan'}]; };
+SF.morning=()=>[
+  ['旁白','天亮了。槐花落了一院子。'],
+  ['苏小棠','{名}！西市一早就开了，我们走吧！'],
+  ['谢霁月','我在馆里等你。'],
+  ['旁白','（西市在四方馆门外的街上，往西走。）']];
+
+/* ---------- talking in the yard ---------- */
+SF.TALK={
+  sf_clerk:()=>S.flags.c3_sf_in?[['礼部小吏','大比三月十五开擂，在贡院前头。到时候礼部会来馆里接人。'],['礼部小吏','天黑以后，别出馆门。']]:[['礼部小吏','……']],
+  sf_lin:()=>[['林沧','（他靠着廊柱，抱着剑，眼皮都没抬）……你就是谢霁月的师弟妹？'],['林沧','我听说，你们那位大师兄，叫一只妖兽给吃了。'],['林沧','……可惜。我本来想在擂台上会会他。'],['林沧','大比上见。我的剑，不会等你。']],
+  sf_cheng:()=>[['程小剑','（他盯着棋盘，额头冒汗）师兄说，这一局要是输了，罚我扎三天马步……'],['卜小鱼','（对面的小姑娘笑眯眯地落了一子）你已经输了。']],
+  sf_wulan:()=>[['乌兰','哈！你就是谢霁月的师弟妹？长得倒是挺顺眼！'],['乌兰','我叫乌兰，万兽谷的。这是阿毛。'],['旁白','她脚边的狌狌冲你嗅了嗅，忽然往她身后一缩，龇了龇牙。'],['乌兰','咦？阿毛怕你？'],['乌兰','（她凑过来闻了闻，皱起眉头）……你身上，怎么有一股狼的味道？'],['乌兰','你在路上，见过狼？']],
+  sf_wenxuan:()=>[['温玄','（他在指尖转着三枚铜钱，没有抬头）……你今天，不宜出门。'],['温玄','玩笑话。'],['温玄','不过，最近京城的卦，确实很乱。'],['旁白','他把三枚铜钱往桌上一撒。'],['温玄','……又是这一卦。'],['温玄','像是有什么东西，在一颗一颗地，吃星星。']],
+  sf_bu:()=>[['卜小鱼','嘘——我在算这一步。'],['卜小鱼','……好啦，算完了。他输了。']],
+};
+JC.CHAT=Object.assign(JC.CHAT,{sf_clerk:['名册……名册……'], sf_lin:['……'], sf_cheng:['这步……这步怎么走……'], sf_wulan:['阿毛，别乱跑！'], sf_wenxuan:['……又是这一卦。'], sf_bu:['你输啦～']});
+On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
+  if(id==='tang'){ if(!F.c3_sf_tang){ UI.say(SF.tangMeet(),()=>{ UI.hud(); Story.check(); }); return true; }
+    if(F.c3_sf_jiedan&&!F.c3_sf_recipe){ UI.say(SF.recipe(),()=>{ UI.hud(); Story.check(); }); return true; }
+    C3.menu('tang',F.c3_sf_recipe?[['苏小棠','龙血竭、石钟乳、九转还魂草……我都背下来啦！']]:[['苏小棠','京城的槐花，可以入药的。清热、凉血……'],['苏小棠','……你看我干什么。']]); return true; }
+  if(id==='xie'){ if(SF.ready()&&!F.c3_sf_jiedan){ UI.say(SF.jiedan(),()=>{ UI.hud(); Story.check(); }); return true; }
+    C3.menu('xie',F.c3_sf_jiedan?[['谢霁月','去找苏小棠。']]:F.c3_sf_in?[['谢霁月','去见见他们。将来在擂台上，你会一个一个遇到。']]:[['谢霁月','……']]); return true; }
+  const L=SF.TALK[id]; if(!L) return false; SF.met(id); UI.say(L(),()=>{ UI.hud(); Story.check(); }); return true; });
+On.theme(id=>id==='jc_sifang'?'calm':null);
+{ const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_sf_in&&RT.mapId!=='jc_sifang') l.push({name:'京城 · 四方馆', map:'jc_sifang', x:15, y:19}); return l; }; }
+
+/* ---------- the quests ---------- */
+{ const q=QUESTS.find(q=>q.id==='c3e'); Object.assign(q,{check:s=>!!s.flags.c3_sf_in,
+    progress:s=>!s.flags.c3_jc_board?'看看十字街口的告示':'去四方馆（十字街往西）',
+    target:s=>!s.flags.c3_jc_board?['jc_zhuque',19,14,'十字街口的告示']:(RT.mapId==='jc_sifang'?['jc_sifang',15,20,'四方馆']:['jc_zhuque',1,14,'往西的十字街'])}); }
+QUESTS.push(
+  {id:'c3f', title:'四方馆', desc:'四宗弟子都住在四方馆。将来在擂台上，会一个一个遇到。', check:s=>!!s.flags.c3_sf_recipe,
+    progress:s=>{ const F=s.flags, n=(s.c3&&s.c3.met||[]).filter(id=>SF.rivals().includes(id)).length, need=Math.min(2,SF.rivals().length);
+      return !F.c3_sf_tang?'找苏小棠（药王谷的厢房）':n<need?`见见别的宗门的人 ${n}/${need}`:!F.c3_sf_jiedan?'大师姐在槐树底下':'问苏小棠要结丹丹方'; },
+    target:s=>{ const F=s.flags; if(!F.c3_sf_tang) return ['jc_sifang',8,13,'苏小棠'];
+      if(!SF.ready()){ const id=SF.rivals().find(id=>!(s.c3&&s.c3.met||[]).includes(id)); const o=MAPS.jc_sifang.objects.find(o=>o.id===id); return o?['jc_sifang',o.x,o.y+1,o.name]:null; }
+      return !F.c3_sf_jiedan?['jc_sifang',12,10,'大师姐']:['jc_sifang',8,13,'苏小棠']; }},
+  {id:'c3g', title:'结丹 · 凑药材', desc:'离大比还有十天。凑齐结丹丹的三味主药：龙血竭（西市药材行）、千年石钟乳（回春堂）、九转还魂草（拍卖会）。', check:s=>false,
+    progress:s=>!s.flags.c3_sf_morning?'宵禁了，回自己宗门的厢房睡觉':'去西市（四方馆门外往西，下一张地图）',
+    target:s=>{ const [x,y]=SF_WING[s.sect]; return !s.flags.c3_sf_morning?['jc_sifang',x+3,y+3,'你们的厢房']:['jc_sifang',2,23,'往西的街']; }});
+// the order: c3f and c3g come after c3e
+{ const ids=QUESTS.map(q=>q.id), e=ids.indexOf('c3e'); for(const id of ['c3g','c3f']){ const i=QUESTS.findIndex(q=>q.id===id); const [q]=QUESTS.splice(i,1); QUESTS.splice(e+1,0,q); } }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -11501,6 +11743,12 @@ setTimeout(()=>Review.route(), 400);
       ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true},'jc_zhuque',13,32,'up','c3d',16.5)),
     N('city','朱雀大街：逛一逛、看告示','城里，朱雀大街。两边是酒楼、当铺、布庄、药铺、茶楼、客栈；十字街上有包子摊、布摊、首饰摊、水果摊，糖葫芦（10 灵石，吴阿蛮要的）、包子（5 灵石）能买；走近的人头顶会冒出一句话；每个人都能说话。十字街口的告示：大比、宵禁、寻人。西边、东边、北边的路口暂时拦着（之后的地图）。',
       ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true},'jc_zhuque',13,22,'up','c3e',16.5)),
+    N('sifang','四方馆：登记入住','四方馆门口。进门：礼部小吏登记，写到「谢霁月」时停了一下；四宗的厢房、老槐树、下棋的两个人、后院的月洞门。',
+      ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true},'jc_sifang',15,19,'up','c3e',17)),
+    N('yard','四方馆：苏小棠和别的宗门','已经登记。找苏小棠（不管哪个宗门都在药王谷的厢房；药王谷弟子是另一段）；和别的宗门的参赛弟子说话：林沧、乌兰（她的狌狌闻到你身上有狼味）、温玄（「有什么东西在吃星星」）；下棋的两个人。',
+      ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true},'jc_sifang',12,15,'up','c3f',17)),
+    N('jiedan','槐树底下：大师姐说结丹','苏小棠和别的宗门都见过了。去槐树底下找大师姐：上一回她能拿头名，是因为比别人高一个境界——离大比十天，结丹。然后去找苏小棠要丹方（三味主药），宵禁的梆子响，回自己宗门的厢房睡觉，第二天早上苏小棠拉你去西市。',
+      ()=>{ go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true},'jc_sifang',12,11,'up','c3f',18); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan']; Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -11689,16 +11937,24 @@ const SelfTest3={
           for(const act of ['jcshop','jcsedan','jcstall','jcway']) for(const o of RT.map.objects.filter(o=>o.act===act)){ Dungeon.act(o); await adv(); }
           Dungeon.act(obj('jcboard')); await adv(); const hulu=count(S,'jc_hulu')>0;
           return {fail:!(inCity&&S.flags.c3_jc_board&&hulu&&!bad.length), info:`${inCity?'进城':'进城 ✗'}，${S.flags.c3_jc_board?'告示':'告示 ✗'}，${hulu?'糖葫芦':'糖葫芦 ✗'}${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：四方馆 → 苏小棠 → 别的宗门 → 大师姐说结丹 → 丹方 → 宵禁睡觉', async()=>{ const n0=SelfTest3.lines.length; cur='四方馆';
+          node('c3-city').run(); await W(400); S.flags.c3_jc_board=true; enterMap('jc_sifang',28,22); await W(900); await adv(); const inSf=!!S.flags.c3_sf_in;
+          Story.talk('tang'); await adv(); for(const o of RT.ents.filter(o=>o.type==='npc'&&o.id.startsWith('sf_'))){ Story.talk(o.id); await adv(); }
+          Story.talk('xie'); await adv(); Story.talk('tang'); await adv(); const got=count(S,'c3_recipe')>0;
+          const [x,y]=SF_WING[sect]; Dungeon.act(RT.map.objects.find(o=>o.act==='sfroom'&&o.sect===sect)); await adv(0); await W(1500); await adv();
+          for(let i=0;i<30&&QUESTS[S.quest].id!=='c3g';i++){ await adv(); UI.sync(); Story.check(); await W(100); }
+          const F=S.flags, ok=inSf&&F.c3_sf_tang&&F.c3_sf_jiedan&&F.c3_sf_recipe&&got&&F.c3_sf_morning&&QUESTS[S.quest].id==='c3g';
+          return {fail:!ok, info:`${inSf?'登记':'登记 ✗'}，${F.c3_sf_tang?'苏小棠':'苏小棠 ✗'}，${F.c3_sf_jiedan?'结丹':'结丹 ✗'}，${got?'丹方':'丹方 ✗'}，${F.c3_sf_morning?'第二天':'第二天 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'3 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'4 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }

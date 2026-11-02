@@ -139,5 +139,5 @@ On.draw(({g,T,ox,oy})=>{ if(!String(RT.mapId).startsWith('jc_')) return; const Z
       for(const s of o._fa.signs){ const fs=s.big?s.h*Z*.82:s.plain?s.h*Z*.95:s.h*Z*.9; g.font=`${Math.round(fs)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle=s.ink; g.textAlign='center'; g.textBaseline='middle';
         g.fillText(s.text, bx+(s.x+s.w/2)*Z, by+(s.y+s.h/2+.5)*Z); } }
     if(o.flagText){ const c=SPRC[o.spr]; if(!c) continue; const lx=ox+(o.x+.5)*T-c.width*Z/2, ty=oy+(o.y+1)*T-c.bottom*Z;
-      g.font=`${Math.round(11*Z)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle='#2a1e1a'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(o.flagText,lx+11*Z,ty+16*Z); } }
+      g.font=`${Math.round((o.flagSize||11)*Z)}px "Ma Shan Zheng","STKaiti","KaiTi",serif`; g.fillStyle=o.flagInk||'#2a1e1a'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(o.flagText,lx+(o.flagX||11)*Z,ty+(o.flagY||16)*Z); } }
   g.textBaseline='alphabetic'; });
