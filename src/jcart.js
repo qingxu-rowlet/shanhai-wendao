@@ -129,6 +129,10 @@ JA.facade=function(o,c){ const fa=o.fa, W=c.width, H0=c.height, wt=Math.round(H0
     if(k==='moon'){ g.fillStyle='#3a2418'; g.beginPath(); g.arc(W-22,LT+12,9,0,7); g.fill(); g.fillStyle='#f4d890'; g.beginPath(); g.arc(W-22,LT+12,7.5,0,7); g.fill(); g.fillStyle='#7a5a38'; for(let i=-6;i<=6;i+=3) g.fillRect(W-22+i,LT+5,1,14); }
     if(k==='jars') for(const x of [dx-12,dx+dw+5]){ g.fillStyle='#6a3a20'; g.beginPath(); g.ellipse(x+3,FB-4,4,5,0,0,7); g.fill(); r(x+1,FB-10,4,2,'#3a2418'); r(x+1,FB-6,4,2,'#e8d8a8'); }
     if(k==='post'){ r(W-6,FB-16,2,16,'#5e3a20'); r(W-8,FB-14,6,1,'#5e3a20'); }
+    if(k==='scrolls') for(const x of [9,W-25]){ r(x,LT+2,16,1,'#5e3a20'); for(let i=0;i<3;i++){ r(x+1+i*5,LT+3,4,18,'#efe6cc'); r(x+1+i*5,LT+3,4,1,'#8a5a36'); r(x+1+i*5,LT+20,4,1,'#8a5a36'); for(let j=LT+6;j<LT+18;j+=3) r(x+2+i*5,j,2,1,'#3a3028'); } }
+    if(k==='weapons') for(const x of [9,W-25]){ r(x,LT+3,16,18,'#3a2a20'); for(let i=0;i<4;i++){ r(x+2+i*4,LT+5,1,14,'#c8d0d8'); r(x+1+i*4,LT+15,3,1,'#c8a050'); r(x+2+i*4,LT+16,1,3,'#5e3a20'); } }
+    if(k==='herbs') for(let x=8;x<W-8;x+=6){ if(x>dx-6&&x<dx+dw+2) continue; r(x+2,LT,1,3,'#3a2418'); const cl=['#6a7a3a','#8a6a3a','#7a8a4a','#9a5a3a'][(x/6|0)%4]; r(x,LT+3,5,8,cl); r(x+1,LT+11,3,2,cl); r(x,LT+3,5,1,'#c8a050'); }
+    if(k==='gold'){ r(4,LT-3,W-8,2,'#d8b048'); for(const x of [4,W-8]) r(x,LT-2,4,2,'#d8b048'); r(dx-3,dy-3,dw+6,1,'#d8b048'); }
   }
   d.bottom=H; return d; };
 On.building((o,c)=>{ if(!o.fa) return c; if(o._faBase!==c){ o._faBase=c; o._fa=JA.facade(o,c); } return o._fa; });

@@ -98,7 +98,7 @@ On.enter(id=>{ if(!String(id).startsWith('jc_')) return; for(const o of RT.ents)
    the gatehouse: a swept brick yard, the main hall where the 礼部's clerk keeps the register, four wings (one for each
    sect, its banner before the door), a great old 槐树, a stone table where two disciples are at 围棋, pots of flowers, and
    in the south-west a moon gate into a small back courtyard with a 太湖石 and a cushion (where you will sit for 结丹).
-   The street outside runs east back to 朱雀大街 and west to 西市 (the next map).
+   The street outside runs east back to 朱雀大街 and west to 西市.
    ============================================================ */
 const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          // each sect's wing (its door is below the middle)
 { const W=30, H=26, G=[...Array(H)].map(()=>Array(W).fill('S'));
@@ -124,7 +124,6 @@ const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          //
     {type:'jc_moongate', x:3, y:15, spr:'jc_moongate'},
     {type:'jc_rock', x:2, y:17, spr:'jc_rock'}, {type:'jc_futon', x:6, y:18, spr:'jc_futon', act:'sffuton'},
     {type:'jc_sgate', x:13, y:21, get spr(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'jc_sgate_dim':'jc_sgate'; }, get flagText(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'':'四方馆'; }, flagInk:'#e8c870', flagX:86, flagY:17.5, flagSize:6.5},
-    {type:'jc_barrier', x:1, y:22, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:23, spr:'jc_barrier', act:'jcway', way:'west'}, {type:'jc_barrier', x:1, y:24, spr:'jc_barrier', act:'jcway', way:'west'},
     {type:'jc_willow', x:6, y:24, spr:'jc_willow'}, {type:'jc_willow', x:23, y:24, spr:'jc_willow'},
     // people: the 礼部's clerk, and the other sects' entrants (your own sect's are you and 大师姐)
     P('sf_clerk',15,7,'礼部小吏',{g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:2,face:'small'}),
@@ -137,4 +136,50 @@ const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          //
     P('tang',8,12,'苏小棠',LOOK_TANG,s=>true),
     P('xie',12,9,'谢霁月',LOOK_XIE,s=>true),
   ];
-  MAPS.jc_sifang={ name:'京城 · 四方馆', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:29,y:22,to:'jc_zhuque',tx:1,ty:14},{x:29,y:23,to:'jc_zhuque',tx:1,ty:15}] }; }
+  MAPS.jc_sifang={ name:'京城 · 四方馆', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:29,y:22,to:'jc_zhuque',tx:1,ty:14},{x:29,y:23,to:'jc_zhuque',tx:1,ty:15},{x:0,y:22,to:'jc_xishi',tx:30,ty:9},{x:0,y:23,to:'jc_xishi',tx:30,ty:10},{x:0,y:24,to:'jc_xishi',tx:30,ty:11}] }; }
+
+/* ============================================================
+   地图三：西市 — the market of rare things, west along the street from 四方馆. On the north side the 琅琊阁 (散修's
+   功法, a new lot every three days) and, by its door, the 琅琊榜; the 聚宝楼, where the auction is held every seventh
+   night; between them a 牌坊 over the lane running north (to the alleys: a map still to come). Down the middle, stalls:
+   old books, 符纸, bird cages, curios. On the south side 百草行 (the herb dealers: 龙血竭), 玄铁斋 (法器) and 博古斋
+   (antiques), with herbs drying before them on the back lane, where 阿秀's mother is still asking after her.
+   ============================================================ */
+{ const W=32, H=22, G=[...Array(H)].map(()=>Array(W).fill('P'));
+  for(let x=0;x<W;x++){ G[0][x]='X'; G[H-1][x]='X'; } for(let y=0;y<H;y++){ G[y][0]='X'; G[y][W-1]='X'; }
+  for(const y of [9,10,11]) G[y][W-1]='P';                                            // east, back to 四方馆
+  for(const x of [15,16]) G[0][x]='P';                                                // the lane north, under the 牌坊
+  const roofs={grey:['#22262c','#2e343c','#3e4650','#68727e'], green:['#1c3028','#28423a','#36584c','#5e8a78'], brown:['#2c2018','#3e2e22','#56402e','#86684c'], red:['#3a1612','#561e18','#742a20','#a84a3a']};
+  const shop=(x,y,w,h,label,id,roof,fa)=>({type:'building', x, y, w, h, style:'shop', roof:roofs[roof], label, door:[x+Math.floor(w/2),y+h], act:'xsshop', id, fa:{...fa, roof:roofs[roof]}});
+  const P=(id,x,y,name,look,extra)=>({type:'npc', id, x, y, look, name, act:'talk', ...(extra||{})});
+  const under=()=>typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=19&&RT.fy<=2;              // walking under the 牌坊: it goes half see-through
+  const objects=[
+    shop(1,2,10,4,'琅琊阁','lang','brown',{storeys:2, wall:'wood', sign:'琅琊阁', open:true, lit:true, deco:['scrolls','blinds']}),
+    shop(21,2,10,4,'聚宝楼 · 拍卖行','ju','red',{storeys:2, wall:'plaster', sign:'聚宝楼', pillar:'#8a2a22', lit:true, lanternText:'拍', deco:['gold','doorLanterns','balconyLanterns']}),
+    shop(1,13,9,4,'百草行 · 药材','yao','green',{wall:'wood', sign:'百草行', pillar:'#2a4a3a', open:true, deco:['herbs','drawers'], windows:false}),
+    shop(12,13,8,4,'玄铁斋 · 法器','fa','grey',{wall:'brick', sign:'玄铁斋', pillar:'#3a3632', deco:['weapons']}),
+    shop(22,13,9,4,'博古斋 · 古玩','gu','brown',{wall:'plaster', sign:'博古斋', pillar:'#5e3a20', open:true, deco:['scrolls']}),
+    {type:'jc_paifang', x:15, y:2, posts:[13,18], get spr(){ return under()?'jc_paifang_dim':'jc_paifang'; }, get flagText(){ return under()?'':'西市'; }, flagInk:'#e8c870', flagX:66, flagY:19, flagSize:9},
+    {type:'jc_barrier', x:15, y:1, spr:'jc_barrier', act:'jcway', way:'xiang'}, {type:'jc_barrier', x:16, y:1, spr:'jc_barrier', act:'jcway', way:'xiang'},
+    {type:'jc_bang', x:12, y:6, spr:'jc_bang', act:'xsbang'},
+    {type:'jc_stall', x:5, y:9, spr:'jc_stall_book', act:'xsstall', si:0, fw:1}, {type:'jc_stall', x:10, y:9, spr:'jc_stall_fu', act:'xsstall', si:1, fw:1},
+    {type:'jc_cages', x:21, y:9, spr:'jc_cages', act:'xsstall', si:2}, {type:'jc_stall', x:26, y:9, spr:'jc_stall_curio', act:'xsstall', si:3, fw:1},
+    {type:'jc_herbs', x:3, y:19, spr:'jc_herbs', act:'xsherbs', fw:1}, {type:'jc_herbs', x:8, y:19, spr:'jc_herbs', act:'xsherbs', fw:1},
+    {type:'jc_barrels', x:14, y:19, spr:'jc_barrels'}, {type:'jc_flag', x:11, y:16, spr:'jc_flag_yao', flagText:'药'},
+    {type:'lantern', x:11, y:12}, {type:'lantern', x:20, y:12}, {type:'lantern', x:2, y:7}, {type:'lantern', x:30, y:7},
+    {type:'jc_willow', x:28, y:19, spr:'jc_willow'}, {type:'jc_willow', x:24, y:20, spr:'jc_willow'},
+    // people
+    P('xs_lang',3,7,'琅琊阁主',{g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:5,face:'small',beard:'#ece8e0'}),
+    P('xs_ju',28,7,'聚宝楼伙计',{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
+    P('xs_book',5,8,'旧书摊的书生',{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:2,face:'small'}),
+    P('xs_fu',10,8,'卖符纸的道士',{g:'m',skin:2,hair:0,hairColor:2,style:'robe',cloth:4,face:'mid',beard:'#5a4a3a'}),
+    P('xs_bird',22,9,'鸟贩',{g:'m',skin:3,hair:1,hairColor:0,style:'jin',cloth:3,face:'mid'}),
+    P('xs_gu',26,8,'古董贩子',{g:'m',skin:1,hair:0,hairColor:1,style:'robe',cloth:6,face:'small'}),
+    P('xs_yao',3,17,'百草行掌柜',{g:'m',skin:2,hair:0,hairColor:3,style:'robe',cloth:5,face:'mid'}),
+    P('xs_sanxiu',8,11,'散修',{g:'f',skin:1,hair:4,hairColor:0,style:'jin',cloth:4,face:'mid'}),
+    P('xs_mother',19,19,'找孩子的妇人',{g:'f',skin:2,hair:3,hairColor:1,style:'qun',cloth:1,face:'mid'}),
+    P('tang',28,10,'苏小棠',LOOK_TANG),
+  ];
+  MAPS.jc_xishi={ name:'京城 · 西市', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:31,y:9,to:'jc_sifang',tx:1,ty:22},{x:31,y:10,to:'jc_sifang',tx:1,ty:23},{x:31,y:11,to:'jc_sifang',tx:1,ty:24}] }; }
+// the 牌坊's two posts stop you; the way between them is open
+On.enter(id=>{ if(id!=='jc_xishi') return; for(const o of RT.ents) if(o.posts) for(const x of o.posts) RT.solid[o.y][x]=true; });

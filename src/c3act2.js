@@ -94,8 +94,8 @@ On.act('jcboard',o=>{ const first=!S.flags.c3_jc_board; UI.say([
   ['旁白','第二张：「京畿近有妖患。钦差萧大人令：入夜宵禁，违者拘押。」'],
   ['旁白','第三张被撕掉了一半，只剩几行字：「寻人：小女阿秀，七岁，正月里在西市走失。身穿红袄，左耳下有一颗痣……」'],
   ...(first?[['谢霁月','（她看着第三张，看了很久）……'],['谢霁月','走吧。先去四方馆。'],{flag:'c3_jc_board'},['旁白','（四方馆在西边：沿着十字街往西走。）']]:[])], ()=>{ UI.hud(); Story.check(); }); });
-On.act('jcway',o=>UI.say([['旁白',{west:'往西：西市。',east:'往东：东市。',north:'往北：皇城。'}[o.way]],
-  ['旁白',{west:'（西市是下一张地图，做好以后从这里走。）',east:'（东市是之后的地图。）',north:'（皇城只有大比开幕那天才能进。）'}[o.way]]]));
+On.act('jcway',o=>UI.say([['旁白',{east:'往东：东市。',north:'往北：皇城。',xiang:'牌坊北边是一条窄巷，七拐八拐的，看不到头。'}[o.way]],
+  ['旁白',{east:'（东市是之后的地图。）',north:'（皇城只有大比开幕那天才能进。）',xiang:'（巷子是之后的地图。）'}[o.way]]]));
 On.theme(id=>id&&id.startsWith('jc_')?'village':null);
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_jc_in&&RT.mapId!=='jc_zhuque') l.push({name:'京城 · 朱雀门', map:'jc_zhuque', x:3, y:31}); return l; }; }
 

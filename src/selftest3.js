@@ -75,16 +75,25 @@ const SelfTest3={
           for(let i=0;i<30&&QUESTS[S.quest].id!=='c3g';i++){ await adv(); UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=inSf&&F.c3_sf_tang&&F.c3_sf_jiedan&&F.c3_sf_recipe&&got&&F.c3_sf_morning&&QUESTS[S.quest].id==='c3g';
           return {fail:!ok, info:`${inSf?'登记':'登记 ✗'}，${F.c3_sf_tang?'苏小棠':'苏小棠 ✗'}，${F.c3_sf_jiedan?'结丹':'结丹 ✗'}，${got?'丹方':'丹方 ✗'}，${F.c3_sf_morning?'第二天':'第二天 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：西市 → 百草行买龙血竭 → 琅琊阁买功法 → 琅琊榜 → 聚宝楼，西市每个人、每样东西都能点', async()=>{ const n0=SelfTest3.lines.length; cur='西市';
+          node('c3-xishi').run(); await W(900); await adv(); const inXs=!!S.flags.c3_xs_in; S.stones=Math.min(S.stones,50);
+          Story.talk('xs_yao'); await adv(); const xue=count(S,'c3_xue')===1&&S.stones>=0;
+          S.stones=500; const b0=JSON.stringify(S.bonus||{}); Story.talk('xs_lang'); await adv(0); await adv('买'); await W(200); await adv(); const gf=XS.st().gf.length===1&&JSON.stringify(S.bonus||{})!==b0;
+          const bad=[]; for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv('不买'); }
+          for(const act of ['xsshop','xsstall','xsherbs','xsbang','jcway']) for(const o of RT.map.objects.filter(o=>o.act===act)){ Dungeon.act(o); await adv('不买'); }
+          UI.sync(); Story.check(); const F=S.flags, q=QUESTS[S.quest], prog=q&&q.progress?q.progress(S):'';
+          const ok=inXs&&xue&&gf&&F.c3_xs_xue&&F.c3_xs_bang&&F.c3_xs_lot&&F.c3_xs_axiu&&!bad.length&&q.id==='c3g'&&/回春堂/.test(prog);
+          return {fail:!ok, info:`${inXs?'进西市':'进西市 ✗'}，${xue?'龙血竭':'龙血竭 ✗'}，${gf?'功法':'功法 ✗'}，${F.c3_xs_bang?'琅琊榜':'琅琊榜 ✗'}，${F.c3_xs_lot?'拍品单':'拍品单 ✗'}，${F.c3_xs_axiu?'阿秀娘':'阿秀娘 ✗'}，任务「${prog}」${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'4 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'5 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }

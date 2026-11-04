@@ -2,6 +2,7 @@
    山海问道 · 第三章的审查点 — each beat of act 1 「北上」 as a save you can open with #t-<id> (or from #review). Every save
    starts from chapter two's end (Chapters.C2) and adds only what this chapter has done by then.
    ============================================================ */
+const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true,c3_sf_jiedan:true,c3_sf_recipe:true,c3_sf_morning:true};
 { const A=['c3_go','c3_cooked','c3_dinner','c3_morning','c3_anping_in','c3_notice','c3_shrine','c3_old','c3_grave','c3_night'];
   const upto=f=>Object.fromEntries(A.slice(0,A.indexOf(f)+1).map(k=>[k,true]));
   const go=(flags,map,x,y,dir,quest,hour)=>{ Review.base({quest, L:12, sect:'jian'}); Chapters.C2.ensure(S); Object.assign(S.flags,flags);
@@ -38,6 +39,12 @@
       ()=>go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true},'jc_sifang',12,15,'up','c3f',17)),
     N('jiedan','槐树底下：大师姐说结丹','苏小棠和别的宗门都见过了。去槐树底下找大师姐：上一回她能拿头名，是因为比别人高一个境界——离大比十天，结丹。然后去找苏小棠要丹方（三味主药），宵禁的梆子响，回自己宗门的厢房睡觉，第二天早上苏小棠拉你去西市。',
       ()=>{ go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true},'jc_sifang',12,11,'up','c3f',18); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan']; Story.check(); }),
+    N('xishi','西市：进门','四方馆住下的第二天早上，从四方馆门外往西走到西市。苏小棠一进来眼睛就不够用。北边：琅琊阁和门口的琅琊榜、牌坊、聚宝楼；中间：旧书、符纸、鸟笼、古玩四个摊子；南边：百草行、玄铁斋、博古斋，后街上晒着药材，一个妇人在找孩子。',
+      ()=>{ go({...upto('c3_night'),...XS_RV},'jc_xishi',30,10,'left','c3g',9); }),
+    N('xue','百草行：龙血竭（苏小棠识破假货）','百草行门口。和掌柜说话：他先拿出假的龙血竭，苏小棠抹在纸上识破，掌柜从后屋拿出真的（萧府把真的都收走了），砍价到 120 灵石，灵石不够时苏小棠帮你垫上。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true},'jc_xishi',5,18,'up','c3g',10); }),
+    N('lang','琅琊阁：功法和琅琊榜','琅琊阁门口，身上有 600 灵石。和阁主说话：书架上三本散修功法（每三天换一批），买一本，属性永久增加。门口的琅琊榜：另外三宗的弟子、大师姐（旁边有人添了一行字）、苏小棠、你（「新人，不详」）。聚宝楼的伙计：拍卖会七天一场，压轴是九转还魂草。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true},'jc_xishi',8,7,'up','c3g',10); S.stones=600; UI.hud(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
