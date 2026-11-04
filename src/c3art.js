@@ -3,7 +3,7 @@
    大师兄's 长生禄位 split down the middle under four claw marks) and 「山脊」 (night after the wolves: a full moon, a man
    on the ridge in a dark cloak with the pack sitting round him, the camp fire small below).
    ============================================================ */
-const LOOK_XIAO={g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:1};   // 萧烬 — a plain white robe (only ever a dark shape in act 1)
+const LOOK_XIAO={g:'m',skin:0,hair:4,hairColor:3,style:'robe',cloth:5};   // 萧烬 — long loose silver-grey hair, a plain black robe: nothing like 顾长歌's ponytail and white
 const C3A={};
 
 /* ---------- 裂开的牌位 ---------- */

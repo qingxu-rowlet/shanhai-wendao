@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="7d9975efd6"><script>(function(){var B="7d9975efd6";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="e74e4f967f"><script>(function(){var B="e74e4f967f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9695,7 +9695,7 @@ DODGE.c3_hejv={
    大师兄's 长生禄位 split down the middle under four claw marks) and 「山脊」 (night after the wolves: a full moon, a man
    on the ridge in a dark cloak with the pack sitting round him, the camp fire small below).
    ============================================================ */
-const LOOK_XIAO={g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:1};   // 萧烬 — a plain white robe (only ever a dark shape in act 1)
+const LOOK_XIAO={g:'m',skin:0,hair:4,hairColor:3,style:'robe',cloth:5};   // 萧烬 — long loose silver-grey hair, a plain black robe: nothing like 顾长歌's ponytail and white
 const C3A={};
 
 /* ---------- 裂开的牌位 ---------- */
@@ -11565,7 +11565,7 @@ On.enter(id=>{ if(id==='jc_xiang'&&!XX.night(S)&&!S.flags.c3_xx_day){ S.flags.c3
 // three parts: what he says first; then you ask him something (or don't); then his name, and the watch coming
 XX.meet=()=>UI.say([
   {run:()=>C3A.xiangCG()},
-  ['旁白','巷子尽头，一个穿素衣的年轻人蹲在墙根下，正把一个包子掰开，喂给一条瘸了腿的黄狗。'],
+  ['旁白','巷子尽头，一个穿玄色素衣的年轻人蹲在墙根下，正把一个包子掰开，喂给一条瘸了腿的黄狗。他的头发没有束，灰白的，垂到腰上。'],
   ['旁白','墙头上蹲着一只狼。狼的头是红的。它低头看着你，没有动。'],
   ['穿素衣的年轻人','（他头也不回）{名}。'],
   ['穿素衣的年轻人','你比镜子里看起来，要小一些。'],

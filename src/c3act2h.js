@@ -41,7 +41,7 @@ On.enter(id=>{ if(id==='jc_xiang'&&!XX.night(S)&&!S.flags.c3_xx_day){ S.flags.c3
 // three parts: what he says first; then you ask him something (or don't); then his name, and the watch coming
 XX.meet=()=>UI.say([
   {run:()=>C3A.xiangCG()},
-  ['旁白','巷子尽头，一个穿素衣的年轻人蹲在墙根下，正把一个包子掰开，喂给一条瘸了腿的黄狗。'],
+  ['旁白','巷子尽头，一个穿玄色素衣的年轻人蹲在墙根下，正把一个包子掰开，喂给一条瘸了腿的黄狗。他的头发没有束，灰白的，垂到腰上。'],
   ['旁白','墙头上蹲着一只狼。狼的头是红的。它低头看着你，没有动。'],
   ['穿素衣的年轻人','（他头也不回）{名}。'],
   ['穿素衣的年轻人','你比镜子里看起来，要小一些。'],
