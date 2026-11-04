@@ -11,19 +11,19 @@ On.tile('P',(g,R,v)=>{ // 青石板: big grey flags in staggered rows, dark join
   for(let r=0;r<2;r++){ const off=(r+v)%2?4:0; for(let k=-1;k<3;k++){ const x=k*8+off, y=r*8; const sh=R()*14-7|0;
       g.fillStyle=`rgb(${140+sh},${135+sh},${125+sh})`; g.fillRect(x+1,y+1,7,7); g.fillStyle=`rgba(255,255,240,.18)`; g.fillRect(x+1,y+1,7,1);
       g.fillStyle='#6a665e'; g.fillRect(x,y,8,1); g.fillRect(x,y,1,8); } }
-  if(R()<.25){ g.fillStyle='rgba(90,120,70,.55)'; g.fillRect(R()*14|0,R()*14|0,2,1); } if(R()<.3){ g.fillStyle='rgba(60,56,50,.35)'; g.fillRect(R()*14|0,R()*14|0,1,1); } });
+  if(R()<.25){ g.fillStyle='rgba(90,120,70,.55)'; g.fillRect(R()*14|0,R()*14|0,2,1); } if(R()<.3){ g.fillStyle='rgba(60,56,50,.35)'; g.fillRect(R()*14|0,R()*14|0,1,1); } },false,'jc_');
 On.tile('X',(g,R,v)=>{ // the wall walk, seen from above: big pale bricks, the outer edge a little darker
   g.fillStyle='#7d776d'; g.fillRect(0,0,16,16);
   for(let r=0;r<4;r++) for(let k=-1;k<3;k++){ const x=k*8+(r%2?4:0), y=r*4, sh=R()*12-6|0; g.fillStyle=`rgb(${128+sh},${121+sh},${110+sh})`; g.fillRect(x+1,y+1,7,3); }
-  g.fillStyle='rgba(40,34,28,.25)'; g.fillRect(0,14,16,2); },true);
+  g.fillStyle='rgba(40,34,28,.25)'; g.fillRect(0,14,16,2); },true,'jc_');
 On.tile('Y',(g,R,v)=>{ // the wall's face: dark brick, tall, the courses picked out, a stain or two; shadow at its foot
   g.fillStyle='#4e4a45'; g.fillRect(0,0,16,16);
   for(let r=0;r<5;r++) for(let k=-1;k<3;k++){ const x=k*8+(r%2?4:0), y=r*3+1, sh=R()*10-5|0; g.fillStyle=`rgb(${92+sh},${86+sh},${78+sh})`; g.fillRect(x+1,y,7,2); }
   if(R()<.35){ g.fillStyle='rgba(30,40,24,.35)'; g.fillRect(R()*12|0,R()*8|0,2,5); }
-  g.fillStyle='rgba(0,0,0,.35)'; g.fillRect(0,14,16,2); },true);
+  g.fillStyle='rgba(0,0,0,.35)'; g.fillRect(0,14,16,2); },true,'jc_');
 On.tile('A',(g,R,v)=>{ // the passage through a gate: worn flags in the shadow of the arch
   g.fillStyle='#4a4640'; g.fillRect(0,0,16,16); for(let r=0;r<2;r++) for(let k=-1;k<3;k++){ const x=k*8+(r%2?4:0), sh=R()*10-5|0; g.fillStyle=`rgb(${84+sh},${80+sh},${72+sh})`; g.fillRect(x+1,r*8+1,7,7); }
-  g.fillStyle='rgba(10,8,6,.35)'; g.fillRect(0,0,16,16); });
+  g.fillStyle='rgba(10,8,6,.35)'; g.fillRect(0,0,16,16); },false,'jc_');
 
 // ---------- things in the streets (painted, outlined like the bosses; SPR holds a stand-in so the map knows them) ----------
 const JA={

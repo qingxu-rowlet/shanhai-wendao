@@ -58,9 +58,10 @@ const Mini = {
   },
 
   /* ---------- 天劫：dodge the lightning ---------- */
-  tribulation(done){
-    const lanes=5; let pos=2, hp=3, t=0, wave=0, strikes=[], nextAt=1.2;
-    const el=Mini.open(`<div class="mg wood trib"><h3>天劫</h3><p class="mg-tip" id="trTip">左右移动，躲开落下的天雷！</p>
+  // opt (optional, for a harder 劫): waves, warn (seconds of warning), gap (seconds between waves), title, failText
+  tribulation(done, opt={}){
+    const lanes=5, waves=opt.waves||3, warn=opt.warn||.9, gap=opt.gap||2.1; let pos=2, hp=3, t=0, wave=0, strikes=[], nextAt=1.2;
+    const el=Mini.open(`<div class="mg wood trib"><h3>${opt.title||'天劫'}</h3><p class="mg-tip" id="trTip">左右移动，躲开落下的天雷！</p>
       <div class="arena" id="trArena">${'<div class="lane"></div>'.repeat(lanes)}<div class="me" id="trMe"></div></div>
       <div class="trib-hp" id="trHp"></div><div class="mg-btns"><button class="btn big" id="trL">◀ 左</button><button class="btn big" id="trR">右 ▶</button></div></div>`);
     const me=$('#trMe'), ln=[...el.querySelectorAll('.lane')]; me.innerHTML=''; const pc=document.createElement('canvas'); pc.className='px'; const sp=lookSprite(S.look,'up',0); pc.width=sp.width; pc.height=sp.height; pc.getContext('2d').drawImage(sp,0,0); me.appendChild(pc);
@@ -70,13 +71,13 @@ const Mini = {
     const kd=e=>{ if(e.code==='ArrowLeft'||e.code==='KeyA') move(-1); if(e.code==='ArrowRight'||e.code==='KeyD') move(1); }; addEventListener('keydown',kd);
     Music.stinger('thunder');
     Mini.run(dt=>{
-      t+=dt; me.style.left=(pos/lanes*100)+'%'; $('#trHp').textContent='护体 '+'◆'.repeat(hp)+'◇'.repeat(3-hp)+'　·　第 '+Math.min(3,wave+1)+' / 3 道天雷';
-      if(t>=nextAt && wave<3){ const n=1+wave; const set=new Set(); while(set.size<Math.min(lanes-1,n+1)) set.add(Math.floor(Math.random()*lanes));
-        for(const l of set){ strikes.push({l, at:t+.9}); ln[l].classList.add('warn'); } wave++; nextAt=t+2.1; }
+      t+=dt; me.style.left=(pos/lanes*100)+'%'; $('#trHp').textContent='护体 '+'◆'.repeat(hp)+'◇'.repeat(3-hp)+'　·　第 '+Math.min(waves,wave+1)+' / '+waves+' 道天雷';
+      if(t>=nextAt && wave<waves){ const n=1+Math.min(wave,2); const set=new Set(); while(set.size<Math.min(lanes-1,n+1)) set.add(Math.floor(Math.random()*lanes));
+        for(const l of set){ strikes.push({l, at:t+warn}); ln[l].classList.add('warn'); } wave++; nextAt=t+gap; }
       for(const s of strikes){ if(!s.done && t>=s.at){ s.done=true; ln[s.l].classList.remove('warn'); ln[s.l].classList.add('bolt'); setTimeout(()=>ln[s.l]&&ln[s.l].classList.remove('bolt'),300);
         Music.stinger('thunder'); if(s.l===pos){ hp--; Sound.hurt(); el.querySelector('.trib').classList.remove('shake'); void el.offsetWidth; el.querySelector('.trib').classList.add('shake'); } } }
-      if(hp<=0 || (wave>=3 && strikes.every(s=>s.done) && t>nextAt-1)){ Mini.stop(); removeEventListener('keydown',kd); const ok=hp>0;
-        el.querySelector('.trib').innerHTML=`<h3>${ok?'渡劫成功！':'天劫未过……'}</h3><p class="mg-tip">${ok?'雷光散去，天地间一片清明。':'你被天雷击伤，这次突破失败了。筑基丹还在，养好伤再来。'}</p><button class="btn main" id="trOk">好</button>`;
+      if(hp<=0 || (wave>=waves && strikes.every(s=>s.done) && t>nextAt-1)){ Mini.stop(); removeEventListener('keydown',kd); const ok=hp>0;
+        el.querySelector('.trib').innerHTML=`<h3>${ok?'渡劫成功！':'天劫未过……'}</h3><p class="mg-tip">${ok?'雷光散去，天地间一片清明。':opt.failText||'你被天雷击伤，这次突破失败了。筑基丹还在，养好伤再来。'}</p><button class="btn main" id="trOk">好</button>`;
         $('#trOk').onclick=()=>{ Mini.close(); done(ok); }; }
     });
   },

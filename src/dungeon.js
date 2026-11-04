@@ -14,7 +14,7 @@ function bottleneck(L){
   if(L===6 && !S.flags.fx_valley) return '炼气六层瓶颈：穿过风穴的风谷，在狂风里稳住心神。';
   return null;
 }
-{ const capped=L=>L===9||L>=12||!!bottleneck(L);
+{ const capped=L=>realmCap(L)||!!bottleneck(L);
   // the same climb as before, but a bottleneck stops it like 炼气九层 does; returns how much actually landed
   const climb=n=>{ const L0=S.L, e0=S.exp; let up=false; S.exp+=n;
     while(true){ const need=expNeed(S.L); if(capped(S.L)){ if(S.exp>need) S.exp=need; break; } if(S.exp<need) break; S.exp-=need; S.L++; up=true; }
@@ -24,13 +24,13 @@ function bottleneck(L){
   gainExpQuiet=function(n){ return climb(n).got; };
   const _full=Med.full; Med.full=function(){ return _full.call(Med) || (!!bottleneck(S.L) && S.exp>=expNeed(S.L)); };
   const _sim=Med.sim; Med.sim=function(h){ let L=S.L, exp=S.exp, total=0;
-    for(let i=0;i<Med.blocks(h);i++){ const cap=(L===9||L>=12||bottleneck(L)); if(cap&&exp>=expNeed(L)) break; const g=Med.block(L), e0=exp; exp+=g;
-      while(true){ const need=expNeed(L); if(L===9||L>=12||bottleneck(L)){ exp=Math.min(exp,need); break; } if(exp<need) break; exp-=need; L++; }
+    for(let i=0;i<Med.blocks(h);i++){ const cap=(realmCap(L)||bottleneck(L)); if(cap&&exp>=expNeed(L)) break; const g=Med.block(L), e0=exp; exp+=g;
+      while(true){ const need=expNeed(L); if(realmCap(L)||bottleneck(L)){ exp=Math.min(exp,need); break; } if(exp<need) break; exp-=need; L++; }
       total+=exp>=e0?exp-e0:g; }
-    return {L, exp, total, capped:(L===9||L>=12||!!bottleneck(L))&&exp>=expNeed(L)}; };
+    return {L, exp, total, capped:(realmCap(L)||!!bottleneck(L))&&exp>=expNeed(L)}; };
   const _ahead=Med.ahead; Med.ahead=function(){ const out=[]; let L=S.L, exp=S.exp, blocks=0;
-    while(out.length<4 && blocks<6*400){ const need=expNeed(L); if((L===9||L>=12||bottleneck(L))&&exp>=need) break; exp+=Med.block(L); blocks++;
-      if(L!==9&&L<12&&!bottleneck(L)&&exp>=need){ exp-=need; L++; out.push([L,blocks]); } else if(exp>=need){ exp=need; out.push([L+.5,blocks]); } }
+    while(out.length<4 && blocks<6*400){ const need=expNeed(L); if((realmCap(L)||bottleneck(L))&&exp>=need) break; exp+=Med.block(L); blocks++;
+      if(!realmCap(L)&&!bottleneck(L)&&exp>=need){ exp-=need; L++; out.push([L,blocks]); } else if(exp>=need){ exp=need; out.push([L+.5,blocks]); } }
     return out.map(([L,b])=>[L===9.5?9.5:L%1?L:L,b]); };
 }
 

@@ -8,13 +8,15 @@
      On.theme(fn)         fn(mapId) → a music theme for that map, or nothing
      On.draw(fn)          fn({g, T, ox, oy}) after the map is drawn (on top of everything): g the canvas, T a tile, ox/oy the offset
      On.building(fn)      fn(o, canvas) → a canvas to draw for that building instead (paint something onto the house itself)
-     On.tile(ch, fn, solid) a new ground tile: fn(g, R, v, frame) paints its 16×16; solid tiles cannot be walked on
+     On.tile(ch, fn, solid, scope) a new ground tile: fn(g, R, v, frame) paints its 16×16; solid tiles cannot be walked on.
+                          scope: a map-id prefix (e.g. 'jc_') — only maps whose id starts with it use this tile, so a
+                          letter another chapter already uses for its own ground keeps its old meaning there
    Chapters 1 and 2 still use their own wrappers underneath; nothing of theirs changes.
    ============================================================ */
 const On={
   _talk:[], _act:{}, _enter:[], _wake:[], _theme:[], _draw:[], _bld:[], _tile:{},
   talk(fn){ On._talk.push(fn); }, act(name,fn){ (On._act[name]=On._act[name]||[]).push(fn); }, enter(fn){ On._enter.push(fn); },
-  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); }, draw(fn){ On._draw.push(fn); }, building(fn){ On._bld.push(fn); }, tile(ch,fn,solid){ On._tile[ch]={fn,solid}; },
+  wake(fn){ On._wake.push(fn); }, theme(fn){ On._theme.push(fn); }, draw(fn){ On._draw.push(fn); }, building(fn){ On._bld.push(fn); }, tile(ch,fn,solid,scope){ On._tile[ch]={fn,solid,scope}; },
 };
 { const _t=Story.talk; Story.talk=function(id){ for(const f of On._talk) if(f(id)===true) return; return _t.call(Story,id); }; }
 { const _a=Dungeon.act; Dungeon.act=function(o){ for(const f of (o&&On._act[o.act])||[]) if(f(o)!==false) return true; return _a.call(Dungeon,o); }; }
@@ -23,6 +25,7 @@ const On={
 { const _at=areaTheme; areaTheme=function(){ for(const f of On._theme){ const t=f(RT.mapId); if(t) return t; } return _at(); }; }
 { const _r=render; render=function(){ _r(); if(!RT.map||!On._draw.length) return; const Z=RT.scale*RT.dpr, v={g:ctx, T:TILE*Z, ox:Math.round(-RT.cam.x*Z), oy:Math.round(-RT.cam.y*Z)}; for(const f of On._draw) f(v); }; }
 { const _b=building; building=function(o){ let c=_b(o); for(const f of On._bld) c=f(o,c)||c; return c; }; }
-{ const _tc=tileCanvas; tileCanvas=function(ch,v,frame){ const t=On._tile[ch]; if(!t) return _tc(ch,v,frame); const key=ch+v+(frame||0); if(TILEC[key]) return TILEC[key];
+On.tileHere=(ch,id)=>{ const t=On._tile[ch]; return t&&(!t.scope||String(id===undefined?RT.mapId:id).startsWith(t.scope))?t:null; };
+{ const _tc=tileCanvas; tileCanvas=function(ch,v,frame){ const t=On.tileHere(ch); if(!t) return _tc(ch,v,frame); const key='on:'+(t.scope||'')+ch+v+(frame||0); if(TILEC[key]) return TILEC[key];
     const c=document.createElement('canvas'); c.width=c.height=TILE; t.fn(c.getContext('2d'), rng(ch.charCodeAt(0)*977+v*131+(frame||0)*7), v, frame||0); return TILEC[key]=c; }; }
-On.enter(()=>{ const m=RT.map; if(!m) return; for(let y=0;y<m.h;y++) for(let x=0;x<m.w;x++){ const t=On._tile[m.ground[y][x]]; if(t&&t.solid) RT.solid[y][x]=true; } });
+On.enter(()=>{ const m=RT.map; if(!m) return; for(let y=0;y<m.h;y++) for(let x=0;x<m.w;x++){ const t=On.tileHere(m.ground[y][x]); if(t&&t.solid) RT.solid[y][x]=true; } });

@@ -264,8 +264,7 @@ function gainExp(n){
   S.exp+=n; let up=false;
   while(true){
     const need=expNeed(S.L);
-    if(S.L===9){ S.exp=Math.min(S.exp,need); break; }
-    if(S.L>=12){ S.exp=Math.min(S.exp,need); break; }
+    if(realmCap(S.L)){ S.exp=Math.min(S.exp,need); break; }
     if(S.exp<need) break;
     S.exp-=need; S.L++; up=true;
   }

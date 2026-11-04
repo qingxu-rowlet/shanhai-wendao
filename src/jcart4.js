@@ -6,15 +6,15 @@
    ============================================================ */
 On.tile('D',(g,R,v)=>{ // a plank floor, the boards running across, worn paler in places
   g.fillStyle='#8a5e3a'; g.fillRect(0,0,16,16); for(let y=0;y<16;y+=4){ g.fillStyle=(y/4)%2?'#946640':'#80563a'; g.fillRect(0,y,16,3); g.fillStyle='#5e3e24'; g.fillRect(0,y+3,16,1);
-    const j=(R()*16|0); g.fillRect(j,y,1,3); } if(R()<.3){ g.fillStyle='rgba(255,230,190,.12)'; g.fillRect(R()*10|0,R()*12|0,5,2); } });
+    const j=(R()*16|0); g.fillRect(j,y,1,3); } if(R()<.3){ g.fillStyle='rgba(255,230,190,.12)'; g.fillRect(R()*10|0,R()*12|0,5,2); } },false,'jc_');
 On.tile('K',(g,R,v)=>{ // the wall's plaster, a dark beam along its top
   g.fillStyle='#e8dcc4'; g.fillRect(0,0,16,16); g.fillStyle='#5e3a20'; g.fillRect(0,0,16,3); g.fillStyle='#7a4e2c'; g.fillRect(0,3,16,1);
-  for(let i=0;i<3;i++){ g.fillStyle='rgba(140,120,90,.14)'; g.fillRect(R()*14|0,5+R()*9|0,2,1); } },true);
+  for(let i=0;i<3;i++){ g.fillStyle='rgba(140,120,90,.14)'; g.fillRect(R()*14|0,5+R()*9|0,2,1); } },true,'jc_');
 On.tile('L',(g,R,v)=>{ // the wall's foot: plaster above, a wooden wainscot, the floor's shadow
   g.fillStyle='#e8dcc4'; g.fillRect(0,0,16,6); g.fillStyle='#6a4428'; g.fillRect(0,6,16,10); g.fillStyle='#8a5a36'; g.fillRect(0,6,16,1);
-  for(let x=0;x<16;x+=8){ g.fillStyle='#5a3820'; g.fillRect(x,7,1,9); g.fillStyle='#7a4e2e'; g.fillRect(x+2,9,4,5); } g.fillStyle='rgba(0,0,0,.25)'; g.fillRect(0,15,16,1); },true);
+  for(let x=0;x<16;x+=8){ g.fillStyle='#5a3820'; g.fillRect(x,7,1,9); g.fillStyle='#7a4e2e'; g.fillRect(x+2,9,4,5); } g.fillStyle='rgba(0,0,0,.25)'; g.fillRect(0,15,16,1); },true,'jc_');
 On.tile('M',(g,R,v)=>{ // the room's edge: the top of a wall, dark
-  g.fillStyle='#2e2420'; g.fillRect(0,0,16,16); g.fillStyle='#3e322a'; g.fillRect(1,1,14,14); },true);
+  g.fillStyle='#2e2420'; g.fillRect(0,0,16,16); g.fillStyle='#3e322a'; g.fillRect(1,1,14,14); },true,'jc_');
 
 const JA4={
   // the 百子柜: a wall of little drawers, each with its slip of paper and a brass pull; jars along the top

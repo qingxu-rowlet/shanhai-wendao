@@ -8,19 +8,19 @@ const Med = {
   // cultivation from one 2-hour block at level L; a full day counts as six blocks (the rest is eating and sleeping)
   block(L){ return Math.round((14+4*L)*(L>=10?1.6:1)*2*Sect.medMul()); },
   blocks(h){ return h<24 ? Math.max(1,Math.round(h/2)) : Math.round(h/24*6); },
-  full(){ return (S.L===9||S.L>=12) && S.exp>=expNeed(S.L); },
+  full(){ return (realmCap(S.L)) && S.exp>=expNeed(S.L); },
   // hours until the clock next shows `hr` o'clock
   until(hr){ let m=hr*60-S.min; if(m<=0) m+=24*60; return m/60; },
   // run the numbers without touching the save
   sim(h){ let L=S.L, exp=S.exp, total=0;
     for(let i=0;i<Med.blocks(h);i++){ const g=Med.block(L), before=exp; exp+=g;
-      while(true){ const need=expNeed(L); if(L===9||L>=12){ exp=Math.min(exp,need); break; } if(exp<need) break; exp-=need; L++; }
-      total+= exp>=before ? exp-before : g; if((L===9||L>=12)&&exp>=expNeed(L)) break; }
-    return {L, exp, total, capped:(L===9||L>=12)&&exp>=expNeed(L)}; },
+      while(true){ const need=expNeed(L); if(realmCap(L)){ exp=Math.min(exp,need); break; } if(exp<need) break; exp-=need; L++; }
+      total+= exp>=before ? exp-before : g; if((realmCap(L))&&exp>=expNeed(L)) break; }
+    return {L, exp, total, capped:(realmCap(L))&&exp>=expNeed(L)}; },
   // how many days of 闭关 until each of the next few realms
   ahead(){ const out=[]; let L=S.L, exp=S.exp, blocks=0;
-    while(out.length<4 && blocks<6*400){ if((L===9||L>=12)&&exp>=expNeed(L)) break; exp+=Med.block(L); blocks++;
-      const need=expNeed(L); if(L!==9&&L<12&&exp>=need){ exp-=need; L++; out.push([L, blocks]); } else if(L===9&&exp>=need){ out.push([9.5, blocks]); exp=need; } }
+    while(out.length<4 && blocks<6*400){ if((realmCap(L))&&exp>=expNeed(L)) break; exp+=Med.block(L); blocks++;
+      const need=expNeed(L); if(!realmCap(L)&&exp>=need){ exp-=need; L++; out.push([L, blocks]); } else if(L===9&&exp>=need){ out.push([9.5, blocks]); exp=need; } }
     return out; },
   when(blocks){ const h=blocks*2; return h<24?`${h} 小时`:`${Math.ceil(blocks/6)} 天`; },
   open(skipAsk){
@@ -74,5 +74,5 @@ const Med = {
 // like gainExp but without the banner/sound per level (the bar shows those)
 // returns how much actually landed (nothing once the bar is full)
 function gainExpQuiet(n){ const L0=S.L, e0=S.exp; let got=n; S.exp+=n;
-  while(true){ const need=expNeed(S.L); if(S.L===9||S.L>=12){ if(S.exp>need){ got-=S.exp-need; S.exp=need; } break; } if(S.exp<need) break; S.exp-=need; S.L++; }
+  while(true){ const need=expNeed(S.L); if(realmCap(S.L)){ if(S.exp>need){ got-=S.exp-need; S.exp=need; } break; } if(S.exp<need) break; S.exp-=need; S.L++; }
   return Math.max(0,got); }

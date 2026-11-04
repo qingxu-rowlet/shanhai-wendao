@@ -29,7 +29,7 @@ const Dev = {
   panel(){
     Dev.ensure();
     const sel=(id,opts,cur)=>`<select id="${id}">${opts.map(([v,t])=>`<option value="${v}" ${String(v)===String(cur)?'selected':''}>${t}</option>`).join('')}</select>`;
-    const realms=[...Array(13)].map((_,L)=>[L,realmName(L)]);
+    const realms=[...Array(16)].map((_,L)=>[L,realmName(L)]);
     const sects=[['','（无）'],...Object.entries(SECTS).map(([k,s])=>[k,s.name])];
     UI.panel('开发者面板', `
       <div class="dev"><button class="btn main" id="dvReview">审查节点（每个节点都有直达链接）</button><h4>跳到剧情节点</h4><div class="devg">${Object.entries(Dev.POINTS).map(([k,t])=>`<button class="btn mini" data-pt="${k}">${t}</button>`).join('')}</div>

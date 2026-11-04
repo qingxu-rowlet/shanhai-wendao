@@ -76,7 +76,7 @@ const Battle = {
   },
   _begin(kind, cb){
     const B=BEASTS[kind], st=stats();
-    if(B.self){ B.hp=Math.round(st.hp*1.4); B.atk=Math.round(st.atk*.85); B.def=Math.round(st.def*.8); }
+    if(B.self){ const m=B.selfMul||{}; B.hp=Math.round(st.hp*(m.hp||1.4)); B.atk=Math.round(st.atk*(m.atk||.85)); B.def=Math.round(st.def*(m.def||.8)); }   // a 心魔 is you: scaled from your own stats
     S.seen[kind]=S.seen[kind]||1;
     Battle.s={kind, B, hp:B.hp, max:B.hp, i:0, moves:B.moves, cb, guard:false, charmed:false, stun:0, burn:0, over:false};
     const el=$('#battle'); el.hidden=false; el.className='battle '+(B.boss?'boss':'');

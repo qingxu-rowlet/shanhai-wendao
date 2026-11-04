@@ -23,7 +23,7 @@ On.act('sfhall',o=>UI.say([['旁白','四方馆的正厅。案上摊着一本厚
 On.act('sftree',o=>UI.say([['旁白','一棵老槐树，树干要两个人才抱得过来。'],['旁白','树上开着一串一串的小白花，风一吹，落了一地。']]));
 On.act('sfchess',o=>UI.say([['旁白','石桌上画着棋盘，黑子白子下了半盘。'],['旁白','看样子，白子要输了。']]));
 On.act('sfpet',o=>UI.say([['旁白','一只白耳朵的狌狌，蹲在乌兰脚边，正歪着头看你。'],['旁白','它冲你嗅了嗅，忽然往后一缩。']]));
-On.act('sffuton',o=>UI.say(S.flags.c3_sf_recipe?[['旁白','后院僻静，一块太湖石，一个蒲团。'],['旁白','（等结丹丹炼好了，就在这里闭关。）']]:[['旁白','后院僻静，一块太湖石，一个蒲团。没有人来。']]));
+On.act('sffuton',o=>S.flags.c3_dan_done?JD.futon():UI.say(S.flags.c3_sf_recipe?[['旁白','后院僻静，一块太湖石，一个蒲团。'],['旁白','（等结丹丹炼好了，就在这里闭关。）']]:[['旁白','后院僻静，一块太湖石，一个蒲团。没有人来。']]));
 
 /* ---------- arriving ---------- */
 On.enter(id=>{ if(id==='jc_sifang'&&!S.flags.c3_sf_in) setTimeout(()=>{ if(RT.mapId==='jc_sifang'&&!S.flags.c3_sf_in) UI.say(SF.arrive(),()=>{ UI.hud(); Story.check(); }); },500); });

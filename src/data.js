@@ -593,11 +593,15 @@ const SHOP = { sell:['huichun'] };
 
 /* ---------- cultivation ---------- */
 const NUM = ['','一','二','三','四','五','六','七','八','九'];
-function realmName(L){ return L===0 ? '凡人' : L<=9 ? `炼气${NUM[L]}层` : L===10 ? '筑基初期' : L===11 ? '筑基中期' : '筑基后期'; }
-function expNeed(L){ return L===0 ? 20 : L<9 ? 40+L*25 : L===9 ? 320 : 400+(L-10)*150; }
+// the realms: 炼气 1–9, 筑基 10–12, 结丹 13–15. A realm's last level is a ceiling: meditation fills it, and only a
+// breakthrough (筑基丹 at 9, 结丹丹 at 12) takes you past it; 15 is the top for now.
+const REALM_STAGES=['初期','中期','后期'], REALM_CAPS=[9,12,15];
+function realmName(L){ return L===0 ? '凡人' : L<=9 ? `炼气${NUM[L]}层` : L<=12 ? '筑基'+REALM_STAGES[L-10] : '结丹'+REALM_STAGES[Math.min(2,L-13)]; }
+function realmCap(L){ return REALM_CAPS.includes(L)||L>=REALM_CAPS[REALM_CAPS.length-1]; }
+function expNeed(L){ return L===0 ? 20 : L<9 ? 40+L*25 : L===9 ? 320 : L<=12 ? 400+(L-10)*150 : 1200+(L-13)*300; }
 function statsFor(L){
-  const z=L>=10?1:0;
-  return {hp:Math.round(50+15*L+z*60), mp:Math.round(16+4*L+z*12), atk:Math.round(6+2.2*L+z*5), def:Math.round(1+0.8*L+z*2)};
+  const z=L>=10?1:0, j=L>=13?1:0;   // each realm crossed is a jump of its own
+  return {hp:Math.round(50+15*L+z*60+j*120), mp:Math.round(16+4*L+z*12+j*24), atk:Math.round(6+2.2*L+z*5+j*10), def:Math.round(1+0.8*L+z*2+j*4)};
 }
 
 /* ---------- beasts ---------- */

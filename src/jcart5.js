@@ -5,7 +5,7 @@
    ============================================================ */
 On.tile('E',(g,R,v)=>{ // the stage: red carpet over boards, a gold border along its front
   g.fillStyle='#8a2420'; g.fillRect(0,0,16,16); for(let i=0;i<10;i++){ g.fillStyle=R()<.5?'#9a2c26':'#7a1e1a'; g.fillRect(R()*16|0,R()*16|0,2,1); }
-  g.fillStyle='#c8a050'; g.fillRect(0,13,16,1); g.fillStyle='#5e3a20'; g.fillRect(0,14,16,2); },true);
+  g.fillStyle='#c8a050'; g.fillRect(0,13,16,1); g.fillStyle='#5e3a20'; g.fillRect(0,14,16,2); },true,'jc_');
 const JA5={
   // a 雅间: a little balcony high on the wall, lattice and red curtains; open, a gap and a hand on the rail
   box(open){ return FineArt.paint(56,34,P=>{ P.rect(0,4,56,26,'#4a2a16'); P.rect(2,6,52,22,'#2a160c');

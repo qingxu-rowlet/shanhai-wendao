@@ -118,6 +118,21 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3i';i++){ UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=lu&&/炸炉/.test(r1.t)&&r1.coach&&F.c3_dan_done&&count(S,'c3_jiedan')===1&&!count(S,'c3_hun')&&QUESTS[S.quest].id==='c3i';
           return {fail:!ok, info:`${lu?'丹炉':'丹炉 ✗'}，第一炉「${r1.t}」，第二炉「${r2.t}」，${r1.coach?'苏小棠看火':'看火 ✗'}，${F.c3_dan_done?'结丹丹':'结丹丹 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：闭关 → 七个人离开 → 心魔之战 → 雷劫（五道）→ 结丹初期 → 插画「雷云」', async()=>{ const n0=SelfTest3.lines.length; cur='闭关';
+          node('c3-biguan').run(); await W(400); const L0=S.L; Dungeon.act(obj('sffuton')); let gone=0, cg1=false;
+          for(let i=0;i<300&&!Battle.s;i++){ if(PixCG.on) cg1=true; const d=$('#dlg'); if(!d.hidden){ const ch=d.querySelector('[data-i]'); if(ch){ ch.click(); } else { if(UI.typing) d.onclick(); const t=d.querySelector('#dText')?.textContent||''; if(/转过身，走了/.test(t)) gone++; rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+t); d.onclick&&d.onclick(); } } await W(15); }
+          const f=await fight(); await adv(); for(let i=0;i<40&&!$('#trL');i++) await W(50);
+          // the 雷劫: step aside from every lane that lights up
+          for(let i=0;i<16*30;i++){ const warn=[...document.querySelectorAll('#trArena .lane')].map(l=>l.classList.contains('warn')); if(!warn.length||$('#trOk')) break; const me=$('#trMe'); const pos=Math.round(parseFloat(me.style.left)/20);
+            if(warn[pos]){ const safe=warn.findIndex(w=>!w), dd=Math.sign(safe-pos); if(dd) $(dd<0?'#trL':'#trR').click(); } Mini.step(1/30); }
+          const trib=$('.trib h3')?.textContent||''; if($('#trOk')) $('#trOk').click(); await W(50);
+          let cg2=false; for(let i=0;i<200;i++){ if(PixCG.on) cg2=true; const d=$('#dlg'); if(d.hidden){ await W(60); if($('#dlg').hidden&&i>20) break; continue; } if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); await W(10); }
+          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3j';i++){ UI.sync(); Story.check(); await W(100); }
+          const F=S.flags, ok=cg1&&gone===7&&f.won&&/成功/.test(trib)&&F.c3_jd_done&&S.L===13&&L0===12&&realmName(S.L)==='结丹初期'&&cg2&&!count(S,'c3_jiedan')&&QUESTS[S.quest].id==='c3j';
+          return {fail:!ok, info:`${cg1?'心魔':'心魔 ✗'}，走了 ${gone}/7 个，心魔之战 ${f.won?f.turns+' 回合':'✗'}，雷劫「${trib}」，${realmName(S.L)}，${cg2?'雷云':'雷云 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('境界表：结丹三层，筑基后期和结丹后期是瓶颈，打坐不会越过去', async()=>{ const names=[12,13,14,15].map(realmName).join('/'), caps=[9,12,15].every(realmCap)&&![10,13,14].some(realmCap);
+          const st12=statsFor(12), st13=statsFor(13); S.L=12; S.exp=0; gainExp(99999); const held12=S.L===12; S.L=13; S.exp=0; gainExp(99999); const to15=S.L===15;
+          return {fail:!(names==='筑基后期/结丹初期/结丹中期/结丹后期'&&caps&&held12&&to15&&st13.hp>st12.hp+100), info:`${names}，筑基后期${held12?'停住':'✗'}，结丹打坐到${realmName(S.L)}，生命 ${st12.hp}→${st13.hp}`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

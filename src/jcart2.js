@@ -6,15 +6,15 @@
    ============================================================ */
 On.tile('Q',(g,R,v)=>{ // the wall's top: grey half-round tiles in a row, seen from above
   g.fillStyle='#4a4e56'; g.fillRect(0,0,16,16); for(let x=0;x<16;x+=4){ g.fillStyle='#5e646e'; g.fillRect(x,1,3,13); g.fillStyle='#7a828e'; g.fillRect(x,1,1,13); }
-  g.fillStyle='#2e3238'; g.fillRect(0,14,16,2); },true);
+  g.fillStyle='#2e3238'; g.fillRect(0,14,16,2); },true,'jc_');
 On.tile('R',(g,R,v)=>{ // the wall's face: white plaster, a grey band at the foot, the coping's shadow at the top
   g.fillStyle='#ece6da'; g.fillRect(0,0,16,16); g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(0,0,16,3);
   for(let i=0;i<4;i++){ g.fillStyle='rgba(120,110,90,.12)'; g.fillRect(R()*14|0,3+R()*9|0,2,1); }
-  g.fillStyle='#8a8478'; g.fillRect(0,12,16,4); g.fillStyle='#a8a296'; g.fillRect(0,12,16,1); },true);
+  g.fillStyle='#8a8478'; g.fillRect(0,12,16,4); g.fillStyle='#a8a296'; g.fillRect(0,12,16,1); },true,'jc_');
 On.tile('S',(g,R,v)=>{ // a courtyard's swept brick floor, laid in a herringbone
   g.fillStyle='#a49a88'; g.fillRect(0,0,16,16);
   for(let y=0;y<16;y+=4) for(let x=0;x<16;x+=8){ const o=(y/4)%2?4:0; g.fillStyle='#b4aa96'; g.fillRect((x+o)%16,y,7,3); g.fillStyle='#8e8474'; g.fillRect((x+o+7)%16,y,1,3); }
-  if(R()<.2){ g.fillStyle='rgba(90,110,70,.4)'; g.fillRect(R()*14|0,R()*14|0,2,1); } });
+  if(R()<.2){ g.fillStyle='rgba(90,110,70,.4)'; g.fillRect(R()*14|0,R()*14|0,2,1); } },false,'jc_');
 
 const JA2={
   // the compound's gatehouse: a tiled roof on red posts, the two doors standing open, a black plaque with gold letters
