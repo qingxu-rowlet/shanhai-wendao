@@ -57,6 +57,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true},'jc_sifang',8,13,'up','c3h',9); for(const k of ['c3_xue','c3_ru','c3_hun']) addItem(k,1); Story.check(); }),
     N('biguan','闭关：心魔（七个人离开）→ 心魔之战 → 雷劫 → 结丹','结丹丹已经炼好，站在后院的蒲团旁边。点蒲团闭关：一片黑暗里，云游子、师尊、大师兄、二师兄、大师姐、苏小棠、顾长歌一个一个走来，说一句你最怕听见的话，转身走了（第二章看过碎镜子的，会多想一句）。然后心魔变成你的样子和你打；打到四成血，外面传来大师姐和苏小棠的声音。打赢以后是雷劫（五道，比筑基难）。成功：结丹初期，插画「雷云」：城东角楼上的人和他的红头狼。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true},'jc_sifang',6,19,'up','c3i',10); addItem('c3_jiedan',1); Story.check(); }),
+    N('xiang','小巷：遇见萧烬（插画「小巷」）','结丹以后的那一夜，站在自己宗门厢房的门口。点门：睡不着，选「悄悄出去走走」，到西市北边的小巷里（白天去只有一条瘸腿的狗）。巷子尽头：穿素衣的年轻人在喂狗，墙头上一只红头的狼。「你比镜子里看起来，要小一些。」白骨扳指；三种问法（为什么帮我 / 安平村的人是不是你带走的 / 什么也不问），然后他说出名字：萧烬。巡夜的来了，他翻墙走了，你回四方馆睡觉。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true},'jc_sifang',SF_WING[Review.sect||'jian'][0]+3,SF_WING[Review.sect||'jian'][1]+4,'up','c3j',22); S.L=13; S.exp=0; UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }

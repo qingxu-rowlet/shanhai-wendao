@@ -15,6 +15,7 @@ const SF={
 };
 // your own wing's door is your room: sleep there; elsewhere a word about whose it is
 On.act('sfroom',o=>{ if(o.sect!==S.sect) return UI.say([['旁白',`${SECTS[o.sect].name}的厢房。门关着，里面有人在低声说话。`]]);
+  if(S.flags.c3_jd_done&&!S.flags.c3_xj_met) return XX.room();
   if(!S.flags.c3_sf_recipe) return UI.say([['旁白','你们的厢房。被褥是新晒过的，有一股太阳的味道。'],['旁白','（天还没黑。先在院子里走走。）']]);
   UI.confirm('回厢房睡觉？', ()=>sleep(false)); });
 On.wake((passedOut,from)=>{ if(!String(from).startsWith('jc_')) return false; const [x,y]=SF.wing(); enterMap('jc_sifang',x+3,y+3); RT.dir='down'; UI.hud(); save();

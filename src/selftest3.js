@@ -133,21 +133,29 @@ const SelfTest3={
         await step('境界表：结丹三层，筑基后期和结丹后期是瓶颈，打坐不会越过去', async()=>{ const names=[12,13,14,15].map(realmName).join('/'), caps=[9,12,15].every(realmCap)&&![10,13,14].some(realmCap);
           const st12=statsFor(12), st13=statsFor(13); S.L=12; S.exp=0; gainExp(99999); const held12=S.L===12; S.L=13; S.exp=0; gainExp(99999); const to15=S.L===15;
           return {fail:!(names==='筑基后期/结丹初期/结丹中期/结丹后期'&&caps&&held12&&to15&&st13.hp>st12.hp+100), info:`${names}，筑基后期${held12?'停住':'✗'}，结丹打坐到${realmName(S.L)}，生命 ${st12.hp}→${st13.hp}`}; });
+        await step('第二幕：结丹那一夜 → 小巷 → 遇见萧烬（三种问法）→ 回四方馆睡觉', async()=>{ const n0=SelfTest3.lines.length, got=[]; let cg=false;
+          for(const pick of ['为什么','安平村','什么也不问']){ cur='小巷'; node('c3-xiang').run(); await W(400);
+            Dungeon.act(RT.map.objects.find(o=>o.act==='sfroom'&&o.sect===sect)); await adv('出去'); for(let i=0;i<40&&RT.mapId!=='jc_xiang';i++){ if(RT.fadeTo) update(.1); await W(60); } await W(600); await adv();
+            const there=RT.mapId==='jc_xiang'&&!!RT.ents.find(e=>e.id==='xiao'); Story.talk('xiao'); for(let i=0;i<20&&!PixCG.on;i++) await W(30); if(PixCG.on) cg=true; await adv(pick);
+            for(let i=0;i<60&&RT.mapId!=='jc_sifang';i++){ if(RT.fadeTo) update(.1); await W(60); } await W(400); await adv(); for(let i=0;i<20&&QUESTS[S.quest].id!=='c3k';i++){ UI.sync(); Story.check(); await W(100); }
+            got.push({there, met:!!S.flags.c3_xj_met, home:RT.mapId==='jc_sifang', q:QUESTS[S.quest].id, love:Social.rel('xiao').pts||0, ask:XX.st().ask}); }
+          const ok=cg&&got.every(g=>g.there&&g.met&&g.home&&g.q==='c3k')&&got.map(g=>g.ask).join()==='why,anping,none';
+          return {fail:!ok, info:`${cg?'小巷':'小巷 ✗'}，`+got.map(g=>`${g.ask}：${g.there?'':'没遇到 ✗ '}${g.met?'':'没说完 ✗ '}好感 ${g.love}`).join('；')+`，${got[2]&&got[2].q}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'7 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'8 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }
-      await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
-        return {fail:bad.length>0, info:bad.length?bad.join('；'):'2 张'}; });
+      await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()],['雷云',()=>JD.cg()],['小巷',()=>C3A.xiangCG()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
+        return {fail:bad.length>0, info:bad.length?bad.join('；'):'4 张'}; });
       await step('没有脚本错误', async()=>({fail:errs.length>0, info:errs.slice(0,2).join(' | ')}));
     } finally { Review.sect=null; Dodge.auto=false; Dev.god=false; removeEventListener('error',onErr); if(Battle.s) Battle.close(); PixCG.close();
       try{ if(backup) localStorage.setItem(slotKey(2),backup); else localStorage.removeItem(slotKey(2)); }catch(e){} }

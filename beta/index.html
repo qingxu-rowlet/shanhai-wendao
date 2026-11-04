@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="8f8db5a1b5"><script>(function(){var B="8f8db5a1b5";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="7d9975efd6"><script>(function(){var B="7d9975efd6";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9695,7 +9695,7 @@ DODGE.c3_hejv={
    大师兄's 长生禄位 split down the middle under four claw marks) and 「山脊」 (night after the wolves: a full moon, a man
    on the ridge in a dark cloak with the pack sitting round him, the camp fire small below).
    ============================================================ */
-const LOOK_XIAO={g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:7};   // 萧烬 — only ever a dark shape in act 1
+const LOOK_XIAO={g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:1};   // 萧烬 — a plain white robe (only ever a dark shape in act 1)
 const C3A={};
 
 /* ---------- 裂开的牌位 ---------- */
@@ -10439,6 +10439,52 @@ Object.assign(SPR,{ju_box:['x'], ju_box_open:['x'], ju_chair:['x'], ju_table:['x
 Object.assign(SPRC,{ju_box:JA5.box(false), ju_box_open:JA5.box(true), ju_chair:JA5.chair(), ju_table:JA5.table(), ju_gong:JA5.gong()});
 
 /* ============================================================
+   山海问道 · 第三章「京城」 · 城里的东西（六）：小巷 — a lame yellow stray, a red-headed wolf sitting on a wall top, washing
+   hung on a line across the lane, and the picture 「小巷」: a narrow lane at night between two high walls, a strip of
+   moonlight down the middle, a young man in a plain robe crouched by the wall feeding a dog, a wolf above him on the
+   wall, and you at the mouth of the lane.
+   ============================================================ */
+const JA6={
+  dog(){ return FineArt.paint(20,16,P=>{ const c='#b8884a', d='#8a6234', l='#d8b07a';
+    P.ell(10,15,7,1.2,'#00000030'); P.ell(10,9,6,3.2,c); P.ell(9,8,4,1.6,l);                        // body
+    P.rect(5,11,2,4,d); P.rect(13,11,2,4,d); P.rect(8,11,2,4,c); P.rect(16,10,2,2,d); P.rect(17,9,1,2,d);   // legs; the back one held up
+    P.ell(4,6,3,2.6,c); P.rect(1,6,3,2,c); P.set(1,6,'#2a1e1a'); P.set(4,5,'#2a1e1a'); P.rect(4,3,2,2,d);   // head, nose, eye, ear
+    P.line(16,8,19,5,c); }); },                                                                        // tail
+  wolf(){ return FineArt.paint(22,22,P=>{ const k='#14141c', r='#6a1814';
+    P.ell(11,21,8,1.4,'#00000040'); P.poly([[5,21],[6,12],[10,8],[14,9],[16,14],[17,21]],k); P.poly([[16,20],[21,18],[20,16],[16,17]],k);   // sitting, its tail round its feet
+    P.poly([[8,9],[10,3],[15,4],[17,7],[13,9]],r); P.poly([[10,4],[10,0],[12,3]],r); P.poly([[13,4],[14,0],[15,4]],r); P.set(13,5,'#f0d060'); }); },
+};
+Object.assign(SPR,{jc_dog:['x'], jc_wolfs:['x']}); Object.assign(SPRC,{jc_dog:JA6.dog(), jc_wolfs:JA6.wolf()});
+// washing on a line across the lane
+On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_xiang') return; const Z=T/16;
+  for(const [x0,x1,y] of [[3,9,20.2],[2,7,13.4]]){ const a=ox+x0*T, b=ox+x1*T, yy=oy+y*T; g.strokeStyle='rgba(30,24,20,.85)'; g.lineWidth=Math.max(1,Z*.6); g.beginPath(); g.moveTo(a,yy); g.quadraticCurveTo((a+b)/2,yy+T*.35,b,yy); g.stroke();
+    for(let k=1;k<5;k++){ const u=k/5, x=a+(b-a)*u, sy=yy+T*.35*4*u*(1-u)*.5, sw=Math.sin(RT.t*1.2+k)*Z; g.fillStyle=['#c8c0b0','#5a6a8a','#a85a4a','#d8d0b8'][k%4]; g.fillRect(x-T*.22+sw,sy,T*.44,T*.5); g.fillStyle='rgba(0,0,0,.2)'; g.fillRect(x-T*.22+sw,sy+T*.42,T*.44,T*.08); } } });
+
+/* ---------- 插画「小巷」 ---------- */
+C3A.xiangCG=function(){
+  const dog=JA6.dog();
+  PixCG.open({ink:(g,W,H,R)=>{ g.fillStyle='#07080e'; g.fillRect(0,0,W,H);
+      // the sky: a strip between the walls, the moon at its top
+      const sg=g.createLinearGradient(0,0,0,H*.4); sg.addColorStop(0,'#141a30'); sg.addColorStop(1,'#232a48'); g.fillStyle=sg; g.beginPath(); g.moveTo(W*.36,0); g.lineTo(W*.64,0); g.lineTo(W*.56,H*.38); g.lineTo(W*.44,H*.38); g.closePath(); g.fill();
+      g.fillStyle='#ece6cc'; g.beginPath(); g.arc(W*.53,H*.08,H*.05,0,7); g.fill(); const mg=g.createRadialGradient(W*.53,H*.08,0,W*.53,H*.08,H*.25); mg.addColorStop(0,'rgba(236,230,204,.25)'); mg.addColorStop(1,'rgba(236,230,204,0)'); g.fillStyle=mg; g.fillRect(0,0,W,H*.4);
+      // the two walls, plastered, the coping dark, running away from us
+      for(const side of [-1,1]){ g.fillStyle=side<0?'#2a2a32':'#33333c'; g.beginPath(); const xn=W*(.5+side*.06), xf=W*(.5+side*.5);
+        g.moveTo(xn,H*.38); g.lineTo(xn,H*.66); g.lineTo(xf,H*1.02); g.lineTo(xf,0); g.lineTo(W*(.5+side*.14),0); g.closePath(); g.fill();
+        g.strokeStyle='rgba(20,20,28,.9)'; g.lineWidth=Math.max(2,H*.012); g.beginPath(); g.moveTo(W*(.5+side*.14),0); g.lineTo(xn,H*.38); g.stroke();
+        for(let k=0;k<30;k++){ const u=R(), x=xn+(xf-xn)*u, y=H*(.4+u*.5)*R(); g.fillStyle=`rgba(${120+R()*40|0},${120+R()*30|0},${130+R()*30|0},${.06+R()*.06})`; g.fillRect(x,y+H*.2,W*.01,H*.004); } }
+      // the far end of the lane: another wall, a little lit
+      { const fg=g.createLinearGradient(0,H*.38,0,H*.66); fg.addColorStop(0,'#2a2a36'); fg.addColorStop(1,'#1a1a22'); g.fillStyle=fg; g.fillRect(W*.44,H*.38,W*.12,H*.28); g.fillStyle='#14141a'; g.fillRect(W*.44,H*.38,W*.12,H*.02); }
+      // the moonlight on the ground, down the middle
+      g.fillStyle='#16161e'; g.beginPath(); g.moveTo(W*.44,H*.66); g.lineTo(W*.56,H*.66); g.lineTo(W*1.02,H*1.02); g.lineTo(-W*.02,H*1.02); g.closePath(); g.fill();
+      g.fillStyle='rgba(200,206,236,.12)'; g.beginPath(); g.moveTo(W*.47,H*.66); g.lineTo(W*.53,H*.66); g.lineTo(W*.66,H); g.lineTo(W*.34,H); g.closePath(); g.fill();
+      // a lantern on the left wall, its glow on the ground
+      const lx=W*.3, ly=H*.42; g.strokeStyle='#14141a'; g.lineWidth=Math.max(1,W*.002); g.beginPath(); g.moveTo(lx-W*.04,ly-H*.05); g.lineTo(lx,ly-H*.02); g.lineTo(lx,ly); g.stroke(); g.fillStyle='#a8302a'; g.fillRect(lx-W*.012,ly,W*.024,H*.05); g.fillStyle='#e8b84a'; g.fillRect(lx-W*.012,ly,W*.024,H*.006); const lg=g.createRadialGradient(lx,ly+H*.2,0,lx,ly+H*.2,W*.25); lg.addColorStop(0,'rgba(255,170,90,.22)'); lg.addColorStop(1,'rgba(255,170,90,0)'); g.fillStyle=lg; g.fillRect(0,0,W,H);
+      // the wolf on the right wall's top, sitting, looking down at us
+      C3A.wolf(g,W*.605,H*.12,H*.11,-1,R); },
+    cast:[{who:'me', x:.16, pose:'stand', face:1},{look:LOOK_XIAO, x:.64, pose:'crouch', face:-1},{cv:dog, x:.53, y:.86, s:1.5, face:1}],
+    title:'小巷', small:'第三章 · 京城', seed:7401}); };
+
+/* ============================================================
    山海问道 · 第三章「京城」 · 地图一：朱雀门 · 朱雀大街 — you come in through the south gate: outside, the road, willows
    and two stone lions; the wall, and over its gate the 朱雀门 tower; inside, the avenue running north to the palace, with
    酒楼, 当铺, 布庄 on the west, 药铺, the 听雨轩 teahouse and an inn on the east, stalls along the cross street, a 糖葫芦
@@ -10816,6 +10862,7 @@ const SF={
 };
 // your own wing's door is your room: sleep there; elsewhere a word about whose it is
 On.act('sfroom',o=>{ if(o.sect!==S.sect) return UI.say([['旁白',`${SECTS[o.sect].name}的厢房。门关着，里面有人在低声说话。`]]);
+  if(S.flags.c3_jd_done&&!S.flags.c3_xj_met) return XX.room();
   if(!S.flags.c3_sf_recipe) return UI.say([['旁白','你们的厢房。被褥是新晒过的，有一股太阳的味道。'],['旁白','（天还没黑。先在院子里走走。）']]);
   UI.confirm('回厢房睡觉？', ()=>sleep(false)); });
 On.wake((passedOut,from)=>{ if(!String(from).startsWith('jc_')) return false; const [x,y]=SF.wing(); enterMap('jc_sifang',x+3,y+3); RT.dir='down'; UI.hud(); save();
@@ -11474,6 +11521,103 @@ JD.cg=function(){
 QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3i')+1,0,
   {id:'c3j', title:'大比之前', desc:'结丹了。离大比还有几天。京城还有很多地方没有去过。', check:s=>false,
     progress:s=>'在京城走走（之后的地图正在做）', target:s=>['jc_sifang',12,10,'大师姐']});
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 第二幕 · 小巷：遇见萧烬 — the night after 结丹 you can't sleep. Past curfew you go out, through
+   西市 and under the 牌坊 into the alleys. At the end of the lane a young man in a plain robe is crouched by the wall
+   feeding a lame stray; a red-headed wolf sits on the wall above him. Without turning round he says your name: "you look
+   younger than in the mirror". He has a white bone ring on his finger. The ridge, the 雅间 — and he says his name: 萧烬.
+   萧大人: the curfew, 安平村's notice, the sedan. Then the night watch is coming, and he goes over the wall with the wolf.
+   Tomorrow, the 大比 opens.
+   The map: a narrow lane winding north between high plastered walls, washing on lines, a well, broken baskets, a lantern
+   or two; open by day too (no one there but the dog).
+   ============================================================ */
+{ const W=12, H=26, G=[...Array(H)].map(()=>Array(W).fill('Q'));
+  const lane=y=>y>=19?[5,7]:y>=13?[3,5]:y>=7?[6,8]:[3,8];          // the lane jogs left, then right, then opens into a little dead end
+  for(let y=1;y<H;y++){ const [a,b]=lane(y); for(let x=a;x<=b;x++) G[y][x]='P'; }
+  for(const [y,a,b] of [[19,3,7],[13,3,8],[7,3,8]]) for(let x=a;x<=b;x++) G[y][x]='P';   // the corners, where it turns
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++) if(G[y][x]==='Q'&&y+1<H&&G[y+1][x]==='P') G[y][x]='R';   // a wall's face wherever the lane runs below it
+  const objects=[
+    {type:'lantern', x:8, y:16}, {type:'lantern', x:2, y:9},
+    {type:'well', x:7, y:3, act:'xxwell'},
+    {type:'jc_barrels', x:3, y:16, spr:'jc_barrels'}, {type:'jc_barrels', x:8, y:10, spr:'jc_barrels'},
+    {type:'jc_dog', x:4, y:4, spr:'jc_dog', act:'xxdog'},
+    {type:'jc_wolfs', x:5, y:0, spr:'jc_wolfs', cond:s=>XX.night(s)&&!s.flags.c3_xj_met},
+    {type:'npc', id:'xiao', x:5, y:4, look:LOOK_XIAO, name:'穿素衣的年轻人', act:'talk', cond:s=>XX.night(s)&&!s.flags.c3_xj_met},
+  ];
+  MAPS.jc_xiang={ name:'京城 · 小巷', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:5,y:25,to:'jc_xishi',tx:15,ty:1},{x:6,y:25,to:'jc_xishi',tx:15,ty:1},{x:7,y:25,to:'jc_xishi',tx:16,ty:1}] }; }
+const XX={ night:s=>!!s.flags.c3_jd_done&&(s.min>=21*60||s.min<4*60) };
+// the lane north of 西市 opens once you have 结丹 (the barriers go; the way under the 牌坊 leads here)
+for(const o of MAPS.jc_xishi.objects) if(o.way==='xiang') o.cond=s=>!s.flags.c3_jd_done;
+MAPS.jc_xishi.exits.push({x:15,y:0,to:'jc_xiang',tx:6,ty:24},{x:16,y:0,to:'jc_xiang',tx:6,ty:24});
+NPCS.xiao={name:'萧烬', romance:true, loves:['jc_bao'], likes:['wine','hide','jc_hulu'], hates:['flower','huichun']};
+TALK.xiao=[['……','你又来了。'],['京城的狗，比人老实。','你身上有雷的味道。还没散。'],['那条狗的腿好了。你要不要去看看？','我小时候，也是这样被人喂过的。……不是人。'],['你在乎的东西，太多了。','……我在学。']];
+Object.assign(JC.CHAT,{xiao:['……']});
+
+/* ---------- the night: you can't sleep ---------- */
+// (called from 四方馆's room handler, which owns the doors there)
+XX.room=()=>UI.say([['旁白','你躺下了。丹田里那颗珠子一圈一圈地转，热乎乎的，怎么也睡不着。'],['旁白','窗外，月亮很亮。'],
+  {choice:'出去走走？（宵禁了）', options:[{text:'悄悄出去走走', fn:()=>XX.out()},{text:'睡觉', fn:()=>sleep(false)}]}]);
+XX.out=()=>{ C3.move('jc_xiang',6,24,'up',23,()=>setTimeout(()=>UI.say([['旁白','你翻过四方馆的后墙，穿过空荡荡的西市，钻进了牌坊北边的巷子。'],['旁白','巷子很深，七拐八拐的。尽头好像有人。']],()=>{ UI.hud(); Story.check(); }),400)); };
+On.enter(id=>{ if(id==='jc_xiang'&&!XX.night(S)&&!S.flags.c3_xx_day){ S.flags.c3_xx_day=true; setTimeout(()=>UI.say([['旁白','白天的小巷里没有人。只有一条瘸了腿的黄狗，趴在墙根下晒太阳。']]),500); } });
+
+/* ---------- 萧烬 ---------- */
+// three parts: what he says first; then you ask him something (or don't); then his name, and the watch coming
+XX.meet=()=>UI.say([
+  {run:()=>C3A.xiangCG()},
+  ['旁白','巷子尽头，一个穿素衣的年轻人蹲在墙根下，正把一个包子掰开，喂给一条瘸了腿的黄狗。'],
+  ['旁白','墙头上蹲着一只狼。狼的头是红的。它低头看着你，没有动。'],
+  ['穿素衣的年轻人','（他头也不回）{名}。'],
+  ['穿素衣的年轻人','你比镜子里看起来，要小一些。'],
+  {choice:'……', options:[{text:'你认识我？', fn:()=>XX.meet2()},{text:'（手按在剑上）', fn:()=>XX.meet2()}]}]);
+XX.meet2=()=>UI.say([
+  ['旁白','他站起来，拍了拍手上的包子屑，转过身。'],
+  ['旁白','是一张很年轻的脸。笑起来很温和，像是隔壁人家的读书人。'],
+  ['旁白','他的手指上，套着一枚白骨扳指。'],
+  ...(S.flags.c3_ju_won?[['我','（……聚宝楼，雅间里的那只手。）']]:[]),
+  ['穿素衣的年轻人','山脊上，见过一回。'],
+  ...(S.flags.c3_ju_won?[['穿素衣的年轻人','聚宝楼，也算见过一回。那株草，好用吗？']]:[]),
+  ['穿素衣的年轻人','今晚的雷，劈了一炷香。整个京城都看见了。'],
+  ['穿素衣的年轻人','……结丹了啊。'],
+  ['旁白','黄狗吃完了包子，一瘸一拐地蹭着他的腿。'],
+  ['穿素衣的年轻人','它的腿，是人打断的。'],
+  ['穿素衣的年轻人','人就是这样。'],
+  {choice:'你想问他：', options:[
+    {text:'你为什么要帮我？', fn:()=>XX.meet3('why')},
+    {text:'安平村的人，是你带走的？', fn:()=>XX.meet3('anping')},
+    {text:'（什么也不问）', fn:()=>XX.meet3('none')}]}]);
+XX.meet3=a=>{ XX.st().ask=a; UI.say([...XX.answer(),
+  ['穿素衣的年轻人','我叫萧烬。'],
+  ['我','……萧？'],
+  ['我','（宵禁的告示。安平村的封条，落款「钦差　萧」。朱雀大街上那顶轿子上的「萧」字……）'],
+  ['萧烬','（他好像知道你在想什么，笑了一下）嗯。就是那个萧。'],
+  ['旁白','远处传来梆子声，还有脚步声。巡夜的兵丁往这边来了。'],
+  ['萧烬','巡夜的快到了。……回去吧。'],
+  ['萧烬','明天大比开幕。'],
+  ['萧烬','我会看着你的。'],
+  ['旁白','他一撑墙头，翻了上去。红头的狼跟在他身后，一眨眼，就不见了。'],
+  ['旁白','只剩那条瘸腿的黄狗，坐在月光里，冲你摇了摇尾巴。'],
+  {flag:'c3_xj_met'}],()=>XX.back()); };
+XX.st=()=>{ const c=C3.st(); c.xj=c.xj||{hate:0}; return c.xj; };
+XX.answer=()=>{ const a=XX.st().ask; return a==='why'?[
+    ['穿素衣的年轻人','（他想了一会儿）……不知道。'],['穿素衣的年轻人','那天在山脊上，你的狼打得很狠，可是你没有杀它。'],['穿素衣的年轻人','我想看看，你是个什么样的人。'],{love:{xiao:40}}]
+  :a==='anping'?[
+    ['穿素衣的年轻人','（他看着你，看了很久）……是。'],['穿素衣的年轻人','你在乎？'],['旁白','你没有回答。他也没有再问。'],['穿素衣的年轻人','……有意思。'],{love:{xiao:20}},{run:()=>{ XX.st().hate+=10; S.flags.c3_xj_anping=true; }}]
+  :[['旁白','你什么也没问。'],['穿素衣的年轻人','（他好像有点意外）……你不怕我。'],['穿素衣的年轻人','很少有人不怕我。'],{love:{xiao:30}}]; };
+On.talk(id=>{ if(RT.mapId!=='jc_xiang'||id!=='xiao') return false; if(!S.flags.c3_xj_met){ XX.meet(); return true; } return false; });
+// the watch is coming: back over the wall, and to bed
+XX.back=()=>{ PixCG.close(); const [x,y]=SF_WING[S.sect]; C3.move('jc_sifang',x+3,y+3,'up',23.6,()=>UI.say([['旁白','你翻回四方馆的时候，大师姐的窗子还亮着。'],['旁白','你没有敲门。']],()=>{ UI.hud(); Story.check(); sleep(false); })); };
+On.act('xxdog',o=>UI.say(S.flags.c3_xj_met?[['旁白','瘸腿的黄狗。它认得你了，冲你摇尾巴。'],...(count(S,'jc_bao')?[{choice:'喂它一个包子？', options:[{text:'喂', fn:()=>{ addItem('jc_bao',-1); UI.say([['旁白','它叼着包子，一瘸一拐地跑到墙根下，慢慢地吃。']]); }},{text:'不了', fn:()=>{}}]}]:[])]:[['旁白','一条瘸了腿的黄狗。']]));
+On.act('xxwell',o=>UI.say([['旁白','一口老井。井沿被绳子磨出了一道一道的槽。']]));
+On.theme(id=>id==='jc_xiang'?'night':null);
+{ const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_xj_met&&RT.mapId!=='jc_xiang') l.push({name:'京城 · 小巷', map:'jc_xiang', x:6, y:23}); return l; }; }
+
+/* ---------- the quests ---------- */
+{ const q=QUESTS.find(q=>q.id==='c3j'); Object.assign(q,{desc:'结丹了。离大比开幕，只剩一夜。', check:s=>!!s.flags.c3_xj_met,
+    progress:s=>RT.mapId==='jc_xiang'?'巷子的尽头':'夜里，回厢房', target:s=>{ if(RT.mapId==='jc_xiang') return ['jc_xiang',5,5,'巷子尽头']; const [x,y]=SF_WING[s.sect]; return ['jc_sifang',x+3,y+3,'你们的厢房']; }}); }
+QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3j')+1,0,
+  {id:'c3k', title:'大比开幕', desc:'萧烬说：明天大比开幕，他会看着你。', check:s=>false,
+    progress:s=>'大比开幕式（之后的剧情正在做）', target:s=>['jc_sifang',12,10,'大师姐']});
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -12544,6 +12688,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true},'jc_sifang',8,13,'up','c3h',9); for(const k of ['c3_xue','c3_ru','c3_hun']) addItem(k,1); Story.check(); }),
     N('biguan','闭关：心魔（七个人离开）→ 心魔之战 → 雷劫 → 结丹','结丹丹已经炼好，站在后院的蒲团旁边。点蒲团闭关：一片黑暗里，云游子、师尊、大师兄、二师兄、大师姐、苏小棠、顾长歌一个一个走来，说一句你最怕听见的话，转身走了（第二章看过碎镜子的，会多想一句）。然后心魔变成你的样子和你打；打到四成血，外面传来大师姐和苏小棠的声音。打赢以后是雷劫（五道，比筑基难）。成功：结丹初期，插画「雷云」：城东角楼上的人和他的红头狼。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true},'jc_sifang',6,19,'up','c3i',10); addItem('c3_jiedan',1); Story.check(); }),
+    N('xiang','小巷：遇见萧烬（插画「小巷」）','结丹以后的那一夜，站在自己宗门厢房的门口。点门：睡不着，选「悄悄出去走走」，到西市北边的小巷里（白天去只有一条瘸腿的狗）。巷子尽头：穿素衣的年轻人在喂狗，墙头上一只红头的狼。「你比镜子里看起来，要小一些。」白骨扳指；三种问法（为什么帮我 / 安平村的人是不是你带走的 / 什么也不问），然后他说出名字：萧烬。巡夜的来了，他翻墙走了，你回四方馆睡觉。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true},'jc_sifang',SF_WING[Review.sect||'jian'][0]+3,SF_WING[Review.sect||'jian'][1]+4,'up','c3j',22); S.L=13; S.exp=0; UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -12798,21 +12944,29 @@ const SelfTest3={
         await step('境界表：结丹三层，筑基后期和结丹后期是瓶颈，打坐不会越过去', async()=>{ const names=[12,13,14,15].map(realmName).join('/'), caps=[9,12,15].every(realmCap)&&![10,13,14].some(realmCap);
           const st12=statsFor(12), st13=statsFor(13); S.L=12; S.exp=0; gainExp(99999); const held12=S.L===12; S.L=13; S.exp=0; gainExp(99999); const to15=S.L===15;
           return {fail:!(names==='筑基后期/结丹初期/结丹中期/结丹后期'&&caps&&held12&&to15&&st13.hp>st12.hp+100), info:`${names}，筑基后期${held12?'停住':'✗'}，结丹打坐到${realmName(S.L)}，生命 ${st12.hp}→${st13.hp}`}; });
+        await step('第二幕：结丹那一夜 → 小巷 → 遇见萧烬（三种问法）→ 回四方馆睡觉', async()=>{ const n0=SelfTest3.lines.length, got=[]; let cg=false;
+          for(const pick of ['为什么','安平村','什么也不问']){ cur='小巷'; node('c3-xiang').run(); await W(400);
+            Dungeon.act(RT.map.objects.find(o=>o.act==='sfroom'&&o.sect===sect)); await adv('出去'); for(let i=0;i<40&&RT.mapId!=='jc_xiang';i++){ if(RT.fadeTo) update(.1); await W(60); } await W(600); await adv();
+            const there=RT.mapId==='jc_xiang'&&!!RT.ents.find(e=>e.id==='xiao'); Story.talk('xiao'); for(let i=0;i<20&&!PixCG.on;i++) await W(30); if(PixCG.on) cg=true; await adv(pick);
+            for(let i=0;i<60&&RT.mapId!=='jc_sifang';i++){ if(RT.fadeTo) update(.1); await W(60); } await W(400); await adv(); for(let i=0;i<20&&QUESTS[S.quest].id!=='c3k';i++){ UI.sync(); Story.check(); await W(100); }
+            got.push({there, met:!!S.flags.c3_xj_met, home:RT.mapId==='jc_sifang', q:QUESTS[S.quest].id, love:Social.rel('xiao').pts||0, ask:XX.st().ask}); }
+          const ok=cg&&got.every(g=>g.there&&g.met&&g.home&&g.q==='c3k')&&got.map(g=>g.ask).join()==='why,anping,none';
+          return {fail:!ok, info:`${cg?'小巷':'小巷 ✗'}，`+got.map(g=>`${g.ask}：${g.there?'':'没遇到 ✗ '}${g.met?'':'没说完 ✗ '}好感 ${g.love}`).join('；')+`，${got[2]&&got[2].q}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'7 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'8 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }
-      await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
-        return {fail:bad.length>0, info:bad.length?bad.join('；'):'2 张'}; });
+      await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()],['雷云',()=>JD.cg()],['小巷',()=>C3A.xiangCG()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
+        return {fail:bad.length>0, info:bad.length?bad.join('；'):'4 张'}; });
       await step('没有脚本错误', async()=>({fail:errs.length>0, info:errs.slice(0,2).join(' | ')}));
     } finally { Review.sect=null; Dodge.auto=false; Dev.god=false; removeEventListener('error',onErr); if(Battle.s) Battle.close(); PixCG.close();
       try{ if(backup) localStorage.setItem(slotKey(2),backup); else localStorage.removeItem(slotKey(2)); }catch(e){} }
