@@ -49,6 +49,10 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true},'jc_huichun',8,10,'up','c3g',11); addItem('c3_xue',1); }),
     N('zhua','回春堂：孙大夫号脉、抓药','掌柜已经问过了，站在孙大夫旁边。点孙大夫：北边来的汉子吃多少都饿，苏小棠摸出他的脉是空的；他是柳河村的（离安平村不远）。然后帮孙大夫抓三副药（四君子汤、银翘散、酸枣仁汤），每次从四个抽屉里选一味；抓错了苏小棠会拦住你。一味没错，石钟乳白送；错过就收 80 灵石。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true},'jc_huichun',13,5,'right','c3g',11); addItem('c3_xue',1); }),
+    N('pool','四方馆：凑拍卖的钱（大师姐当了青玉珠）','石钟乳已经拿到，回到四方馆，站在大师姐旁边，身上只有 100 灵石。点大师姐：她拿出上一届大比的赏钱四百，苏小棠倒出一百五；还不够，大师姐解下剑穗上师父给的青玉珠，拿去当了。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true},'jc_sifang',12,11,'up','c3g',10); S.stones=100; UI.hud(); }),
+    N('auction','聚宝楼：拍卖会（九转还魂草）','第七天，天黑以后，站在聚宝楼门口，钱已经凑好了。点伙计进去：看客认出大师姐，萧府管家一千、两千地买；压轴的九转还魂草和盐商、萧府管家抢，举几次牌以后，楼上的小厮下来传话，管家不要了。雅间的帘子掀开一道缝：一只手，一枚白骨扳指。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_xie_pawn:true},'jc_xishi',26,7,'up','c3g',18.5); S.day=7; S.stones=100; JU.st().pool=1100; UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }

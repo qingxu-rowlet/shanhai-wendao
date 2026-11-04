@@ -102,6 +102,7 @@ On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
   if(id==='tang'){ if(!F.c3_sf_tang){ UI.say(SF.tangMeet(),()=>{ UI.hud(); Story.check(); }); return true; }
     if(F.c3_sf_jiedan&&!F.c3_sf_recipe){ UI.say(SF.recipe(),()=>{ UI.hud(); Story.check(); }); return true; }
     C3.menu('tang',F.c3_sf_recipe?[['苏小棠','龙血竭、石钟乳、九转还魂草……我都背下来啦！']]:[['苏小棠','京城的槐花，可以入药的。清热、凉血……'],['苏小棠','……你看我干什么。']]); return true; }
+  if(id==='xie'&&F.c3_hc_ru&&!F.c3_ju_pool){ UI.say(JU.pool(),()=>{ UI.hud(); Story.check(); }); return true; }
   if(id==='xie'){ if(SF.ready()&&!F.c3_sf_jiedan){ UI.say(SF.jiedan(),()=>{ UI.hud(); Story.check(); }); return true; }
     C3.menu('xie',F.c3_sf_jiedan?[['谢霁月','去找苏小棠。']]:F.c3_sf_in?[['谢霁月','去见见他们。将来在擂台上，你会一个一个遇到。']]:[['谢霁月','……']]); return true; }
   const L=SF.TALK[id]; if(!L) return false; SF.met(id); UI.say(L(),()=>{ UI.hud(); Story.check(); }); return true; });

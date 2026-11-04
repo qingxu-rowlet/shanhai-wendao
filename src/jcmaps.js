@@ -209,3 +209,32 @@ On.enter(id=>{ if(id!=='jc_xishi') return; for(const o of RT.ents) if(o.posts) f
     P('tang',10,8,'苏小棠',LOOK_TANG,{cond:s=>!!s.flags.c3_sf_morning}),
   ];
   MAPS.jc_huichun={ name:'京城 · 回春堂', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:8,y:11,to:'jc_zhuque',tx:22,ty:7},{x:9,y:11,to:'jc_zhuque',tx:22,ty:7}] }; }
+
+/* ============================================================
+   地图五：聚宝楼（屋里） — the auction hall, open only on the seventh night: the stage at the north end with the lot
+   table and the auctioneer, a gong beside it, rows of chairs, the bidders (a salt merchant; 萧府's steward and his boy;
+   people who whisper when they see 大师姐), and up on the back wall the two 雅间. The door in the south wall goes back
+   out to 西市.
+   ============================================================ */
+{ const W=20, H=14, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>x===0||x===W-1||y===0||y===H-1?'M':y===1?'K':y===2?'L':(y===3||y===4)&&x>=6&&x<=13?'E':'D'));
+  for(const x of [9,10]) G[H-1][x]='D';
+  const P=(id,x,y,name,look,extra)=>({type:'npc', id, x, y, look, name, act:'talk', ...(extra||{})});
+  const chairs=[]; for(const y of [7,9,11]) for(const x of [3,4,5,7,8,12,13,15,16]) chairs.push([x,y]);
+  const taken=new Set(['5,9','13,9','15,9','4,11','16,11','8,7','12,11']);
+  const objects=[
+    {type:'ju_box', x:3, y:2, spr:'ju_box'},
+    {type:'ju_box', x:16, y:2, act:'jubox', get spr(){ return typeof S!=='undefined'&&S&&S.flags.c3_ju_won?'ju_box_open':'ju_box'; }},
+    {type:'ju_table', x:8, y:4, spr:'ju_table'},
+    {type:'ju_gong', x:5, y:4, spr:'ju_gong', act:'jugong'},
+    {type:'lantern', x:2, y:5}, {type:'lantern', x:17, y:5}, {type:'lantern', x:2, y:10}, {type:'lantern', x:17, y:10},
+    ...chairs.filter(([x,y])=>!taken.has(x+','+y)).map(([x,y])=>({type:'ju_chair', x, y, spr:'ju_chair'})),
+    P('ju_host',11,4,'拍卖师',{g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:6,face:'small'}),
+    P('ju_yan',5,9,'盐商',{g:'m',skin:2,hair:0,hairColor:1,style:'robe',cloth:5,face:'mid'}),
+    P('ju_guanjia',13,9,'萧府管家',{g:'m',skin:1,hair:0,hairColor:3,style:'robe',cloth:7,face:'small'}),
+    P('ju_boy',15,9,'萧府小厮',{g:'m',skin:0,hair:1,hairColor:0,style:'jin',cloth:7,face:'small'}),
+    P('ju_g1',4,11,'看客',{g:'f',skin:0,hair:4,hairColor:0,style:'qun',cloth:4,face:'mid'}),
+    P('ju_g2',16,11,'看客',{g:'m',skin:2,hair:2,hairColor:0,style:'robe',cloth:2,face:'small'}),
+    P('xie',8,7,'谢霁月',LOOK_XIE),
+    P('tang',12,11,'苏小棠',LOOK_TANG),
+  ];
+  MAPS.jc_jubao={ name:'京城 · 聚宝楼', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:9,y:13,to:'jc_xishi',tx:26,ty:7},{x:10,y:13,to:'jc_xishi',tx:26,ty:7}] }; }

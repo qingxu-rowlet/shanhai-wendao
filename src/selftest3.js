@@ -97,18 +97,27 @@ const SelfTest3={
           const bad=[]; for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv(); }
           for(const act of ['hccounter','hcdesk','hcstove','hcnian']){ Dungeon.act(obj(act)); await adv(); }
           UI.sync(); Story.check(); const F=S.flags, q=QUESTS[S.quest], prog=q.progress?q.progress(S):'', got=count(S,'c3_ru')===1, miss=HC.st().miss;
-          const ok=inHc&&F.c3_hc_ask&&F.c3_hc_pulse&&F.c3_hc_ru&&got&&miss===1&&!bad.length&&/聚宝楼/.test(prog);
+          const ok=inHc&&F.c3_hc_ask&&F.c3_hc_pulse&&F.c3_hc_ru&&got&&miss===1&&!bad.length&&/大师姐商量拍卖/.test(prog);
           return {fail:!ok, info:`${inHc?'进门':'进门 ✗'}，${F.c3_hc_ask?'问掌柜':'问掌柜 ✗'}，${F.c3_hc_pulse?'号脉':'号脉 ✗'}，抓错 ${miss} 次，${got?'石钟乳':'石钟乳 ✗'}，任务「${prog}」${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：四方馆凑钱（大师姐当青玉珠）→ 等到第七天晚上 → 聚宝楼拍卖会 → 九转还魂草', async()=>{ const n0=SelfTest3.lines.length; cur='拍卖会';
+          node('c3-pool').run(); await W(400); Story.talk('xie'); await adv(); const pooled=!!S.flags.c3_ju_pool&&JU.st().pool>=1100&&!!S.flags.c3_xie_pawn;
+          S.day=6; enterMap('jc_xishi',26,7); await W(300); Story.talk('xs_ju'); await adv(); const waitOk=RT.mapId==='jc_xishi';
+          S.day=7; S.min=12*60; Story.talk('xs_ju'); await adv(0); await W(900); await adv(0); await W(900); await adv(0); const inJu=RT.mapId==='jc_jubao';
+          const bad=[]; for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv(); }
+          for(const act of ['jubox','jugong']){ Dungeon.act(obj(act)); await adv(); }
+          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3h';i++){ UI.sync(); Story.check(); await W(100); }
+          const F=S.flags, ok=pooled&&waitOk&&inJu&&F.c3_ju_won&&count(S,'c3_hun')===1&&S.stones>=0&&!bad.length&&QUESTS[S.quest].id==='c3h';
+          return {fail:!ok, info:`${pooled?'凑钱':'凑钱 ✗'}，${waitOk?'没到日子不开门':'日子 ✗'}，${inJu?'进楼':'进楼 ✗'}，${F.c3_ju_won?'拍到':'拍到 ✗'}，${QUESTS[S.quest].id}${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'6 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'7 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }
