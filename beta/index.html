@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="30d484f27b"><script>(function(){var B="30d484f27b";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a9e80e8413"><script>(function(){var B="a9e80e8413";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10360,6 +10360,52 @@ Object.assign(SPR,{
 });
 
 /* ============================================================
+   山海问道 · 第三章「京城」 · 城里的东西（四）：屋里 — the first room you walk into in the capital, 回春堂's front hall:
+   a plank floor, plastered walls over a wooden wainscot, a wall of medicine drawers (百子柜) behind a long counter with
+   a 戥子 and a mortar on it, the doctor's desk with its pulse pillow, a bench for the waiting, a clay stove with a pot
+   simmering, an iron 药碾, and over the desk a plaque: 悬壶济世.
+   ============================================================ */
+On.tile('D',(g,R,v)=>{ // a plank floor, the boards running across, worn paler in places
+  g.fillStyle='#8a5e3a'; g.fillRect(0,0,16,16); for(let y=0;y<16;y+=4){ g.fillStyle=(y/4)%2?'#946640':'#80563a'; g.fillRect(0,y,16,3); g.fillStyle='#5e3e24'; g.fillRect(0,y+3,16,1);
+    const j=(R()*16|0); g.fillRect(j,y,1,3); } if(R()<.3){ g.fillStyle='rgba(255,230,190,.12)'; g.fillRect(R()*10|0,R()*12|0,5,2); } });
+On.tile('K',(g,R,v)=>{ // the wall's plaster, a dark beam along its top
+  g.fillStyle='#e8dcc4'; g.fillRect(0,0,16,16); g.fillStyle='#5e3a20'; g.fillRect(0,0,16,3); g.fillStyle='#7a4e2c'; g.fillRect(0,3,16,1);
+  for(let i=0;i<3;i++){ g.fillStyle='rgba(140,120,90,.14)'; g.fillRect(R()*14|0,5+R()*9|0,2,1); } },true);
+On.tile('L',(g,R,v)=>{ // the wall's foot: plaster above, a wooden wainscot, the floor's shadow
+  g.fillStyle='#e8dcc4'; g.fillRect(0,0,16,6); g.fillStyle='#6a4428'; g.fillRect(0,6,16,10); g.fillStyle='#8a5a36'; g.fillRect(0,6,16,1);
+  for(let x=0;x<16;x+=8){ g.fillStyle='#5a3820'; g.fillRect(x,7,1,9); g.fillStyle='#7a4e2e'; g.fillRect(x+2,9,4,5); } g.fillStyle='rgba(0,0,0,.25)'; g.fillRect(0,15,16,1); },true);
+On.tile('M',(g,R,v)=>{ // the room's edge: the top of a wall, dark
+  g.fillStyle='#2e2420'; g.fillRect(0,0,16,16); g.fillStyle='#3e322a'; g.fillRect(1,1,14,14); },true);
+
+const JA4={
+  // the 百子柜: a wall of little drawers, each with its slip of paper and a brass pull; jars along the top
+  cabinet(){ return FineArt.paint(128,46,P=>{ const wd='#6a4024', wl='#8a5a36', wk='#4a2a16';
+    P.rect(0,8,128,38,wk); P.rect(2,10,124,34,wd);
+    for(let r=0;r<5;r++) for(let c=0;c<14;c++){ const x=4+c*8.8, y=12+r*6.2; P.rect(x,y,8,5.4,wl); P.rect(x,y,8,1,'#a8784a'); P.rect(x+2,y+1.4,4,2,'#efe6cc'); P.set(x+4,y+4,'#e8b84a'); }
+    for(const [x,c] of [[10,'#e8e0d0'],[24,'#3a7a8a'],[40,'#c8a060'],[88,'#e8e0d0'],[104,'#5a6a4a'],[118,'#c8a060']]){ P.ell(x,6,4,4,c); P.rect(x-2,1,4,2,c); P.rect(x-3,8,6,1,'#00000040'); }
+    P.rect(56,2,16,7,'#5e3a20'); P.rect(57,3,14,5,'#c8a050'); }); },
+  // the long counter: dark front panels; on top a 戥子 (steelyard), a mortar, packets of herbs tied in paper
+  counter(){ return FineArt.paint(112,30,P=>{ P.rect(0,10,112,20,'#4a2a16'); P.rect(0,8,112,4,'#8a5a36'); P.rect(0,8,112,1,'#b07a4c');
+    for(let x=4;x<108;x+=18){ P.rect(x,14,14,12,'#5e3a20'); P.rect(x+1,15,12,10,'#6a4024'); }
+    P.rect(18,1,1,8,'#3a2418'); P.line(10,3,30,2,'#3a2418'); P.ell(12,6,4,1.4,'#c8a050'); P.set(28,4,'#3a2418');   // 戥子
+    P.ell(52,7,6,3,'#7a746a'); P.ell(52,6,5,2,'#5a554e'); P.line(54,1,57,6,'#8a5a36');                      // mortar and pestle
+    for(const x of [72,80,88]){ P.rect(x,4,7,5,'#e8dcc4'); P.rect(x+3,4,1,5,'#b02820'); P.rect(x,6,7,1,'#b02820'); } }); },
+  desk(){ return FineArt.paint(44,26,P=>{ P.rect(2,8,40,4,'#8a5a36'); P.rect(2,8,40,1,'#b07a4c'); P.rect(4,12,3,13,'#5e3a20'); P.rect(37,12,3,13,'#5e3a20'); P.rect(4,20,36,2,'#5e3a20');
+    P.ell(14,7,5,2.4,'#c8413b'); P.ell(14,6,4,1.6,'#e05a4a');                                               // the pulse pillow
+    P.rect(26,5,8,3,'#2a2420'); P.line(36,7,40,3,'#3a2418'); P.rect(24,6,1,1,'#f0f0f0'); }); },
+  bench(){ return FineArt.paint(44,16,P=>{ P.rect(1,5,42,3,'#8a5a36'); P.rect(1,5,42,1,'#b07a4c'); for(const x of [4,38]) P.rect(x,8,3,7,'#5e3a20'); P.ell(22,15,18,1.4,'#00000030'); }); },
+  stove(){ return FineArt.paint(24,30,P=>{ P.rect(3,12,18,17,'#8a6a4a'); P.rect(3,12,18,2,'#a88a68'); P.ell(12,22,4,3,'#2a1a10'); P.ell(12,23,3,2,'#e8702a'); P.ell(12,23.5,1.6,1,'#ffd060');
+    P.ell(12,10,8,4,'#4a3a30'); P.ell(12,8,7,3,'#5e4e42'); P.rect(18,6,4,2,'#4a3a30'); P.ell(12,6,4,1.4,'#3a2a20'); }); },
+  nian(){ return FineArt.paint(32,16,P=>{ P.poly([[1,8],[31,8],[26,15],[6,15]],'#4a4a50'); P.rect(3,8,26,2,'#2a2a30'); P.ell(16,7,6,6,'#5a5a62'); P.ell(16,7,1.6,1.6,'#2a2a30'); P.rect(6,6,20,1,'#7a5a3a'); }); },
+  plaque(){ return FineArt.paint(64,18,P=>{ P.rect(0,0,64,18,'#c8a050'); P.rect(2,2,60,14,'#1a1614'); P.rect(3,3,58,12,'#22201c'); }); },
+};
+Object.assign(SPR,{hc_cabinet:['x'], hc_counter:['x'], hc_desk:['x'], hc_bench:['x'], hc_stove:['x'], hc_nian:['x'], hc_plaque:['x']});
+Object.assign(SPRC,{hc_cabinet:JA4.cabinet(), hc_counter:JA4.counter(), hc_desk:JA4.desk(), hc_bench:JA4.bench(), hc_stove:JA4.stove(), hc_nian:JA4.nian(), hc_plaque:JA4.plaque()});
+// steam from the pot on the stove
+On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_huichun') return; for(const o of RT.ents) if(o.spr==='hc_stove') for(let k=0;k<3;k++){ const u=((RT.t*.5+k/3)%1), x=ox+(o.x+.5)*T+Math.sin(RT.t*2+k*2)*T*.15, y=oy+(o.y-.4)*T-u*T*1.2;
+  g.fillStyle=`rgba(255,255,255,${.35*(1-u)})`; g.beginPath(); g.arc(x,y,T*(.12+u*.18),0,7); g.fill(); } });
+
+/* ============================================================
    山海问道 · 第三章「京城」 · 地图一：朱雀门 · 朱雀大街 — you come in through the south gate: outside, the road, willows
    and two stone lions; the wall, and over its gate the 朱雀门 tower; inside, the avenue running north to the palace, with
    酒楼, 当铺, 布庄 on the west, 药铺, the 听雨轩 teahouse and an inn on the east, stalls along the cross street, a 糖葫芦
@@ -10546,6 +10592,32 @@ const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          //
 On.enter(id=>{ if(id!=='jc_xishi') return; for(const o of RT.ents) if(o.posts) for(const x of o.posts) RT.solid[o.y][x]=true; });
 
 /* ============================================================
+   地图四：回春堂（屋里） — the front hall of the capital's biggest pharmacy, off 朱雀大街: the 百子柜 and the counter
+   along the back wall, the 掌柜 and his apprentice behind it; 孙大夫's desk under the 悬壶济世 plaque, with a patient
+   before it; the waiting bench, a stove with a pot on, the 药碾. The door in the south wall goes back out to the street.
+   ============================================================ */
+{ const W=18, H=12, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>x===0||x===W-1||y===0||y===H-1?'M':y===1?'K':y===2?'L':'D'));
+  for(const x of [8,9]) G[H-1][x]='D';
+  const P=(id,x,y,name,look,extra)=>({type:'npc', id, x, y, look, name, act:'talk', ...(extra||{})});
+  const objects=[
+    {type:'hc_cabinet', x:5, y:2, spr:'hc_cabinet'},
+    {type:'hc_plaque', x:14, y:1, spr:'hc_plaque', flagText:'悬壶济世', flagInk:'#e8c870', flagX:32, flagY:9.5, flagSize:9},
+    {type:'hc_counter', x:6, y:5, spr:'hc_counter', act:'hccounter', fw:3},
+    {type:'hc_desk', x:14, y:6, spr:'hc_desk', act:'hcdesk', fw:1},
+    {type:'hc_bench', x:3, y:9, spr:'hc_bench', fw:1},
+    {type:'hc_stove', x:16, y:9, spr:'hc_stove', act:'hcstove'},
+    {type:'hc_nian', x:12, y:10, spr:'hc_nian', act:'hcnian'},
+    P('hc_zhang',5,4,'回春堂掌柜',{g:'m',skin:1,hair:0,hairColor:1,style:'robe',cloth:5,face:'mid'}),
+    P('hc_tu',9,4,'小学徒',{g:'m',skin:0,hair:1,hairColor:0,style:'jin',cloth:2,face:'small'}),
+    P('hc_sun',14,5,'孙大夫',{g:'m',skin:2,hair:0,hairColor:3,style:'robe',cloth:7,face:'small',beard:'#ece8e0'}),
+    P('hc_bei',13,7,'北边来的汉子',{g:'m',skin:3,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
+    P('hc_mu',2,8,'抱孩子的妇人',{g:'f',skin:1,hair:3,hairColor:0,style:'qun',cloth:3,face:'mid'}),
+    P('hc_po',4,8,'老婆婆',{g:'f',skin:2,hair:3,hairColor:3,style:'qun',cloth:5,face:'small'}),
+    P('tang',10,8,'苏小棠',LOOK_TANG,{cond:s=>!!s.flags.c3_sf_morning}),
+  ];
+  MAPS.jc_huichun={ name:'京城 · 回春堂', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:8,y:11,to:'jc_zhuque',tx:22,ty:7},{x:9,y:11,to:'jc_zhuque',tx:22,ty:7}] }; }
+
+/* ============================================================
    山海问道 · 第三章「京城」 · 第二幕「京城」 — so far: the road's last day and 朱雀门. The guards look at the sect's papers
    and then at 大师姐; inside, the avenue is loud and full; on the notice wall at the crossroads: the 大比 (三月十五，贡院前),
    萧大人's curfew, and a torn notice for a lost child. You can buy a 糖葫芦 (吴阿蛮 asked for one) and a 包子, and talk
@@ -10587,11 +10659,11 @@ JC.gate=()=>[
   ['旁白','（进城看看。十字街口有告示，四方馆在西边。）']];
 // 大师姐 (and 苏小棠) walk with you in the city too
 MAPS.jc_zhuque.objects.push(
-  {type:'npc', id:'xie', x:14, y:24, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in},
-  {type:'npc', id:'tang', x:12, y:20, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>s.sect==='dan'&&!!s.flags.c3_jc_in});
+  {type:'npc', id:'xie', x:14, y:24, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in&&!s.flags.c3_sf_in},
+  {type:'npc', id:'tang', x:12, y:20, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>!!s.flags.c3_jc_in&&(s.sect==='dan'||!!s.flags.c3_sf_morning)});
 On.talk(id=>{ if(RT.mapId!=='jc_zhuque') return false; const F=S.flags;
   if(id==='xie'){ C3.menu('xie',F.c3_jc_board?[['谢霁月','宵禁……'],['谢霁月','（她看了一眼天色）先去四方馆。']]:[['谢霁月','京城……比上一回来的时候，人多了。'],['谢霁月','十字街口有告示，去看看。']]); return true; }
-  if(id==='tang'&&JC.dan()){ C3.menu('tang',[['苏小棠','回春堂！京城最大的药铺！我、我能进去看一眼吗？'],['苏小棠','……就一眼！']]); return true; }
+  if(id==='tang'&&(JC.dan()||F.c3_sf_morning)){ C3.menu('tang',F.c3_hc_ru?[['苏小棠','两味了。还差九转还魂草……'],['苏小棠','八百灵石。{名}，我们一起想办法。']]:F.c3_xs_xue?[['苏小棠','回春堂！就在前面，东边那家！'],['苏小棠','京城最大的药铺……我早就想进去看看了。']]:[['苏小棠','回春堂！京城最大的药铺！我、我能进去看一眼吗？'],['苏小棠','……就一眼！']]); return true; }
   const L=JC.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L); return true; });
 JC.TALK={
   jc_guard1:[['守城兵','大比的往西走，四方馆。别在大街上乱晃。']],
@@ -10630,7 +10702,7 @@ const JC_SHOPS={
   cha:[['旁白','听雨轩。门半掩着，里面醒木一拍：'],['旁白','「……上回说到，那一年宗门大比，有一位女弟子，生得是闭月羞花——」'],['谢霁月','……'],['旁白','（茶楼是之后的地图，到时候可以进去听书。）']],
   kezhan:[['旁白','悦来客栈。掌柜在门口打着算盘：「打尖还是住店？」'],['旁白','（大比的弟子都住四方馆。）']],
 };
-On.act('jcshop',o=>{ const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
+On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
 On.act('jcsedan',o=>UI.say([['旁白','一顶红呢大轿。轿帘放着，里面没有人。'],['旁白','轿杠上，刻着一个小小的「萧」字。'],{flag:'c3_jc_sedan'}]));
 On.act('jcbao',o=>Story.talk('jc_baoniang'));
 On.act('jchulu',o=>Story.talk('jc_hulu'));
@@ -10935,6 +11007,125 @@ On.talk(id=>{ if(RT.mapId!=='jc_xishi') return false;
     target:s=>{ const F=s.flags, [x,y]=SF_WING[s.sect]; if(!F.c3_sf_morning) return ['jc_sifang',x+3,y+3,'你们的厢房'];
       if(!F.c3_xs_xue) return RT.mapId==='jc_xishi'?['jc_xishi',5,17,'百草行']:['jc_sifang',1,23,'往西的街'];
       return ['jc_zhuque',22,6,'回春堂']; }}); }
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 第二幕 · 回春堂 — the second herb. The 掌柜 has one piece of 千年石钟乳 and won't sell it:
+   孙大夫 keeps it for someone who needs it. 孙大夫 is taking the pulse of a man from the north who eats and eats and is
+   always hungry, and thinner every day; forty years a doctor and he has never seen it. 苏小棠 feels the pulse: it is
+   empty, as if something were drawing his 精气 away. His village (柳河村, near 安平村) was taken by soldiers last autumn;
+   he hid in the cellar; since then he dreams of a great mouth, a great pot. 孙大夫 is short-handed: help him make up
+   three prescriptions (抓药) and the 石钟乳 is yours — free if you get every herb right, at cost otherwise.
+   ============================================================ */
+const HC={
+  st(){ const c=C3.st(); c.hc=c.hc||{round:0, miss:0}; return c.hc; },
+  go(){ enterMap('jc_huichun',8,10); RT.dir='up'; UI.hud(); },
+  // the three prescriptions: what goes in, and what a careless hand might reach for instead (with why it's wrong)
+  RX:[
+    {who:'北边来的汉子', name:'四君子汤', say:'人参、白术、茯苓。先把他的气补上。', need:['人参','白术','茯苓'],
+      wrong:{附子:'附子大热，他这身子，受不住。', 大黄:'大黄是泻药！他本来就虚……', 麻黄:'麻黄发汗的，他没受寒。'}},
+    {who:'抱孩子的妇人', name:'银翘散', say:'孩子发热，嗓子疼。金银花、连翘、薄荷。', need:['金银花','连翘','薄荷'],
+      wrong:{肉桂:'肉桂是热的，孩子本来就烧着呢。', 干姜:'干姜也是热的……', 鹿茸:'鹿茸？给一个三岁的孩子？'}},
+    {who:'老婆婆', name:'酸枣仁汤', say:'夜里睡不着，心慌。酸枣仁、茯神、远志。', need:['酸枣仁','茯神','远志'],
+      wrong:{黄连:'黄连太苦了，又凉，老人家脾胃弱。', 巴豆:'巴豆！吃了要拉三天的！', 麻黄:'麻黄让人更睡不着。'}},
+  ],
+  shuffle(l){ const R=rng(S.day*7+l.length+HC.st().round*13+(HC.st().miss||0)); l=[...l]; for(let i=l.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [l[i],l[j]]=[l[j],l[i]]; } return l; },
+  CHAT:{hc_zhang:['称好了，您拿好。'], hc_tu:['够不着……'], hc_sun:['伸手。','舌头。'], hc_bei:['……饿。'], hc_mu:['乖，不哭……'], hc_po:['睡不着啊……']},
+};
+JC.CHAT=Object.assign(JC.CHAT,HC.CHAT);
+
+/* ---------- arriving ---------- */
+On.enter(id=>{ if(id==='jc_huichun'&&!S.flags.c3_hc_in) setTimeout(()=>{ if(RT.mapId==='jc_huichun'&&!S.flags.c3_hc_in) UI.say(HC.arrive(),()=>{ UI.hud(); Story.check(); }); },500); });
+HC.arrive=()=>[
+  ['旁白','回春堂里一股苦香。一整面墙的小抽屉，从地上一直摞到房梁，每一格上都贴着药名。'],
+  ['旁白','靠墙的长凳上坐满了等着看病的人。里头一张桌子后面，一个白胡子老大夫正在给人号脉。'],
+  ['苏小棠','（她站在百子柜前面，仰着头，半天没说话）……'],
+  ['苏小棠','……比我们谷里的药房还大。'],
+  {flag:'c3_hc_in'},
+  ['旁白','（问问柜台后面的掌柜，有没有千年石钟乳。）']];
+
+/* ---------- the 掌柜, and 孙大夫 ---------- */
+HC.ask=()=>[
+  ['回春堂掌柜','千年石钟乳？有，就一块。'],
+  ['回春堂掌柜','不过不卖。'],
+  ['苏小棠','为什么呀？'],
+  ['回春堂掌柜','那是孙大夫留着的。他说，那块石钟乳，要给用得着的人。'],
+  ['回春堂掌柜','（他朝里头努了努嘴）你们自己去问他吧。今天人多，他怕是没工夫搭理你们。'],
+  {flag:'c3_hc_ask'}];
+HC.pulse=()=>[
+  ['旁白','孙大夫三根手指搭在一个汉子的手腕上，眉头越皱越紧。'],
+  ['北边来的汉子','大夫……我吃多少都饿。一顿吃五个馍，还是饿。'],
+  ['北边来的汉子','可人倒是一天比一天瘦。'],
+  ['孙大夫','脉虚得厉害，像是饿了一整年的人。可他明明吃得下……'],
+  ['孙大夫','老夫行医四十年，没见过这种病。'],
+  ['苏小棠','（她犹豫了一下）……大夫，我能摸摸看吗？'],
+  ['旁白','孙大夫看了她一眼，让开了。苏小棠搭上脉，闭着眼睛，过了很久。'],
+  ['苏小棠','……脉是空的。'],
+  ['苏小棠','不是病。像是……有什么东西，把他的精气，一点一点地吸走了。'],
+  ['北边来的汉子','（他的手抖了一下）……'],
+  ['北边来的汉子','我们村子，去年秋天来了官兵，把人都带走了。我躲在地窖里，才没被带走。'],
+  ['北边来的汉子','从那以后，夜里老做一个梦。梦见一张大嘴，一口好大的锅……'],
+  ['我','你们村子，叫什么？'],
+  ['北边来的汉子','柳河村。北边的，离安平村不远。'],
+  ['我','（……柳河村。安平村的隔壁。）'],
+  {flag:'c3_hc_pulse'},
+  ['孙大夫','（他捋着胡子，看着苏小棠）小姑娘，药王谷的？'],
+  ['孙大夫','看不了的病，就先补着。可今天外头还排着十几个人，老夫一个人忙不过来。'],
+  ['孙大夫','你们两个，帮老夫抓药。抓对了，那块石钟乳，就给你们。'],
+  ['苏小棠','（她冲你眨了眨眼睛）{名}，你来抓，我在旁边看着。']];
+
+/* ---------- 抓药: three prescriptions, three herbs each, four drawers to choose from each time ---------- */
+HC.zhua=()=>{ const h=HC.st(); if(h.round>=HC.RX.length) return HC.done(); const rx=HC.RX[h.round]; h.left=h.left&&h.left.length?h.left:[...rx.need];
+  UI.say([['孙大夫',`${rx.who}：${rx.name}。${rx.say}`]],()=>HC.pick()); };
+HC.pick=()=>{ const h=HC.st(), rx=HC.RX[h.round], got=rx.need.length-h.left.length, wrong=HC.shuffle(Object.keys(rx.wrong)).slice(0,4-Math.min(h.left.length,2)), opts=HC.shuffle([...h.left.slice(0,2),...wrong]);
+  UI.say([{choice:`《${rx.name}》　抓第 ${got+1} 味（共 ${rx.need.length} 味）`, options:opts.map(n=>({text:`拉开「${n}」那一格`, fn:()=>HC.take(n)}))}]); };
+HC.take=n=>{ const h=HC.st(), rx=HC.RX[h.round];
+  if(rx.need.includes(n)){ h.left=h.left.filter(x=>x!==n); Sound.coin&&Sound.coin(); save();
+    if(h.left.length) return UI.say([['旁白',`你从「${n}」那一格里抓出一把，放在戥子上称好，倒在纸上。`]],()=>HC.pick());
+    h.round++; h.left=null; save(); return UI.say([['旁白','三味药包进纸里，拿红绳一扎。'],['孙大夫','（他看了一眼）嗯。'],...(h.round<HC.RX.length?[['旁白','下一个。']]:[])],()=>HC.zhua()); }
+  h.miss++; save(); UI.say([['苏小棠',`（她一把按住你的手）等等！${rx.wrong[n]}`],['孙大夫','……再想想。']],()=>HC.pick()); };
+HC.done=()=>{ const h=HC.st(), price=h.miss?80:0, pay=Math.min(price,S.stones); UI.say([
+  ['孙大夫','手脚还算麻利。'],
+  ...(h.miss?[['孙大夫',`错了 ${h.miss} 回。……那块石钟乳，收你们八十灵石，算个本钱。`],...(pay<price?[['孙大夫','（他看了看你瘪瘪的钱袋）……有多少给多少吧。']]:[])]:[['孙大夫','一味都没抓错。那块石钟乳，送你们了。']]),
+  ['旁白','掌柜从柜台最底下的一格里，捧出一个锦盒。里面是一截乳白色的石头，摸上去凉凉的，像是还在往下滴水。'],
+  {run:()=>{ S.stones-=pay; addItem('c3_ru',1); Sound.coin(); UI.hud(); }}, {flag:'c3_hc_ru'},
+  ['旁白','（得到「千年石钟乳」。）'],
+  ['苏小棠','两味了！'],
+  ['苏小棠','还差最后一味……九转还魂草。聚宝楼的拍卖会，八百灵石起价……'],
+  ['孙大夫','九转还魂草？'],
+  ['孙大夫','（他沉默了一会儿）……拍卖会上，有人会跟你们抢的。萧府的人，最近什么药都收。'],
+  ['孙大夫','小姑娘。那个汉子的脉，你要是想明白了，回来告诉老夫一声。']],()=>{ UI.hud(); Story.check(); }); };
+Object.assign(ITEMS,{c3_ru:{name:'千年石钟乳', icon:'i_ru', quest:true, keep:true, desc:'结丹丹的第二味主药。乳白色，摸上去凉凉的，像是还在往下滴水。回春堂孙大夫留着的那一块。'}});
+Object.assign(SPR,{i_ru:['............','...zzzzzz...','....zxxz....','....zxxz....','.....zxz....','.....zz.....','......z.....','......l.....','............','......l.....']});
+
+/* ---------- talking, and the things in the room ---------- */
+HC.TALK={
+  hc_zhang:()=>S.flags.c3_hc_ru?[['回春堂掌柜','那块石钟乳，孙大夫藏了十年了。'],['回春堂掌柜','……他肯给你们，是看得起你们。']]:S.flags.c3_hc_ask?[['回春堂掌柜','去问孙大夫吧。']]:HC.ask(),
+  hc_sun:()=>{ const F=S.flags; if(!F.c3_hc_ask) return [['孙大夫','（他正给人号脉，头也不抬）……排队。']];
+    if(!F.c3_hc_pulse) return HC.pulse(); if(!F.c3_hc_ru) return null;
+    return [['孙大夫','那个汉子的脉……老夫也想了一宿。'],['孙大夫','精气被吸走……人怎么会被吸走精气呢。']]; },
+  hc_tu:[['小学徒','（他踮着脚，够最上面一格抽屉）……够不着。'],['小学徒','师父说，等我够得着最上面那一格，就能出师了。']],
+  hc_bei:()=>S.flags.c3_hc_pulse?[['北边来的汉子','……谢谢你们。'],['北边来的汉子','我娘也被带走了。我在京城等着，说不定哪天，能找到她。']]:[['北边来的汉子','（他捧着肚子，脸色蜡黄）……饿。']],
+  hc_mu:()=>S.flags.c3_hc_ru?[['抱孩子的妇人','多谢小神医！孩子喝了药，睡着了。']]:[['抱孩子的妇人','孩子烧了两天了……'],['抱孩子的妇人','晚上不让出门，想请大夫都请不来。']],
+  hc_po:[['老婆婆','睡不着啊……'],['老婆婆','一闭眼，就想起我那小孙子。去年冬天，在城西走丢的。'],['老婆婆','官府说，走丢的孩子多了，找不过来。']],
+};
+On.talk(id=>{ if(RT.mapId!=='jc_huichun') return false;
+  if(id==='tang'){ C3.menu('tang',S.flags.c3_hc_ru?[['苏小棠','那个汉子的脉……'],['苏小棠','{名}，我从来没摸过那样的脉。像一口井，底下是空的。']]:[['苏小棠','这么多抽屉……我能在这里待一整天。']]); return true; }
+  if(id==='hc_sun'&&S.flags.c3_hc_pulse&&!S.flags.c3_hc_ru){ HC.zhua(); return true; }
+  const L=HC.TALK[id]; if(!L) return false; const lines=typeof L==='function'?L():L;
+  UI.say(lines,()=>{ UI.hud(); Story.check(); if(id==='hc_sun'&&S.flags.c3_hc_pulse&&!S.flags.c3_hc_ru) setTimeout(()=>HC.zhua(),200); }); return true; });
+On.act('hccounter',o=>Story.talk('hc_zhang'));
+On.act('hcdesk',o=>Story.talk('hc_sun'));
+On.act('hcstove',o=>UI.say([['旁白','炉子上咕嘟咕嘟煎着药，一屋子苦香。']]));
+On.act('hcnian',o=>UI.say([['旁白','一只铁药碾。碾槽里还剩着一点没碾完的药末。']]));
+On.theme(id=>id==='jc_huichun'?'calm':null);
+
+/* ---------- the quest ---------- */
+{ const q=QUESTS.find(q=>q.id==='c3g'), _p=q.progress, _t=q.target; Object.assign(q,{
+    progress:s=>{ const F=s.flags; if(!F.c3_xs_xue) return _p(s); return !F.c3_hc_ask?'去回春堂问千年石钟乳（朱雀大街东边）':!F.c3_hc_ru?'回春堂：问孙大夫，帮他抓药':`九转还魂草：聚宝楼的拍卖会（第 ${XS.auctionDay()} 天晚上，下一步）`; },
+    target:s=>{ const F=s.flags; if(!F.c3_xs_xue) return _t(s); const In=RT.mapId==='jc_huichun';
+      if(!F.c3_hc_ask) return In?['jc_huichun',5,6,'掌柜']:['jc_zhuque',22,6,'回春堂'];
+      if(!F.c3_hc_ru) return In?['jc_huichun',13,5,'孙大夫']:['jc_zhuque',22,6,'回春堂'];
+      return ['jc_xishi',26,6,'聚宝楼']; }}); }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -11993,6 +12184,10 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true},'jc_xishi',5,18,'up','c3g',10); }),
     N('lang','琅琊阁：功法和琅琊榜','琅琊阁门口，身上有 600 灵石。和阁主说话：书架上三本散修功法（每三天换一批），买一本，属性永久增加。门口的琅琊榜：另外三宗的弟子、大师姐（旁边有人添了一行字）、苏小棠、你（「新人，不详」）。聚宝楼的伙计：拍卖会七天一场，压轴是九转还魂草。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true},'jc_xishi',8,7,'up','c3g',10); S.stones=600; UI.hud(); }),
+    N('huichun','回春堂：进门、问石钟乳','买到龙血竭以后，在回春堂里（从朱雀大街的回春堂门口进来）。一整面墙的百子柜、柜台、孙大夫的诊桌、长凳上等着看病的人、煎药的炉子。问掌柜：千年石钟乳只有一块，不卖，是孙大夫留着的。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true},'jc_huichun',8,10,'up','c3g',11); addItem('c3_xue',1); }),
+    N('zhua','回春堂：孙大夫号脉、抓药','掌柜已经问过了，站在孙大夫旁边。点孙大夫：北边来的汉子吃多少都饿，苏小棠摸出他的脉是空的；他是柳河村的（离安平村不远）。然后帮孙大夫抓三副药（四君子汤、银翘散、酸枣仁汤），每次从四个抽屉里选一味；抓错了苏小棠会拦住你。一味没错，石钟乳白送；错过就收 80 灵石。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true},'jc_huichun',13,5,'right','c3g',11); addItem('c3_xue',1); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -12198,16 +12393,31 @@ const SelfTest3={
           UI.sync(); Story.check(); const F=S.flags, q=QUESTS[S.quest], prog=q&&q.progress?q.progress(S):'';
           const ok=inXs&&xue&&gf&&F.c3_xs_xue&&F.c3_xs_bang&&F.c3_xs_lot&&F.c3_xs_axiu&&!bad.length&&q.id==='c3g'&&/回春堂/.test(prog);
           return {fail:!ok, info:`${inXs?'进西市':'进西市 ✗'}，${xue?'龙血竭':'龙血竭 ✗'}，${gf?'功法':'功法 ✗'}，${F.c3_xs_bang?'琅琊榜':'琅琊榜 ✗'}，${F.c3_xs_lot?'拍品单':'拍品单 ✗'}，${F.c3_xs_axiu?'阿秀娘':'阿秀娘 ✗'}，任务「${prog}」${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：回春堂 → 问石钟乳 → 孙大夫号脉 → 抓三副药（故意抓错一次）→ 千年石钟乳', async()=>{ const n0=SelfTest3.lines.length; cur='回春堂';
+          node('c3-xishi').run(); await W(300); S.flags.c3_xs_in=true; S.flags.c3_xs_xue=true; addItem('c3_xue',1); enterMap('jc_zhuque',22,7); await W(300); await adv();
+          Dungeon.act(RT.map.objects.find(o=>o.act==='jcshop'&&o.id==='yao')); await W(900); await adv(); const inHc=RT.mapId==='jc_huichun'&&!!S.flags.c3_hc_in;
+          Story.talk('hc_zhang'); await adv(); Story.talk('hc_sun'); let wrong=false, rounds=0;
+          for(let i=0;i<400;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg'); if(d.hidden){ await W(60); if($('#dlg').hidden&&++rounds>8) break; continue; } rounds=0;
+            const ch=[...d.querySelectorAll('[data-i]')];
+            if(ch.length){ rec('选项',ch.map(c=>c.textContent).join(' / ')); const h=HC.st(), rx=HC.RX[h.round], good=c=>(h.left||rx.need).some(n=>c.textContent.includes('「'+n+'」'));
+              const c=!wrong?(ch.find(c=>!good(c))||ch[0]):(ch.find(good)||ch[0]); if(!good(c)) wrong=true; c.click(); }
+            else if(d.onclick){ if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); }
+            await W(10); }
+          const bad=[]; for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv(); }
+          for(const act of ['hccounter','hcdesk','hcstove','hcnian']){ Dungeon.act(obj(act)); await adv(); }
+          UI.sync(); Story.check(); const F=S.flags, q=QUESTS[S.quest], prog=q.progress?q.progress(S):'', got=count(S,'c3_ru')===1, miss=HC.st().miss;
+          const ok=inHc&&F.c3_hc_ask&&F.c3_hc_pulse&&F.c3_hc_ru&&got&&miss===1&&!bad.length&&/聚宝楼/.test(prog);
+          return {fail:!ok, info:`${inHc?'进门':'进门 ✗'}，${F.c3_hc_ask?'问掌柜':'问掌柜 ✗'}，${F.c3_hc_pulse?'号脉':'号脉 ✗'}，抓错 ${miss} 次，${got?'石钟乳':'石钟乳 ✗'}，任务「${prog}」${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'5 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'6 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }

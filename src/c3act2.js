@@ -40,11 +40,11 @@ JC.gate=()=>[
   ['旁白','（进城看看。十字街口有告示，四方馆在西边。）']];
 // 大师姐 (and 苏小棠) walk with you in the city too
 MAPS.jc_zhuque.objects.push(
-  {type:'npc', id:'xie', x:14, y:24, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in},
-  {type:'npc', id:'tang', x:12, y:20, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>s.sect==='dan'&&!!s.flags.c3_jc_in});
+  {type:'npc', id:'xie', x:14, y:24, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in&&!s.flags.c3_sf_in},
+  {type:'npc', id:'tang', x:12, y:20, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>!!s.flags.c3_jc_in&&(s.sect==='dan'||!!s.flags.c3_sf_morning)});
 On.talk(id=>{ if(RT.mapId!=='jc_zhuque') return false; const F=S.flags;
   if(id==='xie'){ C3.menu('xie',F.c3_jc_board?[['谢霁月','宵禁……'],['谢霁月','（她看了一眼天色）先去四方馆。']]:[['谢霁月','京城……比上一回来的时候，人多了。'],['谢霁月','十字街口有告示，去看看。']]); return true; }
-  if(id==='tang'&&JC.dan()){ C3.menu('tang',[['苏小棠','回春堂！京城最大的药铺！我、我能进去看一眼吗？'],['苏小棠','……就一眼！']]); return true; }
+  if(id==='tang'&&(JC.dan()||F.c3_sf_morning)){ C3.menu('tang',F.c3_hc_ru?[['苏小棠','两味了。还差九转还魂草……'],['苏小棠','八百灵石。{名}，我们一起想办法。']]:F.c3_xs_xue?[['苏小棠','回春堂！就在前面，东边那家！'],['苏小棠','京城最大的药铺……我早就想进去看看了。']]:[['苏小棠','回春堂！京城最大的药铺！我、我能进去看一眼吗？'],['苏小棠','……就一眼！']]); return true; }
   const L=JC.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L); return true; });
 JC.TALK={
   jc_guard1:[['守城兵','大比的往西走，四方馆。别在大街上乱晃。']],
@@ -83,7 +83,7 @@ const JC_SHOPS={
   cha:[['旁白','听雨轩。门半掩着，里面醒木一拍：'],['旁白','「……上回说到，那一年宗门大比，有一位女弟子，生得是闭月羞花——」'],['谢霁月','……'],['旁白','（茶楼是之后的地图，到时候可以进去听书。）']],
   kezhan:[['旁白','悦来客栈。掌柜在门口打着算盘：「打尖还是住店？」'],['旁白','（大比的弟子都住四方馆。）']],
 };
-On.act('jcshop',o=>{ const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
+On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
 On.act('jcsedan',o=>UI.say([['旁白','一顶红呢大轿。轿帘放着，里面没有人。'],['旁白','轿杠上，刻着一个小小的「萧」字。'],{flag:'c3_jc_sedan'}]));
 On.act('jcbao',o=>Story.talk('jc_baoniang'));
 On.act('jchulu',o=>Story.talk('jc_hulu'));

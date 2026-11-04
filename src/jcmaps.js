@@ -183,3 +183,29 @@ const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          //
   MAPS.jc_xishi={ name:'京城 · 西市', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:31,y:9,to:'jc_sifang',tx:1,ty:22},{x:31,y:10,to:'jc_sifang',tx:1,ty:23},{x:31,y:11,to:'jc_sifang',tx:1,ty:24}] }; }
 // the 牌坊's two posts stop you; the way between them is open
 On.enter(id=>{ if(id!=='jc_xishi') return; for(const o of RT.ents) if(o.posts) for(const x of o.posts) RT.solid[o.y][x]=true; });
+
+/* ============================================================
+   地图四：回春堂（屋里） — the front hall of the capital's biggest pharmacy, off 朱雀大街: the 百子柜 and the counter
+   along the back wall, the 掌柜 and his apprentice behind it; 孙大夫's desk under the 悬壶济世 plaque, with a patient
+   before it; the waiting bench, a stove with a pot on, the 药碾. The door in the south wall goes back out to the street.
+   ============================================================ */
+{ const W=18, H=12, G=[...Array(H)].map((_,y)=>[...Array(W)].map((_,x)=>x===0||x===W-1||y===0||y===H-1?'M':y===1?'K':y===2?'L':'D'));
+  for(const x of [8,9]) G[H-1][x]='D';
+  const P=(id,x,y,name,look,extra)=>({type:'npc', id, x, y, look, name, act:'talk', ...(extra||{})});
+  const objects=[
+    {type:'hc_cabinet', x:5, y:2, spr:'hc_cabinet'},
+    {type:'hc_plaque', x:14, y:1, spr:'hc_plaque', flagText:'悬壶济世', flagInk:'#e8c870', flagX:32, flagY:9.5, flagSize:9},
+    {type:'hc_counter', x:6, y:5, spr:'hc_counter', act:'hccounter', fw:3},
+    {type:'hc_desk', x:14, y:6, spr:'hc_desk', act:'hcdesk', fw:1},
+    {type:'hc_bench', x:3, y:9, spr:'hc_bench', fw:1},
+    {type:'hc_stove', x:16, y:9, spr:'hc_stove', act:'hcstove'},
+    {type:'hc_nian', x:12, y:10, spr:'hc_nian', act:'hcnian'},
+    P('hc_zhang',5,4,'回春堂掌柜',{g:'m',skin:1,hair:0,hairColor:1,style:'robe',cloth:5,face:'mid'}),
+    P('hc_tu',9,4,'小学徒',{g:'m',skin:0,hair:1,hairColor:0,style:'jin',cloth:2,face:'small'}),
+    P('hc_sun',14,5,'孙大夫',{g:'m',skin:2,hair:0,hairColor:3,style:'robe',cloth:7,face:'small',beard:'#ece8e0'}),
+    P('hc_bei',13,7,'北边来的汉子',{g:'m',skin:3,hair:1,hairColor:0,style:'jin',cloth:6,face:'mid'}),
+    P('hc_mu',2,8,'抱孩子的妇人',{g:'f',skin:1,hair:3,hairColor:0,style:'qun',cloth:3,face:'mid'}),
+    P('hc_po',4,8,'老婆婆',{g:'f',skin:2,hair:3,hairColor:3,style:'qun',cloth:5,face:'small'}),
+    P('tang',10,8,'苏小棠',LOOK_TANG,{cond:s=>!!s.flags.c3_sf_morning}),
+  ];
+  MAPS.jc_huichun={ name:'京城 · 回春堂', w:W, h:H, ground:G.map(r=>r.join('')), objects, exits:[{x:8,y:11,to:'jc_zhuque',tx:22,ty:7},{x:9,y:11,to:'jc_zhuque',tx:22,ty:7}] }; }
