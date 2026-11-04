@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="0fe0b7d1b1"><script>(function(){var B="0fe0b7d1b1";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="9e4ed2f052"><script>(function(){var B="9e4ed2f052";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3810,8 +3810,10 @@ const Mini = {
     addEventListener('keydown',kd); addEventListener('keyup',ku); return ()=>{ removeEventListener('keydown',kd); removeEventListener('keyup',ku); }; },
 
   /* ---------- 炼丹：keep the heat inside the moving sweet spot ---------- */
-  alchemy(recipe, done){
-    const out=ITEMS[recipe.out], wide=S.sect==='dan'?.21:.16, total=7;
+  // opt (optional, for harder pills): wide = the gold zone's half-height, total = seconds, speed = how fast the zone moves,
+  // jolt = an extra quick wobble in the second half, coach(state, t, total) = a helper's words in place of the tip
+  alchemy(recipe, done, opt={}){
+    const out=ITEMS[recipe.out], wide=opt.wide||(S.sect==='dan'?.21:.16), total=opt.total||7, sp=opt.speed||1;
     const el=Mini.open(`<div class="mg wood alc"><h3>炼制 ${out.name}</h3>
       <div class="alc-wrap"><div class="furnace"><div class="flame" id="alcFlame"></div></div>
         <div class="heat"><div class="zone" id="alcZone"></div><div class="needle" id="alcNeedle"></div></div></div>
@@ -3820,13 +3822,13 @@ const Mini = {
     let h=.3, v=0, t=-1.2, inside=0, holding=false; const unbind=Mini.hold($('#alcBtn'), x=>holding=x);
     Mini.run(dt=>{
       t+=dt; v+=(holding?1.5:-1.05)*dt; v*=.92; h=Math.max(0,Math.min(1,h+v*dt*2.2)); if(h===0||h===1) v=0;
-      const c=.5+.22*Math.sin(t*.95)+.06*Math.sin(t*2.3);
+      const c=.5+.22*Math.sin(t*.95*sp)+.06*Math.sin(t*2.3*sp)+(opt.jolt&&t>total/2?opt.jolt*Math.sin(t*4.1):0);
       if(t>0){ if(Math.abs(h-c)<wide) inside+=dt; }
       $('#alcZone').style.bottom=((c-wide)*100)+'%'; $('#alcZone').style.height=(wide*200)+'%';
       $('#alcNeedle').style.bottom=(h*100)+'%'; $('#alcFlame').style.transform=`scale(${.5+h*.9})`; $('#alcFlame').style.opacity=.5+h*.5;
       $('#alcProg').style.width=Math.max(0,t/total*100)+'%';
       if(t<0) $('#alcTip').textContent='准备……';
-      else if(Math.abs(h-c)<wide) $('#alcTip').textContent='火候正好！'; else $('#alcTip').textContent=h>c?'火太旺了！':'火太弱了！';
+      else { const st=Math.abs(h-c)<wide?'ok':h>c?'hot':'cold'; $('#alcTip').textContent=opt.coach?opt.coach(st,t,total):{ok:'火候正好！',hot:'火太旺了！',cold:'火太弱了！'}[st]; }
       if(t>=total){ unbind(); Mini.stop(); const r=inside/total, grade=r>=.58?'top':r>=.35?'mid':r>=.15?'low':'fail';
         const name={top:'上品',mid:'中品',low:'下品',fail:'炸炉'}[grade];
         el.querySelector('.alc').innerHTML=`<h3>${grade==='fail'?'炸炉了……':name+out.name}</h3><p class="mg-tip">火候命中 ${Math.round(r*100)}%（上品要 58%，中品 35%）</p><button class="btn main" id="alcOk">好</button>`;
@@ -10891,6 +10893,7 @@ SF.TALK={
 };
 JC.CHAT=Object.assign(JC.CHAT,{sf_clerk:['名册……名册……'], sf_lin:['……'], sf_cheng:['这步……这步怎么走……'], sf_wulan:['阿毛，别乱跑！'], sf_wenxuan:['……又是这一卦。'], sf_bu:['你输啦～']});
 On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
+  if(id==='tang'&&F.c3_ju_won&&!F.c3_dan_done){ DAN.talk(); return true; }
   if(id==='tang'){ if(!F.c3_sf_tang){ UI.say(SF.tangMeet(),()=>{ UI.hud(); Story.check(); }); return true; }
     if(F.c3_sf_jiedan&&!F.c3_sf_recipe){ UI.say(SF.recipe(),()=>{ UI.hud(); Story.check(); }); return true; }
     C3.menu('tang',F.c3_sf_recipe?[['苏小棠','龙血竭、石钟乳、九转还魂草……我都背下来啦！']]:[['苏小棠','京城的槐花，可以入药的。清热、凉血……'],['苏小棠','……你看我干什么。']]); return true; }
@@ -11298,6 +11301,65 @@ On.theme(id=>id==='jc_jubao'?'calm':null);
 QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3g')+1,0,
   {id:'c3h', title:'结丹 · 炼丹', desc:'三味主药都齐了：龙血竭、千年石钟乳、九转还魂草。苏小棠说，她来看火候。', check:s=>false,
     progress:s=>'回四方馆，找苏小棠炼结丹丹（下一步）', target:s=>['jc_sifang',8,13,'苏小棠']});
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 第二幕 · 炼结丹丹 — back at 四方馆 with all three herbs, 苏小棠 carries her little bronze
+   furnace out to the back courtyard. The fire is harder than any pill before: the gold band moves faster and in the
+   last half it shivers ("九转"). She watches the fire for you and calls it. If the furnace bursts she catches the herbs
+   in time and you go again. Then the pill, ash on her face, and 大师姐 in the moon gate: tomorrow, 闭关.
+   ============================================================ */
+const DAN={
+  st(){ const c=C3.st(); return c; },
+  opt:()=>({wide:S.sect==='dan'?.17:.135, total:10, speed:1.35, jolt:.07,
+    coach:(st,t,total)=>t>total/2&&t<total/2+1.2?'苏小棠：要转九转了——稳住！':{ok:'苏小棠：对，就这样……别动！',hot:'苏小棠：太旺了！松一松！',cold:'苏小棠：火要灭了，快鼓风！'}[st]}),
+};
+MAPS.jc_sifang.objects.push({type:'furnace', x:7, y:17, act:'sfdan', cond:s=>!!s.flags.c3_dan_lu});
+Object.assign(ITEMS,{c3_jiedan:{name:'结丹丹', icon:'i_pill', quest:true, keep:true, desc:'苏小棠看着火候，在四方馆后院炼成的结丹丹。龙血竭、千年石钟乳、九转还魂草。闭关时服下。'}});
+
+/* ---------- 苏小棠 brings out her furnace ---------- */
+DAN.start=()=>[
+  ['苏小棠','{名}！三味都齐了！'],
+  ['苏小棠','（她跑回厢房，抱出一只小小的铜丹炉，炉身被摸得发亮）这是我自己的炉子。从谷里一路背过来的。'],
+  ['苏小棠','去后院！那里没人，风也小。'],
+  {run:()=>C3.set('c3_dan_lu')},
+  ['旁白','（后院月洞门里，太湖石旁边，苏小棠把丹炉架好了。）']];
+DAN.before=()=>[
+  ['苏小棠','结丹丹的火候，和筑基丹不一样。'],
+  ['苏小棠','要转九转。前一半还好，后一半，火会自己乱跳。'],
+  ['苏小棠','你鼓风，我看火。我说大，你就大；我说小，你就小。'],
+  ['苏小棠','……别紧张。'],
+  ['苏小棠','（她自己的手，其实也在抖）']];
+DAN.go=()=>{ const need=['c3_xue','c3_ru','c3_hun'].filter(k=>!count(S,k)); if(need.length) return UI.say([['苏小棠','药材不齐……']]);
+  Mini.alchemy({out:'c3_jiedan'}, grade=>{ S.min+=60; UI.hud();
+    if(grade==='fail') return UI.say([['旁白','「砰」的一声，炉盖跳了起来，一股黑烟冲上天。'],['苏小棠','（她扑过去，用袖子把药材从炉膛里扒了出来）……还好！还好我手快！'],['苏小棠','（她脸上一道一道的黑灰，却笑了）药没坏。再来一次！']],()=>UI.say(DAN.before().slice(-2),()=>DAN.go()));
+    for(const k of ['c3_xue','c3_ru','c3_hun']) addItem(k,-1); addItem('c3_jiedan',1); S.c3.danGrade=grade; save();
+    UI.say(DAN.after(grade),()=>{ UI.hud(); Story.check(); }); }, DAN.opt()); };
+DAN.after=g=>[
+  ['旁白','炉火慢慢小了下去。苏小棠揭开炉盖，一股清香冲出来，满院子的槐花香都被压下去了。'],
+  ['旁白',`炉底躺着一颗丹药，${{top:'圆润透亮，丹纹九道，一道不少',mid:'圆润，丹纹七八道',low:'有点歪，丹纹只有五六道'}[g]}。`],
+  ...(g==='top'?[['苏小棠','（她捧着丹药，半天没说话）……上品。'],['苏小棠','长老一辈子，也就炼出过三颗上品结丹丹。']]:g==='mid'?[['苏小棠','成了！成色还不错！']]:[['苏小棠','成了……就是丑了一点。'],['苏小棠','药力是一样的！真的！']]),
+  ['苏小棠','（她用袖子擦了擦脸，把黑灰抹得更开了）{名}……你要结丹了。'],
+  {love:{tang:20}},{flag:'c3_dan_done'},
+  ['旁白','（得到「结丹丹」。）'],
+  ['旁白','月洞门那边，大师姐不知道什么时候来的，靠在门框上。'],
+  ['谢霁月','……炼好了？'],
+  ['谢霁月','明天开始闭关。就在这里。'],
+  ['谢霁月','我替你守着。']];
+
+/* ---------- where it happens ---------- */
+// (called from 四方馆's own talk handler, which owns 苏小棠 there)
+DAN.talk=()=>{ if(!S.flags.c3_dan_lu) return UI.say(DAN.start(),()=>{ UI.hud(); Story.check(); });
+  C3.menu('tang',[['苏小棠','丹炉架在后院了！快来！']]); };
+On.act('sfdan',o=>{ if(S.flags.c3_dan_done) return UI.say([['旁白','苏小棠的小铜炉。炉身还是温的。']]);
+  UI.say(DAN.before(),()=>DAN.go()); });
+
+/* ---------- the quests ---------- */
+{ const q=QUESTS.find(q=>q.id==='c3h'); Object.assign(q,{check:s=>!!s.flags.c3_dan_done,
+    progress:s=>!s.flags.c3_dan_lu?'回四方馆，找苏小棠':'后院的丹炉：和苏小棠炼结丹丹',
+    target:s=>!s.flags.c3_dan_lu?(RT.mapId==='jc_sifang'?['jc_sifang',8,13,'苏小棠']:['jc_sifang',15,19,'四方馆']):['jc_sifang',7,18,'丹炉']}); }
+QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3h')+1,0,
+  {id:'c3i', title:'结丹 · 闭关', desc:'结丹丹炼好了。大师姐说：明天开始闭关，她替你守着。', check:s=>false,
+    progress:s=>'在后院的蒲团上闭关（下一步）', target:s=>['jc_sifang',6,19,'蒲团']});
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -12364,6 +12426,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true},'jc_sifang',12,11,'up','c3g',10); S.stones=100; UI.hud(); }),
     N('auction','聚宝楼：拍卖会（九转还魂草）','第七天，天黑以后，站在聚宝楼门口，钱已经凑好了。点伙计进去：看客认出大师姐，萧府管家一千、两千地买；压轴的九转还魂草和盐商、萧府管家抢，举几次牌以后，楼上的小厮下来传话，管家不要了。雅间的帘子掀开一道缝：一只手，一枚白骨扳指。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_xie_pawn:true},'jc_xishi',26,7,'up','c3g',18.5); S.day=7; S.stones=100; JU.st().pool=1100; UI.hud(); Story.check(); }),
+    N('dan','四方馆后院：和苏小棠炼结丹丹','三味主药都在身上，站在苏小棠旁边。点她：她抱出自己的小铜炉，架在后院。去后院点丹炉：火候比筑基丹难（金色区更窄、动得更快，后一半会乱跳），苏小棠在下面喊「大」「小」。炸炉的话她把药材抢出来，可以再炼。炼成以后，大师姐在月洞门口：明天闭关。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true},'jc_sifang',8,13,'up','c3h',9); for(const k of ['c3_xue','c3_ru','c3_hun']) addItem(k,1); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -12593,6 +12657,16 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3h';i++){ UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=pooled&&waitOk&&inJu&&F.c3_ju_won&&count(S,'c3_hun')===1&&S.stones>=0&&!bad.length&&QUESTS[S.quest].id==='c3h';
           return {fail:!ok, info:`${pooled?'凑钱':'凑钱 ✗'}，${waitOk?'没到日子不开门':'日子 ✗'}，${inJu?'进楼':'进楼 ✗'}，${F.c3_ju_won?'拍到':'拍到 ✗'}，${QUESTS[S.quest].id}${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：炼结丹丹（先炸一次炉，再按苏小棠说的火候炼）→ 大师姐说闭关', async()=>{ const n0=SelfTest3.lines.length; cur='炼丹';
+          node('c3-dan').run(); await W(400); Story.talk('tang'); await adv(); const lu=!!RT.ents.find(e=>e.act==='sfdan');
+          // the furnace: first let the fire die (it bursts), then keep the needle on the gold band
+          const play=async(good)=>{ for(let i=0;i<60&&!$('#alcBtn');i++){ const d=$('#dlg'); if(!d.hidden){ if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(20); }
+            let hold=false, coach=new Set(); const b=$('#alcBtn'); for(let i=0;i<13*30;i++){ const z=$('#alcZone'), n=$('#alcNeedle'); if(!z||$('#alcOk')) break; coach.add($('#alcTip').textContent); const zc=parseFloat(z.style.bottom)+parseFloat(z.style.height)/2, nb=parseFloat(n.style.bottom), want=good&&nb<zc-1.5; if(want!==hold){ hold=want; b.dispatchEvent(new PointerEvent(want?'pointerdown':'pointerup',{bubbles:true})); } Mini.step(1/30); }
+            const t=$('.alc h3')?.textContent||''; if($('#alcOk')) $('#alcOk').click(); await W(30); return {t, coach:[...coach].some(x=>x.startsWith('苏小棠'))}; };
+          Dungeon.act(obj('sfdan')); const r1=await play(false); const r2=await play(true); await adv();
+          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3i';i++){ UI.sync(); Story.check(); await W(100); }
+          const F=S.flags, ok=lu&&/炸炉/.test(r1.t)&&r1.coach&&F.c3_dan_done&&count(S,'c3_jiedan')===1&&!count(S,'c3_hun')&&QUESTS[S.quest].id==='c3i';
+          return {fail:!ok, info:`${lu?'丹炉':'丹炉 ✗'}，第一炉「${r1.t}」，第二炉「${r2.t}」，${r1.coach?'苏小棠看火':'看火 ✗'}，${F.c3_dan_done?'结丹丹':'结丹丹 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

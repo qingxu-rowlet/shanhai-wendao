@@ -53,6 +53,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true},'jc_sifang',12,11,'up','c3g',10); S.stones=100; UI.hud(); }),
     N('auction','聚宝楼：拍卖会（九转还魂草）','第七天，天黑以后，站在聚宝楼门口，钱已经凑好了。点伙计进去：看客认出大师姐，萧府管家一千、两千地买；压轴的九转还魂草和盐商、萧府管家抢，举几次牌以后，楼上的小厮下来传话，管家不要了。雅间的帘子掀开一道缝：一只手，一枚白骨扳指。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_xie_pawn:true},'jc_xishi',26,7,'up','c3g',18.5); S.day=7; S.stones=100; JU.st().pool=1100; UI.hud(); Story.check(); }),
+    N('dan','四方馆后院：和苏小棠炼结丹丹','三味主药都在身上，站在苏小棠旁边。点她：她抱出自己的小铜炉，架在后院。去后院点丹炉：火候比筑基丹难（金色区更窄、动得更快，后一半会乱跳），苏小棠在下面喊「大」「小」。炸炉的话她把药材抢出来，可以再炼。炼成以后，大师姐在月洞门口：明天闭关。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true},'jc_sifang',8,13,'up','c3h',9); for(const k of ['c3_xue','c3_ru','c3_hun']) addItem(k,1); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }

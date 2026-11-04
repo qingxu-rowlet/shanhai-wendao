@@ -99,6 +99,7 @@ SF.TALK={
 };
 JC.CHAT=Object.assign(JC.CHAT,{sf_clerk:['名册……名册……'], sf_lin:['……'], sf_cheng:['这步……这步怎么走……'], sf_wulan:['阿毛，别乱跑！'], sf_wenxuan:['……又是这一卦。'], sf_bu:['你输啦～']});
 On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
+  if(id==='tang'&&F.c3_ju_won&&!F.c3_dan_done){ DAN.talk(); return true; }
   if(id==='tang'){ if(!F.c3_sf_tang){ UI.say(SF.tangMeet(),()=>{ UI.hud(); Story.check(); }); return true; }
     if(F.c3_sf_jiedan&&!F.c3_sf_recipe){ UI.say(SF.recipe(),()=>{ UI.hud(); Story.check(); }); return true; }
     C3.menu('tang',F.c3_sf_recipe?[['苏小棠','龙血竭、石钟乳、九转还魂草……我都背下来啦！']]:[['苏小棠','京城的槐花，可以入药的。清热、凉血……'],['苏小棠','……你看我干什么。']]); return true; }

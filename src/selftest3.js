@@ -108,6 +108,16 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3h';i++){ UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=pooled&&waitOk&&inJu&&F.c3_ju_won&&count(S,'c3_hun')===1&&S.stones>=0&&!bad.length&&QUESTS[S.quest].id==='c3h';
           return {fail:!ok, info:`${pooled?'凑钱':'凑钱 ✗'}，${waitOk?'没到日子不开门':'日子 ✗'}，${inJu?'进楼':'进楼 ✗'}，${F.c3_ju_won?'拍到':'拍到 ✗'}，${QUESTS[S.quest].id}${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：炼结丹丹（先炸一次炉，再按苏小棠说的火候炼）→ 大师姐说闭关', async()=>{ const n0=SelfTest3.lines.length; cur='炼丹';
+          node('c3-dan').run(); await W(400); Story.talk('tang'); await adv(); const lu=!!RT.ents.find(e=>e.act==='sfdan');
+          // the furnace: first let the fire die (it bursts), then keep the needle on the gold band
+          const play=async(good)=>{ for(let i=0;i<60&&!$('#alcBtn');i++){ const d=$('#dlg'); if(!d.hidden){ if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(20); }
+            let hold=false, coach=new Set(); const b=$('#alcBtn'); for(let i=0;i<13*30;i++){ const z=$('#alcZone'), n=$('#alcNeedle'); if(!z||$('#alcOk')) break; coach.add($('#alcTip').textContent); const zc=parseFloat(z.style.bottom)+parseFloat(z.style.height)/2, nb=parseFloat(n.style.bottom), want=good&&nb<zc-1.5; if(want!==hold){ hold=want; b.dispatchEvent(new PointerEvent(want?'pointerdown':'pointerup',{bubbles:true})); } Mini.step(1/30); }
+            const t=$('.alc h3')?.textContent||''; if($('#alcOk')) $('#alcOk').click(); await W(30); return {t, coach:[...coach].some(x=>x.startsWith('苏小棠'))}; };
+          Dungeon.act(obj('sfdan')); const r1=await play(false); const r2=await play(true); await adv();
+          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3i';i++){ UI.sync(); Story.check(); await W(100); }
+          const F=S.flags, ok=lu&&/炸炉/.test(r1.t)&&r1.coach&&F.c3_dan_done&&count(S,'c3_jiedan')===1&&!count(S,'c3_hun')&&QUESTS[S.quest].id==='c3i';
+          return {fail:!ok, info:`${lu?'丹炉':'丹炉 ✗'}，第一炉「${r1.t}」，第二炉「${r2.t}」，${r1.coach?'苏小棠看火':'看火 ✗'}，${F.c3_dan_done?'结丹丹':'结丹丹 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
