@@ -138,24 +138,35 @@ const SelfTest3={
             Dungeon.act(RT.map.objects.find(o=>o.act==='sfroom'&&o.sect===sect)); await adv('出去'); for(let i=0;i<40&&RT.mapId!=='jc_xiang';i++){ if(RT.fadeTo) update(.1); await W(60); } await W(600); await adv();
             const there=RT.mapId==='jc_xiang'&&!!RT.ents.find(e=>e.id==='xiao'); Story.talk('xiao'); for(let i=0;i<20&&!PixCG.on;i++) await W(30); if(PixCG.on) cg=true; await adv(pick);
             for(let i=0;i<60&&RT.mapId!=='jc_sifang';i++){ if(RT.fadeTo) update(.1); await W(60); } await W(400); await adv(); for(let i=0;i<20&&QUESTS[S.quest].id!=='c3k';i++){ UI.sync(); Story.check(); await W(100); }
-            got.push({there, met:!!S.flags.c3_xj_met, home:RT.mapId==='jc_sifang', q:QUESTS[S.quest].id, love:Social.rel('xiao').pts||0, ask:XX.st().ask}); }
+            got.push({there, met:!!S.flags.c3_xj_met, home:['jc_sifang','jc_gongyuan'].includes(RT.mapId), q:QUESTS[S.quest].id, love:Social.rel('xiao').pts||0, ask:XX.st().ask}); }
           const ok=cg&&got.every(g=>g.there&&g.met&&g.home&&g.q==='c3k')&&got.map(g=>g.ask).join()==='why,anping,none';
           return {fail:!ok, info:`${cg?'小巷':'小巷 ✗'}，`+got.map(g=>`${g.ask}：${g.there?'':'没遇到 ✗ '}${g.met?'':'没说完 ✗ '}好感 ${g.love}`).join('；')+`，${got[2]&&got[2].q}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第二幕：大比开幕 → 礼部来接 → 高台（天子、萧烬、国师）→ 观天鉴 → 抽签、对阵表', async()=>{ const n0=SelfTest3.lines.length; cur='开幕式'; let cg=false;
+          node('c3-kaimu').run(); await W(1300);
+          for(let i=0;i<400;i++){ if(RT.fadeTo) update(.1); if(PixCG.on) cg=true; const d=$('#dlg'); if(d.hidden){ await W(60); if($('#dlg').hidden&&!RT.fadeTo&&i>40&&S.flags.c3_km_done) break; continue; }
+            const ch=d.querySelector('[data-i]'); if(ch){ rec('选项',ch.textContent); ch.click(); } else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
+          const panel=!$('#panel').hidden&&/对阵表/.test($('#panel').innerHTML); UI.closePanel&&UI.closePanel();
+          const b=KM.st().bracket||[], inSq=RT.mapId==='jc_gongyuan';
+          const bad=[]; for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden&&!document.querySelector('.panel:not([hidden]),#panel:not([hidden])')) bad.push(o.id); await adv('说说话'); UI.closePanel&&UI.closePanel(); }
+          for(const act of ['kmgaotai','kmleitai','kmjian']){ Dungeon.act(obj(act)); await adv(); }
+          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3l';i++){ UI.sync(); Story.check(); await W(100); }
+          const ok=cg&&inSq&&S.flags.c3_km_call&&S.flags.c3_km_done&&b.length===4&&b[1]==='tang'&&b.every(id=>KM.NAME[id])&&!bad.length&&QUESTS[S.quest].id==='c3l';
+          return {fail:!ok, info:`${S.flags.c3_km_call?'礼部来接':'来接 ✗'}，${inSq?'贡院前':'贡院前 ✗'}，${cg?'高台':'高台 ✗'}，对阵 ${b.map(id=>(KM.NAME[id]||id+'?').slice(0,3)).join('→')}，${panel?'对阵表':'(对阵表面板?)'}${bad.length?'，没反应：'+bad.join(' '):''}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24],['jc_gongyuan',13,21]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'8 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'9 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }
-      await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()],['雷云',()=>JD.cg()],['小巷',()=>C3A.xiangCG()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
-        return {fail:bad.length>0, info:bad.length?bad.join('；'):'4 张'}; });
+      await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()],['雷云',()=>JD.cg()],['小巷',()=>C3A.xiangCG()],['开幕式的高台',()=>KM.cg()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
+        return {fail:bad.length>0, info:bad.length?bad.join('；'):'5 张'}; });
       await step('没有脚本错误', async()=>({fail:errs.length>0, info:errs.slice(0,2).join(' | ')}));
     } finally { Review.sect=null; Dodge.auto=false; Dev.god=false; removeEventListener('error',onErr); if(Battle.s) Battle.close(); PixCG.close();
       try{ if(backup) localStorage.setItem(slotKey(2),backup); else localStorage.removeItem(slotKey(2)); }catch(e){} }

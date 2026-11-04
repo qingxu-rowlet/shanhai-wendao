@@ -59,6 +59,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true},'jc_sifang',6,19,'up','c3i',10); addItem('c3_jiedan',1); Story.check(); }),
     N('xiang','小巷：遇见萧烬（插画「小巷」）','结丹以后的那一夜，站在自己宗门厢房的门口。点门：睡不着，选「悄悄出去走走」，到西市北边的小巷里（白天去只有一条瘸腿的狗）。巷子尽头：穿素衣的年轻人在喂狗，墙头上一只红头的狼。「你比镜子里看起来，要小一些。」白骨扳指；三种问法（为什么帮我 / 安平村的人是不是你带走的 / 什么也不问），然后他说出名字：萧烬。巡夜的来了，他翻墙走了，你回四方馆睡觉。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true},'jc_sifang',SF_WING[Review.sect||'jian'][0]+3,SF_WING[Review.sect||'jian'][1]+4,'up','c3j',22); S.L=13; S.exp=0; UI.hud(); Story.check(); }),
+    N('kaimu','大比开幕：高台上的萧烬、国师、观天鉴、抽签（插画「开幕式的高台」）','遇见萧烬的第二天早上，在四方馆院子里。礼部小吏来接人，大师姐：「你昨晚出去了。」到贡院前的广场：擂台、高台、战鼓、四宗的旗。天子驾到，所有人跪下；天子右手边站着萧烬（玄色朝服），身后阴影里站着戴饕餮面具的国师（看过顾长歌 6♥ 或博古斋小铜鼎的会多想一句）。新规矩：观天鉴记下灵根和修为，「结丹了？！」；抽签，出对阵表（第二轮是苏小棠）。以后朱雀大街往北就能走到这里。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true},'jc_sifang',14,12,'up','c3k',7); S.L=13; S.exp=0; UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
