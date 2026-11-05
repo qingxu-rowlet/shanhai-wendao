@@ -9,10 +9,10 @@ const SelfTest3={
   lines:[],
   async run(){
     const W=ms=>new Promise(r=>setTimeout(r,ms)), errs=[]; const onErr=e=>errs.push((e.message||String(e))+` @${e.lineno}:${e.colno}`); addEventListener('error',onErr);
-    const el=document.createElement('div'); el.id='selftest'; el.innerHTML=`<div class="st-box wood"><h3>第三章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">${SelfTest3.all?'四个宗门各走一遍':'随机选一个宗门走一遍'}第三章，每句台词都会检查。</p></div>`; document.body.appendChild(el);
-    const list=$('#stList'); let pass=0, fail=0, sect='', cur=''; TestLog.begin(SelfTest3.all?'第三章（四个宗门）':'第三章'); SelfTest3.lines=[];
+    const el=document.createElement('div'); el.id='selftest'; el.innerHTML=`<div class="st-box wood"><h3>第三章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">${SelfTest3.all?'四个宗门各走一遍':'随机选一个宗门走一遍'}第三章${SelfTest3.only?'（只测：'+SelfTest3.only.join('、')+'，加上地图、台词、脚本错误）':''}，每句台词都会检查。</p></div>`; document.body.appendChild(el);
+    const list=$('#stList'); let pass=0, fail=0, sect='', cur=''; TestLog.begin((SelfTest3.all?'第三章（四个宗门）':'第三章')+(SelfTest3.only?' · 只测 '+SelfTest3.only.join('、'):'')); SelfTest3.lines=[];
     const report=(name,ok,info='')=>{ ok?pass++:fail++; TestLog.item(name,ok,info); const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
-    const step=async(name,fn)=>{ try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)); } finally{ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } };
+    const step=async(name,fn)=>{ if(SelfTest3.only&&!/地图都走一遍|台词检查|没有脚本错误/.test(name)&&!SelfTest3.only.some(w=>name.includes(w))) return; try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)); } finally{ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } };
     const rec=(kind,text)=>{ text=String(text||'').replace(/\s*▼\s*$/,'').trim(); if(text){ SelfTest3.lines.push({sect,node:cur,text}); TestLog.line(SECTS[sect].name+' · '+cur,kind,text); } };
     // dialogue to its end; pick = an option's index, or words it contains. Fades run on the frame loop, which stops in a
     // hidden window, so they are stepped here.
@@ -172,16 +172,25 @@ const SelfTest3={
           Story.talk('tang'); await adv(); Story.talk('xie'); await adv('说说话'); Story.talk('xf_guard'); await adv();
           const F=S.flags, q=QUESTS[S.quest], prog=q.progress(S), ok=jin&&room&&XF.st().clue.dregs&&XF.n()===2&&q.id==='c3m'&&/2\/4/.test(prog);
           return {fail:!ok, info:`${jin?'禁足':'禁足 ✗'}，${room?'空屋（八卦镜 '+C3.st().bagua+' 次）':'空屋 ✗'}，${XF.st().clue.dregs?'药渣':'药渣 ✗'}，「${prog}」，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第三幕：醉月楼 → 青禾 → 送信 / 赎琵琶 → 「宗庙那边，又要一车」（线索 3/4）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='醉月楼';
+          for(const how of ['letter','pipa']){ node('c3-zuiyue').run(); await W(400); Dungeon.act(RT.map.objects.find(o=>o.act==='zyin')); await W(200); const inside=RT.mapId==='jc_zuiyue';
+            Story.talk('qinghe'); await adv(); const hasLetter=count(S,'c3_letter')===1;
+            if(how==='letter'){ enterMap('jc_huichun',13,8); await W(100); Story.talk('hc_bei'); await adv(); enterMap('jc_zuiyue',9,5); await W(100); }
+            else { Story.talk('zy_bao'); await adv('赎'); }
+            Story.talk('qinghe'); await adv(); got.push({how, inside, hasLetter, clue:!!XF.st().clue.qinghe, told:ZY.st().told}); }
+          const bad=[]; for(const m of ['jc_zuiyue','jc_dongkou']){ enterMap(m, m==='jc_zuiyue'?9:13, m==='jc_zuiyue'?11:7); await W(100); for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv('算了'); } for(const o of RT.ents.filter(o=>o.act&&o.type!=='npc'&&o.act!=='zyin')){ Dungeon.act(o); await adv(); } }
+          const prog=QUESTS[S.quest].progress(S), ok=got.every(g=>g.inside&&g.hasLetter&&g.clue&&g.told===g.how)&&!bad.length&&/3\/4/.test(prog);
+          return {fail:!ok, info:got.map(g=>`${g.how==='letter'?'送信':'赎琵琶'}：${g.inside?'':'没进楼 ✗ '}${g.clue?'线索':'线索 ✗'}`).join('，')+`${bad.length?'，没反应：'+bad.join(' '):''}，「${prog.slice(0,30)}」，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24],['jc_gongyuan',13,21]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24],['jc_gongyuan',13,21],['jc_dongkou',2,4],['jc_zuiyue',8,11]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'9 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'11 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }
@@ -195,4 +204,6 @@ const SelfTest3={
     console.log(`[selftest3] ${pass} passed, ${fail} failed, ${SelfTest3.lines.length} lines`);
   },
 };
-if(location.hash==='#selftest3'||location.hash==='#selftest3all'){ SelfTest3.all=location.hash==='#selftest3all'; setTimeout(()=>SelfTest3.run(),900); }
+// #selftest3:醉月楼,擂台 runs only the steps whose names contain one of those words (and the map walk, line check and
+// script-error check, which are cheap); use it when only those parts changed
+{ const h=decodeURIComponent(location.hash); if(/^#selftest3(all)?(:|$)/.test(h)){ SelfTest3.all=h.startsWith('#selftest3all'); const m=h.split(':')[1]; SelfTest3.only=m?m.split(/[,，]/).filter(Boolean):null; setTimeout(()=>SelfTest3.run(),900); } }

@@ -99,6 +99,7 @@ HC.TALK={
   hc_po:[['老婆婆','睡不着啊……'],['老婆婆','一闭眼，就想起我那小孙子。去年冬天，在城西走丢的。'],['老婆婆','官府说，走丢的孩子多了，找不过来。']],
 };
 On.talk(id=>{ if(RT.mapId!=='jc_huichun') return false;
+  if(id==='hc_bei'&&count(S,'c3_letter')){ UI.say(ZY.deliver(),()=>{ UI.hud(); Story.check(); }); return true; }   // 青禾's letter (third act)
   if(id==='tang'){ C3.menu('tang',S.flags.c3_hc_ru?[['苏小棠','那个汉子的脉……'],['苏小棠','{名}，我从来没摸过那样的脉。像一口井，底下是空的。']]:[['苏小棠','这么多抽屉……我能在这里待一整天。']]); return true; }
   if(id==='hc_sun'&&S.flags.c3_hc_pulse&&!S.flags.c3_hc_ru){ HC.zhua(); return true; }
   const L=HC.TALK[id]; if(!L) return false; const lines=typeof L==='function'?L():L;

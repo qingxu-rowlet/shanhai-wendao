@@ -137,6 +137,7 @@ const AMB={parts:[], map:null};
 function drawAtmosphere(g, Z){
   const w=cv.width, h=cv.height, hr=S.min/60, day=hr>=6&&hr<18.5, night=hr>=19.5||hr<5, t=RT.t;
   if(AMB.map!==RT.mapId){ AMB.map=RT.mapId; AMB.parts=[]; }
+  if(RT.map&&RT.map.indoor) return;   // a room: no sky, no petals, no fireflies
   // drifting cloud shadows in daylight
   if(day){ for(let k=0;k<3;k++){ const s=w*.5, x=((t*12*Z*(1+k*.3)+k*w*.7)%(w+s*2))-s, y=h*(.2+k*.3)+Math.sin(t*.1+k)*h*.05;
       const gr=g.createRadialGradient(x,y,0,x,y,s*.6); gr.addColorStop(0,'rgba(20,30,50,.10)'); gr.addColorStop(1,'rgba(20,30,50,0)'); g.fillStyle=gr; g.beginPath(); g.ellipse(x,y,s*.6,s*.32,0,0,7); g.fill(); } }
