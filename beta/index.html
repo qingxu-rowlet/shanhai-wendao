@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="701c136b1c"><script>(function(){var B="701c136b1c";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a892d3762f"><script>(function(){var B="a892d3762f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12948,6 +12948,93 @@ QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3p')+1,0,
   {id:'c3zz', title:'第三章「京城」完', desc:'八卦镜的裂缝里，浮出两个字：「贰负」。', check:s=>false, progress:s=>'（第四章正在构思）', target:s=>null});
 
 /* ============================================================
+   山海问道 · 第三章 · 萧烬的心动事件 — met in the 小巷 at night (聊天 there, once the hearts are in):
+   2♥「瘸腿的狗」 he splints the stray's leg; a wolf taught him how.
+   4♥「赌一局」 at 千金坊's back table, a bet with no stakes but this: the loser answers one question, truthfully.
+   6♥「屋顶」 on a roof over the sleeping city; what he does for the 国师, and why.
+   8♥「草窝」 the little grave on 安平村's back hill, with flowers on it that never wilt: his mother's. The one who killed
+        her was your 大师兄. He has known all along whose 师弟/师妹 you are.
+   Each has a picture. His 好感 and 敌意 move with what you answer.
+   ============================================================ */
+const XJ_DOG=()=>JA6.dog();
+Object.assign(PXSCENES,{
+  xj_alley:{ gy:.86, base(g,W,H,R){ PX.sky(g,W,0,H*.3,['#0a0e1c','#141c32','#1e2844']); PX.stars(g,W,H*.25,R,30); PX.orb(g,W*.5,H*.12,6,'#ece6cc','#4a5070');
+      PX.r(g,0,H*.2,W*.3,H*.7,'#2a2a34'); PX.r(g,W*.7,H*.2,W*.3,H*.7,'#30303a'); for(let y=H*.22;y<H*.86;y+=4) for(let x=0;x<W;x+=6){ if(x>W*.3&&x<W*.7) continue; PX.r(g,x+(y/4%2)*3,y,5,1,'#24242c'); }
+      PX.r(g,W*.3,H*.2,W*.4,H*.66,'#1a1a22'); PX.r(g,0,H*.86,W,H*.14,'#22222a'); PX.r(g,W*.38,H*.86,W*.24,H*.14,'#2e3040');
+      PX.lantern(g,W*.24,H*.42,true); g.fillStyle='rgba(255,170,90,.15)'; g.fillRect(W*.14,H*.4,W*.2,H*.5); },
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.3,pose:'stand',face:1},{at:3,x:.42,pose:'kneel',face:1}]},
+          {look:LOOK_XIAO,beats:[{at:0,x:.62,pose:'crouch',face:-1},{at:5,x:.62,pose:'stand',face:-1}]}, {get cv(){ return XJ_DOG(); }, x:.52, y:.88, s:1.4, face:1}]},
+  xj_dice:{ gy:.86, base(g,W,H,R){ PX.r(g,0,0,W,H,'#2a1a14'); for(let x=0;x<W;x+=8) PX.r(g,x,0,1,H*.8,'#3a2418');
+      PX.r(g,0,H*.62,W,H*.04,'#5e3a20'); PX.r(g,W*.2,H*.5,W*.6,H*.14,'#2a6a3a'); PX.r(g,W*.2,H*.5,W*.6,2,'#3a8a4a'); PX.r(g,W*.48,H*.38,8,10,'#a8803a'); PX.r(g,W*.48,H*.38,8,2,'#c8a050');
+      for(const [x,y] of [[.3,.56],[.66,.55]]){ PX.r(g,W*x,H*y,3,3,'#f0ece0'); PX.r(g,W*x+1,H*y+1,1,1,'#c8413b'); }
+      PX.lantern(g,W*.12,H*.2,true); PX.lantern(g,W*.88,H*.2,true); g.fillStyle='rgba(255,180,90,.12)'; g.fillRect(0,0,W,H); },
+    cast:[{who:'me',x:.26,pose:'sit',face:1},{look:LOOK_XIAO,x:.74,pose:'sit',face:-1}]},
+  xj_roof:{ gy:.62, base(g,W,H,R){ PX.sky(g,W,0,H*.62,['#05081a','#0c1430','#1a2448','#2a3460']); PX.stars(g,W,H*.5,R,90); PX.orb(g,W*.8,H*.16,9,'#f4f0dc','#5a6490');
+      for(let k=0;k<7;k++){ const x=W*(k/6), y=H*(.7+R()*.08); PX.roof(g,x,y,W*.14,'#141828','#1c2236'); PX.r(g,x-W*.05,y+6,W*.1,H,'#0e1220'); if(R()<.6) PX.r(g,x+R()*8-4,y+9,2,2,'#f0c060'); }
+      for(let x=0;x<W;x++){ const y=Math.round(H*.62+Math.abs(x-W*.5)*.04); PX.r(g,x,y,1,3,x%4<2?'#3a3e4c':'#2e3240'); } },
+    cast:[{who:'me',x:.38,pose:'sit',face:1},{look:LOOK_XIAO,x:.56,pose:'sit',face:-1}]},
+  xj_grave:{ gy:.84, base(g,W,H,R){ PX.sky(g,W,0,H*.6,['#2a1a24','#6a3a3a','#c8784a','#e8b070']); PX.orb(g,W*.2,H*.5,10,'#f8d090','#c87850');
+      PX.ridge(g,W,H,H*.56,H*.1,'#4a3a3a','#5a4440',R); PX.ridge(g,W,H,H*.66,H*.06,'#3a3030',null,R);
+      PX.r(g,0,H*.84,W,H*.16,'#4a4a30'); for(let i=0;i<40;i++) PX.grass(g,R()*W,H*(.86+R()*.12),'#3a4a28','#5a6a38');
+      PX.rock(g,W*.5,H*.86,W*.14,H*.08); for(const dx of [-3,-1,1,3]) PX.r(g,W*.5+dx*2,H*.8,1,4,'#2a2420');            // the little cairn, four claw marks
+      for(const [dx,c] of [[-8,'#f2f2a0'],[-5,'#f5a3c0'],[6,'#ffffff'],[9,'#b9a3f5']]) PX.flower(g,W*.5+dx,H*.84,c);
+      PX.tree(g,W*.86,H*.86,H*.34,R,'pine',{d:'#1a1a14',m:'#24261c',l:'#34382a',t:'#1a1a14'}); },
+    cast:[{who:'me',x:.28,pose:'stand',face:1},{look:LOOK_XIAO,beats:[{at:0,x:.6,pose:'kneel',face:-1},{at:6,x:.6,pose:'stand',face:-1}]}]},
+});
+HEART_CG.xiao={
+  2:{scene:'xj_alley', title:'瘸腿的狗', steps:[
+    ['旁白','夜里的小巷。那条瘸腿的黄狗趴在萧烬脚边，哼哼唧唧的。'],
+    ['萧烬','（他折断一根竹片，削得又平又直）……帮我按住它。'],
+    ['旁白','你蹲下来，按住黄狗。萧烬捏着它的后腿，一摸，一拉，「咔」的一声。黄狗惨叫了一声，然后不叫了。'],
+    ['旁白','他用竹片夹住那条腿，拿布条一圈一圈地缠紧。手很稳。'],
+    ['萧烬','好了。过半个月，能跑。'],
+    {choice:'你想说：', options:[{text:'你从哪儿学的？', go:'xj2a'},{text:'（摸了摸黄狗的头）', go:'xj2b'}]}]},
+  4:{scene:'xj_dice', title:'赌一局', steps:[
+    ['旁白','千金坊的后堂，只点了一盏灯。萧烬坐在桌子那头，手里转着骰盅。'],
+    ['萧烬','赌一局？'],
+    ['萧烬','不赌灵石。输的人，回答对方一个问题。'],
+    ['萧烬','必须说真话。'],
+    ['旁白','骰盅「啪」地扣在桌上。'],
+    {choice:'押——', options:[{text:'大', go:'xj4w'},{text:'小', go:'xj4l'}]}]},
+  6:{scene:'xj_roof', title:'屋顶', steps:[
+    ['旁白','萧烬带你上了屋顶。整个京城睡着了，屋脊一道一道排到天边。'],
+    ['萧烬','（他躺下来，枕着胳膊）我第一次进京城，也是在屋顶上睡的。'],
+    ['萧烬','没有钱，没有人认识我。只有一身狼味。'],
+    ['萧烬','后来有一个人找到我。他说，你鼻子灵，替我找人。我给你一个位置。'],
+    ['我','……国师？'],
+    ['萧烬','（他没有回答，只是看着天）我替他找的人，都很好找。没有人会找他们。'],
+    {choice:'你：', options:[{text:'那些人，后来去哪儿了？', go:'xj6a'},{text:'（陪他看星星，什么也不问）', go:'xj6b'},{text:'你不该替他做事。', go:'xj6c'}]}]},
+  8:{scene:'xj_grave', title:'草窝', steps:[
+    ['旁白','黄昏。安平村的后山。那个小小的石堆还在，石头上四道爪痕。石堆前的野花，开得正好。'],
+    ['萧烬','（他跪下来，把一束新摘的野花放在石堆前）……每年都开。'],
+    ['萧烬','因为每年，我都来。'],
+    ['旁白','你想起来了。那一年，大师兄说过：草窝里的狼妖，到死都挡在洞口。'],
+    ['萧烬','这里埋的，是我娘。'],
+    ['萧烬','我是她从雪地里叼回来的。她把我养大。'],
+    ['萧烬','那年我七岁。我趴在草丛里，看着一个穿你们宗门衣服的人，一剑刺穿了她。'],
+    ['萧烬','（他看着你）……你的大师兄。'],
+    ['萧烬','我一直都知道，你是他的什么人。'],
+    {choice:'你：', options:[{text:'他是我大师兄。我替他向你赔罪。', go:'xj8a'},{text:'他已经不在了。他被穷奇吃了。', go:'xj8b'},{text:'……你想报仇吗？', go:'xj8c'}]}]},
+};
+Object.assign(SCRIPTS,{
+  xj2a:[['萧烬','狼教的。'],['萧烬','我娘的腿也断过一回。她自己咬着一根树枝，躺了一个月。我在旁边看着。'],['萧烬','……看会了。'],{love:{xiao:40}},{cgend:true}],
+  xj2b:[['旁白','黄狗舔了舔你的手。'],['萧烬','（他看着你，很久）……它不怕你。'],['萧烬','它怕人。'],{love:{xiao:50}},{cgend:true}],
+  xj4w:[['旁白','开！四、五、六——大。'],['萧烬','（他笑了一下）你赢了。问吧。'],{choice:'你问：', options:[{text:'你为什么帮我？', go:'xj4q1'},{text:'你娘，是什么样的？', go:'xj4q2'}]}],
+  xj4q1:[['萧烬','……'],['萧烬','因为在山脊上，你没有杀我的狼。'],['萧烬','你本来可以的。'],{love:{xiao:50}},{cgend:true}],
+  xj4q2:[['萧烬','（他愣了一下，很久没有说话）'],['萧烬','……她是一头狼。灰的。左耳缺了一块。'],['萧烬','她很凶。可她从来没有咬过我。'],{love:{xiao:60}},{cgend:true}],
+  xj4l:[['旁白','开！一、二、二——小。'],['萧烬','我赢了。'],['萧烬','（他把骰盅推到一边，看着你）……你怕不怕我？'],{choice:'说真话：', options:[{text:'怕。', go:'xj4f'},{text:'不怕。', go:'xj4n'}]}],
+  xj4f:[['萧烬','（他点了点头）……好。'],['萧烬','说实话的人，比不怕的人少。'],{love:{xiao:40}},{cgend:true}],
+  xj4n:[['萧烬','（他看了你很久，然后笑了，笑得很温和）……傻子。'],{love:{xiao:50}},{cgend:true}],
+  xj6a:[['萧烬','（他翻了个身，背对着你）……别问。'],['萧烬','问了，你就不会再上来了。'],{love:{xiao:20}},{run:()=>{ XX.st().hate+=5; }},{cgend:true}],
+  xj6b:[['旁白','一颗流星划过去。你们谁也没有说话。'],['萧烬','（过了很久，他轻轻地说）……从来没有人陪我看过。'],{love:{xiao:60}},{cgend:true}],
+  xj6c:[['萧烬','（他坐起来，看着你）我该替谁做事？'],['萧烬','你们宗门？'],['旁白','他没有生气。可那句话，像一把刀。'],{love:{xiao:30}},{run:()=>{ XX.st().hate+=10; }},{cgend:true}],
+  xj8a:[['萧烬','（他看着你，没有说话）'],['萧烬','……你替他赔罪。'],['萧烬','你知道这有多可笑吗？'],['萧烬','（他转过头去，声音低了下去）……可是没有人对我说过这句话。十几年了，一个也没有。'],{love:{xiao:80}},{run:()=>{ XX.st().hate=Math.max(0,XX.st().hate-10); }},{cgend:true}],
+  xj8b:[['萧烬','（他愣住了）……被穷奇吃了？'],['萧烬','（他忽然笑了起来，笑得停不下来，笑到最后，声音变了）……那我恨了这么多年，恨的是什么。'],['旁白','你在他身边坐下。他没有推开你。'],{love:{xiao:70}},{cgend:true}],
+  xj8c:[['萧烬','想过。'],['萧烬','想了十几年。'],['萧烬','（他看着你）后来我遇见了你。'],['萧烬','……我不知道了。'],{love:{xiao:60}},{run:()=>{ XX.st().hate+=5; }},{cgend:true}],
+});
+// in his 人物 tab, the events can be watched again like everyone's
+
+/* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
    ============================================================ */
 const WORLD = { home:[0,0], town:[24,1], forest:[-3,17] };   // where each area sits on the world map (in tiles)
@@ -14046,6 +14133,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true,c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true,c3_a4_done:true},'jc_digong',13,6,'up','c3p',0.5); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=0; Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); S.flags.c3_xj_side=true; UI.hud(); Story.check(); }),
     N('leave','离开京城：萧烬的三种结局','告示之后，在朱雀门外找大师姐，选「走吧」。苏小棠回药王谷（塞给你糖人），二师兄跟你回宗门，顾长歌送师叔回北边。萧烬：好感 ≥250 且站过来 → 在城外柳树下等你，跟你走；站过来但不够 → 山脊上带着狼群往北走（回狼山）；走掉的 → 城楼上的萧大人。最后八卦镜的裂缝里浮出「贰负」。第三章完。',
       ()=>{ go({...{...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true,c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true,c3_a4_done:true},c3_a5_win:true,c3_a5_notice:true,c3_xj_side:true},'jc_zhuque',13,29,'down','c3q',7); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=0; Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); Social.rel('xiao').pts=300; UI.hud(); Story.check(); }),
+    N('xiao2','萧烬心动：2♥ 瘸腿的狗 → 4♥ 赌一局 → 6♥ 屋顶 → 8♥ 草窝','夜里的小巷，萧烬在巷子尽头。好感正好 2♥：点他 → 聊天，触发「瘸腿的狗」。之后每到 4♥、6♥、8♥，聊天时触发下一段：千金坊后堂赌一局（输的人说真话）、屋顶上看京城、安平村后山的草窝——那是他娘的坟，杀她的是你的大师兄。每一段的回答会改变好感和敌意。',
+      ()=>{ go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true,c3_sf_jiedan:true,c3_sf_recipe:true,c3_sf_morning:true,c3_jd_done:true,c3_xj_met:true},'jc_xiang',5,6,'up','c3k',23); S.L=13; Social.rel('xiao').pts=200; UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -14399,6 +14488,11 @@ const SelfTest3={
             for(let i=0;i<20&&QUESTS[S.quest].id!=='c3zz';i++){ UI.sync(); Story.check(); await W(100); } ends.push({want, got:S.flags.c3_xj_end, done:!!S.flags.c3_done}); }
           const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights[0].allies===3&&fights[1].allies===2&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
           return {fail:!ok, info:fights.map(f=>`${f.side?'萧烬在':'萧烬不在'}：${f.won?f.turns+' 回合':'✗'}，${f.allies} 个帮手${f.notice?'':'，告示 ✗'}`).join('；')+'，结局 '+ends.map(e=>e.got===e.want?e.got:e.want+'✗').join('/')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('萧烬心动事件：2♥ 4♥（赢 / 输）6♥ 8♥，每段都有插画、好感会涨', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
+          for(const [lv,pick] of [[2,0],[4,'大'],[4,'小'],[6,0],[8,0]]){ node('c3-xiao2').run(); await W(300); const r=Social.rel('xiao'); r.ev={}; for(const l of [2,4,6,8]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; const p0=r.pts;
+            Social.chat('xiao'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
+          const ok=got.every(g=>g.cg&&g.seen&&g.up&&g.closed);
+          return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

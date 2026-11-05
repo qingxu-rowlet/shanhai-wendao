@@ -232,6 +232,11 @@ const SelfTest3={
             for(let i=0;i<20&&QUESTS[S.quest].id!=='c3zz';i++){ UI.sync(); Story.check(); await W(100); } ends.push({want, got:S.flags.c3_xj_end, done:!!S.flags.c3_done}); }
           const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights[0].allies===3&&fights[1].allies===2&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
           return {fail:!ok, info:fights.map(f=>`${f.side?'萧烬在':'萧烬不在'}：${f.won?f.turns+' 回合':'✗'}，${f.allies} 个帮手${f.notice?'':'，告示 ✗'}`).join('；')+'，结局 '+ends.map(e=>e.got===e.want?e.got:e.want+'✗').join('/')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('萧烬心动事件：2♥ 4♥（赢 / 输）6♥ 8♥，每段都有插画、好感会涨', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
+          for(const [lv,pick] of [[2,0],[4,'大'],[4,'小'],[6,0],[8,0]]){ node('c3-xiao2').run(); await W(300); const r=Social.rel('xiao'); r.ev={}; for(const l of [2,4,6,8]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; const p0=r.pts;
+            Social.chat('xiao'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
+          const ok=got.every(g=>g.cg&&g.seen&&g.up&&g.closed);
+          return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
