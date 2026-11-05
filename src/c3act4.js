@@ -149,7 +149,7 @@ A4.face=()=>{ const side=A4.loveOK(); UI.say([
   ['旁白','青铜大鼎「嗡」地响了一声，鼎腹上那张兽脸，裂开了一道缝。'],
   ['旁白','黑水从裂缝里涌出来。水里，有什么东西，正在往外爬。'],
   {run:()=>{ PixCG.close(); S.flags.c3_a4_done=true; save(); }},
-  ['旁白','（第四幕「人吃人」完。）']],()=>{ UI.hud(); Story.check(); }); };
+  ['旁白','（第四幕「人吃人」完。）']],()=>{ UI.hud(); Story.check(); setTimeout(()=>YY.go(),400); }); };
 
 /* ---------- talking, hooks ---------- */
 A4.TALK={
@@ -165,7 +165,7 @@ On.talk(id=>{ const m=RT.mapId; if(m!=='jc_digong'&&!(m==='jc_sifang'&&['ge','c3
   const L=A4.TALK[id]; if(!L) return false; const l=typeof L==='function'?L():L; UI.say(l,()=>{ UI.hud(); Story.check(); }); return true; });
 On.act('dgbars',o=>A4.cell(o.cell));
 On.act('dginner',o=>UI.say([['旁白','一道铁栏杆横在路上。后面就是那股铁锈味最浓的地方。'],['旁白','（先把被关的人救出来。）']]));
-On.act('dgding',o=>S.flags.c3_a4_done?UI.say([['旁白','鼎裂开了。']]):A4.ding());
+On.act('dgding',o=>!S.flags.c3_a4_done?A4.ding():!S.flags.c3_a5_win?YY.go():UI.say([['旁白','鼎底下的火灭了。鼎上那张兽脸，闭着嘴。']]));
 // the sifang talk handler owns 顾长歌 there only for this act; make sure it is reachable from it
 { const _t=XF.talk; XF.talk=id=>{ if(['ge','c3_man'].includes(id)&&S.flags.c3_a3_done){ const L=A4.TALK[id]; UI.say(L(),()=>{ UI.hud(); Story.check(); }); return true; } return _t(id); }; }
 

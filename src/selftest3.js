@@ -218,10 +218,20 @@ const SelfTest3={
           const a=A4.st(), freed=a.woke.length===4&&!RT.ents.some(e=>e.act==='dginner');
           const ends=[]; for(const love of [0,150]){ node('c3-ding').run(); await W(400); Social.rel('xiao').pts=love; const b0=C3.st().bagua; Dungeon.act(obj('dgding')); let cg=false;
             for(let i=0;i<300;i++){ if(PixCG.on) cg=true; const d=$('#dlg'); if(d.hidden){ await W(50); if($('#dlg').hidden&&i>20) break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
-            ends.push({love, side:!!S.flags.c3_xj_side, left:!!S.flags.c3_xj_left, cg, mirror:C3.st().bagua===b0-1, done:!!S.flags.c3_a4_done}); }
+            const done=!!S.flags.c3_a4_done; for(let i=0;i<160&&!Battle.s;i++){ cine(); await W(80); } const yy=!!Battle.s&&Battle.s.kind==='c3_yayu'; if(Battle.s) Battle.close(); $('#cine').hidden=true;   // the 鼎 cracking goes straight into act 5's fight
+            ends.push({love, side:!!S.flags.c3_xj_side, left:!!S.flags.c3_xj_left, cg, mirror:C3.st().bagua===b0-1, done, yy}); }
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3p';i++){ UI.sync(); Story.check(); await W(100); }
-          const ok=plan&&got.every(Boolean)&&freed&&ends[0].left&&!ends[0].side&&ends[1].side&&ends.every(e=>e.cg&&e.mirror&&e.done)&&QUESTS[S.quest].id==='c3p';
-          return {fail:!ok, info:`${plan?'商量、醒神汤':'商量 ✗'}，守卫 ${got.map(x=>x?'✓':'✗').join('')}，${freed?'四个都醒了':'救人 ✗ '+a.woke.length}，`+ends.map(e=>`好感 ${e.love}：${e.side?'站过来':e.left?'走掉':'?'}${e.cg?'':' 鼎✗'}${e.mirror?'':' 镜✗'}`).join('；')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+          const ok=plan&&got.every(Boolean)&&freed&&ends[0].left&&!ends[0].side&&ends[1].side&&ends.every(e=>e.cg&&e.mirror&&e.done&&e.yy)&&QUESTS[S.quest].id==='c3p';
+          return {fail:!ok, info:`${plan?'商量、醒神汤':'商量 ✗'}，守卫 ${got.map(x=>x?'✓':'✗').join('')}，${freed?'四个都醒了':'救人 ✗ '+a.woke.length}，`+ends.map(e=>`好感 ${e.love}：${e.side?'站过来':e.left?'走掉':'?'}${e.cg?'':' 鼎✗'}${e.mirror?'':' 镜✗'}${e.yy?'，接着打窫窳':' 窫窳✗'}`).join('；')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第五幕：窫窳（萧烬站过来 / 走掉，各打一遍）→ 救人、师叔 → 告示 → 朱雀门：萧烬三种结局 → 第三章完', async()=>{ const n0=SelfTest3.lines.length, fights=[], ends=[]; cur='第五幕';
+          for(const side of [true,false]){ node('c3-yayu').run(); await W(400); S.flags.c3_xj_side=side; S.flags.c3_xj_left=!side; Dungeon.act(obj('dgding')); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); }
+            const allies=document.querySelectorAll('#battle [id^=allyStand]').length; const f=await fight(); await W(500);
+            for(let i=0;i<300;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg'); if(d.hidden){ await W(50); if($('#dlg').hidden&&!RT.fadeTo&&i>30&&RT.mapId==='jc_zhuque') break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
+            fights.push({side, won:f.won, turns:f.turns, allies, win:!!S.flags.c3_a5_win, notice:!!S.flags.c3_a5_notice}); }
+          for(const [side,pts,want] of [[true,300,'with'],[true,100,'wolf'],[false,0,'stay']]){ node('c3-leave').run(); await W(400); S.flags.c3_xj_side=side; Social.rel('xiao').pts=pts; Story.talk('c3_leave'); await adv('走吧');
+            for(let i=0;i<20&&QUESTS[S.quest].id!=='c3zz';i++){ UI.sync(); Story.check(); await W(100); } ends.push({want, got:S.flags.c3_xj_end, done:!!S.flags.c3_done}); }
+          const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights[0].allies===3&&fights[1].allies===2&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
+          return {fail:!ok, info:fights.map(f=>`${f.side?'萧烬在':'萧烬不在'}：${f.won?f.turns+' 回合':'✗'}，${f.allies} 个帮手${f.notice?'':'，告示 ✗'}`).join('；')+'，结局 '+ends.map(e=>e.got===e.want?e.got:e.want+'✗').join('/')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
