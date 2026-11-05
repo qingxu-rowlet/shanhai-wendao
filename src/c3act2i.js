@@ -147,7 +147,7 @@ On.talk(id=>{ if(RT.mapId!=='jc_gongyuan') return false; const F=S.flags;
   if(id==='tang'){ C3.menu('tang',F.c3_km_done?[['苏小棠','第二轮……'],['苏小棠','{名}，你不许让我。']]:[['苏小棠','好多人……']]); return true; }
   const L=KM.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L); return true; });
 On.act('kmgaotai',o=>UI.say(S.flags.c3_km_done?[['旁白','高台上已经空了。华盖底下，只剩一把明黄的椅子。']]:[['旁白','高台。']]));
-On.act('kmleitai',o=>UI.say([['旁白','擂台是新砌的。青石面上铺着红毡，四角立着红柱子，拴着一圈金绳。'],['旁白','明天，你要站上去。']]));
+On.act('kmleitai',o=>S.flags.c3_km_done?LT.go():UI.say([['旁白','擂台是新砌的。青石面上铺着红毡，四角立着红柱子，拴着一圈金绳。'],['旁白','明天，你要站上去。']]));
 On.act('kmjian',o=>UI.say([['旁白','观天鉴。一人多高的铜镜，镜面雪亮。'],['旁白','你凑近了看。镜子里的你，好像比你自己，慢了半拍。']]));
 On.theme(id=>id==='jc_gongyuan'?'village':null);
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_km_done&&RT.mapId!=='jc_gongyuan') l.push({name:'京城 · 贡院前', map:'jc_gongyuan', x:13, y:21}); return l; }; }

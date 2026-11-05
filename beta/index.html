@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="17c142f51b"><script>(function(){var B="17c142f51b";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="e6006ee94f"><script>(function(){var B="e6006ee94f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4257,7 +4257,7 @@ const Life = {
     if(tab==='fish'){ const got=FISH_ORDER.filter(id=>C.fish[id]).length;
       return sub+`<p class="muted">已收集 ${got}/${FISH_ORDER.length}　${S.flags.fish_set?'✓ 已获得金钓竿':'集齐奖励：金钓竿'}　·　水面泛起金光的地方，能钓到稀有鱼和鱼王。</p><div class="book">${FISH_ORDER.map(id=>{ const r=C.fish[id], it=ITEMS[id], f=FISH[id];
         return `<div class="bk ${r?'':'unk'}${f.king?' king':''}"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""><div><b>${r?it.name:'？？？'} <span class="rare">${'◆'.repeat(f.rare)}</span></b><p>${r?`${esc(it.desc)}<br>钓到 ${r.n} 条 · 最大 ${r.max} 厘米`:f.king?'传说中的鱼王……只在金光水面出没。':'还没有钓到过。'}</p></div></div>`; }).join('')}</div>`; }
-    return sub+`<div class="book">${Object.keys(BEASTS).filter(k=>!BEASTS[k].self).map(k=>{ const B=BEASTS[k], s=S.seen[k]; return `<div class="bk ${s?'':'unk'}"><img class="px" src="${iconURL(B.spr)}" alt=""><div><b>${s?B.name:'？？？'}</b><p>${s?esc(B.lore):'尚未遇见。'}</p></div></div>`; }).join('')}</div>`;
+    return sub+`<div class="book">${Object.keys(BEASTS).filter(k=>!BEASTS[k].self&&!BEASTS[k].person).map(k=>{ const B=BEASTS[k], s=S.seen[k]; return `<div class="bk ${s?'':'unk'}"><img class="px" src="${iconURL(B.spr)}" alt=""><div><b>${s?B.name:'？？？'}</b><p>${s?esc(B.lore):'尚未遇见。'}</p></div></div>`; }).join('')}</div>`;
   },
 };
 
@@ -11811,7 +11811,7 @@ On.talk(id=>{ if(RT.mapId!=='jc_gongyuan') return false; const F=S.flags;
   if(id==='tang'){ C3.menu('tang',F.c3_km_done?[['苏小棠','第二轮……'],['苏小棠','{名}，你不许让我。']]:[['苏小棠','好多人……']]); return true; }
   const L=KM.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L); return true; });
 On.act('kmgaotai',o=>UI.say(S.flags.c3_km_done?[['旁白','高台上已经空了。华盖底下，只剩一把明黄的椅子。']]:[['旁白','高台。']]));
-On.act('kmleitai',o=>UI.say([['旁白','擂台是新砌的。青石面上铺着红毡，四角立着红柱子，拴着一圈金绳。'],['旁白','明天，你要站上去。']]));
+On.act('kmleitai',o=>S.flags.c3_km_done?LT.go():UI.say([['旁白','擂台是新砌的。青石面上铺着红毡，四角立着红柱子，拴着一圈金绳。'],['旁白','明天，你要站上去。']]));
 On.act('kmjian',o=>UI.say([['旁白','观天鉴。一人多高的铜镜，镜面雪亮。'],['旁白','你凑近了看。镜子里的你，好像比你自己，慢了半拍。']]));
 On.theme(id=>id==='jc_gongyuan'?'village':null);
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_km_done&&RT.mapId!=='jc_gongyuan') l.push({name:'京城 · 贡院前', map:'jc_gongyuan', x:13, y:21}); return l; }; }
@@ -11823,6 +11823,163 @@ On.theme(id=>id==='jc_gongyuan'?'village':null);
 QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3k')+1,0,
   {id:'c3l', title:'擂台赛', desc:'四宗大比，每日一轮。第二轮是苏小棠。', check:s=>false,
     progress:s=>'擂台赛 · 第一轮（之后的剧情正在做）', target:s=>['jc_gongyuan',14,14,'擂台']});
+
+/* ============================================================
+   山海问道 · 第三章 · 擂台上的对手 — the six people you can meet on the 擂台, each fighting the way their sect fights:
+   程小剑 (a 剑宗 junior: slow crossing cuts), 卜小鱼 (天机阁: a few floating 符 words), 苏小棠 (药王谷: 丹火 sparks and
+   thrown pills — and halfway through she stops), 林沧 (剑宗's fastest: cuts that cross where you stand, sword-qi lines
+   with one gap, a band that sweeps), 乌兰 (万兽谷: 阿毛 throws fruit, she charges, a roar ring), 温玄 (天机阁: 符 words
+   that seek you, a star wheel turning, pillars of light where the coins fell). The 擂台 by day behind them.
+   ============================================================ */
+const RIVAL={
+  sf_cheng:{name:'程小剑', look:{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:0,face:'small'}, hp:900, atk:30, def:8, moves:['cut','cut','qi'], sub:'青云剑宗 · 外门'},
+  sf_bu:{name:'卜小鱼', look:{g:'f',skin:0,hair:3,hairColor:0,style:'qun',cloth:4,face:'small'}, hp:900, atk:30, def:8, moves:['fu','fu','star'], sub:'天机阁'},
+  tang:{name:'苏小棠', look:LOOK_TANG, hp:1300, atk:38, def:10, moves:['fire','pill','fire','ring'], sub:'药王谷'},
+  sf_lin:{name:'林沧', look:{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:0,face:'small'}, hp:2100, atk:48, def:14, moves:['cross','qi','cross','sweep'], sub:'青云剑宗 · 这一辈最快的剑',
+    phase2:{at:.5, moves:['cross','sweep','qi','cross'], line:'林沧的剑快得只剩下一道光！'}},
+  sf_wulan:{name:'乌兰', look:{g:'f',skin:3,hair:3,hairColor:1,style:'jin',cloth:3,face:'mid'}, hp:1800, atk:44, def:13, moves:['fruit','rush','roar','fruit'], sub:'万兽谷 · 和阿毛一起上台',
+    phase2:{at:.5, moves:['rush','roar','fruit','rush'], line:'阿毛跳上了乌兰的肩膀，龇着牙冲你叫！'}},
+  sf_wenxuan:{name:'温玄', look:{g:'m',skin:0,hair:5,hairColor:5,style:'robe',cloth:4,face:'small'}, hp:1900, atk:44, def:12, moves:['fu','wheel','pillar','fu'], sub:'天机阁 · 看不透的人',
+    phase2:{at:.5, moves:['wheel','pillar','fu','wheel'], line:'温玄把三枚铜钱抛上了天——擂台上亮起一圈星光！'}},
+};
+const RIVAL_WORDS=['定','封','缚','镇','散','止'];
+// patterns, built from the shared bullets; a weaker one is the same thing slower and sparser
+const RIVAL_PAT={
+  cut:{name:'交叉斩', hit:.55, dur:4, spawn(P,t,dt,m){ P.every('c',1.2/m,()=>{ const a=Math.random()*Math.PI; P.add({k:'slash', cx:P.me.x, cy:P.me.y, a, w:6, warn:.95/m, act:.2}); }); }},
+  qi:{name:'剑气', hit:.5, dur:4.4, spawn(P,t,dt,m){ P.every('q',1.1/m,()=>{ const left=Math.random()<.5, gap=12+Math.random()*76;
+      for(let y=4;y<100;y+=8) if(Math.abs(y-gap)>13) P.add({k:'blade', x:left?-6:106, y, vx:(left?1:-1)*42*m, vy:0, r:2.4}); }); }},
+  cross:{name:'快剑', hit:.65, dur:4.4, spawn(P,t,dt,m){ P.every('x',.8/m,()=>{ const a=Math.random()*Math.PI; for(const d of [0,Math.PI/2]) P.add({k:'slash', cx:P.me.x, cy:P.me.y, a:a+d, w:6, warn:.7/m, act:.2}); }); }},
+  sweep:{name:'横扫千军', hit:.8, dur:4.6, spawn(P,t,dt,m){ for(const [at,dir] of [[.3,'h'],[1.5,'v'],[2.7,'h'],[3.6,'v']]) P.once('s'+at,t>=at,()=>P.add({k:'band', dir, at:dir==='h'?P.me.y:P.me.x, w:20, warn:.8/m, act:.3})); }},
+  fu:{name:'飞符', hit:.5, dur:4.4, spawn(P,t,dt,m){ P.every('f',.7/m,()=>{ const a=Math.random()*Math.PI*2, x=50+Math.cos(a)*55, y=50+Math.sin(a)*55, d=Math.hypot(P.me.x-x,P.me.y-y)||1, sp=26*m;
+      P.add({k:'word', text:RIVAL_WORDS[Math.random()*RIVAL_WORDS.length|0], x, y, vx:(P.me.x-x)/d*sp, vy:(P.me.y-y)/d*sp, r:3.4}); }); }},
+  star:{name:'星斗', hit:.45, dur:4, spawn(P,t,dt,m){ P.once('o',t>=.2,()=>{ for(let k=0;k<6;k++) P.add({k:'orbit', a:k/6*Math.PI*2, R:34, va:1.3*m, vr:-3, r:2.4}); }); }},
+  wheel:{name:'周天星盘', hit:.6, dur:4.6, spawn(P,t,dt,m){ P.once('o',t>=.2,()=>{ for(let k=0;k<9;k++) P.add({k:'orbit', a:k/9*Math.PI*2, R:40, va:(1.7)*m, vr:-5, r:2.6}); });
+      P.every('w',1.4/m,()=>{ const a=Math.random()*Math.PI*2; P.add({k:'word', text:'封', x:50+Math.cos(a)*55, y:50+Math.sin(a)*55, vx:-Math.cos(a)*24*m, vy:-Math.sin(a)*24*m, r:3.4}); }); }},
+  pillar:{name:'铜钱落地', hit:.7, dur:4.4, spawn(P,t,dt,m){ P.every('p',.9/m,()=>{ P.add({k:'pillar', at:P.me.x, w:12, warn:.8/m, act:.45}); P.add({k:'pillar', at:6+Math.random()*88, w:10, warn:.8/m, act:.45}); }); }},
+  fire:{name:'丹火', hit:.5, dur:4.4, spawn(P,t,dt,m){ P.every('e',.85/m,()=>{ const base=Math.atan2(P.me.y-4,P.me.x-50); for(const da of [-.35,0,.35]) P.add({k:'ember', x:50, y:4, vx:Math.cos(base+da)*36*m, vy:Math.sin(base+da)*36*m, r:2.2}); }); }},
+  pill:{name:'丹丸乱飞', hit:.45, dur:4.2, spawn(P,t,dt,m){ P.every('l',.45/m,()=>{ const left=Math.random()<.5; P.add({k:'fruit', x:left?-4:104, y:10+Math.random()*40, vx:(left?1:-1)*(30+Math.random()*14)*m, vy:-(10+Math.random()*20), ay:46, r:2.4}); }); }},
+  ring:{name:'药香', hit:.4, dur:4, spawn(P,t,dt,m){ P.every('r',1.2/m,()=>P.add({k:'ring', cx:50, cy:20, R:2, vr:30*m, gap:Math.random()*Math.PI*2, gw:1.2, th:3})); }},
+  fruit:{name:'阿毛扔果子', hit:.45, dur:4.2, spawn(P,t,dt,m){ P.every('u',.32/m,()=>P.add({k:'fruit', x:104, y:10+Math.random()*50, vx:-(30+Math.random()*16)*m, vy:-(10+Math.random()*20), ay:46, r:2.6})); }},
+  rush:{name:'猛冲', hit:.7, dur:4.4, spawn(P,t,dt,m){ P.every('h',1.15/m,()=>{ const left=Math.random()<.5, gap=12+Math.random()*76; for(let y=4;y<100;y+=7) if(Math.abs(y-gap)>12) P.add({k:'blade', x:left?-6:106, y, vx:(left?1:-1)*46*m, vy:0, r:2.6}); }); }},
+  roar:{name:'兽吼', hit:.5, dur:4.2, spawn(P,t,dt,m){ P.every('o',1.05/m,()=>P.add({k:'ring', cx:P.me.x, cy:P.me.y, R:1, vr:34*m, gap:Math.random()*Math.PI*2, gw:1.2, th:3})); }},
+};
+for(const id in RIVAL){ const R=RIVAL[id], kind='c3r_'+id;
+  BEASTS[kind]={name:R.name, spr:kind, person:true, big:true, boss:true, hp:R.hp, atk:R.atk, def:R.def, exp:0, stones:[0,0], moves:R.moves, phase2:R.phase2, lore:R.sub};
+  DODGE[kind]=Object.fromEntries(R.moves.concat(R.phase2?R.phase2.moves:[]).map(k=>[k,RIVAL_PAT[k]]));
+  SCENES[kind]={...SCENES.qiongqi, sky:['#9ab8d4','#c4d6e2','#e6e2d0'], moon:'#fff4d8', hills:['#a09080','#8a7a6a','#746656','#5e5246'], fx:null, title:R.name, sub:R.sub+'　——　四宗大比', ink:'#2a221c'}; }
+// their battle pictures are their own map sprites, made on first use
+{ const _s=Battle.start; Battle.start=function(kind,cb){ if(String(kind).startsWith('c3r_')&&!SPRC[kind]){ const id=kind.slice(4); SPR[kind]=['x']; const c=cgChibi(RIVAL[id].look,'stand',null,null,null,false); c.fine=true; SPRC[kind]=c; } return _s.call(Battle,kind,cb); }; }
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 第三幕 · 擂台赛 — one round a day on the 擂台 before the 贡院: first the 观天鉴, then the
+   fight. Lose and you are not out: 大师姐 sends you back to train, and you go up again when you're ready. Round two is
+   always 苏小棠: halfway through she sees you are stronger and stops — "go and be first; I want to see you at the top".
+   Every night the one who lost is put into a 礼部 carriage "to be sent home to their sect" (苏小棠 alone may stay: the
+   clerk looks in his book — 萧大人 left word). The final; 萧烬 claps twice; you are 魁首.
+   ============================================================ */
+const LT={
+  st(){ const c=KM.st(); c.round=c.round||0; return c; },
+  opp:()=>{ const c=LT.st(); return (c.bracket||KM.bracket())[c.round]; },
+  ROUND:['第一轮','第二轮','第三轮','决赛'],
+  // what each says before and after
+  PRE:{
+    sf_cheng:[['程小剑','（他握剑的手在抖）请、请多指教！']], sf_bu:[['卜小鱼','我算过了，这一局我会输。'],['卜小鱼','……不过我还是要打的。']],
+    tang:()=>S.sect==='dan'?[['苏小棠','（她站在擂台那一头，冲你挥了挥手）同门切磋！'],['苏小棠','长老说，药王谷的弟子，上了台就不许哭。']]:[['苏小棠','（她站在擂台那一头，深吸了一口气）……{名}。'],['苏小棠','我说过的，你不许让我。']],
+    sf_lin:[['林沧','（他拔出剑。剑身很窄，亮得刺眼）'],['林沧','我说过。我的剑，不会等你。']],
+    sf_wulan:[['乌兰','阿毛，上！'],['旁白','白耳朵的狌狌跳上擂台，冲你龇牙。它还是怕你身上的狼味，可它没有退。']],
+    sf_wenxuan:[['温玄','（他在掌心里摇了摇三枚铜钱）……这一卦，是「既济」。'],['温玄','事已经成了。只是，成的是谁的事。']],
+  },
+  WIN:{
+    sf_cheng:[['程小剑','（他坐在地上，揉着手腕）……师兄说得对，我还得练。']], sf_bu:[['卜小鱼','你看，我算得多准。']],
+    sf_lin:[['林沧','（他看着地上断成两截的剑穗，很久没有说话）'],['林沧','……你的剑，比我快。'],['林沧','我回去，再练十年。']],
+    sf_wulan:[['乌兰','（阿毛缩在她怀里，她摸着它的脑袋笑了）哈！输得痛快！'],['乌兰','下回去万兽谷，我请你吃烤羊腿。']],
+    sf_wenxuan:[['温玄','（他捡起地上的铜钱，看了一眼，又看了你一眼）……原来是你的事。'],['温玄','保重。京城的卦，越来越乱了。']],
+  },
+};
+
+/* ---------- the 擂台 ---------- */
+LT.go=()=>{ const c=LT.st(), id=LT.opp();
+  if(!S.flags.c3_km_done) return false;
+  if(c.round>=4) return UI.say([['旁白','擂台上空空荡荡的。红毡上，还留着几道剑痕。']]);
+  if(c.day===S.day) return UI.say([['礼部尚书','今日的比完了。明日辰时再来。']]);
+  UI.say([['旁白',`四宗大比 · ${LT.ROUND[c.round]}。`],['旁白','上台之前，你又在观天鉴前站了一下。镜面晃了晃，记下了什么。'],
+    ...(typeof LT.PRE[id]==='function'?LT.PRE[id]():LT.PRE[id]),
+    {choice:`${LT.ROUND[c.round]}：对 ${KM.NAME[id]}`, options:[{text:'上台', fn:()=>LT.fight()},{text:'再准备一下', fn:()=>{}}]}]); return true; };
+// 苏小棠's round ends in her own scene (she stops at half); should a blow finish her first, the scene still follows
+LT.fight=()=>{ const id=LT.opp(); Battle.start('c3r_'+id, r=>{ if(r!=='win') return LT.lose(); if(id==='tang') return setTimeout(()=>{ if(!S.flags.c3_lt_tang) LT.tangAfter(); },400); LT.win(); }); };
+LT.lose=()=>{ S.hp=Math.max(1,Math.round(stats().hp*.4)); UI.hud(); const c=LT.st(); c.lost=(c.lost||0)+1; save();
+  UI.say([['旁白','你被打下了擂台。'],['谢霁月','（她把你扶起来，拍掉你肩上的灰）……没事。'],
+    ['谢霁月','魁首不是一次打出来的。回去，打坐，练剑，吃药。'],['谢霁月','练好了，再上去。礼部那边，我去说。'],{flag:'c3_lt_lost'}]); };
+LT.win=()=>{ const c=LT.st(), id=LT.opp(), fin=c.round===3; c.round++; c.day=S.day; S.stones+=fin?400:[100,150,200][c.round-1]; save();
+  UI.say([...(LT.WIN[id]||[]),['旁白',`（${LT.ROUND[c.round-1]}，胜。灵石 +${fin?400:[100,150,200][c.round-1]}。）`],...(fin?LT.crown():[])],()=>{ UI.hud(); LT.evening(id); }); };
+
+/* ---------- 苏小棠: she stops halfway ---------- */
+LT.yield=s=>{ if(s.yielded) return; s.yielded=true; s.busy=true; Battle.ui();
+  QQLU.talk([['苏小棠','（她忽然停下来，丹火在她掌心里慢慢灭了）……'],['苏小棠','{名}，你比我厉害。厉害好多。'],['苏小棠','我早就知道了。从桃源镇，你帮我采药那天就知道了。'],
+    ['苏小棠','（她笑了，眼睛红红的）我认输。'],['苏小棠','你去拿头名吧。'],['苏小棠','我要看你站在最上面。']],()=>{ if(Battle.s!==s) return; s.dead=true; Battle.end('win'); }); };
+{ const _act=Battle.act; Battle.act=function(a){ const s=Battle.s; const r=_act.call(Battle,a); if(s&&s.kind==='c3r_tang'&&Battle.s===s&&!s.yielded&&!s.over&&s.hp<=s.max*.5){ s.dead=false; s.hp=Math.max(1,s.hp); LT.yield(s); } return r; }; }
+{ const _et=Battle.enemyTurn; Battle.enemyTurn=function(){ const s=Battle.s; if(s&&s.kind==='c3r_tang'&&!s.yielded&&s.hp<=s.max*.5) return LT.yield(s); return _et.call(Battle); }; }
+LT.tangAfter=()=>{ const c=LT.st(); c.round++; c.day=S.day; S.stones+=150; S.flags.c3_lt_tang=true; save();
+  UI.say([['旁白','（第二轮，胜。苏小棠认输。灵石 +150。）'],['旁白','台下嗡的一声。有人喊「让的！」，有人喊「药王谷没人了！」'],
+    ['苏小棠','（她跳下擂台，跑到你身边，小声说）……我一点都不难过。真的。'],{love:{tang:40}}],()=>{ UI.hud(); LT.evening('tang'); }); };
+
+/* ---------- the evening: the loser goes "home" ---------- */
+LT.evening=id=>{ const c=LT.st(), [x,y]=SF_WING[S.sect];
+  C3.move('jc_sifang',x+3,y+4,'up',19,()=>setTimeout(()=>UI.say(LT.night(id),()=>{ UI.hud(); Story.check(); }),500)); };
+LT.night=id=>{ const nm=KM.NAME[id].replace(/（.*/,''), c=LT.st();
+  if(id==='tang') return [
+    ['旁白','天黑了。四方馆门口停着一辆礼部的马车，黑篷，没有灯。'],
+    ['礼部小吏','（他翻着册子）药王谷，苏小棠——败。按规矩，今夜送回宗门。'],
+    ['我','她不走。'],
+    ['苏小棠','（她拽住你的袖子）我……我想看完决赛再走。行吗？'],
+    ['旁白','小吏皱着眉头翻册子，翻到某一页，手指停住了。'],
+    ['礼部小吏','……苏姑娘可以留下。'],
+    ['礼部小吏','萧大人吩咐过的。'],
+    ['苏小棠','（她一脸茫然）萧大人？我不认识什么萧大人啊……'],
+    ['我','（……）'],
+    ['旁白','那辆马车在门口等了一会儿，空着走了。'],
+    {flag:'c3_lt_n2'}];
+  if(c.round>=4) return [
+    ['旁白','那天夜里，四方馆的院子里点满了灯。可是院子空了一大半。'],
+    ['旁白','四宗来的弟子，一个一个都「送回宗门」了。'],
+    ['苏小棠','（她抱着膝盖坐在台阶上）……{名}，你说，他们到家了吗？'],
+    ['谢霁月','（她看着门外黑漆漆的街）明天，给宗门写封信。问问。'],
+    {flag:'c3_lt_done'}];
+  return [
+    ['旁白','天黑了。四方馆门口停着一辆礼部的马车，黑篷，没有灯。'],
+    ['旁白',`${nm}背着包袱上了车。礼部小吏在册子上勾了一笔：「败者，今夜送回宗门。」`],
+    ...(id==='sf_cheng'||id==='sf_bu'?[['旁白',`${nm}从车窗里探出头，冲你挥了挥手。`]]:[['旁白',`${nm}上车之前，回头看了你一眼，点了点头。`]]),
+    ['旁白','马车没有往城门的方向走。它往东拐了，拐进了一条你不认识的街。'],
+    ['谢霁月','（她站在门口，看着马车走远）……送回宗门，为什么要连夜送？'],
+    {flag:'c3_lt_n'+c.round},
+    ['旁白',`（明日：${LT.ROUND[c.round]}。回厢房睡觉。）`]]; };
+
+/* ---------- the final: 魁首 ---------- */
+LT.crown=()=>[
+  ['礼部尚书','（他的声音在广场上回荡）四宗大比——'],
+  ['礼部尚书',`魁首：${sectName()}，${S.name}！`],
+  ['旁白','鼓响了。广场上一下子炸开了锅。'],
+  ['苏小棠','（她在台下又跳又叫，眼泪鼻涕一起流）{名}——！'],
+  ['谢霁月','（她站在人群里，没有喊，只是看着你。过了很久，轻轻点了一下头）'],
+  ['旁白','你抬起头。高台上，萧烬站在天子身边，看着你。'],
+  ['旁白','他拍了两下手。'],
+  ['旁白','然后他身后的阴影里，那张青铜面具，也慢慢地转向了你。'],
+  {run:()=>{ S.flags.c3_kuishou=true; perk('atk',5,'四宗大比魁首：攻击 +5'); }},
+  ['旁白','（你是这一届四宗大比的魁首。）']];
+
+/* ---------- hooks: the 擂台 on the square, 苏小棠 talking, the quests ---------- */
+KM.TALK.sf_cheng=[['程小剑','明天就要上台了……我腿都软了。']]; KM.TALK.sf_bu=[['卜小鱼','我算过了。'],['卜小鱼','……不告诉你。']];
+{ const q=QUESTS.find(q=>q.id==='c3l'); Object.assign(q,{check:s=>!!s.flags.c3_kuishou,
+    progress:s=>{ const c=LT.st(); if(c.round>=4) return '魁首'; const nm=KM.NAME[LT.opp()].replace(/（.*/,'');
+      return c.day===S.day?`今天的比完了：回厢房睡觉（明日${LT.ROUND[c.round]}，对${nm}）`:`${LT.ROUND[c.round]}：对${nm}${s.flags.c3_lt_lost?'（输了不要紧，练好了再上）':''}`; },
+    target:s=>{ const c=LT.st(), [x,y]=SF_WING[s.sect]; return c.day===S.day?['jc_sifang',x+3,y+3,'你们的厢房']:['jc_gongyuan',14,14,'擂台']; }}); }
+QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3l')+1,0,
+  {id:'c3m', title:'宗门来信', desc:'你是四宗大比的魁首。可每天夜里，礼部的马车都往东拐。', check:s=>false,
+    progress:s=>'（之后的剧情正在做）', target:s=>['jc_sifang',12,10,'大师姐']});
+
+// whoever lost and was "sent home" is gone from 四方馆 and the square (苏小棠 stays)
+LT.gone=id=>{ const c=S&&S.c3&&S.c3.km; if(!c||!c.bracket||id==='tang') return false; const i=c.bracket.indexOf(id); return i>=0&&i<(c.round||0); };
+for(const m of ['jc_sifang','jc_gongyuan']) for(const o of MAPS[m].objects) if(['sf_cheng','sf_bu','sf_lin','sf_wulan','sf_wenxuan'].includes(o.id)){ const c0=o.cond; o.cond=s=>(!c0||c0(s))&&!LT.gone(o.id); }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -12897,6 +13054,12 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true},'jc_sifang',SF_WING[Review.sect||'jian'][0]+3,SF_WING[Review.sect||'jian'][1]+4,'up','c3j',22); S.L=13; S.exp=0; UI.hud(); Story.check(); }),
     N('kaimu','大比开幕：高台上的萧烬、国师、观天鉴、抽签（插画「开幕式的高台」）','遇见萧烬的第二天早上，在四方馆院子里。礼部小吏来接人，大师姐：「你昨晚出去了。」到贡院前的广场：擂台、高台、战鼓、四宗的旗。天子驾到，所有人跪下；天子右手边站着萧烬（玄色朝服），身后阴影里站着戴饕餮面具的国师（看过顾长歌 6♥ 或博古斋小铜鼎的会多想一句）。新规矩：观天鉴记下灵根和修为，「结丹了？！」；抽签，出对阵表（第二轮是苏小棠）。以后朱雀大街往北就能走到这里。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true},'jc_sifang',14,12,'up','c3k',7); S.L=13; S.exp=0; UI.hud(); Story.check(); }),
+    N('r1','擂台赛：第一轮','开幕第二天，站在擂台前。点擂台：观天鉴，然后上台（程小剑或卜小鱼，最弱的一个）。打完：傍晚回四方馆，门口一辆黑篷马车把输的人「送回宗门」，可马车往东拐了。输了不淘汰，大师姐让你回去练，练好了再上。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true},'jc_gongyuan',14,15,'up','c3l',9); S.L=13; S.exp=0; KM.st().bracket=KM.bracket(); KM.st().round=0; KM.st().day=-1; UI.hud(); Story.check(); }),
+    N('r2','擂台赛：第二轮，苏小棠（她收手）','第二轮一定是苏小棠（药王谷弟子是同门切磋）。打到她一半血，她停手：「你去拿头名吧。我要看你站在最上面。」晚上礼部要把她送走，翻册子——「萧大人吩咐过，苏姑娘可以留下」。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true},'jc_gongyuan',14,15,'up','c3l',9); S.L=13; S.exp=0; KM.st().bracket=KM.bracket(); KM.st().round=1; KM.st().day=-1; UI.hud(); Story.check(); }),
+    N('final','擂台赛：决赛 → 魁首','决赛（有林沧就是林沧）。赢了：礼部尚书宣布你是魁首，苏小棠在台下又哭又叫，大师姐轻轻点头；高台上萧烬拍了两下手，他身后的青铜面具转向了你。当晚四方馆空了一大半。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true},'jc_gongyuan',14,15,'up','c3l',9); S.L=13; S.exp=0; KM.st().bracket=KM.bracket(); KM.st().round=3; KM.st().day=-1; S.flags.c3_lt_tang=true; UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -13039,8 +13202,10 @@ const SelfTest3={
         const ch=[...d.querySelectorAll('[data-i]')]; if(ch.length){ rec('选项',ch.map(c=>c.textContent).join(' / ')); const c=typeof pick==='string'?(ch.find(c=>c.textContent.includes(pick))||ch[0]):ch[Math.min(pick,ch.length-1)]; c.click(); }
         else if(d.onclick){ if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); }
         await W(10); } };
-    const fight=async()=>{ Dev.god=true; let n=0; for(let i=0;i<150&&!(Battle.s&&!Battle.s.busy);i++){ document.querySelectorAll('.boss-intro,#bossIntro').forEach(e=>e.click()); await W(80); }
-      while(Battle.s&&!Battle.s.over&&n<90){ const s=Battle.s, st=stats(); S.hp=Math.max(S.hp,st.hp*.6|0); if(s.busy){ await W(50); continue; }
+    const cine=()=>{ const c=$('#cine'); if(c&&!c.hidden&&c.onclick) c.onclick(); document.querySelectorAll('.boss-intro,#bossIntro').forEach(e=>e.click()); };
+    const talkB=()=>document.querySelectorAll('#battle .b-talk').forEach(b=>{ rec('战斗对话',b.innerText.replace(/\s*\n\s*/g,'：').replace(/：?▼$/,'')); b.click(); });
+    const fight=async()=>{ Dev.god=true; let n=0; for(let i=0;i<150&&!(Battle.s&&!Battle.s.busy);i++){ cine(); await W(80); }
+      while(Battle.s&&!Battle.s.over&&n<90){ const s=Battle.s, st=stats(); S.hp=Math.max(S.hp,st.hp*.6|0); if(s.busy){ talkB(); await W(50); continue; }
         if(S.sect&&s.jianyi&&S.mp>=SECTS[S.sect].skill.mp) Battle.act('sect'); else if(S.mp>=Battle.skillMp()) Battle.act('skill'); else { S.mp=st.mp; Battle.act('atk'); } n++; await W(200); }
       for(let i=0;i<40&&!$('#bOk');i++) await W(100); const ok=$('#bOk'); if(ok) ok.click(); await W(400); Dev.god=false; return {won:!!ok, turns:n}; };
     const node=id=>Review.NODES.find(x=>x.id===id);
@@ -13170,6 +13335,18 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3l';i++){ UI.sync(); Story.check(); await W(100); }
           const ok=cg&&inSq&&S.flags.c3_km_call&&S.flags.c3_km_done&&b.length===4&&b[1]==='tang'&&b.every(id=>KM.NAME[id])&&!bad.length&&QUESTS[S.quest].id==='c3l';
           return {fail:!ok, info:`${S.flags.c3_km_call?'礼部来接':'来接 ✗'}，${inSq?'贡院前':'贡院前 ✗'}，${cg?'高台':'高台 ✗'}，对阵 ${b.map(id=>(KM.NAME[id]||id+'?').slice(0,3)).join('→')}，${panel?'对阵表':'(对阵表面板?)'}${bad.length?'，没反应：'+bad.join(' '):''}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第三幕：擂台赛四轮（先输一次再练）→ 苏小棠收手 → 魁首；输的人当晚被马车带走', async()=>{ const n0=SelfTest3.lines.length, log=[]; cur='擂台赛';
+          node('c3-r1').run(); await W(400); const B=KM.st().bracket.slice();
+          // lose once: the round is not lost for good
+          Dungeon.act(obj('kmleitai')); await adv('上台'); for(let i=0;i<160&&!Battle.s;i++){ cine(); await W(80); }
+          if(Battle.s){ Battle.s.busy=false; Battle.end('lose'); } for(let i=0;i<40&&!$('#bOk');i++) await W(80); $('#bOk')&&$('#bOk').click(); await W(300); await adv(); const lostOk=KM.st().round===0&&!!S.flags.c3_lt_lost;
+          for(let r=0;r<4;r++){ enterMap('jc_gongyuan',14,15); S.day+=1; await W(200); Dungeon.act(obj('kmleitai')); await adv('上台'); const f=await fight(); await W(600);
+            for(let i=0;i<300;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg'); if(d.hidden){ await W(60); if($('#dlg').hidden&&!RT.fadeTo&&i>30&&RT.mapId==='jc_sifang') break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
+            log.push(`${KM.NAME[B[r]].slice(0,3)} ${f.won?f.turns+'回合':'✗'}`); }
+          const gone=B.filter(id=>id!=='tang').every(id=>!RT.ents.some(e=>e.id===id)), tangStays=RT.ents.some(e=>e.id==='tang');
+          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3m';i++){ UI.sync(); Story.check(); await W(100); }
+          const F=S.flags, ok=lostOk&&KM.st().round===4&&F.c3_lt_tang&&F.c3_lt_n2&&F.c3_kuishou&&F.c3_lt_done&&gone&&tangStays&&QUESTS[S.quest].id==='c3m';
+          return {fail:!ok, info:`${lostOk?'输了再来':'输 ✗'}，${log.join('，')}，${F.c3_lt_tang?'苏小棠收手':'收手 ✗'}，${F.c3_lt_n2?'苏小棠留下':'留下 ✗'}，${F.c3_kuishou?'魁首':'魁首 ✗'}，${gone?'输的人都走了':'还在 ✗'}${tangStays?'':'，苏小棠不见了 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

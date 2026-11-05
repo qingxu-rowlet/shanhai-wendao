@@ -21,8 +21,10 @@ const SelfTest3={
         const ch=[...d.querySelectorAll('[data-i]')]; if(ch.length){ rec('选项',ch.map(c=>c.textContent).join(' / ')); const c=typeof pick==='string'?(ch.find(c=>c.textContent.includes(pick))||ch[0]):ch[Math.min(pick,ch.length-1)]; c.click(); }
         else if(d.onclick){ if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); }
         await W(10); } };
-    const fight=async()=>{ Dev.god=true; let n=0; for(let i=0;i<150&&!(Battle.s&&!Battle.s.busy);i++){ document.querySelectorAll('.boss-intro,#bossIntro').forEach(e=>e.click()); await W(80); }
-      while(Battle.s&&!Battle.s.over&&n<90){ const s=Battle.s, st=stats(); S.hp=Math.max(S.hp,st.hp*.6|0); if(s.busy){ await W(50); continue; }
+    const cine=()=>{ const c=$('#cine'); if(c&&!c.hidden&&c.onclick) c.onclick(); document.querySelectorAll('.boss-intro,#bossIntro').forEach(e=>e.click()); };
+    const talkB=()=>document.querySelectorAll('#battle .b-talk').forEach(b=>{ rec('战斗对话',b.innerText.replace(/\s*\n\s*/g,'：').replace(/：?▼$/,'')); b.click(); });
+    const fight=async()=>{ Dev.god=true; let n=0; for(let i=0;i<150&&!(Battle.s&&!Battle.s.busy);i++){ cine(); await W(80); }
+      while(Battle.s&&!Battle.s.over&&n<90){ const s=Battle.s, st=stats(); S.hp=Math.max(S.hp,st.hp*.6|0); if(s.busy){ talkB(); await W(50); continue; }
         if(S.sect&&s.jianyi&&S.mp>=SECTS[S.sect].skill.mp) Battle.act('sect'); else if(S.mp>=Battle.skillMp()) Battle.act('skill'); else { S.mp=st.mp; Battle.act('atk'); } n++; await W(200); }
       for(let i=0;i<40&&!$('#bOk');i++) await W(100); const ok=$('#bOk'); if(ok) ok.click(); await W(400); Dev.god=false; return {won:!!ok, turns:n}; };
     const node=id=>Review.NODES.find(x=>x.id===id);
@@ -152,6 +154,18 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3l';i++){ UI.sync(); Story.check(); await W(100); }
           const ok=cg&&inSq&&S.flags.c3_km_call&&S.flags.c3_km_done&&b.length===4&&b[1]==='tang'&&b.every(id=>KM.NAME[id])&&!bad.length&&QUESTS[S.quest].id==='c3l';
           return {fail:!ok, info:`${S.flags.c3_km_call?'礼部来接':'来接 ✗'}，${inSq?'贡院前':'贡院前 ✗'}，${cg?'高台':'高台 ✗'}，对阵 ${b.map(id=>(KM.NAME[id]||id+'?').slice(0,3)).join('→')}，${panel?'对阵表':'(对阵表面板?)'}${bad.length?'，没反应：'+bad.join(' '):''}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第三幕：擂台赛四轮（先输一次再练）→ 苏小棠收手 → 魁首；输的人当晚被马车带走', async()=>{ const n0=SelfTest3.lines.length, log=[]; cur='擂台赛';
+          node('c3-r1').run(); await W(400); const B=KM.st().bracket.slice();
+          // lose once: the round is not lost for good
+          Dungeon.act(obj('kmleitai')); await adv('上台'); for(let i=0;i<160&&!Battle.s;i++){ cine(); await W(80); }
+          if(Battle.s){ Battle.s.busy=false; Battle.end('lose'); } for(let i=0;i<40&&!$('#bOk');i++) await W(80); $('#bOk')&&$('#bOk').click(); await W(300); await adv(); const lostOk=KM.st().round===0&&!!S.flags.c3_lt_lost;
+          for(let r=0;r<4;r++){ enterMap('jc_gongyuan',14,15); S.day+=1; await W(200); Dungeon.act(obj('kmleitai')); await adv('上台'); const f=await fight(); await W(600);
+            for(let i=0;i<300;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg'); if(d.hidden){ await W(60); if($('#dlg').hidden&&!RT.fadeTo&&i>30&&RT.mapId==='jc_sifang') break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
+            log.push(`${KM.NAME[B[r]].slice(0,3)} ${f.won?f.turns+'回合':'✗'}`); }
+          const gone=B.filter(id=>id!=='tang').every(id=>!RT.ents.some(e=>e.id===id)), tangStays=RT.ents.some(e=>e.id==='tang');
+          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3m';i++){ UI.sync(); Story.check(); await W(100); }
+          const F=S.flags, ok=lostOk&&KM.st().round===4&&F.c3_lt_tang&&F.c3_lt_n2&&F.c3_kuishou&&F.c3_lt_done&&gone&&tangStays&&QUESTS[S.quest].id==='c3m';
+          return {fail:!ok, info:`${lostOk?'输了再来':'输 ✗'}，${log.join('，')}，${F.c3_lt_tang?'苏小棠收手':'收手 ✗'}，${F.c3_lt_n2?'苏小棠留下':'留下 ✗'}，${F.c3_kuishou?'魁首':'魁首 ✗'}，${gone?'输的人都走了':'还在 ✗'}${tangStays?'':'，苏小棠不见了 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

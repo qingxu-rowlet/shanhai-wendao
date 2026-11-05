@@ -124,7 +124,7 @@ const Life = {
     if(tab==='fish'){ const got=FISH_ORDER.filter(id=>C.fish[id]).length;
       return sub+`<p class="muted">已收集 ${got}/${FISH_ORDER.length}　${S.flags.fish_set?'✓ 已获得金钓竿':'集齐奖励：金钓竿'}　·　水面泛起金光的地方，能钓到稀有鱼和鱼王。</p><div class="book">${FISH_ORDER.map(id=>{ const r=C.fish[id], it=ITEMS[id], f=FISH[id];
         return `<div class="bk ${r?'':'unk'}${f.king?' king':''}"><img class="px" src="${iconURL(it.icon,it.color)}" alt=""><div><b>${r?it.name:'？？？'} <span class="rare">${'◆'.repeat(f.rare)}</span></b><p>${r?`${esc(it.desc)}<br>钓到 ${r.n} 条 · 最大 ${r.max} 厘米`:f.king?'传说中的鱼王……只在金光水面出没。':'还没有钓到过。'}</p></div></div>`; }).join('')}</div>`; }
-    return sub+`<div class="book">${Object.keys(BEASTS).filter(k=>!BEASTS[k].self).map(k=>{ const B=BEASTS[k], s=S.seen[k]; return `<div class="bk ${s?'':'unk'}"><img class="px" src="${iconURL(B.spr)}" alt=""><div><b>${s?B.name:'？？？'}</b><p>${s?esc(B.lore):'尚未遇见。'}</p></div></div>`; }).join('')}</div>`;
+    return sub+`<div class="book">${Object.keys(BEASTS).filter(k=>!BEASTS[k].self&&!BEASTS[k].person).map(k=>{ const B=BEASTS[k], s=S.seen[k]; return `<div class="bk ${s?'':'unk'}"><img class="px" src="${iconURL(B.spr)}" alt=""><div><b>${s?B.name:'？？？'}</b><p>${s?esc(B.lore):'尚未遇见。'}</p></div></div>`; }).join('')}</div>`;
   },
 };
 
