@@ -166,6 +166,12 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3m';i++){ UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=lostOk&&KM.st().round===4&&F.c3_lt_tang&&F.c3_lt_n2&&F.c3_kuishou&&F.c3_lt_done&&gone&&tangStays&&QUESTS[S.quest].id==='c3m';
           return {fail:!ok, info:`${lostOk?'输了再来':'输 ✗'}，${log.join('，')}，${F.c3_lt_tang?'苏小棠收手':'收手 ✗'}，${F.c3_lt_n2?'苏小棠留下':'留下 ✗'}，${F.c3_kuishou?'魁首':'魁首 ✗'}，${gone?'输的人都走了':'还在 ✗'}${tangStays?'':'，苏小棠不见了 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第三幕：宗门来信 → 大师姐禁足 → 八卦镜照空屋 → 苏小棠验药渣（线索 2/4）', async()=>{ const n0=SelfTest3.lines.length; cur='宗门来信';
+          node('c3-letter').run(); await W(1300); await adv(); const jin=!!S.flags.c3_xf_in&&RT.ents.some(e=>e.id==='xf_guard');
+          const b0=C3.st().bagua; Dungeon.act(RT.map.objects.find(o=>o.act==='sfroom'&&o.sect===XF.room())); await adv('照'); const room=!!XF.st().clue.room&&count(S,'c3_dregs')===1&&C3.st().bagua===b0-1;
+          Story.talk('tang'); await adv(); Story.talk('xie'); await adv('说说话'); Story.talk('xf_guard'); await adv();
+          const F=S.flags, q=QUESTS[S.quest], prog=q.progress(S), ok=jin&&room&&XF.st().clue.dregs&&XF.n()===2&&q.id==='c3m'&&/2\/4/.test(prog);
+          return {fail:!ok, info:`${jin?'禁足':'禁足 ✗'}，${room?'空屋（八卦镜 '+C3.st().bagua+' 次）':'空屋 ✗'}，${XF.st().clue.dregs?'药渣':'药渣 ✗'}，「${prog}」，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

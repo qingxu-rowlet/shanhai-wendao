@@ -14,7 +14,7 @@ const SF={
   wing:()=>SF_WING[S.sect],
 };
 // your own wing's door is your room: sleep there; elsewhere a word about whose it is
-On.act('sfroom',o=>{ if(o.sect!==S.sect) return UI.say([['旁白',`${SECTS[o.sect].name}的厢房。门关着，里面有人在低声说话。`]]);
+On.act('sfroom',o=>{ if(S.flags.c3_xf_in&&XF.door(o)) return; if(o.sect!==S.sect) return UI.say([['旁白',`${SECTS[o.sect].name}的厢房。门关着，里面有人在低声说话。`]]);
   if(S.flags.c3_jd_done&&!S.flags.c3_xj_met) return XX.room();
   if(!S.flags.c3_sf_recipe) return UI.say([['旁白','你们的厢房。被褥是新晒过的，有一股太阳的味道。'],['旁白','（天还没黑。先在院子里走走。）']]);
   UI.confirm('回厢房睡觉？', ()=>sleep(false)); });
@@ -100,6 +100,7 @@ SF.TALK={
 };
 JC.CHAT=Object.assign(JC.CHAT,{sf_clerk:['名册……名册……'], sf_lin:['……'], sf_cheng:['这步……这步怎么走……'], sf_wulan:['阿毛，别乱跑！'], sf_wenxuan:['……又是这一卦。'], sf_bu:['你输啦～']});
 On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
+  if(F.c3_xf_in&&XF.talk(id)) return true;
   if(id==='tang'&&F.c3_ju_won&&!F.c3_dan_done){ DAN.talk(); return true; }
   if(id==='tang'){ if(!F.c3_sf_tang){ UI.say(SF.tangMeet(),()=>{ UI.hud(); Story.check(); }); return true; }
     if(F.c3_sf_jiedan&&!F.c3_sf_recipe){ UI.say(SF.recipe(),()=>{ UI.hud(); Story.check(); }); return true; }

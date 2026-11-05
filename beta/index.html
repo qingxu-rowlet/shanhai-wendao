@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="e6006ee94f"><script>(function(){var B="e6006ee94f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="0d84232b32"><script>(function(){var B="0d84232b32";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10904,7 +10904,7 @@ const SF={
   wing:()=>SF_WING[S.sect],
 };
 // your own wing's door is your room: sleep there; elsewhere a word about whose it is
-On.act('sfroom',o=>{ if(o.sect!==S.sect) return UI.say([['旁白',`${SECTS[o.sect].name}的厢房。门关着，里面有人在低声说话。`]]);
+On.act('sfroom',o=>{ if(S.flags.c3_xf_in&&XF.door(o)) return; if(o.sect!==S.sect) return UI.say([['旁白',`${SECTS[o.sect].name}的厢房。门关着，里面有人在低声说话。`]]);
   if(S.flags.c3_jd_done&&!S.flags.c3_xj_met) return XX.room();
   if(!S.flags.c3_sf_recipe) return UI.say([['旁白','你们的厢房。被褥是新晒过的，有一股太阳的味道。'],['旁白','（天还没黑。先在院子里走走。）']]);
   UI.confirm('回厢房睡觉？', ()=>sleep(false)); });
@@ -10990,6 +10990,7 @@ SF.TALK={
 };
 JC.CHAT=Object.assign(JC.CHAT,{sf_clerk:['名册……名册……'], sf_lin:['……'], sf_cheng:['这步……这步怎么走……'], sf_wulan:['阿毛，别乱跑！'], sf_wenxuan:['……又是这一卦。'], sf_bu:['你输啦～']});
 On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
+  if(F.c3_xf_in&&XF.talk(id)) return true;
   if(id==='tang'&&F.c3_ju_won&&!F.c3_dan_done){ DAN.talk(); return true; }
   if(id==='tang'){ if(!F.c3_sf_tang){ UI.say(SF.tangMeet(),()=>{ UI.hud(); Story.check(); }); return true; }
     if(F.c3_sf_jiedan&&!F.c3_sf_recipe){ UI.say(SF.recipe(),()=>{ UI.hud(); Story.check(); }); return true; }
@@ -11980,6 +11981,115 @@ QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3l')+1,0,
 // whoever lost and was "sent home" is gone from 四方馆 and the square (苏小棠 stays)
 LT.gone=id=>{ const c=S&&S.c3&&S.c3.km; if(!c||!c.bracket||id==='tang') return false; const i=c.bracket.indexOf(id); return i>=0&&i<(c.round||0); };
 for(const m of ['jc_sifang','jc_gongyuan']) for(const o of MAPS[m].objects) if(['sf_cheng','sf_bu','sf_lin','sf_wulan','sf_wenxuan'].includes(o.id)){ const c0=o.cond; o.cond=s=>(!c0||c0(s))&&!LT.gone(o.id); }
+
+/* ============================================================
+   山海问道 · 第三章「京城」 · 第三幕 · 宗门来信 — the morning after the final a paper crane comes from your master: the
+   other sects have written — not one of their beaten disciples ever came home. By noon the street outside 四方馆 is
+   saying it: "the 狐仙 who was 魁首 last time drinks people's 精气 at night". The 礼部 confines 大师姐 to 四方馆 and posts
+   a guard at the gate. She says: go and find out. Four clues: the 八卦镜 on an empty room, 苏小棠 and the dregs in a tea
+   bowl, what 青禾 at 醉月楼 heard, the 千金坊's ledger. Here: the first two, both in 四方馆.
+   The 八卦镜 has three looks in it (照房间、照人、照真相); this is the first.
+   ============================================================ */
+const XF={
+  st(){ const c=C3.st(); c.xf=c.xf||{clue:{}}; c.bagua=c.bagua==null?3:c.bagua; return c.xf; },
+  n:()=>Object.keys(XF.st().clue).length,
+  SECT_OF:{sf_cheng:'jian', sf_bu:'tianji', sf_lin:'jian', sf_wulan:'shou', sf_wenxuan:'tianji'},
+  // the room to look into: the one who lost the third round (the strongest of those taken)
+  who:()=>{ const b=(KM.st().bracket||KM.bracket()); return b[2]; },
+  whoName:()=>KM.NAME[XF.who()].replace(/（.*/,''),
+  room:()=>XF.SECT_OF[XF.who()],
+};
+ITEMS.c2_bagua.desc+='（第三章：师尊解开了一面封印。还能照三次：照房间、照人、照真相。）';
+Object.assign(ITEMS,{c3_dregs:{name:'茶碗里的药渣', icon:'i_lingmo', quest:true, keep:true, desc:'失踪弟子房里，一只茶碗底下的药渣。黑褐色，闻着有一股铁锈味。'}});
+
+/* ---------- the morning after: letters, rumours, the guard ---------- */
+On.enter(id=>{ if(id!=='jc_sifang'||!S.flags.c3_lt_done||S.flags.c3_xf_in||S.min<5*60||S.min>14*60) return;
+  setTimeout(()=>{ if(RT.mapId==='jc_sifang'&&!S.flags.c3_xf_in) UI.say(XF.morning(),()=>{ UI.hud(); Story.check(); }); },700); });
+XF.morning=()=>{ const m=SECTS[S.sect].master.name, others=Object.keys(SECTS).filter(k=>k!==S.sect).map(k=>SECTS[k].name).join('、'); return [
+  ['旁白','天刚亮，一只纸鹤从窗缝里钻进来，落在你的枕头边上。'],
+  ['旁白',`是${m}的字。`],
+  ['旁白',`「${others}来书：本宗落败弟子，无一人归山。」`],
+  ['旁白','「礼部的马车，不曾到过任何一座山门。」'],
+  ['旁白','「速查。勿轻举。」'],
+  ['苏小棠','（她拿着另一只纸鹤冲进来，脸都白了）{名}！长老也来信了……他问我，大比完了，怎么还不回去……'],
+  ['苏小棠','他说……这几年，京城里来大比的弟子，回去的越来越少了。'],
+  ['旁白','到了中午，四方馆门外聚了一群人，指指点点。'],
+  ['看热闹的人','就是这儿……那位「狐仙」住的地方。'],
+  ['看热闹的人','听说了吗？夜里吸人精气！上一届就是这么夺的魁，这一届又来了！'],
+  ['看热闹的人','她住哪儿，哪儿就丢人……'],
+  ['旁白','礼部尚书带着一队禁军进了院子。'],
+  ['礼部尚书','谢霁月。'],
+  ['礼部尚书','京城近日流言四起，事关参赛弟子失踪。即日起，禁足四方馆，听候发落。'],
+  ['苏小棠','凭什么！大师姐什么都没做！'],
+  ['谢霁月','（她按住苏小棠的肩膀，没有看礼部尚书，只看着你）……'],
+  ['谢霁月','我不走。'],
+  ['旁白','禁军在馆门口站了一排。礼部尚书走了。'],
+  {run:()=>C3.set('c3_xf_in')},
+  ['谢霁月','（等人都走了，她才开口，声音很低）去查。'],
+  ['谢霁月','先看他们住过的屋子。你怀里那面镜子，还照得出东西。'],
+  ['谢霁月','苏小棠认药。有什么吃的喝的，拿给她看。'],
+  ['谢霁月','还有……城里的人知道的，比我们多。听说书的、喝酒的、赌钱的。'],
+  ['旁白',`（线索：用八卦镜照${XF.whoName()}住过的屋子；找苏小棠验药；醉月楼、千金坊也许有人知道什么。）`]]; };
+
+/* ---------- clue 1: the empty room, and the 八卦镜 ---------- */
+XF.roomScene=()=>{ const c=C3.st(), n=XF.whoName(); return [
+  ['旁白',`${n}住过的厢房。门没有锁。`],
+  ['旁白','屋里收拾得很干净，干净得不像住过人。床铺叠得整整齐齐，包袱不见了。'],
+  ['旁白','桌上只剩一只茶碗，碗底干了，留着一圈黑褐色的渣子。'],
+  {choice:`用八卦镜照一照？（还能照 ${c.bagua} 次）`, options:[
+    {text:'照', fn:()=>UI.say(XF.mirror(),()=>{ UI.hud(); Story.check(); })},
+    {text:'先不照', fn:()=>{}}]}]; };
+XF.mirror=()=>{ const n=XF.whoName(); return [
+  {run:()=>{ C3.st().bagua--; }},
+  ['旁白','你把八卦镜举起来。镜面那一角亮了，像一只半睁的眼睛。'],
+  ['旁白','镜子里，屋里点着灯。是那天夜里。'],
+  ['旁白',`${n}坐在桌边收拾包袱。门开了，礼部的小吏端着一只茶碗进来。`],
+  ['礼部小吏','（镜子里）送行茶。大比辛苦了，喝了好上路。'],
+  ['旁白',`${n}喝了。没过一会儿，就趴在了桌子上。`],
+  ['旁白','门外又进来两个人，一身黑衣，脸看不清。他们把人架起来，往额头上贴了一张黄符。'],
+  ['旁白','符上没有字，画着一面圆圆的镜子。'],
+  ['我','（……观天鉴。）'],
+  ['旁白','镜面暗了下去。'],
+  ['我','（……送行茶。）'],
+  {give:{c3_dregs:1}},
+  {run:()=>{ XF.st().clue.room=true; save(); }},
+  ['旁白','（你把茶碗里的药渣包了起来。线索：失踪弟子的屋子。）']]; };
+XF.roomAgain=()=>[['旁白','空了的厢房。桌上的茶碗已经被你收走了。']];
+
+/* ---------- clue 2: 苏小棠 and the dregs ---------- */
+XF.dregs=()=>[
+  ['苏小棠','药渣？给我看看。'],
+  ['旁白','她把药渣倒在手心里，捻了捻，又凑到鼻子底下闻。'],
+  ['苏小棠','安神的……酸枣仁、夜交藤，还有曼陀罗。这是「醉仙散」，喝了能睡三天三夜。'],
+  ['苏小棠','还有一味……'],
+  ['旁白','她的手停住了。'],
+  ['苏小棠','苦的。像铁锈。'],
+  ['苏小棠','（她的脸一点一点白下去）{名}……这股味道，我闻过。'],
+  ['苏小棠','回春堂那个北边来的汉子。他身上，就是这股味道。'],
+  ['苏小棠','精气被吸走的人，身上的味道。'],
+  {run:()=>{ XF.st().clue.dregs=true; save(); }},
+  ['旁白','（线索：药渣。和柳河村那个汉子身上的味道一样。）']];
+
+/* ---------- hooks in 四方馆 ---------- */
+// the guard at the gate while 大师姐 is confined
+MAPS.jc_sifang.objects.push({type:'npc', id:'xf_guard', x:13, y:19, look:{g:'m',skin:2,hair:0,hairColor:0,style:'jin',cloth:2,face:'mid'}, name:'禁军', act:'talk', cond:s=>!!s.flags.c3_xf_in});
+Object.assign(JC.CHAT,{xf_guard:['……']});
+XF.talk=id=>{ const F=S.flags;
+  if(id==='xf_guard'){ UI.say([['禁军','谢姑娘不许出馆。'],['禁军','……别的人，随意。']]); return true; }
+  if(id==='tang'&&count(S,'c3_dregs')&&!XF.st().clue.dregs){ UI.say(XF.dregs(),()=>{ UI.hud(); Story.check(); }); return true; }
+  if(id==='xie'){ const c=XF.st().clue; C3.menu('xie',[['谢霁月','（她坐在槐树底下，剑横在膝头，看着馆门口的禁军）'],
+    ['谢霁月',!c.room?`先去${XF.whoName()}的屋子看看。`:!c.dregs?'药渣，拿给苏小棠。':'城里的人，知道的比我们多。醉月楼，千金坊……去问问。'],
+    ['谢霁月','……我没事。别担心我。']]); return true; }
+  return false; };
+// the empty room: a wing that isn't yours, once you are looking
+XF.door=o=>{ if(!S.flags.c3_xf_in||o.sect!==XF.room()) return false; if(XF.st().clue.room) return UI.say(XF.roomAgain()), true; UI.say(XF.roomScene()); return true; };
+
+/* ---------- the quest ---------- */
+{ const q=QUESTS.find(q=>q.id==='c3m'); Object.assign(q,{desc:'落败的弟子没有一个回到宗门。京城里说是大师姐吸了他们的精气，她被禁足在四方馆。去查。', check:s=>XF.n()>=4,
+    progress:s=>{ if(!s.flags.c3_xf_in) return '天亮了'; const c=XF.st().clue;
+      return `线索 ${XF.n()}/4：`+[c.room?'屋子 ✓':'用八卦镜照空屋', c.dregs?'药渣 ✓':'找苏小棠验药', c.qinghe?'醉月楼 ✓':'醉月楼（之后的地图）', c.ledger?'千金坊 ✓':'千金坊（之后的地图）'].join('、'); },
+    target:s=>{ if(!s.flags.c3_xf_in) return ['jc_sifang',12,10,'大师姐']; const c=XF.st().clue, [x,y]=SF_WING[XF.room()];
+      return !c.room?['jc_sifang',x+3,y+3,XF.whoName()+'的屋子']:!c.dregs?['jc_sifang',8,13,'苏小棠']:['jc_sifang',12,10,'大师姐']; }}); }
 
 /* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
@@ -13060,6 +13170,10 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true},'jc_gongyuan',14,15,'up','c3l',9); S.L=13; S.exp=0; KM.st().bracket=KM.bracket(); KM.st().round=1; KM.st().day=-1; UI.hud(); Story.check(); }),
     N('final','擂台赛：决赛 → 魁首','决赛（有林沧就是林沧）。赢了：礼部尚书宣布你是魁首，苏小棠在台下又哭又叫，大师姐轻轻点头；高台上萧烬拍了两下手，他身后的青铜面具转向了你。当晚四方馆空了一大半。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true},'jc_gongyuan',14,15,'up','c3l',9); S.L=13; S.exp=0; KM.st().bracket=KM.bracket(); KM.st().round=3; KM.st().day=-1; S.flags.c3_lt_tang=true; UI.hud(); Story.check(); }),
+    N('letter','宗门来信：没有人回去；大师姐被禁足','魁首之后的第二天早上，在四方馆。师尊的纸鹤：别的宗门落败的弟子，没有一个回到山门。苏小棠的长老也来信。中午门外有人说「狐仙夜里吸人精气」，礼部尚书带禁军来，把大师姐禁足在四方馆。大师姐：去查——四条线索。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true},'jc_sifang',12,12,'up','c3m',7); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; Story.check(); }),
+    N('clue12','线索：八卦镜照空屋、苏小棠验药渣','已经被禁足。去第三轮输给你的那个人住过的厢房（门口旗子是他的宗门），点门：屋里空了，桌上一只茶碗；用八卦镜照：那夜礼部小吏端来「送行茶」，人趴下，两个黑衣人架走，额头贴一张画着镜子的符。药渣拿给苏小棠：「醉仙散」，还有一味铁锈味——和回春堂那个柳河村汉子身上的一样。',
+      ()=>{ go({...{...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true},c3_xf_in:true},'jc_sifang',15,14,'up','c3m',10); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -13347,6 +13461,12 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3m';i++){ UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=lostOk&&KM.st().round===4&&F.c3_lt_tang&&F.c3_lt_n2&&F.c3_kuishou&&F.c3_lt_done&&gone&&tangStays&&QUESTS[S.quest].id==='c3m';
           return {fail:!ok, info:`${lostOk?'输了再来':'输 ✗'}，${log.join('，')}，${F.c3_lt_tang?'苏小棠收手':'收手 ✗'}，${F.c3_lt_n2?'苏小棠留下':'留下 ✗'}，${F.c3_kuishou?'魁首':'魁首 ✗'}，${gone?'输的人都走了':'还在 ✗'}${tangStays?'':'，苏小棠不见了 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第三幕：宗门来信 → 大师姐禁足 → 八卦镜照空屋 → 苏小棠验药渣（线索 2/4）', async()=>{ const n0=SelfTest3.lines.length; cur='宗门来信';
+          node('c3-letter').run(); await W(1300); await adv(); const jin=!!S.flags.c3_xf_in&&RT.ents.some(e=>e.id==='xf_guard');
+          const b0=C3.st().bagua; Dungeon.act(RT.map.objects.find(o=>o.act==='sfroom'&&o.sect===XF.room())); await adv('照'); const room=!!XF.st().clue.room&&count(S,'c3_dregs')===1&&C3.st().bagua===b0-1;
+          Story.talk('tang'); await adv(); Story.talk('xie'); await adv('说说话'); Story.talk('xf_guard'); await adv();
+          const F=S.flags, q=QUESTS[S.quest], prog=q.progress(S), ok=jin&&room&&XF.st().clue.dregs&&XF.n()===2&&q.id==='c3m'&&/2\/4/.test(prog);
+          return {fail:!ok, info:`${jin?'禁足':'禁足 ✗'}，${room?'空屋（八卦镜 '+C3.st().bagua+' 次）':'空屋 ✗'}，${XF.st().clue.dregs?'药渣':'药渣 ✗'}，「${prog}」，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
