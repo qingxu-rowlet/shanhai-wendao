@@ -181,16 +181,32 @@ const SelfTest3={
           const bad=[]; for(const m of ['jc_zuiyue','jc_dongkou']){ enterMap(m, m==='jc_zuiyue'?9:13, m==='jc_zuiyue'?11:7); await W(100); for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv('算了'); } for(const o of RT.ents.filter(o=>o.act&&o.type!=='npc'&&o.act!=='zyin')){ Dungeon.act(o); await adv(); } }
           const prog=QUESTS[S.quest].progress(S), ok=got.every(g=>g.inside&&g.hasLetter&&g.clue&&g.told===g.how)&&!bad.length&&/3\/4/.test(prog);
           return {fail:!ok, info:got.map(g=>`${g.how==='letter'?'送信':'赎琵琶'}：${g.inside?'':'没进楼 ✗ '}${g.clue?'线索':'线索 ✗'}`).join('，')+`${bad.length?'，没反应：'+bad.join(' '):''}，「${prog.slice(0,30)}」，${SelfTest3.lines.length-n0} 句`}; });
+        await step('第三幕：千金坊 → 糖人小姑娘 → 赌大小（凝神听、每日上限）→ 连赢老板三把 → 后堂八卦镜 → 暗账（线索 4/4）', async()=>{ const n0=SelfTest3.lines.length; cur='千金坊';
+          node('c3-qianjin').run(); await W(400); Story.talk('ds_girl'); await adv(); const girl=!!S.flags.c3_qj_girl&&count(S,'jc_tangren')===1;
+          Dungeon.act(RT.map.objects.find(o=>o.act==='qjin')); await W(200); const inside=RT.mapId==='jc_qianjin';
+          const real=QJ.dice; QJ.dice=()=>[5,5,6];   // every roll comes up 大
+          // answer each choice in turn from a list, then 「不」 to whatever comes after
+          const seq=async picks=>{ let idle=0; for(let i=0;i<300;i++){ const d=$('#dlg'); if(d.hidden){ await W(50); if(++idle>8) return; continue; } idle=0; const ch=[...d.querySelectorAll('[data-i]')];
+            if(ch.length){ const want=picks.length?picks.shift():'不'; rec('选项',ch.map(c=>c.textContent).join(' / ')); (ch.find(c=>c.textContent.includes(want))||ch[ch.length-1]).click(); } else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); } };
+          S.mp=stats().mp; Dungeon.act(obj('qjdice')); await seq(['凝神','押大','不玩了']); const mpUsed=S.mp<stats().mp;
+          Story.talk('qj_boss'); await seq(['赌','押大','再来','押大','再来','押大']); QJ.dice=real; const invited=!!QJ.st().invited;
+          Dungeon.act(obj('qjdoor')); await W(700); await adv(); const hall=RT.mapId==='jc_qjhoutang'; const b0=C3.st().bagua;
+          Dungeon.act(obj('qjcaishen')); await adv('照'); const ledger=count(S,'c3_ledger')===1&&C3.st().bagua===b0-1&&!!XF.st().clue.ledger;
+          // the daily cap
+          QJ.st().lostDay=S.day; QJ.st().lost=QJ.CAP; enterMap('jc_qianjin',8,10); await W(100); Dungeon.act(obj('qjdice')); await W(80); if(UI.typing) $('#dlg').onclick(); await W(30); const capped=/手气背/.test($('#dText')?.textContent||''); await adv();
+          const bad=[]; for(const m of ['jc_dongshi','jc_qianjin']){ enterMap(m,m==='jc_dongshi'?10:8,m==='jc_dongshi'?8:10); await W(100); for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv('不'); } }
+          const prog=QUESTS[S.quest].progress(S), ok=girl&&inside&&mpUsed&&invited&&hall&&ledger&&capped&&XF.n()===4&&!bad.length;
+          return {fail:!ok, info:`${girl?'糖人小姑娘':'小姑娘 ✗'}，${inside?'进坊':'进坊 ✗'}，${mpUsed?'凝神听':'凝神 ✗'}，${invited?'连赢三把':'三把 ✗'}，${hall?'后堂':'后堂 ✗'}，${ledger?'暗账（八卦镜 '+C3.st().bagua+' 次）':'暗账 ✗'}，${capped?'每日上限':'上限 ✗'}${bad.length?'，没反应：'+bad.join(' '):''}，「${prog.slice(0,24)}」，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24],['jc_gongyuan',13,21],['jc_dongkou',2,4],['jc_zuiyue',8,11]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24],['jc_gongyuan',13,21],['jc_dongkou',2,4],['jc_zuiyue',8,11],['jc_dongshi',1,5],['jc_qianjin',8,11],['jc_qjhoutang',4,6]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'11 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'14 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }
