@@ -237,6 +237,13 @@ const SelfTest3={
             Social.chat('xiao'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
           const ok=got.every(g=>g.cg&&g.seen&&g.up&&g.closed);
           return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('大师姐心动事件：2♥ 药圃夜谈、4♥ 木剑（第二章，补了插画）→ 当铺赎青玉珠 → 6♥ 槐树 → 8♥ 河灯（还珠 / 不还）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='大师姐心动';
+          node('c3-xie68').run(); await W(300); delete S.inv.c3_bead; S.flags.c3_bead=false; C3.st().ju={pool:1100,pawn:300}; S.stones=1000; enterMap('jc_zhuque',5,13); await W(100);
+          Dungeon.act(RT.map.objects.find(o=>o.id==='dang')); await adv('赎'); const bought=count(S,'c3_bead')===1&&S.stones===1000-360;
+          for(const [lv,pick] of [[2,0],[4,0],[6,0],[8,'青玉珠'],[8,'也放']]){ const r=Social.rel('xie'); r.ev={}; for(const l of [2,4,6]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; if(pick==='也放'){ delete S.inv.c3_bead; } else if(lv===8&&!count(S,'c3_bead')) addItem('c3_bead',1); const p0=r.pts;
+            Social.chat('xie'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, back:!!S.flags.c3_bead_back}); }
+          const ok=bought&&got.every(g=>g.cg&&g.seen&&g.up)&&got[3].back;
+          return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

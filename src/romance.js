@@ -263,7 +263,8 @@ Object.assign(SCRIPTS, {
   Social.chat=function(id){
     const ev=HEART_CG[id];
     if(ev){ const r=Social.rel(id), h=Social.hearts(id);
-      for(const lv of [2,4,6,8]) if(h>=lv && !r.ev[lv]){ r.ev[lv]=true; if(r.talked!==S.day){ r.talked=S.day; } Sound.levelup();
+      // someone may have only some of the four as pictures (大师姐: 6 and 8)
+      for(const lv of [2,4,6,8]) if(h>=lv && !r.ev[lv] && ev[lv]){ r.ev[lv]=true; if(r.talked!==S.day){ r.talked=S.day; } Sound.levelup();
         const e=ev[lv]; return UI.say([{cg:e.scene, who:id, title:e.title}, ...e.steps]); } }
     return _chat.call(Social,id);
   };

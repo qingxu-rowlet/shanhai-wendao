@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a892d3762f"><script>(function(){var B="a892d3762f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b61390155f"><script>(function(){var B="b61390155f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3091,7 +3091,7 @@ UI.people=()=>{
     return `<div class="person"><canvas class="px" data-npc="${id}" width="18" height="22"></canvas><div class="pinfo"><b>${n.name}${n.romance?'<small class="rom">可结缘</small>':''}</b>
       <span class="hearts">${'<i class="on">♥</i>'.repeat(h)}${'<i>♥</i>'.repeat(Math.max(0,max-h))}</span>
       <span class="muted">${r.talked===S.day?'今天聊过了':'今天还没聊天'} · ${r.gifted===S.day?'今天送过礼':'今天还能送礼'}</span>
-      ${known?`<span class="kn">已知喜好：${known}</span>`:''}${typeof HEART_CG!=='undefined'&&HEART_CG[id]?`<span class="kn">心动事件：${[2,4,6,8].map(lv=>r.ev[lv]?`<button class="btn mini cgb" data-cg="${id}:${lv}">${HEART_CG[id][lv].title}</button>`:`<span class="lock">${lv}♥ 解锁</span>`).join(' ')}</span>`:''}</div></div>`; }).join('');
+      ${known?`<span class="kn">已知喜好：${known}</span>`:''}${typeof HEART_CG!=='undefined'&&HEART_CG[id]?`<span class="kn">心动事件：${[2,4,6,8].filter(lv=>HEART_CG[id][lv]).map(lv=>r.ev[lv]?`<button class="btn mini cgb" data-cg="${id}:${lv}">${HEART_CG[id][lv].title}</button>`:`<span class="lock">${lv}♥ 解锁</span>`).join(' ')}</span>`:''}</div></div>`; }).join('');
   return rows;
 };
 function npcSprite(id){
@@ -4565,7 +4565,8 @@ Object.assign(SCRIPTS, {
   Social.chat=function(id){
     const ev=HEART_CG[id];
     if(ev){ const r=Social.rel(id), h=Social.hearts(id);
-      for(const lv of [2,4,6,8]) if(h>=lv && !r.ev[lv]){ r.ev[lv]=true; if(r.talked!==S.day){ r.talked=S.day; } Sound.levelup();
+      // someone may have only some of the four as pictures (大师姐: 6 and 8)
+      for(const lv of [2,4,6,8]) if(h>=lv && !r.ev[lv] && ev[lv]){ r.ev[lv]=true; if(r.talked!==S.day){ r.talked=S.day; } Sound.levelup();
         const e=ev[lv]; return UI.say([{cg:e.scene, who:id, title:e.title}, ...e.steps]); } }
     return _chat.call(Social,id);
   };
@@ -9442,10 +9443,10 @@ Object.assign(HEART_EVENTS, {
 Object.assign(SCRIPTS, {
   c2g_lu_a:[['我','对不对，你自己心里知道。'],['陆正衡','……'],['旁白','他看了你很久，没有说话。转身走了。'],['旁白','走出几步，他停下来：「……你比我当年胆子大。」'],{love:{lu:40}}],
   c2g_lu_b:[['旁白','你不知道该怎么回答。'],['陆正衡','（他自嘲地笑了一下）……我也不知道。'],['陆正衡','回去睡吧。'],{love:{lu:30}}],
-  c2g_xie_a:[['我','我不信他们。'],['谢霁月','（她转过头，看了你一眼）……你才来几天。'],['我','几天就够了。'],['旁白','她没有再说话。可她膝盖上那柄剑，被她攥得没那么紧了。'],{love:{xie:50}}],
-  c2g_xie_b:[['我','你笑起来，一定很好看。'],['谢霁月','……胡说。'],['旁白','她把脸转开了。月光底下，你好像看见她的耳朵红了一点。'],{love:{xie:60}}],
-  c2g_xie_c:[['我','那我以后每天都来。'],['谢霁月','……随你。'],['旁白','她走了两步，又回头：「卯时。迟了，就不教了。」'],{love:{xie:60}}],
-  c2g_xie_d:[['旁白','你什么也没说，又认认真真地把那一招练了一遍。手腕松着，剑是活的。'],['谢霁月','（她看着，嘴角动了一下）……嗯。'],{love:{xie:50}}],
+  c2g_xie_a:[['我','我不信他们。'],['谢霁月','（她转过头，看了你一眼）……你才来几天。'],['我','几天就够了。'],['旁白','她没有再说话。可她膝盖上那柄剑，被她攥得没那么紧了。'],{love:{xie:50}},{cgend:true}],
+  c2g_xie_b:[['我','你笑起来，一定很好看。'],['谢霁月','……胡说。'],['旁白','她把脸转开了。月光底下，你好像看见她的耳朵红了一点。'],{love:{xie:60}},{cgend:true}],
+  c2g_xie_c:[['我','那我以后每天都来。'],['谢霁月','……随你。'],['旁白','她走了两步，又回头：「卯时。迟了，就不教了。」'],{love:{xie:60}},{cgend:true}],
+  c2g_xie_d:[['旁白','你什么也没说，又认认真真地把那一招练了一遍。手腕松着，剑是活的。'],['谢霁月','（她看着，嘴角动了一下）……嗯。'],{love:{xie:50}},{cgend:true}],
 });
 // 大师姐 can come to love you, as 苏小棠 and 顾长歌 can: her hearts go to ten, and what she says warms as they rise
 NPCS.xie.romance=true;
@@ -10944,7 +10945,7 @@ const JC_SHOPS={
   cha:[['旁白','听雨轩。门半掩着，里面醒木一拍：'],['旁白','「……上回说到，那一年宗门大比，有一位女弟子，生得是闭月羞花——」'],['谢霁月','……'],['旁白','（茶楼是之后的地图，到时候可以进去听书。）']],
   kezhan:[['旁白','悦来客栈。掌柜在门口打着算盘：「打尖还是住店？」'],['旁白','（大比的弟子都住四方馆。）']],
 };
-On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
+On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); if(o.id==='dang'&&S.flags.c3_xie_pawn&&!S.flags.c3_bead) return XIE.dang(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
 On.act('jcsedan',o=>UI.say([['旁白','一顶红呢大轿。轿帘放着，里面没有人。'],['旁白','轿杠上，刻着一个小小的「萧」字。'],{flag:'c3_jc_sedan'}]));
 On.act('jcbao',o=>Story.talk('jc_baoniang'));
 On.act('jchulu',o=>Story.talk('jc_hulu'));
@@ -13035,6 +13036,86 @@ Object.assign(SCRIPTS,{
 // in his 人物 tab, the events can be watched again like everyone's
 
 /* ============================================================
+   大师姐's 6♥ and 8♥ (her 2♥ and 4♥ were chapter two's, in words only):
+   6♥「槐树」 the night under 四方馆's 槐树: the night she won the last 大比 she sat here alone; no one came to say well done.
+   8♥「河灯」 river lanterns on the 护城河; she has never let one go. If she pawned her master's jade bead for the auction
+        and you bought it back at the 当铺, you can give it to her here.
+   ============================================================ */
+const XIE={
+  // the 当铺 on 朱雀大街 still has the bead: buy it back for a little more than it fetched
+  dang(){ const pawn=(C3.st().ju||{}).pawn||200, price=Math.round(pawn*1.2);
+    UI.say([['旁白','当铺的柜台比人还高。'],['朝奉','（他头也不抬）赎什么？'],['我','一颗青玉珠子。剑穗上的。'],['朝奉','……哦，那颗。成色好，正要往外卖呢。'],
+      {choice:`赎回大师姐的青玉珠？（${price} 灵石，你有 ${S.stones}）`, options:[{text:'赎', fn:()=>{ if(S.stones<price) return UI.say([['朝奉','钱不够，别耽误工夫。']]);
+        S.stones-=price; addItem('c3_bead',1); S.flags.c3_bead=true; Sound.coin(); UI.hud(); save(); UI.say([['旁白','朝奉从柜子里摸出一颗青玉珠子，在灯底下照了照，才放到你手里。'],['旁白','（得到「青玉珠」。找个时候，还给大师姐。）']]); }},{text:'算了', fn:()=>{}}]}]); },
+};
+Object.assign(ITEMS,{c3_bead:{name:'青玉珠', icon:'i_lingmo', quest:true, keep:true, desc:'大师姐剑穗上的青玉珠，她师父给的。为了凑拍卖会的钱，她当了它。你又把它赎了回来。'}});
+Object.assign(PXSCENES,{
+  xie_huai:{ gy:.84, fx:'petals', base(g,W,H,R){ PX.sky(g,W,0,H*.7,['#0a0e1e','#141c34','#202a4a']); PX.stars(g,W,H*.5,R,50); PX.orb(g,W*.82,H*.16,8,'#f2eedc','#5a6490');
+      PX.r(g,0,H*.6,W,H*.08,'#e8e0cc'); PX.r(g,0,H*.6,W,2,'#4a4e56'); PX.r(g,0,H*.68,W,H*.32,'#3a3a40');                        // the white wall, the yard
+      PX.tree(g,W*.5,H*.86,H*.62,R,'round',{d:'#1e3020',m:'#2e4830',l:'#4a6a40',t:'#3a2a20'});
+      for(let i=0;i<60;i++) PX.r(g,W*(.25+R()*.5),H*(.12+R()*.5),1,1,R()<.6?'#f0ead0':'#d8d0a8'); },                           // its white flowers
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.36,pose:'stand',face:1},{at:3,x:.4,pose:'sit',face:1}]},{look:LOOK_XIE,x:.6,pose:'sit',face:-1}]},
+  xie_river:{ gy:.7, fx:'lanterns', base(g,W,H,R){ PX.sky(g,W,0,H*.5,['#060a18','#101a34','#1a2850']); PX.stars(g,W,H*.4,R,60);
+      for(let k=0;k<6;k++){ const x=W*(k/5); PX.roof(g,x,H*.46,W*.12,'#141828','#1c2236'); PX.r(g,x-W*.04,H*.46+6,W*.08,H*.06,'#0e1220'); PX.r(g,x,H*.49,2,2,'#f0c060'); }
+      PX.water(g,W,H*.56,H,'#0c1830','#14244a','#3a4a7a',R);
+      for(let i=0;i<14;i++){ const x=R()*W, y=H*(.6+R()*.36); PX.r(g,x-2,y,5,2,'#e8b84a'); PX.r(g,x-1,y-2,3,2,'#f8d070'); PX.r(g,x-3,y+3,7,1,'rgba(255,200,100,.35)'); }   // the river lanterns
+      PX.r(g,0,H*.7,W*.4,H*.04,'#5a5a60'); PX.r(g,0,H*.74,W*.4,H,'#3a3a40');
+      for(const x of [.08,.32]) PX.tree(g,W*x,H*.72,H*.3,R,'round',{d:'#1a2a1a',m:'#24382a',l:'#34503a',t:'#2a2018'}); },
+    cast:[{who:'me',x:.16,pose:'stand',face:1},{look:LOOK_XIE,beats:[{at:0,x:.28,pose:'kneel',face:1},{at:5,x:.28,pose:'stand',face:-1}]}]},
+});
+// her chapter-two events (2♥ by the herb beds at night, 4♥ the wooden swords at dawn) get pictures too: same words
+Object.assign(PXSCENES,{
+  xie_yaopu:{ gy:.84, fx:'fireflies', base(g,W,H,R){ PX.sky(g,W,0,H*.6,['#0a1020','#16203a','#24304e']); PX.stars(g,W,H*.45,R,50); PX.orb(g,W*.78,H*.16,9,'#f2eedc','#5a6490');
+      PX.ridge(g,W,H,H*.56,H*.08,'#1c2438','#26304a',R); PX.r(g,0,H*.64,W,H*.36,'#2a3a24');
+      for(let r=0;r<4;r++) for(let x=4;x<W;x+=7) PX.grass(g,x+(r%2)*3,H*(.7+r*.06),'#3a5a30','#5a8a44');            // the herb beds in rows
+      for(let k=0;k<4;k++) PX.r(g,W*.5-k*3,H*(.84-k*.04),W*.5+k*6,H*.04,k%2?'#6a6a62':'#7a7a70'); },                     // the stone steps
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.4,pose:'stand',face:1}]},{look:LOOK_XIE,x:.6,pose:'sitedge',face:-1}]},
+  xie_jian:{ gy:.86, fx:'leaves', base(g,W,H,R){ PX.sky(g,W,0,H*.6,['#e8c8a0','#f0dcc0','#f8ecd8']); PX.orb(g,W*.18,H*.5,10,'#fff2d0','#f0c890');
+      PX.ridge(g,W,H,H*.5,H*.12,'#9a8a7a','#b0a090',R); PX.ridge(g,W,H,H*.58,H*.06,'#7a6e62',null,R);
+      PX.r(g,0,H*.62,W,H*.38,'#b8a888'); for(let y=H*.62;y<H;y+=6) for(let x=0;x<W;x+=12) PX.r(g,x+((y/6)%2)*6,y,11,1,'#a89878');   // the paved training ground
+      PX.r(g,W*.82,H*.5,3,H*.2,'#5e3a20'); PX.r(g,W*.79,H*.54,9,2,'#5e3a20'); },                                            // a rack of practice swords
+    cast:[{who:'me',x:.42,pose:'sword',prop:'wood',face:1},{look:LOOK_XIE,beats:[{at:0,x:.62,pose:'hold',prop:'wood',face:-1},{at:2,x:.36,pose:'stand',face:1},{at:5,x:.62,pose:'stand',face:-1}]}]},
+});
+HEART_CG.xie={
+  2:{scene:'xie_yaopu', title:'药圃夜谈', get steps(){ return HEART_EVENTS.xie[2]; }},
+  4:{scene:'xie_jian', title:'木剑', get steps(){ return HEART_EVENTS.xie[4]; }},
+  6:{scene:'xie_huai', title:'槐树', steps:[
+    ['旁白','夜里。四方馆的院子里没有人，只有槐花一朵一朵地往下落。'],
+    ['旁白','大师姐坐在槐树底下。她听见你的脚步声，没有回头。'],
+    ['谢霁月','……上一回，我也住在这间馆里。'],
+    ['谢霁月','拿了头名的那天晚上，我一个人坐在这棵树底下，坐到天亮。'],
+    ['谢霁月','师父没有来。同门没有来。外面的人，在说书。'],
+    ['谢霁月','（她伸手接住一朵落下来的槐花）那时候我想，原来拿了头名，是这个样子。'],
+    {choice:'你：', options:[{text:'我来恭喜你。晚了三年。', go:'xie6a'},{text:'（在她身边坐下）', go:'xie6b'}]}]},
+  8:{scene:'xie_river', title:'河灯', get steps(){ return [
+    ['旁白','护城河上漂满了河灯。今天是花朝节。'],
+    ['旁白','大师姐蹲在河边，手里拿着一盏没点的河灯，拿了很久。'],
+    ['谢霁月','……我没放过河灯。'],
+    ['谢霁月','小时候家里穷，买不起。后来进了山门，觉得这种东西没用。'],
+    ['谢霁月','（她把河灯递给你）你帮我点。'],
+    ['旁白','你点亮了它。她把河灯轻轻放进水里，看着它慢慢漂远。'],
+    {choice:'你：', options:[
+      {text:'你许了什么愿？', go:'xie8a'},
+      {text:'（也放一盏，陪她看着）', go:'xie8b'},
+      ...(count(S,'c3_bead')?[{text:'（拿出那颗青玉珠，放在她手心里）', go:'xie8c'}]:[])]}]; }},
+};
+Object.assign(SCRIPTS,{
+  xie6a:[['谢霁月','（她转过头看你，愣了很久）'],['谢霁月','……嗯。'],['旁白','她没有再说话。可是你看见，她笑了。很小很小的一下。'],['旁白','那是你第一次看见大师姐笑。'],{love:{xie:60}},{cgend:true}],
+  xie6b:[['旁白','你什么也没说，在她身边坐下。槐花落在你们两个人的肩上。'],['谢霁月','（过了很久）……这一回，有人坐在这儿了。'],{love:{xie:60}},{cgend:true}],
+  xie8a:[['谢霁月','（她没有回答，只是看着那盏灯漂远）……不告诉你。'],['谢霁月','说出来，就不灵了。'],{love:{xie:60}},{cgend:true}],
+  xie8b:[['旁白','你也放了一盏。两盏灯并排漂着，一会儿近，一会儿远。'],['谢霁月','（她看着那两盏灯，轻轻地说）……要是一直漂在一起就好了。'],{love:{xie:70}},{cgend:true}],
+  xie8c:[
+    {run:()=>addItem('c3_bead',-1)},
+    ['旁白','你把那颗青玉珠放在她手心里。'],
+    ['谢霁月','（她低头看着它，手指慢慢合上）……你去当铺了。'],
+    ['谢霁月','（她把珠子重新系回剑穗上，系了好几次，才系好）'],
+    ['谢霁月','{名}。'],
+    ['谢霁月','……谢谢你。'],
+    ['旁白','河灯的光映在她脸上。她的眼睛，是湿的。'],
+    {love:{xie:100}},{flag:'c3_bead_back'},{cgend:true}],
+});
+
+/* ============================================================
    山海问道 · navigation: tracked task, GPS trail, auto-walk, minimap, world map, task list, profiles
    ============================================================ */
 const WORLD = { home:[0,0], town:[24,1], forest:[-3,17] };   // where each area sits on the world map (in tiles)
@@ -14135,6 +14216,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...{...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true,c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true,c3_a4_done:true},c3_a5_win:true,c3_a5_notice:true,c3_xj_side:true},'jc_zhuque',13,29,'down','c3q',7); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=0; Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); Social.rel('xiao').pts=300; UI.hud(); Story.check(); }),
     N('xiao2','萧烬心动：2♥ 瘸腿的狗 → 4♥ 赌一局 → 6♥ 屋顶 → 8♥ 草窝','夜里的小巷，萧烬在巷子尽头。好感正好 2♥：点他 → 聊天，触发「瘸腿的狗」。之后每到 4♥、6♥、8♥，聊天时触发下一段：千金坊后堂赌一局（输的人说真话）、屋顶上看京城、安平村后山的草窝——那是他娘的坟，杀她的是你的大师兄。每一段的回答会改变好感和敌意。',
       ()=>{ go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true,c3_sf_jiedan:true,c3_sf_recipe:true,c3_sf_morning:true,c3_jd_done:true,c3_xj_met:true},'jc_xiang',5,6,'up','c3k',23); S.L=13; Social.rel('xiao').pts=200; UI.hud(); Story.check(); }),
+    N('xie68','大师姐心动：6♥ 槐树、8♥ 河灯（还青玉珠）','四方馆院子里，大师姐在槐树底下，好感正好 6♥，身上带着从当铺赎回的青玉珠。点她 → 聊天：「槐树」——上一回拿了头名的那夜，她一个人坐到天亮。再到 8♥ 聊天：「河灯」——她从没放过河灯；可以把青玉珠还给她（她剑穗上师父给的那颗，为了拍卖会当掉的）。当铺：朱雀大街的当铺可以赎回青玉珠。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_xie_pawn:true,c3_bead:true},'jc_sifang',12,11,'up','c3h',21); S.L=13; addItem('c3_bead',1); const r=Social.rel('xie'); r.pts=600; r.ev={2:true,4:true}; UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
@@ -14493,6 +14576,13 @@ const SelfTest3={
             Social.chat('xiao'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
           const ok=got.every(g=>g.cg&&g.seen&&g.up&&g.closed);
           return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('大师姐心动事件：2♥ 药圃夜谈、4♥ 木剑（第二章，补了插画）→ 当铺赎青玉珠 → 6♥ 槐树 → 8♥ 河灯（还珠 / 不还）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='大师姐心动';
+          node('c3-xie68').run(); await W(300); delete S.inv.c3_bead; S.flags.c3_bead=false; C3.st().ju={pool:1100,pawn:300}; S.stones=1000; enterMap('jc_zhuque',5,13); await W(100);
+          Dungeon.act(RT.map.objects.find(o=>o.id==='dang')); await adv('赎'); const bought=count(S,'c3_bead')===1&&S.stones===1000-360;
+          for(const [lv,pick] of [[2,0],[4,0],[6,0],[8,'青玉珠'],[8,'也放']]){ const r=Social.rel('xie'); r.ev={}; for(const l of [2,4,6]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; if(pick==='也放'){ delete S.inv.c3_bead; } else if(lv===8&&!count(S,'c3_bead')) addItem('c3_bead',1); const p0=r.pts;
+            Social.chat('xie'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, back:!!S.flags.c3_bead_back}); }
+          const ok=bought&&got.every(g=>g.cg&&g.seen&&g.up)&&got[3].back;
+          return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

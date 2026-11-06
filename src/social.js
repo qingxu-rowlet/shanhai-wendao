@@ -167,7 +167,7 @@ UI.people=()=>{
     return `<div class="person"><canvas class="px" data-npc="${id}" width="18" height="22"></canvas><div class="pinfo"><b>${n.name}${n.romance?'<small class="rom">可结缘</small>':''}</b>
       <span class="hearts">${'<i class="on">♥</i>'.repeat(h)}${'<i>♥</i>'.repeat(Math.max(0,max-h))}</span>
       <span class="muted">${r.talked===S.day?'今天聊过了':'今天还没聊天'} · ${r.gifted===S.day?'今天送过礼':'今天还能送礼'}</span>
-      ${known?`<span class="kn">已知喜好：${known}</span>`:''}${typeof HEART_CG!=='undefined'&&HEART_CG[id]?`<span class="kn">心动事件：${[2,4,6,8].map(lv=>r.ev[lv]?`<button class="btn mini cgb" data-cg="${id}:${lv}">${HEART_CG[id][lv].title}</button>`:`<span class="lock">${lv}♥ 解锁</span>`).join(' ')}</span>`:''}</div></div>`; }).join('');
+      ${known?`<span class="kn">已知喜好：${known}</span>`:''}${typeof HEART_CG!=='undefined'&&HEART_CG[id]?`<span class="kn">心动事件：${[2,4,6,8].filter(lv=>HEART_CG[id][lv]).map(lv=>r.ev[lv]?`<button class="btn mini cgb" data-cg="${id}:${lv}">${HEART_CG[id][lv].title}</button>`:`<span class="lock">${lv}♥ 解锁</span>`).join(' ')}</span>`:''}</div></div>`; }).join('');
   return rows;
 };
 function npcSprite(id){

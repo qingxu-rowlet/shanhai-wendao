@@ -84,3 +84,83 @@ Object.assign(SCRIPTS,{
   xj8c:[['萧烬','想过。'],['萧烬','想了十几年。'],['萧烬','（他看着你）后来我遇见了你。'],['萧烬','……我不知道了。'],{love:{xiao:60}},{run:()=>{ XX.st().hate+=5; }},{cgend:true}],
 });
 // in his 人物 tab, the events can be watched again like everyone's
+
+/* ============================================================
+   大师姐's 6♥ and 8♥ (her 2♥ and 4♥ were chapter two's, in words only):
+   6♥「槐树」 the night under 四方馆's 槐树: the night she won the last 大比 she sat here alone; no one came to say well done.
+   8♥「河灯」 river lanterns on the 护城河; she has never let one go. If she pawned her master's jade bead for the auction
+        and you bought it back at the 当铺, you can give it to her here.
+   ============================================================ */
+const XIE={
+  // the 当铺 on 朱雀大街 still has the bead: buy it back for a little more than it fetched
+  dang(){ const pawn=(C3.st().ju||{}).pawn||200, price=Math.round(pawn*1.2);
+    UI.say([['旁白','当铺的柜台比人还高。'],['朝奉','（他头也不抬）赎什么？'],['我','一颗青玉珠子。剑穗上的。'],['朝奉','……哦，那颗。成色好，正要往外卖呢。'],
+      {choice:`赎回大师姐的青玉珠？（${price} 灵石，你有 ${S.stones}）`, options:[{text:'赎', fn:()=>{ if(S.stones<price) return UI.say([['朝奉','钱不够，别耽误工夫。']]);
+        S.stones-=price; addItem('c3_bead',1); S.flags.c3_bead=true; Sound.coin(); UI.hud(); save(); UI.say([['旁白','朝奉从柜子里摸出一颗青玉珠子，在灯底下照了照，才放到你手里。'],['旁白','（得到「青玉珠」。找个时候，还给大师姐。）']]); }},{text:'算了', fn:()=>{}}]}]); },
+};
+Object.assign(ITEMS,{c3_bead:{name:'青玉珠', icon:'i_lingmo', quest:true, keep:true, desc:'大师姐剑穗上的青玉珠，她师父给的。为了凑拍卖会的钱，她当了它。你又把它赎了回来。'}});
+Object.assign(PXSCENES,{
+  xie_huai:{ gy:.84, fx:'petals', base(g,W,H,R){ PX.sky(g,W,0,H*.7,['#0a0e1e','#141c34','#202a4a']); PX.stars(g,W,H*.5,R,50); PX.orb(g,W*.82,H*.16,8,'#f2eedc','#5a6490');
+      PX.r(g,0,H*.6,W,H*.08,'#e8e0cc'); PX.r(g,0,H*.6,W,2,'#4a4e56'); PX.r(g,0,H*.68,W,H*.32,'#3a3a40');                        // the white wall, the yard
+      PX.tree(g,W*.5,H*.86,H*.62,R,'round',{d:'#1e3020',m:'#2e4830',l:'#4a6a40',t:'#3a2a20'});
+      for(let i=0;i<60;i++) PX.r(g,W*(.25+R()*.5),H*(.12+R()*.5),1,1,R()<.6?'#f0ead0':'#d8d0a8'); },                           // its white flowers
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.36,pose:'stand',face:1},{at:3,x:.4,pose:'sit',face:1}]},{look:LOOK_XIE,x:.6,pose:'sit',face:-1}]},
+  xie_river:{ gy:.7, fx:'lanterns', base(g,W,H,R){ PX.sky(g,W,0,H*.5,['#060a18','#101a34','#1a2850']); PX.stars(g,W,H*.4,R,60);
+      for(let k=0;k<6;k++){ const x=W*(k/5); PX.roof(g,x,H*.46,W*.12,'#141828','#1c2236'); PX.r(g,x-W*.04,H*.46+6,W*.08,H*.06,'#0e1220'); PX.r(g,x,H*.49,2,2,'#f0c060'); }
+      PX.water(g,W,H*.56,H,'#0c1830','#14244a','#3a4a7a',R);
+      for(let i=0;i<14;i++){ const x=R()*W, y=H*(.6+R()*.36); PX.r(g,x-2,y,5,2,'#e8b84a'); PX.r(g,x-1,y-2,3,2,'#f8d070'); PX.r(g,x-3,y+3,7,1,'rgba(255,200,100,.35)'); }   // the river lanterns
+      PX.r(g,0,H*.7,W*.4,H*.04,'#5a5a60'); PX.r(g,0,H*.74,W*.4,H,'#3a3a40');
+      for(const x of [.08,.32]) PX.tree(g,W*x,H*.72,H*.3,R,'round',{d:'#1a2a1a',m:'#24382a',l:'#34503a',t:'#2a2018'}); },
+    cast:[{who:'me',x:.16,pose:'stand',face:1},{look:LOOK_XIE,beats:[{at:0,x:.28,pose:'kneel',face:1},{at:5,x:.28,pose:'stand',face:-1}]}]},
+});
+// her chapter-two events (2♥ by the herb beds at night, 4♥ the wooden swords at dawn) get pictures too: same words
+Object.assign(PXSCENES,{
+  xie_yaopu:{ gy:.84, fx:'fireflies', base(g,W,H,R){ PX.sky(g,W,0,H*.6,['#0a1020','#16203a','#24304e']); PX.stars(g,W,H*.45,R,50); PX.orb(g,W*.78,H*.16,9,'#f2eedc','#5a6490');
+      PX.ridge(g,W,H,H*.56,H*.08,'#1c2438','#26304a',R); PX.r(g,0,H*.64,W,H*.36,'#2a3a24');
+      for(let r=0;r<4;r++) for(let x=4;x<W;x+=7) PX.grass(g,x+(r%2)*3,H*(.7+r*.06),'#3a5a30','#5a8a44');            // the herb beds in rows
+      for(let k=0;k<4;k++) PX.r(g,W*.5-k*3,H*(.84-k*.04),W*.5+k*6,H*.04,k%2?'#6a6a62':'#7a7a70'); },                     // the stone steps
+    cast:[{who:'me',beats:[{at:0,x:-.15,pose:'stand',face:1},{at:1,x:.4,pose:'stand',face:1}]},{look:LOOK_XIE,x:.6,pose:'sitedge',face:-1}]},
+  xie_jian:{ gy:.86, fx:'leaves', base(g,W,H,R){ PX.sky(g,W,0,H*.6,['#e8c8a0','#f0dcc0','#f8ecd8']); PX.orb(g,W*.18,H*.5,10,'#fff2d0','#f0c890');
+      PX.ridge(g,W,H,H*.5,H*.12,'#9a8a7a','#b0a090',R); PX.ridge(g,W,H,H*.58,H*.06,'#7a6e62',null,R);
+      PX.r(g,0,H*.62,W,H*.38,'#b8a888'); for(let y=H*.62;y<H;y+=6) for(let x=0;x<W;x+=12) PX.r(g,x+((y/6)%2)*6,y,11,1,'#a89878');   // the paved training ground
+      PX.r(g,W*.82,H*.5,3,H*.2,'#5e3a20'); PX.r(g,W*.79,H*.54,9,2,'#5e3a20'); },                                            // a rack of practice swords
+    cast:[{who:'me',x:.42,pose:'sword',prop:'wood',face:1},{look:LOOK_XIE,beats:[{at:0,x:.62,pose:'hold',prop:'wood',face:-1},{at:2,x:.36,pose:'stand',face:1},{at:5,x:.62,pose:'stand',face:-1}]}]},
+});
+HEART_CG.xie={
+  2:{scene:'xie_yaopu', title:'药圃夜谈', get steps(){ return HEART_EVENTS.xie[2]; }},
+  4:{scene:'xie_jian', title:'木剑', get steps(){ return HEART_EVENTS.xie[4]; }},
+  6:{scene:'xie_huai', title:'槐树', steps:[
+    ['旁白','夜里。四方馆的院子里没有人，只有槐花一朵一朵地往下落。'],
+    ['旁白','大师姐坐在槐树底下。她听见你的脚步声，没有回头。'],
+    ['谢霁月','……上一回，我也住在这间馆里。'],
+    ['谢霁月','拿了头名的那天晚上，我一个人坐在这棵树底下，坐到天亮。'],
+    ['谢霁月','师父没有来。同门没有来。外面的人，在说书。'],
+    ['谢霁月','（她伸手接住一朵落下来的槐花）那时候我想，原来拿了头名，是这个样子。'],
+    {choice:'你：', options:[{text:'我来恭喜你。晚了三年。', go:'xie6a'},{text:'（在她身边坐下）', go:'xie6b'}]}]},
+  8:{scene:'xie_river', title:'河灯', get steps(){ return [
+    ['旁白','护城河上漂满了河灯。今天是花朝节。'],
+    ['旁白','大师姐蹲在河边，手里拿着一盏没点的河灯，拿了很久。'],
+    ['谢霁月','……我没放过河灯。'],
+    ['谢霁月','小时候家里穷，买不起。后来进了山门，觉得这种东西没用。'],
+    ['谢霁月','（她把河灯递给你）你帮我点。'],
+    ['旁白','你点亮了它。她把河灯轻轻放进水里，看着它慢慢漂远。'],
+    {choice:'你：', options:[
+      {text:'你许了什么愿？', go:'xie8a'},
+      {text:'（也放一盏，陪她看着）', go:'xie8b'},
+      ...(count(S,'c3_bead')?[{text:'（拿出那颗青玉珠，放在她手心里）', go:'xie8c'}]:[])]}]; }},
+};
+Object.assign(SCRIPTS,{
+  xie6a:[['谢霁月','（她转过头看你，愣了很久）'],['谢霁月','……嗯。'],['旁白','她没有再说话。可是你看见，她笑了。很小很小的一下。'],['旁白','那是你第一次看见大师姐笑。'],{love:{xie:60}},{cgend:true}],
+  xie6b:[['旁白','你什么也没说，在她身边坐下。槐花落在你们两个人的肩上。'],['谢霁月','（过了很久）……这一回，有人坐在这儿了。'],{love:{xie:60}},{cgend:true}],
+  xie8a:[['谢霁月','（她没有回答，只是看着那盏灯漂远）……不告诉你。'],['谢霁月','说出来，就不灵了。'],{love:{xie:60}},{cgend:true}],
+  xie8b:[['旁白','你也放了一盏。两盏灯并排漂着，一会儿近，一会儿远。'],['谢霁月','（她看着那两盏灯，轻轻地说）……要是一直漂在一起就好了。'],{love:{xie:70}},{cgend:true}],
+  xie8c:[
+    {run:()=>addItem('c3_bead',-1)},
+    ['旁白','你把那颗青玉珠放在她手心里。'],
+    ['谢霁月','（她低头看着它，手指慢慢合上）……你去当铺了。'],
+    ['谢霁月','（她把珠子重新系回剑穗上，系了好几次，才系好）'],
+    ['谢霁月','{名}。'],
+    ['谢霁月','……谢谢你。'],
+    ['旁白','河灯的光映在她脸上。她的眼睛，是湿的。'],
+    {love:{xie:100}},{flag:'c3_bead_back'},{cgend:true}],
+});
