@@ -307,7 +307,8 @@ const SelfTest3={
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+(bad.length?'，没反应：'+bad.join(' '):'')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('京城的小事：寻亲、书生的文章、卖花的小姑娘、赌客的债', async()=>{ const n0=SelfTest3.lines.length, r={}; cur='小事';
           node('c3-side').run(); await W(300); const has=id=>!!RT.ents.find(e=>e.id===id);
-          Story.talk('jc_traveler'); await adv('我帮你打听'); r.ask=!!S.flags.c3_sq_qin_ask;
+          r.list=['c3s_qin','c3s_shu','c3s_hua','c3s_du'].every(k=>C3S.items().some(x=>x.key===k)); UI.tasks(); await W(80); r.panel=/寻亲/.test($('#panel').innerText)&&!!$('#panel [data-go="main"]')&&!!$('#panel [data-go="c3s_qin"]'); UI.closePanel();
+          Story.talk('jc_traveler'); await adv('我帮你打听'); r.ask=!!S.flags.c3_sq_qin_ask; S.track='c3s_qin'; r.track=Nav.tracked()?.target?.[0]==='jc_dongshi'&&Nav.list()[0].key==='c3s_qin';
           enterMap('jc_dongshi',10,8); await W(80); Story.talk('ds_wonton'); await adv(); r.hint=!!S.flags.c3_sq_qin_hint;
           enterMap('jc_xishi',22,10); await W(80); r.zhao=has('sq_zhao'); Story.talk('sq_zhao'); await adv(); r.found=!!S.flags.c3_sq_qin_found;
           enterMap('jc_zhuque',15,30); await W(80); Story.talk('jc_traveler'); await adv(); r.qin=!!S.flags.c3_sq_qin_done&&count(S,'jc_fu')>0;
@@ -318,7 +319,7 @@ const SelfTest3={
           S.min=19*60; enterMap('jc_dongkou',8,10); await W(80); Story.talk('zy_flower'); await adv('全买下'); r.deng=!!S.flags.c3_sq_hua_deng&&count(S,'jc_deng')>0;
           HD.st().day=-1; Dungeon.act(RT.ents.find(e=>e.act==='hdstep')); await adv('春娘'); r.hua=!!S.flags.c3_sq_hua_done;
           S.min=10*60; enterMap('jc_dongshi',10,8); await W(80); Story.talk('ds_gambler'); await adv('替他还了'); await W(100); r.du=S.flags.c3_sq_du===2&&!has('ds_gambler');
-          Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text));
+          Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text)); r.cleared=!C3S.items().some(x=>/qin|shu|hua|du/.test(x.key))&&Nav.tracked()?.kind==='main';
           const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);

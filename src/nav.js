@@ -144,8 +144,8 @@ UI.tasks=()=>{
   const extra=Nav.extraTasks?Nav.extraTasks():[];   // chapter 2: the chores the seniors hand out
   rows.push(`<div class="task ${S.track==='main'?'on':''}"><div class="tk-head"><span class="tag main">主线</span><b>${esc(q.title)}</b></div><p>${esc(q.desc)}</p>
     ${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}
-    ${extra.length?'':`<div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div>`}</div>`);
-  for(const t of extra) rows.push(`<div class="task ${Nav.tracked()?.id===t.key?'on':''}"><div class="tk-head"><span class="tag">今日</span><b>${esc(t.title)}</b></div><p class="muted">进度：${esc(t.progress)}</p>
+    ${extra.some(t=>!t.tag)?'':`<div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div>`}</div>`);
+  for(const t of extra) rows.push(`<div class="task ${Nav.tracked()?.id===t.key?'on':''}"><div class="tk-head"><span class="tag">${esc(t.tag||'今日')}</span><b>${esc(t.title)}</b></div><p class="muted">进度：${esc(t.progress)}</p>
       <div class="tk-btns"><button class="btn mini" data-track="${t.key}">${Nav.tracked()?.id===t.key?'追踪中':'追踪'}</button>${t.target?`<button class="btn mini main" data-go="${t.key}">寻路</button>`:''}</div></div>`);
   for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;
     const giver=npcAt(s.giver)[3];

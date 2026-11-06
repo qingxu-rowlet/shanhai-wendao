@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="23a70ff044"><script>(function(){var B="23a70ff044";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5ba054d485"><script>(function(){var B="5ba054d485";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13901,8 +13901,8 @@ UI.tasks=()=>{
   const extra=Nav.extraTasks?Nav.extraTasks():[];   // chapter 2: the chores the seniors hand out
   rows.push(`<div class="task ${S.track==='main'?'on':''}"><div class="tk-head"><span class="tag main">主线</span><b>${esc(q.title)}</b></div><p>${esc(q.desc)}</p>
     ${q.progress?`<p class="muted">进度：${esc(q.progress(S))}</p>`:''}
-    ${extra.length?'':`<div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div>`}</div>`);
-  for(const t of extra) rows.push(`<div class="task ${Nav.tracked()?.id===t.key?'on':''}"><div class="tk-head"><span class="tag">今日</span><b>${esc(t.title)}</b></div><p class="muted">进度：${esc(t.progress)}</p>
+    ${extra.some(t=>!t.tag)?'':`<div class="tk-btns"><button class="btn mini" data-track="main">${S.track==='main'?'追踪中':'追踪'}</button>${q.target?'<button class="btn mini main" data-go="main">寻路</button>':''}</div>`}</div>`);
+  for(const t of extra) rows.push(`<div class="task ${Nav.tracked()?.id===t.key?'on':''}"><div class="tk-head"><span class="tag">${esc(t.tag||'今日')}</span><b>${esc(t.title)}</b></div><p class="muted">进度：${esc(t.progress)}</p>
       <div class="tk-btns"><button class="btn mini" data-track="${t.key}">${Nav.tracked()?.id===t.key?'追踪中':'追踪'}</button>${t.target?`<button class="btn mini main" data-go="${t.key}">寻路</button>`:''}</div></div>`);
   for(const s of SIDES){ const st=S.side[s.id]; if(st==='done'||!s.unlock(S)||!npcAt(s.giver)) continue;
     const giver=npcAt(s.giver)[3];
@@ -13994,6 +13994,43 @@ UI.title();
     if(C2.on()&&(!S.track||S.track==='main')){ const it=C2.items()[0]; if(it) return {kind:'side', id:it.key, title:it.title, desc:it.progress, progress:it.progress, target:it.target}; }
     return _tr.call(Nav); }; }
 Nav.extraTasks=()=>C2.items();
+
+/* ============================================================
+   山海问道 · 第三章 — the capital's small stories in the task list (loads after nav.js / chapter2nav.js, which it wraps):
+   寻亲, 书生的文章, 卖花的小姑娘, 赌客的债, 老仆的桂花糕, 长命锁. Each shows as 可接 (who to talk to, and where) until you
+   start it, then as 支线 with its next step; tracking one and pressing 寻路 walks you there.
+   ============================================================ */
+const C3S={
+  items(){ const F=S.flags; if(!F.c3_sf_in||F.c3_xj_end) return []; const out=[], has=k=>count(S,k)>0;
+    const add=(key,kind,title,progress,target)=>out.push({key:'c3s_'+key, kind, tag:kind==='avail'?'可接取':'支线', title, progress, target});
+    // 寻亲
+    if(!F.c3_sq_qin_ask) add('qin','avail','寻亲','去找朱雀大街城门口那个赶路的人',['jc_zhuque',15,32,'赶路的人']);
+    else if(!F.c3_sq_qin_found) add('qin','side','寻亲',F.c3_sq_qin_hint?'赵木匠在西市，给博古斋修架子':'打听赵木匠：东市卖馄饨的也许知道',F.c3_sq_qin_hint?['jc_xishi',20,18,'赵木匠']:['jc_dongshi',21,9,'卖馄饨的']);
+    else if(!F.c3_sq_qin_done) add('qin','side','寻亲','回朱雀大街告诉她',['jc_zhuque',15,32,'赶路的人']);
+    // 书生的文章
+    if(!F.c3_sq_shu_ask) add('shu','avail','书生的文章','去找朱雀大街上的书生',['jc_zhuque',21,13,'书生']);
+    else if(!F.c3_sq_shu_print) add('shu','side','书生的文章','把《北村记》拿去西市琅琊阁',['jc_xishi',3,7,'琅琊阁主']);
+    else if(!F.c3_sq_shu_done) add('shu','side','书生的文章','回去告诉书生',['jc_zhuque',21,13,'书生']);
+    // 卖花的小姑娘
+    if(!F.c3_sq_hua_deng) add('hua','avail','卖花的小姑娘','黄昏（六点到九点）去护城河边的花铺门口',['jc_dongkou',21,7,'卖花的小姑娘']);
+    else if(!F.c3_sq_hua_done) add('hua','side','卖花的小姑娘','黄昏去河埠头放河灯，写「春娘」',['jc_dongkou',9,12,'河埠头']);
+    // 赌客的债
+    if(!F.c3_sq_du&&!F.c3_a4_done) add('du','avail','赌客的债','去东市找那个输光了的赌客',['jc_dongshi',12,7,'输光了的赌客']);
+    // 老仆的桂花糕
+    if(F.c3_xj_met&&!F.c3_xfu_ask) add('gao','avail','萧府外墙','东市再往东，萧府门外有个扫地的老仆',['jc_xiaofu',8,10,'扫地的老仆']);
+    else if(F.c3_xfu_ask&&!F.c3_xfu_gao) add('gao','side','老仆的桂花糕',has('jc_gao')?'把桂花糕送给萧烬（宵禁以后，萧府墙角或小巷里）':'去东市小吃铺买一块桂花糕',has('jc_gao')?['jc_xiaofu',19,7,'萧烬（宵禁以后）']:['jc_dongshi',4,6,'小吃铺']);
+    // 长命锁
+    if(has('jc_lock')&&!F.c3_hd_lock) add('lock','side','长命锁','拿给醉月楼的青禾看看',RT.mapId==='jc_zuiyue'?['jc_zuiyue',9,5,'青禾']:['jc_dongkou',13,7,'醉月楼']);
+    return out; },
+};
+{ const _x=Nav.extraTasks; Nav.extraTasks=()=>[...(_x?_x():[]), ...C3S.items()]; }
+{ const _l=Nav.list; Nav.list=function(){ const base=_l.call(Nav), mine=C3S.items(); if(!mine.length) return base;
+    const tk=S.track||'main', main=base.filter(x=>x.kind==='main'), rest=base.filter(x=>x.kind!=='main');
+    const all=[...main, ...mine.filter(x=>x.kind==='side'), ...rest, ...mine.filter(x=>x.kind==='avail')];
+    all.sort((a,b)=>(b.key===tk)-(a.key===tk)); return all.slice(0,3); }; }
+{ const _tr=Nav.tracked; Nav.tracked=function(){ if(S.track&&S.track.startsWith('c3s_')){ const it=C3S.items().find(x=>x.key===S.track);
+      if(it) return {kind:it.kind, id:it.key, title:it.title, desc:it.progress, progress:it.progress, target:it.target}; S.track='main'; }
+    return _tr.call(Nav); }; }
 
 /* ============================================================
    山海问道 · 章节交接单 — what each chapter needs when it starts and what it leaves when it ends, written down once.
@@ -15296,7 +15333,8 @@ const SelfTest3={
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+(bad.length?'，没反应：'+bad.join(' '):'')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('京城的小事：寻亲、书生的文章、卖花的小姑娘、赌客的债', async()=>{ const n0=SelfTest3.lines.length, r={}; cur='小事';
           node('c3-side').run(); await W(300); const has=id=>!!RT.ents.find(e=>e.id===id);
-          Story.talk('jc_traveler'); await adv('我帮你打听'); r.ask=!!S.flags.c3_sq_qin_ask;
+          r.list=['c3s_qin','c3s_shu','c3s_hua','c3s_du'].every(k=>C3S.items().some(x=>x.key===k)); UI.tasks(); await W(80); r.panel=/寻亲/.test($('#panel').innerText)&&!!$('#panel [data-go="main"]')&&!!$('#panel [data-go="c3s_qin"]'); UI.closePanel();
+          Story.talk('jc_traveler'); await adv('我帮你打听'); r.ask=!!S.flags.c3_sq_qin_ask; S.track='c3s_qin'; r.track=Nav.tracked()?.target?.[0]==='jc_dongshi'&&Nav.list()[0].key==='c3s_qin';
           enterMap('jc_dongshi',10,8); await W(80); Story.talk('ds_wonton'); await adv(); r.hint=!!S.flags.c3_sq_qin_hint;
           enterMap('jc_xishi',22,10); await W(80); r.zhao=has('sq_zhao'); Story.talk('sq_zhao'); await adv(); r.found=!!S.flags.c3_sq_qin_found;
           enterMap('jc_zhuque',15,30); await W(80); Story.talk('jc_traveler'); await adv(); r.qin=!!S.flags.c3_sq_qin_done&&count(S,'jc_fu')>0;
@@ -15307,7 +15345,7 @@ const SelfTest3={
           S.min=19*60; enterMap('jc_dongkou',8,10); await W(80); Story.talk('zy_flower'); await adv('全买下'); r.deng=!!S.flags.c3_sq_hua_deng&&count(S,'jc_deng')>0;
           HD.st().day=-1; Dungeon.act(RT.ents.find(e=>e.act==='hdstep')); await adv('春娘'); r.hua=!!S.flags.c3_sq_hua_done;
           S.min=10*60; enterMap('jc_dongshi',10,8); await W(80); Story.talk('ds_gambler'); await adv('替他还了'); await W(100); r.du=S.flags.c3_sq_du===2&&!has('ds_gambler');
-          Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text));
+          Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text)); r.cleared=!C3S.items().some(x=>/qin|shu|hua|du/.test(x.key))&&Nav.tracked()?.kind==='main';
           const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
