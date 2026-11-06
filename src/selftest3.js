@@ -268,16 +268,25 @@ const SelfTest3={
           Story.talk('sf_lin'); await adv('切磋'); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); } const f=await fight(); await adv();
           const ok=bought.length===7&&giftsOk&&s1>s0&&once&&s2>s1&&favs.every(Boolean)&&f.won;
           return {fail:!ok, info:`买到 ${bought.length}/7，送礼${giftsOk?'':' ✗ '+gl.find(t=>!t||/undefined/.test(t))}，抓药 +${s1-s0}${once?'（一天一次）':' 次数 ✗'}，抄书 +${s2-s1}，小忙 ${favs.map(x=>x?'✓':'✗').join('')}，切磋 ${f.won?f.turns+' 回合':'✗'}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('听雨轩（茶楼）：进门、说书「狐仙夺魁」拆台 / 忍、大师姐的反应、之后几天轮着讲、一天一段', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='茶楼';
+          for(const pick of ['站起来','忍着']){ node('c3-chalou').run(); await W(300); enterMap('jc_zhuque',22,13); await W(80); Dungeon.act(RT.map.objects.find(o=>o.id==='cha')); await W(150); const inside=RT.mapId==='jc_chalou';
+            Story.talk('cl_teller'); await adv(pick); const flag=pick==='站起来'?S.flags.c3_cl_chai:S.flags.c3_cl_ren;
+            Story.talk('cl_teller'); await adv('听'); const once=/说完了/.test(SelfTest3.lines.slice(-2).map(l=>l.text).join(''));
+            enterMap('jc_sifang',12,11); await W(100); Story.talk('xie'); await W(100); const xl=$('#dText')?.textContent||''; await adv(); got.push({pick, inside, flag:!!flag, once, xie:!!S.flags.c3_cl_xie}); }
+          const tales=new Set(); for(let d=0;d<6;d++){ S.day+=1; tales.add(CL.today()); }
+          const bad=[]; enterMap('jc_chalou',9,7); await W(80); for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv('不'); }
+          const ok=got.every(g=>g.inside&&g.flag&&g.once&&g.xie)&&tales.size>=4&&!bad.length;
+          return {fail:!ok, info:got.map(g=>`${g.pick}：${g.inside?'':'进门✗ '}${g.flag?'':'选择✗ '}${g.once?'':'一天一段✗ '}${g.xie?'大师姐提起':'大师姐✗'}`).join('；')+`，轮到的书 ${tales.size} 段${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
         await step('每张第三章的地图都走一遍：所有门、人、能点的东西都走得到', async()=>{ const bad=[];
-          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24],['jc_gongyuan',13,21],['jc_dongkou',2,4],['jc_zuiyue',8,11],['jc_dongshi',1,5],['jc_qianjin',8,11],['jc_qjhoutang',4,6],['jc_yejie',1,8],['jc_digong',5,18]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
+          for(const [id,x,y] of [['c3_road',10,13],['c3_anping',11,16],['jc_zhuque',13,32],['jc_sifang',28,22],['jc_xishi',30,10],['jc_huichun',8,10],['jc_jubao',10,12],['jc_xiang',6,24],['jc_gongyuan',13,21],['jc_dongkou',2,4],['jc_zuiyue',8,11],['jc_dongshi',1,5],['jc_qianjin',8,11],['jc_qjhoutang',4,6],['jc_yejie',1,8],['jc_digong',5,18],['jc_chalou',8,11]]){ enterMap(id,x,y); await W(100); const m=RT.map, sol=(a,b)=>a<0||b<0||a>=m.w||b>=m.h||RT.solid[b][a], seen=new Set([x+','+y]), q=[[x,y]];
             while(q.length){ const [a,b]=q.shift(); for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const k=(a+dx)+','+(b+dy); if(!seen.has(k)&&!sol(a+dx,b+dy)){ seen.add(k); q.push([a+dx,b+dy]); } } }
             const near=(a,b)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>seen.has((a+dx)+','+(b+dy)));
             for(const o of RT.ents){ if(o.locked) continue; if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
-          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'16 张地图'}; });
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'17 张地图'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }

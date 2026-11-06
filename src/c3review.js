@@ -91,6 +91,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true,c3_sf_jiedan:true,c3_sf_recipe:true,c3_sf_morning:true,c3_jd_done:true,c3_xj_met:true},'jc_xiang',5,6,'up','c3k',23); S.L=13; Social.rel('xiao').pts=200; UI.hud(); Story.check(); }),
     N('xie68','大师姐心动：6♥ 槐树、8♥ 河灯（还青玉珠）','四方馆院子里，大师姐在槐树底下，好感正好 6♥，身上带着从当铺赎回的青玉珠。点她 → 聊天：「槐树」——上一回拿了头名的那夜，她一个人坐到天亮。再到 8♥ 聊天：「河灯」——她从没放过河灯；可以把青玉珠还给她（她剑穗上师父给的那颗，为了拍卖会当掉的）。当铺：朱雀大街的当铺可以赎回青玉珠。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_xie_pawn:true,c3_bead:true},'jc_sifang',12,11,'up','c3h',21); S.L=13; addItem('c3_bead',1); const r=Social.rel('xie'); r.pts=600; r.ev={2:true,4:true}; UI.hud(); Story.check(); }),
+    N('chalou','听雨轩（茶楼）：说书「狐仙夺魁」——拆台 / 忍','进了京城、住进四方馆以后，在听雨轩里（朱雀大街东边的两层茶楼）。找说书先生听书（茶钱 2 灵石，一天一段）：第一段一定是「狐仙夺魁」，可以站起来拆台，也可以忍着；之后几天轮着讲「少侠斩狼妖」「萧大人发迹」「天子求长生」「贰负杀窫窳」，第五幕以后多一段「萧大人平妖」。拆台或忍了以后，下回跟大师姐说话，她会提起这件事。茶博士卖明前茶。',
+      ()=>{ go({...upto('c3_night'),...XS_RV},'jc_chalou',9,7,'up','c3g',15); UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
