@@ -480,7 +480,9 @@ function findPrompt(){
 }
 function drawPrompt(g, ox, oy, T, Z){
   RT.prompt=findPrompt(); const p=RT.prompt; if(!p) return;
-  const cx=ox+(p.x+.5)*T, cy=oy+p.y*T-(p.o&&p.o.type==='npc'?18:10)*Z+Math.sin(RT.t*4)*Z, r=6*Z;
+  // above the thing itself: for a tall object (a tent, a stall) over the top of its picture, so it never sits on your own head
+  const sp=p.o&&p.o.type!=='npc'&&p.o.type!=='building'&&(p.o.spr||p.o.type), pc=sp&&SPRC[sp], ph=pc?(pc.bottom||pc.height):sp&&SPR[sp]?SPR[sp].length:0;
+  const cx=ox+(p.x+.5)*T, cy=Math.min(oy+p.y*T-(p.o&&p.o.type==='npc'?18:10)*Z, ph?oy+(p.y+1)*T-(ph+7)*Z:Infinity)+Math.sin(RT.t*4)*Z, r=6*Z;
   g.fillStyle='rgba(42,30,26,.85)'; g.beginPath(); g.roundRect?g.roundRect(cx-r,cy-r,r*2,r*2,2*Z):g.rect(cx-r,cy-r,r*2,r*2); g.fill();
   g.strokeStyle='#f2c14e'; g.lineWidth=Z*.8; g.stroke();
   g.fillStyle='#fff3dc'; g.font=`bold ${Math.round(8*Z)}px system-ui,-apple-system,"PingFang SC",Arial,sans-serif`; g.textAlign='center'; g.textBaseline='middle';

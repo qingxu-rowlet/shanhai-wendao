@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b61390155f"><script>(function(){var B="b61390155f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="6727d13532"><script>(function(){var B="6727d13532";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2215,7 +2215,9 @@ function findPrompt(){
 }
 function drawPrompt(g, ox, oy, T, Z){
   RT.prompt=findPrompt(); const p=RT.prompt; if(!p) return;
-  const cx=ox+(p.x+.5)*T, cy=oy+p.y*T-(p.o&&p.o.type==='npc'?18:10)*Z+Math.sin(RT.t*4)*Z, r=6*Z;
+  // above the thing itself: for a tall object (a tent, a stall) over the top of its picture, so it never sits on your own head
+  const sp=p.o&&p.o.type!=='npc'&&p.o.type!=='building'&&(p.o.spr||p.o.type), pc=sp&&SPRC[sp], ph=pc?(pc.bottom||pc.height):sp&&SPR[sp]?SPR[sp].length:0;
+  const cx=ox+(p.x+.5)*T, cy=Math.min(oy+p.y*T-(p.o&&p.o.type==='npc'?18:10)*Z, ph?oy+(p.y+1)*T-(ph+7)*Z:Infinity)+Math.sin(RT.t*4)*Z, r=6*Z;
   g.fillStyle='rgba(42,30,26,.85)'; g.beginPath(); g.roundRect?g.roundRect(cx-r,cy-r,r*2,r*2,2*Z):g.rect(cx-r,cy-r,r*2,r*2); g.fill();
   g.strokeStyle='#f2c14e'; g.lineWidth=Z*.8; g.stroke();
   g.fillStyle='#fff3dc'; g.font=`bold ${Math.round(8*Z)}px system-ui,-apple-system,"PingFang SC",Arial,sans-serif`; g.textAlign='center'; g.textBaseline='middle';
@@ -14138,7 +14140,7 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
   Review.NODES.push(
     N('go','开春：师尊交镜，出发北上','第二章已经打完，站在师尊面前。点师尊：「弟子准备好了」/「再等等」。准备好了：师尊把解开一面的八卦镜交给你，外门弟子送行（药王谷弟子：苏小棠一起走），黑屏后到官道边的营地。',
       ()=>go({},'zong_jian',15,6,'up','c2z')),
-    N('road','第一夜：捡柴、打水、煮粥','官道边的营地，傍晚。左上角任务：捡三根柴火（林子边上）、去溪边的泉眼打水，然后在锅边煮粥。路北横着几根倒树，过不去。',
+    N('road','第一夜：捡柴、打水','官道边的营地，傍晚。左上角任务：捡三根柴火（林子边上）、去溪边的泉眼打水。都齐了就到下一个审查点（锅边煮粥）。路北横着几根倒树，过不去。',
       ()=>{ go(upto('c3_go'),'c3_road',10,12,'up','c3a',18); setTimeout(()=>UI.say(C3.arrive()),400); }),
     N('dinner','篝火边：大师姐说起上一届的头名','柴和水都齐了，站在锅边。点锅：煮粥，大师姐坐到对面，说上一届大比是她拿的头名。两个回答都试一下。远处传来狼嚎。然后回帐篷睡觉，第二天早上路通了。',
       ()=>{ go(upto('c3_go'),'c3_road',8,11,'up','c3a',19); S.c3={wood:[0,1,2], water:1}; enterMap('c3_road',8,11); UI.hud(); }),
