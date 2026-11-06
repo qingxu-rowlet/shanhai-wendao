@@ -244,6 +244,30 @@ const SelfTest3={
             Social.chat('xie'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, back:!!S.flags.c3_bead_back}); }
           const ok=bought&&got.every(g=>g.cg&&g.seen&&g.up)&&got[3].back;
           return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('京城日常：买礼物、送礼（萧烬、青禾、别的弟子）、回春堂抓药和琅琊阁抄书挣钱、别的宗门弟子的小忙和切磋', async()=>{ const n0=SelfTest3.lines.length; cur='京城日常';
+          node('c3-jiedan').run(); await W(400); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan','sf_cheng','sf_bu']; S.flags.c3_hc_ru=true; S.stones=2000;
+          // shops
+          const buy=async(map,x,y,find)=>{ enterMap(map,x,y); await W(80); Dungeon.act(RT.map.objects.find(find)); await adv(0); };
+          await buy('jc_zhuque',13,15,o=>o.act==='jcstall'&&o.si===0); await buy('jc_zhuque',13,15,o=>o.act==='jcstall'&&o.si===1); await buy('jc_zhuque',13,15,o=>o.id==='jiulou');
+          await buy('jc_dongkou',3,6,o=>o.act==='zyflower'); await buy('jc_dongkou',3,6,o=>o.act==='zytea'); await buy('jc_dongshi',4,6,o=>o.act==='dsshop'&&o.id==='eat'); await buy('jc_xishi',5,10,o=>o.act==='xsstall'&&o.si===0);
+          const bought=['jc_pa','jc_zan','wine','flower','jc_tea','jc_gao','jc_oldbook'].filter(k=>count(S,k)>0);
+          // gifts: nobody answers 「undefined」
+          const gl=[]; for(const [id,item] of [['xiao','jc_gao'],['qinghe','jc_pa'],['sf_wulan','wine'],['sf_wenxuan','jc_oldbook'],['sf_lin','jc_tea']]){ if(!count(S,item)) addItem(item,1); Social.rel(id).gifted=-1; Social.give(id,item); await W(80); gl.push($('#dText')?.textContent||''); await adv(); }
+          const giftsOk=gl.every(t=>t&&!/undefined/.test(t));
+          // work
+          enterMap('jc_huichun',13,6); await W(80); const s0=S.stones, rx=JOB.RX[(S.day*7+3)%JOB.RX.length]; Story.talk('hc_sun');
+          for(let i=0;i<200;i++){ const d=$('#dlg'); if(d.hidden){ await W(50); if($('#dlg').hidden&&i>10) break; continue; } const ch=[...d.querySelectorAll('[data-i]')];
+            if(ch.length){ (ch.find(c=>/帮忙/.test(c.textContent))||ch.find(c=>rx.need.some(n=>c.textContent.includes('「'+n+'」')))||ch[0]).click(); } else { if(UI.typing) d.onclick(); rec('对话',d.querySelector('#dText')?.textContent||''); d.onclick&&d.onclick(); } await W(15); }
+          const s1=S.stones; Story.talk('hc_sun'); await adv('帮忙'); const once=S.stones===s1;
+          enterMap('jc_xishi',3,8); await W(80); Story.talk('xs_lang'); await adv('抄书'); const s2=S.stones;
+          // the disciples
+          enterMap('jc_sifang',15,14); await W(150); const favs=[];
+          for(const [id,go] of [['sf_cheng',async()=>{ enterMap('jc_xishi',22,10); await W(80); Story.talk('xs_bird'); await adv(); }],['sf_wulan',async()=>{ enterMap('jc_dongshi',8,13); await W(80); Dungeon.act(RT.ents.find(e=>e.act==='dspet')); await adv(); }],
+              ['sf_wenxuan',async()=>{ enterMap('jc_xishi',26,9); await W(80); Story.talk('xs_gu'); await adv('买'); }],['sf_bu',async()=>{ addItem('jc_tangren',1); }]]){
+            enterMap('jc_sifang',15,14); await W(80); Story.talk(id); await adv('帮忙'); await go(); enterMap('jc_sifang',15,14); await W(80); Story.talk(id); await adv('交给'); favs.push(DAY3.st().fav[id]==='done'); }
+          Story.talk('sf_lin'); await adv('切磋'); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); } const f=await fight(); await adv();
+          const ok=bought.length===7&&giftsOk&&s1>s0&&once&&s2>s1&&favs.every(Boolean)&&f.won;
+          return {fail:!ok, info:`买到 ${bought.length}/7，送礼${giftsOk?'':' ✗ '+gl.find(t=>!t||/undefined/.test(t))}，抓药 +${s1-s0}${once?'（一天一次）':' 次数 ✗'}，抄书 +${s2-s1}，小忙 ${favs.map(x=>x?'✓':'✗').join('')}，切磋 ${f.won?f.turns+' 回合':'✗'}，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

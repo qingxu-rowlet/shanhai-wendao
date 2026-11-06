@@ -128,8 +128,8 @@ On.talk(id=>{ if(!['jc_dongkou','jc_zuiyue','jc_huichun'].includes(RT.mapId)) re
     UI.say(XF.st().clue.qinghe?[['青禾','（她弹着自己的琵琶，弹的是北边的调子）'],['青禾','……你要去宗庙，就小心些。']]:[['青禾','信送到了吗？或者，我的琵琶……']]); return true; }
   const L=ZY.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L,()=>{ UI.hud(); Story.check(); }); return true; });
 On.act('zyin',o=>{ enterMap('jc_zuiyue',8,11); RT.dir='up'; UI.hud(); });
-On.act('zytea',o=>UI.say([['旁白','河边的茶摊。茶碗粗，茶也粗，可是看得见河。']]));
-On.act('zyflower',o=>UI.say([['旁白','花铺门口摆着芍药、海棠，还有一桶刚剪下来的柳枝。']]));
+On.act('zytea',o=>SHOP3.stall(o)||UI.say([['旁白','河边的茶摊。茶碗粗，茶也粗，可是看得见河。']]));
+On.act('zyflower',o=>SHOP3.stall(o)||UI.say([['旁白','花铺门口摆着芍药、海棠，还有一桶刚剪下来的柳枝。']]));
 On.act('zystairs',o=>UI.say([['旁白','楼梯通到楼上的雅间。门口站着人，不让上。']]));
 On.theme(id=>id==='jc_zuiyue'?'calm':null);
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_zy_met&&RT.mapId!=='jc_dongkou') l.push({name:'京城 · 护城河边', map:'jc_dongkou', x:13, y:8}); return l; }; }

@@ -83,11 +83,11 @@ const JC_SHOPS={
   cha:[['旁白','听雨轩。门半掩着，里面醒木一拍：'],['旁白','「……上回说到，那一年宗门大比，有一位女弟子，生得是闭月羞花——」'],['谢霁月','……'],['旁白','（茶楼是之后的地图，到时候可以进去听书。）']],
   kezhan:[['旁白','悦来客栈。掌柜在门口打着算盘：「打尖还是住店？」'],['旁白','（大比的弟子都住四方馆。）']],
 };
-On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); if(o.id==='dang'&&S.flags.c3_xie_pawn&&!S.flags.c3_bead) return XIE.dang(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
+On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); if(SHOP3.stall(o)) return; if(o.id==='dang'&&S.flags.c3_xie_pawn&&!S.flags.c3_bead) return XIE.dang(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
 On.act('jcsedan',o=>UI.say([['旁白','一顶红呢大轿。轿帘放着，里面没有人。'],['旁白','轿杠上，刻着一个小小的「萧」字。'],{flag:'c3_jc_sedan'}]));
 On.act('jcbao',o=>Story.talk('jc_baoniang'));
 On.act('jchulu',o=>Story.talk('jc_hulu'));
-On.act('jcstall',o=>UI.say([[['旁白','布摊上摆着一匹一匹的花布，摊主忙着给一位大娘量尺寸。']],[['旁白','首饰摊上的簪子、耳坠，在灯笼底下一闪一闪的。']],[['旁白','水果摊上堆着橘子和柿子。北边来的果子，比桃源镇的小一圈。']]][o.si||0]));
+On.act('jcstall',o=>SHOP3.stall(o)||UI.say([[['旁白','布摊上摆着一匹一匹的花布，摊主忙着给一位大娘量尺寸。']],[['旁白','首饰摊上的簪子、耳坠，在灯笼底下一闪一闪的。']],[['旁白','水果摊上堆着橘子和柿子。北边来的果子，比桃源镇的小一圈。']]][o.si||0]));
 On.act('jcboard',o=>{ const first=!S.flags.c3_jc_board; UI.say([
   ['旁白','十字街口的墙上，贴着三张告示。'],
   ['旁白','第一张：「四宗大比，三月十五起，于贡院前设擂。四宗弟子，凭宗门文书至礼部报名。——礼部」'],

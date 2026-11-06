@@ -150,7 +150,7 @@ On.act('qjdoor',o=>QJ.st().invited?QJ.houtang():UI.say([['旁白','一扇上了�
 On.act('qjcaishen',o=>XF.st().clue.ledger||!S.flags.c3_xf_in?UI.say([['旁白','一尊镀金的财神，笑眯眯的，手里捧着元宝。']]):UI.say([['旁白','财神笑眯眯的。香炉里的灰，扫得太干净了。'],...QJ.mirror()]));
 On.act('dstang',o=>Story.talk('ds_old'));
 On.act('dsstall',o=>Story.talk('ds_wonton'));
-On.act('dsshop',o=>UI.say({eat:[['旁白','小吃铺门口摆着蒸笼、油锅，香味飘了半条街。']], za:[['旁白','杂货铺里什么都有：针线、灯油、铜锁、木屐。']]}[o.id]));
+On.act('dsshop',o=>SHOP3.stall(o)||UI.say({eat:[['旁白','小吃铺门口摆着蒸笼、油锅，香味飘了半条街。']], za:[['旁白','杂货铺里什么都有：针线、灯油、铜锁、木屐。']]}[o.id]));
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_qj_girl&&RT.mapId!=='jc_dongshi') l.push({name:'京城 · 东市', map:'jc_dongshi', x:15, y:8}); return l; }; }
 
 /* ---------- the quest ---------- */

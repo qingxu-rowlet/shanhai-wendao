@@ -108,6 +108,7 @@ On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
   if(id==='xie'&&F.c3_hc_ru&&!F.c3_ju_pool){ UI.say(JU.pool(),()=>{ UI.hud(); Story.check(); }); return true; }
   if(id==='xie'){ if(SF.ready()&&!F.c3_sf_jiedan){ UI.say(SF.jiedan(),()=>{ UI.hud(); Story.check(); }); return true; }
     C3.menu('xie',F.c3_sf_jiedan?[['谢霁月','去找苏小棠。']]:F.c3_sf_in?[['谢霁月','去见见他们。将来在擂台上，你会一个一个遇到。']]:[['谢霁月','……']]); return true; }
+  if(DS.IDS.includes(id)&&F.c3_sf_in&&SF.st().met.includes(id)){ DS.menu(id); return true; }   // once met: talk, chat, gifts, 切磋, a favour
   const L=SF.TALK[id]; if(!L) return false; SF.met(id); UI.say(L(),()=>{ UI.hud(); Story.check(); }); return true; });
 On.theme(id=>id==='jc_sifang'?'calm':null);
 { const _d=Portal.dests; Portal.dests=function(){ const l=_d.call(Portal); if(S.flags.c3_sf_in&&RT.mapId!=='jc_sifang') l.push({name:'京城 · 四方馆', map:'jc_sifang', x:15, y:19}); return l; }; }
