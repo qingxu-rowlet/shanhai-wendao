@@ -93,6 +93,10 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_xie_pawn:true,c3_bead:true},'jc_sifang',12,11,'up','c3h',21); S.L=13; addItem('c3_bead',1); const r=Social.rel('xie'); r.pts=600; r.ev={2:true,4:true}; UI.hud(); Story.check(); }),
     N('chalou','听雨轩（茶楼）：说书「狐仙夺魁」——拆台 / 忍','进了京城、住进四方馆以后，在听雨轩里（朱雀大街东边的两层茶楼）。找说书先生听书（茶钱 2 灵石，一天一段）：第一段一定是「狐仙夺魁」，可以站起来拆台，也可以忍着；之后几天轮着讲「少侠斩狼妖」「萧大人发迹」「天子求长生」「贰负杀窫窳」，第五幕以后多一段「萧大人平妖」。拆台或忍了以后，下回跟大师姐说话，她会提起这件事。茶博士卖明前茶。',
       ()=>{ go({...upto('c3_night'),...XS_RV},'jc_chalou',9,7,'up','c3g',15); UI.hud(); Story.check(); }),
+    N('xiaofu','萧府外墙：石狼、扫地的老仆、桂花糕、墙角的香','见过萧烬以后，站在萧府外墙（东市再往东）。门口两只石兽：不是狮子，是狼（猲狙）。门房谁也不见。扫地的老仆讲大人十几岁被带进府的事，托你带一块桂花糕给他（东市小吃铺有卖，已放进背包）；送给萧烬，他会知道是谁让带的。讨饭的孩子、角门边给狗的肉碗。宵禁以后（晚上九点）再来，萧烬蹲在墙角插香，香头冲着北边。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true},'jc_xiaofu',3,8,'right','c3l',16); addItem('jc_gao',1); UI.hud(); Story.check(); }),
+    N('hedeng','护城河：放河灯、钓鱼、长命锁','护城河边，黄昏（已调到傍晚六点半）。花铺黄昏卖河灯（5 灵石）；河埠头放河灯，一天一盏，写「大师兄」「愿不见了的人都能回家」、写一个名字（好感 2♥ 以上的人），或者什么也不写。河面上漂满了灯。船家借钓竿；石阶上可以下竿钓鱼，护城河偶尔钓上一把刻着「柳河 · 穗」的长命锁——送给醉月楼的青禾。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_zy_met:true},'jc_dongkou',8,10,'down','c3l',18.5); UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }
