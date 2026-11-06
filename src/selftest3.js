@@ -12,7 +12,7 @@ const SelfTest3={
     const el=document.createElement('div'); el.id='selftest'; el.innerHTML=`<div class="st-box wood"><h3>第三章自检中…</h3><ol id="stList"></ol><p class="muted" id="stNote">${SelfTest3.all?'四个宗门各走一遍':'随机选一个宗门走一遍'}第三章${SelfTest3.only?'（只测：'+SelfTest3.only.join('、')+'，加上地图、台词、脚本错误）':''}，每句台词都会检查。</p></div>`; document.body.appendChild(el);
     const list=$('#stList'); let pass=0, fail=0, sect='', cur=''; TestLog.begin((SelfTest3.all?'第三章（四个宗门）':'第三章')+(SelfTest3.only?' · 只测 '+SelfTest3.only.join('、'):'')); SelfTest3.lines=[];
     const report=(name,ok,info='')=>{ ok?pass++:fail++; TestLog.item(name,ok,info); const li=document.createElement('li'); li.className=ok?'ok':'bad'; li.textContent=`${ok?'✓':'✗'} ${name}${info?' — '+info:''}`; list.appendChild(li); li.scrollIntoView({block:'nearest'}); };
-    const step=async(name,fn)=>{ if(SelfTest3.only&&!/地图都走一遍|台词检查|没有脚本错误/.test(name)&&!SelfTest3.only.some(w=>name.includes(w))) return; try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)); } finally{ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } };
+    const step=async(name,fn)=>{ if(SelfTest3.only&&!/地图都走一遍|台词检查|没有脚本错误/.test(name)&&!SelfTest3.only.some(w=>name.includes(w))) return; try{ const r=await fn(); report(`[${SECTS[sect].name}] ${name}`, r!==false&&!(r&&r.fail), r&&r.info||''); }catch(e){ report(`[${SECTS[sect].name}] ${name}`,false,String(e&&e.message||e)+(e&&e.stack?"（"+(e.stack.split(String.fromCharCode(10))[1]||"").trim().replace(/^at /,"").slice(0,90)+"）":"")); } finally{ PixCG.close(); if(Battle.s&&!$('#battle').hidden) Battle.close(); } };
     const rec=(kind,text)=>{ text=String(text||'').replace(/\s*▼\s*$/,'').trim(); if(text){ SelfTest3.lines.push({sect,node:cur,text}); TestLog.line(SECTS[sect].name+' · '+cur,kind,text); } };
     // dialogue to its end; pick = an option's index, or words it contains. Fades run on the frame loop, which stops in a
     // hidden window, so they are stepped here.
@@ -66,8 +66,8 @@ const SelfTest3={
           await W(800); await adv(); const inCity=RT.mapId==='jc_zhuque'&&S.flags.c3_jc_in&&QUESTS[S.quest].id==='c3e';
           cur='朱雀大街'; S.stones=Math.max(S.stones,100); const bad=[];
           for(const o of RT.ents.filter(o=>o.type==='npc')){ Story.talk(o.id); await W(80); if($('#dlg').hidden) bad.push(o.id); await adv(0); }
-          for(const act of ['jcshop','jcsedan','jcstall','jcway']) for(const o of RT.map.objects.filter(o=>o.act===act)){ Dungeon.act(o); await adv(); }
-          Dungeon.act(obj('jcboard')); await adv(); const hulu=count(S,'jc_hulu')>0;
+          for(const act of ['jcshop','jcsedan','jcstall','jcway']) for(const o of MAPS.jc_zhuque.objects.filter(o=>o.act===act)){ if(RT.mapId!=='jc_zhuque'){ enterMap('jc_zhuque',14,14); await W(80); } Dungeon.act(o); await adv(); }   // some doors (听雨轩) take you inside
+          if(RT.mapId!=='jc_zhuque'){ enterMap('jc_zhuque',14,14); await W(80); } Dungeon.act(obj('jcboard')); await adv(); const hulu=count(S,'jc_hulu')>0;
           return {fail:!(inCity&&S.flags.c3_jc_board&&hulu&&!bad.length), info:`${inCity?'进城':'进城 ✗'}，${S.flags.c3_jc_board?'告示':'告示 ✗'}，${hulu?'糖葫芦':'糖葫芦 ✗'}${bad.length?'，没反应：'+bad.join(' '):''}，${SelfTest3.lines.length-n0} 句`}; });
         await step('第二幕：四方馆 → 苏小棠 → 别的宗门 → 大师姐说结丹 → 丹方 → 宵禁睡觉', async()=>{ const n0=SelfTest3.lines.length; cur='四方馆';
           node('c3-city').run(); await W(400); S.flags.c3_jc_board=true; enterMap('jc_sifang',28,22); await W(900); await adv(); const inSf=!!S.flags.c3_sf_in;
