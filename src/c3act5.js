@@ -37,7 +37,7 @@ FineArt.yayu=function(){ if(FineArt.cache.yayu) return FineArt.cache.yayu; const
     for(let k=0;k<26;k++){ const x=36+R()*90, y=40+R()*26; P.set(x,y,ink); if(R()<.4) P.rect(x,y,1,2+R()*3|0,ink); } });
   c.bottom=c.height; return FineArt.cache.yayu=c; };
 SPRC.c3_yayu=FineArt.yayu(); SPR.c3_yayu=['x'];
-BEASTS.c3_yayu={name:'窫窳', spr:'c3_yayu', boss:true, big:true, hp:3600, atk:52, def:16, exp:600, stones:[400,400], theme:'qiongqi',
+BEASTS.c3_yayu={name:'窫窳', spr:'c3_yayu', boss:true, big:true, hp:4400, atk:62, def:16, exp:600, stones:[400,400], theme:'qiongqi',
   lore:'《山海经·北山经》：其状如牛，而赤身、人面、马足，名曰窫窳，其音如婴儿，是食人。《海内西经》：贰负之臣曰危，危与贰负杀窫窳。本是天神，被冤杀，复活以后，成了吃人的东西。',
   moves:['flood','weep','trample','devour','weep','flood'],
   phase2:{at:.55, moves:['devour','trample','flood','weep','devour','trample'], line:'窫窳仰头长嚎，声音像婴儿在哭——鼎里的黑水全涌了出来！'}};

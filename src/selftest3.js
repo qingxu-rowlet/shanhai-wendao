@@ -322,6 +322,24 @@ const SelfTest3={
           Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text)); r.cleared=!C3S.items().some(x=>/qin|shu|hua|du/.test(x.key))&&Nav.tracked()?.kind==='main';
           const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('战斗难度：每场战斗要打几回合、每回合能挨几下弹幕（不吃药、不护体）', async()=>{ const keep=JSON.stringify(S), hadPet=!!S.pet;
+          // works it out on paper, the same formulas as the battle: you use 绝学 while there's 灵力, then 御剑术, then attack; each enemy turn is a dodge
+          const probe=(kind,L,sect,opt={})=>{ S.L=L; S.sect=sect; S.exp=0; if(sect==='shou'&&!S.pet) S.pet={kind:'hu',lv:3};
+            const st=stats(), B={...BEASTS[kind],...(opt.B||{})}; if(B.self){ const m=B.selfMul||{}; B.hp=Math.round(st.hp*(m.hp||1.4)); B.atk=Math.round(st.atk*(m.atk||.85)); B.def=Math.round(st.def*(m.def||.8)); }
+            const crit=1+.8*Sect.crit(), mul=Sect.spellMul(), def=B.def, sc=SECTS[sect]; let hp=B.hp, mp=st.mp, turns=0, jy=0, burn=0, i=0, ph2=false; const eh=[], pet=Sect.petAtk();
+            const moves=()=>B.phase2&&hp<=B.hp*B.phase2.at?B.phase2.moves:B.moves;
+            while(hp>0&&turns<80){ turns++; let d;
+              if(sect==='jian'&&!jy&&mp>=5){ mp-=5; d=st.atk*1.6*mul-def/4; jy=1; }
+              else if(mp>=sc.skill.mp){ mp-=sc.skill.mp; d=sect==='jian'?(st.atk*3*mul-def/4)*(jy?1.3:1):sect==='dan'?st.atk*2.2*mul:sect==='shou'?st.atk*(1+(S.pet.lv-1)*.15)*2.4-def/3:st.atk*2.6*mul-def/4; if(sect==='jian') jy=0; if(sect==='dan') burn=3; }
+              else if(mp>=5){ mp-=5; d=st.atk*1.6*mul-def/4; } else d=st.atk-def/2;
+              hp-=Math.max(1,d)*crit+pet+(opt.allies||0)*44; if(hp<=0) break;
+              const ms=moves(); if(ms!==B.moves&&!ph2){ ph2=true; i=0; } const pat=DODGE[kind]&&DODGE[kind][ms[i++%ms.length]]; if(pat) eh.push(Math.max(1,Math.round(B.atk*pat.hit-st.def*.5))); if(burn>0){ hp-=st.atk*.8; burn--; } }
+            const per=eh.reduce((a,b)=>a+b,0)/Math.max(1,eh.length); return {turns, hpt:eh.length?st.hp/per/eh.length:99}; };
+          const rows=[], out=[];
+          for(const [lab,k,L,opt,lo,hi] of [['猲狙','c3_hejv',12,{},.7,3],['第三轮','c3r_sf_wulan',13,{},.9,5],['决赛','c3r_sf_lin',13,{B:LT.FINAL},.7,2.5],['地宫守卫','c3r_dg_guard',13,{},.9,5],['窫窳','c3_yayu',13,{allies:2},.6,2]]){
+            const r=['jian','dan','shou','tianji'].map(sc=>probe(k,L,sc,opt)), a=Math.min(...r.map(x=>x.hpt)), b=Math.max(...r.map(x=>x.hpt));
+            rows.push(`${lab} ${Math.min(...r.map(x=>x.turns))}–${Math.max(...r.map(x=>x.turns))} 回合、每回合能挨 ${a.toFixed(1)}–${b.toFixed(1)} 下`); if(a<lo||b>hi) out.push(lab); }
+          Object.assign(S,JSON.parse(keep)); if(!hadPet) delete S.pet; return {fail:out.length>0, info:rows.join('；')+(out.length?'　超出范围：'+out.join(' '):'')}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

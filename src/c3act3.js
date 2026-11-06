@@ -34,7 +34,10 @@ LT.go=()=>{ const c=LT.st(), id=LT.opp();
     ...(typeof LT.PRE[id]==='function'?LT.PRE[id]():LT.PRE[id]),
     {choice:`${LT.ROUND[c.round]}：对 ${KM.NAME[id]}`, options:[{text:'上台', fn:()=>LT.fight()},{text:'再准备一下', fn:()=>{}}]}]); return true; };
 // 苏小棠's round ends in her own scene (she stops at half); should a blow finish her first, the scene still follows
-LT.fight=()=>{ const id=LT.opp(); Battle.start('c3r_'+id, r=>{ if(r!=='win') return LT.lose(); if(id==='tang') return setTimeout(()=>{ if(!S.flags.c3_lt_tang) LT.tangAfter(); },400); LT.win(); }); };
+// the final: whoever stands across from you goes all out (林沧, or the last of the others), so the 魁首 is earned
+LT.FINAL={hp:2400, atk:54};
+LT.fight=()=>{ const id=LT.opp(), B=BEASTS['c3r_'+id], keep={hp:B.hp, atk:B.atk}; if(LT.st().round===3){ B.hp=Math.max(B.hp,LT.FINAL.hp); B.atk=Math.max(B.atk,LT.FINAL.atk); }
+  Battle.start('c3r_'+id, r=>{ B.hp=keep.hp; B.atk=keep.atk; if(r!=='win') return LT.lose(); if(id==='tang') return setTimeout(()=>{ if(!S.flags.c3_lt_tang) LT.tangAfter(); },400); LT.win(); }); };
 LT.lose=()=>{ S.hp=Math.max(1,Math.round(stats().hp*.4)); UI.hud(); const c=LT.st(); c.lost=(c.lost||0)+1; save();
   UI.say([['旁白','你被打下了擂台。'],['谢霁月','（她把你扶起来，拍掉你肩上的灰）……没事。'],
     ['谢霁月','魁首不是一次打出来的。回去，打坐，练剑，吃药。'],['谢霁月','练好了，再上去。礼部那边，我去说。'],{flag:'c3_lt_lost'}]); };

@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="5ba054d485"><script>(function(){var B="5ba054d485";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="fba2123e21"><script>(function(){var B="fba2123e21";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12003,7 +12003,10 @@ LT.go=()=>{ const c=LT.st(), id=LT.opp();
     ...(typeof LT.PRE[id]==='function'?LT.PRE[id]():LT.PRE[id]),
     {choice:`${LT.ROUND[c.round]}：对 ${KM.NAME[id]}`, options:[{text:'上台', fn:()=>LT.fight()},{text:'再准备一下', fn:()=>{}}]}]); return true; };
 // 苏小棠's round ends in her own scene (she stops at half); should a blow finish her first, the scene still follows
-LT.fight=()=>{ const id=LT.opp(); Battle.start('c3r_'+id, r=>{ if(r!=='win') return LT.lose(); if(id==='tang') return setTimeout(()=>{ if(!S.flags.c3_lt_tang) LT.tangAfter(); },400); LT.win(); }); };
+// the final: whoever stands across from you goes all out (林沧, or the last of the others), so the 魁首 is earned
+LT.FINAL={hp:2400, atk:54};
+LT.fight=()=>{ const id=LT.opp(), B=BEASTS['c3r_'+id], keep={hp:B.hp, atk:B.atk}; if(LT.st().round===3){ B.hp=Math.max(B.hp,LT.FINAL.hp); B.atk=Math.max(B.atk,LT.FINAL.atk); }
+  Battle.start('c3r_'+id, r=>{ B.hp=keep.hp; B.atk=keep.atk; if(r!=='win') return LT.lose(); if(id==='tang') return setTimeout(()=>{ if(!S.flags.c3_lt_tang) LT.tangAfter(); },400); LT.win(); }); };
 LT.lose=()=>{ S.hp=Math.max(1,Math.round(stats().hp*.4)); UI.hud(); const c=LT.st(); c.lost=(c.lost||0)+1; save();
   UI.say([['旁白','你被打下了擂台。'],['谢霁月','（她把你扶起来，拍掉你肩上的灰）……没事。'],
     ['谢霁月','魁首不是一次打出来的。回去，打坐，练剑，吃药。'],['谢霁月','练好了，再上去。礼部那边，我去说。'],{flag:'c3_lt_lost'}]); };
@@ -12838,7 +12841,7 @@ FineArt.yayu=function(){ if(FineArt.cache.yayu) return FineArt.cache.yayu; const
     for(let k=0;k<26;k++){ const x=36+R()*90, y=40+R()*26; P.set(x,y,ink); if(R()<.4) P.rect(x,y,1,2+R()*3|0,ink); } });
   c.bottom=c.height; return FineArt.cache.yayu=c; };
 SPRC.c3_yayu=FineArt.yayu(); SPR.c3_yayu=['x'];
-BEASTS.c3_yayu={name:'窫窳', spr:'c3_yayu', boss:true, big:true, hp:3600, atk:52, def:16, exp:600, stones:[400,400], theme:'qiongqi',
+BEASTS.c3_yayu={name:'窫窳', spr:'c3_yayu', boss:true, big:true, hp:4400, atk:62, def:16, exp:600, stones:[400,400], theme:'qiongqi',
   lore:'《山海经·北山经》：其状如牛，而赤身、人面、马足，名曰窫窳，其音如婴儿，是食人。《海内西经》：贰负之臣曰危，危与贰负杀窫窳。本是天神，被冤杀，复活以后，成了吃人的东西。',
   moves:['flood','weep','trample','devour','weep','flood'],
   phase2:{at:.55, moves:['devour','trample','flood','weep','devour','trample'], line:'窫窳仰头长嚎，声音像婴儿在哭——鼎里的黑水全涌了出来！'}};
@@ -15348,6 +15351,24 @@ const SelfTest3={
           Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text)); r.cleared=!C3S.items().some(x=>/qin|shu|hua|du/.test(x.key))&&Nav.tracked()?.kind==='main';
           const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('战斗难度：每场战斗要打几回合、每回合能挨几下弹幕（不吃药、不护体）', async()=>{ const keep=JSON.stringify(S), hadPet=!!S.pet;
+          // works it out on paper, the same formulas as the battle: you use 绝学 while there's 灵力, then 御剑术, then attack; each enemy turn is a dodge
+          const probe=(kind,L,sect,opt={})=>{ S.L=L; S.sect=sect; S.exp=0; if(sect==='shou'&&!S.pet) S.pet={kind:'hu',lv:3};
+            const st=stats(), B={...BEASTS[kind],...(opt.B||{})}; if(B.self){ const m=B.selfMul||{}; B.hp=Math.round(st.hp*(m.hp||1.4)); B.atk=Math.round(st.atk*(m.atk||.85)); B.def=Math.round(st.def*(m.def||.8)); }
+            const crit=1+.8*Sect.crit(), mul=Sect.spellMul(), def=B.def, sc=SECTS[sect]; let hp=B.hp, mp=st.mp, turns=0, jy=0, burn=0, i=0, ph2=false; const eh=[], pet=Sect.petAtk();
+            const moves=()=>B.phase2&&hp<=B.hp*B.phase2.at?B.phase2.moves:B.moves;
+            while(hp>0&&turns<80){ turns++; let d;
+              if(sect==='jian'&&!jy&&mp>=5){ mp-=5; d=st.atk*1.6*mul-def/4; jy=1; }
+              else if(mp>=sc.skill.mp){ mp-=sc.skill.mp; d=sect==='jian'?(st.atk*3*mul-def/4)*(jy?1.3:1):sect==='dan'?st.atk*2.2*mul:sect==='shou'?st.atk*(1+(S.pet.lv-1)*.15)*2.4-def/3:st.atk*2.6*mul-def/4; if(sect==='jian') jy=0; if(sect==='dan') burn=3; }
+              else if(mp>=5){ mp-=5; d=st.atk*1.6*mul-def/4; } else d=st.atk-def/2;
+              hp-=Math.max(1,d)*crit+pet+(opt.allies||0)*44; if(hp<=0) break;
+              const ms=moves(); if(ms!==B.moves&&!ph2){ ph2=true; i=0; } const pat=DODGE[kind]&&DODGE[kind][ms[i++%ms.length]]; if(pat) eh.push(Math.max(1,Math.round(B.atk*pat.hit-st.def*.5))); if(burn>0){ hp-=st.atk*.8; burn--; } }
+            const per=eh.reduce((a,b)=>a+b,0)/Math.max(1,eh.length); return {turns, hpt:eh.length?st.hp/per/eh.length:99}; };
+          const rows=[], out=[];
+          for(const [lab,k,L,opt,lo,hi] of [['猲狙','c3_hejv',12,{},.7,3],['第三轮','c3r_sf_wulan',13,{},.9,5],['决赛','c3r_sf_lin',13,{B:LT.FINAL},.7,2.5],['地宫守卫','c3r_dg_guard',13,{},.9,5],['窫窳','c3_yayu',13,{allies:2},.6,2]]){
+            const r=['jian','dan','shou','tianji'].map(sc=>probe(k,L,sc,opt)), a=Math.min(...r.map(x=>x.hpt)), b=Math.max(...r.map(x=>x.hpt));
+            rows.push(`${lab} ${Math.min(...r.map(x=>x.turns))}–${Math.max(...r.map(x=>x.turns))} 回合、每回合能挨 ${a.toFixed(1)}–${b.toFixed(1)} 下`); if(a<lo||b>hi) out.push(lab); }
+          Object.assign(S,JSON.parse(keep)); if(!hadPet) delete S.pet; return {fail:out.length>0, info:rows.join('；')+(out.length?'　超出范围：'+out.join(' '):'')}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });
