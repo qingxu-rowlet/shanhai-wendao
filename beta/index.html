@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="31b739a548"><script>(function(){var B="31b739a548";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="192db0161a"><script>(function(){var B="192db0161a";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10739,7 +10739,7 @@ const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          //
   const objects=[
     {type:'building', x:10, y:1, w:10, h:4, style:'shop', roof:roofs.red, label:'四方馆 · 正厅', door:[15,5], act:'sfhall', fa:{wall:'wood', pillar:'#8a2a22', sign:'四方馆', open:true, lit:true, lanternText:'礼', deco:['doorLanterns'], roof:roofs.red}},
     wing('jian'), wing('dan'), wing('shou'), wing('tianji'),
-    ...Object.keys(SF_WING).map(k=>{ const [x,y]=SF_WING[k]; return {type:'jc_banner', x:x<10?x+6:x-1, y:y+3, spr:'jc_banner_'+k, flagText:SECT_CH[k], flagInk:'#f8f0d8', flagX:12.5, flagY:21}; }),
+    ...Object.keys(SF_WING).map(k=>{ const [x,y]=SF_WING[k]; return {type:'jc_banner', x:x<10?x+6:x-1, y:y, spr:'jc_banner_'+k, flagText:SECT_CH[k], flagInk:'#f8f0d8', flagX:12.5, flagY:21}; }),
     {type:'jc_huai', x:15, y:11, spr:'jc_huai', act:'sftree'},
     {type:'jc_chess', x:19, y:17, spr:'jc_chess', act:'sfchess', fw:1},
     {type:'jc_pot', x:12, y:6, spr:'jc_pot'}, {type:'jc_pot', x:18, y:6, spr:'jc_pot'}, {type:'jc_pot', x:10, y:18, spr:'jc_pot'}, {type:'jc_pot', x:27, y:18, spr:'jc_pot'},
@@ -10749,7 +10749,7 @@ const SF_WING={jian:[2,4], dan:[2,11], shou:[22,4], tianji:[22,11]};          //
     {type:'jc_sgate', x:13, y:21, get spr(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'jc_sgate_dim':'jc_sgate'; }, get flagText(){ return typeof RT!=='undefined'&&RT.fx>=12&&RT.fx<=18&&RT.fy>=17&&RT.fy<=20?'':'四方馆'; }, flagInk:'#e8c870', flagX:86, flagY:17.5, flagSize:6.5},
     {type:'jc_willow', x:6, y:24, spr:'jc_willow'}, {type:'jc_willow', x:23, y:24, spr:'jc_willow'},
     // people: the 礼部's clerk, and the other sects' entrants (your own sect's are you and 大师姐)
-    P('sf_clerk',15,7,'礼部小吏',{g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:2,face:'small'}),
+    P('sf_clerk',11,6,'礼部小吏',{g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:2,face:'small'}),
     P('sf_lin',8,8,'林沧',{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:0,face:'small'},not('jian')),
     P('sf_cheng',21,17,'程小剑',{g:'m',skin:1,hair:1,hairColor:0,style:'jin',cloth:0,face:'small'},not('jian')),
     P('sf_wulan',21,8,'乌兰',{g:'f',skin:3,hair:3,hairColor:1,style:'jin',cloth:3,face:'mid'},not('shou')),
@@ -11915,7 +11915,7 @@ On.theme(id=>id==='jc_gongyuan'?'village':null);
 /* ---------- the quests ---------- */
 { const q=QUESTS.find(q=>q.id==='c3k'); Object.assign(q,{check:s=>!!s.flags.c3_km_done,
     progress:s=>!s.flags.c3_km_call?'天亮了，在四方馆等礼部来接':'贡院前：开幕式',
-    target:s=>!s.flags.c3_km_call?['jc_sifang',15,7,'礼部小吏']:['jc_gongyuan',14,8,'礼部尚书']}); }
+    target:s=>!s.flags.c3_km_call?['jc_sifang',11,7,'礼部小吏']:['jc_gongyuan',14,8,'礼部尚书']}); }
 QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3k')+1,0,
   {id:'c3l', title:'擂台赛', desc:'四宗大比，每日一轮。第二轮是苏小棠。', check:s=>false,
     progress:s=>'擂台赛 · 第一轮（之后的剧情正在做）', target:s=>['jc_gongyuan',14,14,'擂台']});

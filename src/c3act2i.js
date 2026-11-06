@@ -155,7 +155,7 @@ On.theme(id=>id==='jc_gongyuan'?'village':null);
 /* ---------- the quests ---------- */
 { const q=QUESTS.find(q=>q.id==='c3k'); Object.assign(q,{check:s=>!!s.flags.c3_km_done,
     progress:s=>!s.flags.c3_km_call?'天亮了，在四方馆等礼部来接':'贡院前：开幕式',
-    target:s=>!s.flags.c3_km_call?['jc_sifang',15,7,'礼部小吏']:['jc_gongyuan',14,8,'礼部尚书']}); }
+    target:s=>!s.flags.c3_km_call?['jc_sifang',11,7,'礼部小吏']:['jc_gongyuan',14,8,'礼部尚书']}); }
 QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3k')+1,0,
   {id:'c3l', title:'擂台赛', desc:'四宗大比，每日一轮。第二轮是苏小棠。', check:s=>false,
     progress:s=>'擂台赛 · 第一轮（之后的剧情正在做）', target:s=>['jc_gongyuan',14,14,'擂台']});
