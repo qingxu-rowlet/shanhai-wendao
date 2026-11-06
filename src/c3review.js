@@ -99,6 +99,8 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_zy_met:true},'jc_dongkou',8,10,'down','c3l',18.5); UI.hud(); Story.check(); }),
     N('libu','礼部：告示栏、车轮上的红泥、名册上的「宗」、登闻鼓','大比开始以后，贡院前广场往西就是礼部（这里调到了大师姐被禁足、查线索的那几天）。告示栏：「败者已送归本宗」，旁边是大师姐禁足的告示，有人在她名字边画了只狐狸——可以撕下来。车棚里的黑篷马车：车轮缝里有红泥，只有宗庙后墙外是红泥地。档房主事：塞 50 灵石看名册，输了的人名字边上都有个「宗」，上一届也有。登闻鼓：替告状的老妇敲，礼部推刑部、刑部推礼部；第五幕以后她儿子回来了。车夫是哑巴，在地上写字。',
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true},'jc_libu',21,12,'left','c3m',10); XF.st().clue.room=true; XF.st().clue.ledger=true; S.stones=Math.max(S.stones,120); UI.hud(); Story.check(); }),
+    N('side','京城的小事：寻亲、书生的文章、卖花的小姑娘、赌客的债','住进四方馆以后（这里在朱雀大街，灵石已调到 300）。① 城门口北边来的女人找表舅赵木匠：东市卖馄饨的知道他搬去了西市博古斋，找到他，回来告诉她（平安符）。② 大街上的书生写了《北村记》，没书坊肯刻：拿去琅琊阁，阁主替他抄一百份、不署名（题诗扇）。③ 黄昏护城河边，卖花的小姑娘花卖不掉、娘病着：全买下，她给你一盏自己叠的河灯，去河埠头写「春娘」。④ 东市输光了的赌客：替他还一百灵石，他回家；不还的话，第五幕以后他是从宗庙底下放出来的人之一。',
+      ()=>{ go({...upto('c3_night'),...XS_RV},'jc_zhuque',15,30,'up','c3g',10); S.stones=Math.max(S.stones,300); UI.hud(); Story.check(); }),
     N('lu','彩蛋：风眼里的大师兄问牌位','去过安平村祠堂以后，在风眼挑战狂暴穷奇：开打前大师兄问你路过安平村没有；打赢后问牌位还在不在。「裂了」和「还在」两种回答。',
       ()=>{ go({...upto('c3_shrine'),c3_a1_done:true},'fx3',8,8,'up','c3z'); S.fxRematchDay=-1; }),
   ); }

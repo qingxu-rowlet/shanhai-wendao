@@ -305,6 +305,22 @@ const SelfTest3={
           S.flags.c3_a5_win=true; Story.talk('lb_laofu'); await adv(); r.son=!!S.flags.c3_lb_son; Dungeon.act(RT.ents.find(e=>e.act==='lbboard')); await adv(); r.after=SelfTest3.lines.slice(-6).some(l=>/萧大人平定/.test(l.text)); delete S.flags.c3_a5_win;
           const ok=Object.values(r).every(Boolean)&&!bad.length;
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+(bad.length?'，没反应：'+bad.join(' '):'')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('京城的小事：寻亲、书生的文章、卖花的小姑娘、赌客的债', async()=>{ const n0=SelfTest3.lines.length, r={}; cur='小事';
+          node('c3-side').run(); await W(300); const has=id=>!!RT.ents.find(e=>e.id===id);
+          Story.talk('jc_traveler'); await adv('我帮你打听'); r.ask=!!S.flags.c3_sq_qin_ask;
+          enterMap('jc_dongshi',10,8); await W(80); Story.talk('ds_wonton'); await adv(); r.hint=!!S.flags.c3_sq_qin_hint;
+          enterMap('jc_xishi',22,10); await W(80); r.zhao=has('sq_zhao'); Story.talk('sq_zhao'); await adv(); r.found=!!S.flags.c3_sq_qin_found;
+          enterMap('jc_zhuque',15,30); await W(80); Story.talk('jc_traveler'); await adv(); r.qin=!!S.flags.c3_sq_qin_done&&count(S,'jc_fu')>0;
+          enterMap('jc_zhuque',15,30); await W(80); r.gone=!has('jc_traveler'); enterMap('jc_xishi',22,10); await W(80); r.niece=has('sq_niece');
+          enterMap('jc_zhuque',15,20); await W(80); Story.talk('jc_scholar'); await adv('琅琊阁'); r.wen=count(S,'jc_wen')>0;
+          enterMap('jc_xishi',4,8); await W(80); Story.talk('xs_lang'); await adv(); r.print=!!S.flags.c3_sq_shu_print&&!count(S,'jc_wen');
+          enterMap('jc_zhuque',15,20); await W(80); Story.talk('jc_scholar'); await adv(); r.shu=!!S.flags.c3_sq_shu_done&&count(S,'jc_shan')>0;
+          S.min=19*60; enterMap('jc_dongkou',8,10); await W(80); Story.talk('zy_flower'); await adv('全买下'); r.deng=!!S.flags.c3_sq_hua_deng&&count(S,'jc_deng')>0;
+          HD.st().day=-1; Dungeon.act(RT.ents.find(e=>e.act==='hdstep')); await adv('春娘'); r.hua=!!S.flags.c3_sq_hua_done;
+          S.min=10*60; enterMap('jc_dongshi',10,8); await W(80); Story.talk('ds_gambler'); await adv('替他还了'); await W(100); r.du=S.flags.c3_sq_du===2&&!has('ds_gambler');
+          Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text));
+          const ok=Object.values(r).every(Boolean);
+          return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('彩蛋：风眼里大师兄问牌位（裂了 / 还在）', async()=>{ const got=[]; for(const pick of ['裂了','还在']){ cur='彩蛋'; node('c3-lu').run(); await W(400);
             Dungeon.act(obj('fxboss2')); await adv(); for(let i=0;i<60&&!Battle.s;i++) await W(100); await fight(); await adv(pick); got.push(!!S.flags.c3_lu_egg); }
           return {fail:!got.every(Boolean), info:got.map(x=>x?'✓':'✗').join(' ')}; });

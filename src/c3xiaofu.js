@@ -141,6 +141,7 @@ On.act('hdstep',o=>{ const h=HD.st();
     {text:'「大师兄」', fn:()=>HD.let('xiong')},
     {text:S.flags.c3_a5_win?'「愿回来的人，都好好的」':'「愿不见了的人，都能回家」', fn:()=>HD.let('home')},
     ...(who.length?[{text:'写一个名字', fn:()=>UI.say([{choice:'写谁的名字？', options:[...who.map(id=>({text:NPCS[id].name, fn:()=>HD.let('name',id)})),{text:'算了', fn:()=>HD.let('none')}]}])}]:[]),
+    ...(HD.more||[]).map(f=>f()).filter(Boolean),
     {text:'什么也不写', fn:()=>HD.let('none')}]}]); });
 HD.let=(k,id)=>{ const h=HD.st(); h.day=S.day; h.n=(h.n||0)+1; addItem('jc_deng',-1); if(id) Social.add(id,30); save();
   HD.live.push({x:8.5, y:13.2, t:0, seed:Math.random()*9});
