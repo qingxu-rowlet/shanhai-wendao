@@ -162,8 +162,22 @@ On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_dongkou') return; const dusk=HD.dusk(
   HD.live=HD.live.filter(l=>l.t<40); });
 // the 船家 lends a rod
 ZY.TALK.zy_boatman=()=>[['船家','护城河绕城一圈。黄昏放河灯，好看着呢。'],
-  ...(S.inv.rod?[['船家','钓鱼？埠头那边水深，鲤鱼肥。']]:[['船家','想钓鱼？（他从船舱里摸出一根旧竿子）拿去，用完放船上就成。'],{run:()=>{ addItem('rod',1); UI.toast('借到一根钓竿'); }}]),
+  ...(S.inv.rod?[['船家','钓鱼？埠头那边水深，鲤鱼肥。']]:[['船家','想钓鱼？（他从船舱里摸出一根旧竿子）拿去，用完放船上就成。'],{run:()=>{ addItem('rod',1); S.sel='rod'; UI.hud(); UI.toast('借到一根钓竿'); }},['船家','站到河沿上，竿子往水里一甩就成。（选中钓竿，点河面）']]),
   ['船家','就是最近，夜里总有空船往东边宗庙那头划。不点灯。']];
+// the stone bank (row 12) is a wall, so you cast over it: anywhere on the street just above it, or from the steps
+HD.bank=()=>RT.mapId==='jc_dongkou';
+HD.castFrom=(x,y)=>y===11&&tileAt(x,12)==='G'&&tileAt(x,13)==='~';
+{ const _t=tapWorld; tapWorld=function(tx,ty){
+    if(HD.bank()&&!RT.paused&&isRod(S.sel)&&tileAt(tx,ty)==='~'){ const wx=tx;
+      // stand on the street above the bank, as close to where you clicked as you can get (or on the steps)
+      const ok=(x,y)=>HD.castFrom(x,y)||(x===8&&y===12), dist=(x)=>Math.abs(x-wx);
+      if(ok(S.x,S.y)&&dist(S.x)<=1){ RT.autoNav=false; RT.path=[]; face(S.x,13); return Mini.fish(S.x,13); }
+      let best=null; for(let x=0;x<MAPS.jc_dongkou.w;x++) for(const y of [11,12]) if(ok(x,y)&&!RT.solid[y][x]&&(!best||dist(x)<dist(best[0]))) best=[x,y];
+      if(best){ RT.autoNav=false; const [bx,by]=best; return goAndDo((x,y)=>x===bx&&y===by, ()=>{ face(bx,13); Mini.fish(bx,13); }); } }
+    return _t.apply(this,arguments); }; }
+{ const _f=findPrompt; findPrompt=function(){ const p=_f.apply(this,arguments); if(p||!HD.bank()||RT.paused||RT.moving) return p;
+    if(isRod(S.sel)&&S.inv[S.sel]&&HD.castFrom(S.x,S.y)) return {fish:true, x:S.x, y:13};
+    return null; }; }
 // what the river gives up
 { const _p=Mini.fishPick; Mini.fishPick=function(){ if(typeof RT!=='undefined'&&RT.mapId==='jc_dongkou'&&!S.flags.c3_hd_lock&&!count(S,'jc_lock')&&Math.random()<.3) return {id:'jc_lock', speed:.9, jumpy:.7};
   return _p.apply(Mini,arguments); }; }

@@ -291,6 +291,9 @@ const SelfTest3={
           Dungeon.act(RT.ents.find(e=>e.act==='zyflower')); await adv('河灯'); r.deng=count(S,'jc_deng')>0;
           Dungeon.act(RT.ents.find(e=>e.act==='hdstep')); await adv('什么也不写'); r.let=HD.st().day===S.day&&HD.live.length>0;
           await adv(); Dungeon.act(RT.ents.find(e=>e.act==='hdstep')); await adv(); r.once=/漂远/.test(SelfTest3.lines.slice(-3).map(l=>l.text).join(''));
+          { let n=0; const xs=[1,5,12,17,24]; for(const wx of xs){ enterMap('jc_dongkou',13,8); await W(60); S.sel='rod'; tapWorld(wx,15);
+              for(let i=0;i<200&&!$('#minigame:not([hidden]) .fishg')&&!$('.fishg');i++) await W(30);
+              if($('.fishg')) n++; Mini.close(); await W(40); } r.fishAny=n===xs.length; if(n<xs.length) r['钓到'+n+'/'+xs.length]=false; }
           const rnd=Math.random; Math.random=()=>.1; const f=Mini.fishPick(); Math.random=rnd; r.lock=f.id==='jc_lock';
           addItem('jc_lock',1); Social.rel('qinghe').gifted=-1; Social.give('qinghe','jc_lock'); await adv(); r.qing=!!S.flags.c3_hd_lock&&!count(S,'jc_lock');
           const ok=Object.values(r).every(Boolean)&&!bad.length;
