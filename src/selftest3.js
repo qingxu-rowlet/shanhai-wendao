@@ -337,6 +337,18 @@ const SelfTest3={
           for(const id of ids){ DS.favour(id); await adv(); r['完'+id]=!item(id)&&d.fav[id]==='done'; }
           S.track='main'; const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).filter(([k,v])=>!v||!/^(未接|寻路|完)/.test(k)).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`（${ids.length} 人在京城）`}; });
+        await step('当铺：当鱼换钱、八成价收别的、买死当；青玉珠没赎时先问「当还是赎」', async()=>{ const r={}; cur='当铺';
+          node('c3-side').run(); await W(300); enterMap('jc_zhuque',5,13); await W(80); const shop=RT.ents.find(e=>e.act==='jcshop'&&e.id==='dang');
+          const keep={pawn:S.flags.c3_xie_pawn, bead:S.flags.c3_bead}; S.flags.c3_xie_pawn=false; S.flags.c3_bead=false;
+          for(const k of Object.keys(S.inv)) if(k.startsWith('fish_')) delete S.inv[k]; addItem('fish_li',3); addItem('huichun',1); addItem('jc_lock',1); S.stones=100;
+          Dungeon.act(shop); await W(120); r.open=!$('#panel').hidden&&/当铺/.test($('#panel').innerText); r.lockKept=!$('#panel [data-sell="jc_lock"]');
+          const fishP=ITEMS.fish_li.sell, s0=S.stones; $('#panel [data-sellall="fish_li"]').click(); await W(60); r.fish=!count(S,'fish_li')&&S.stones===s0+fishP*3;
+          const s1=S.stones; $('#panel [data-sell="huichun"]').click(); await W(60); r.pill=S.stones===s1+Math.floor(ITEMS.huichun.sell*.8);
+          $('#panel [data-t="buy"]').click(); await W(60); const s2=S.stones; $('#panel [data-buy="jc_jing"]').click(); await W(60); r.buy=count(S,'jc_jing')===1&&S.stones===s2-40; UI.closePanel();
+          r.gift=Social.taste?Social.taste('xie','jc_jing')!=='hate':true;
+          S.flags.c3_xie_pawn=true; Dungeon.act(shop); await W(120); r.ask=!$('#dlg').hidden&&/朝奉/.test($('#dlg').innerText+SelfTest3.lines.slice(-4).map(l=>l.text).join('')); await adv('赎回'); r.redeem=SelfTest3.lines.slice(-6).some(l=>/青玉珠/.test(l.text));
+          await adv('算了'); delete S.inv.jc_lock; S.flags.c3_xie_pawn=keep.pawn; S.flags.c3_bead=keep.bead;
+          const ok=Object.values(r).every(Boolean); return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')}; });
         await step('战斗难度：每场战斗要打几回合、每回合能挨几下弹幕（不吃药、不护体）', async()=>{ const keep=JSON.stringify(S), hadPet=!!S.pet;
           // works it out on paper, the same formulas as the battle: you use 绝学 while there's 灵力, then 御剑术, then attack; each enemy turn is a dodge
           const probe=(kind,L,sect,opt={})=>{ S.L=L; S.sect=sect; S.exp=0; if(sect==='shou'&&!S.pet) S.pet={kind:'hu',lv:3};

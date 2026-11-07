@@ -122,3 +122,32 @@ On.act('dspet',o=>{ DAY3.st().fav.amao='found'; save(); C3.sync&&C3.sync(); UI.s
 { const t=HC.TALK.hc_sun; HC.TALK.hc_sun=()=>S.flags.c3_hc_ru?[['孙大夫','（他忙得头都不抬）……来得正好。'],{choice:'帮孙大夫抓药？（每天一次，有工钱）', options:[{text:'帮忙', fn:()=>JOB.zhua()},{text:'改天', fn:()=>{}}]}]:t(); }
 // 琅琊阁: the keeper will pay for fair copies
 { const l=XS.lang; XS.lang=()=>{ const L=l(), last=L[L.length-1]; if(last&&last.choice) last.options.splice(last.options.length-1,0,{text:DAY3.st().job.copy===S.day?'（今天已经帮阁主抄过书了）':'帮阁主抄书（每天一次，有工钱）', fn:()=>JOB.copy()}); return L; }; }
+// 当铺: the 朝奉 takes what you bring (fish at full price — 醉仙居's kitchen buys them off him every morning; anything else
+// at eight-tenths), and sells what nobody came back for. While 大师姐's 青玉珠 is still on his shelf, that comes first.
+Object.assign(ITEMS,{
+  jc_jing:{name:'铜镜', icon:'i_lingmo', sell:30, desc:'当铺的死当。背面铸着一对衔草的鸾鸟，镜面磨得还很亮。'},
+  jc_pei:{name:'旧玉佩', icon:'i_slip', sell:50, desc:'当铺的死当。一块青白玉佩，刻着半句诗，另外半句不知道在谁手里。'},
+});
+NPCS.xie.likes=[...(NPCS.xie.likes||[]),'jc_jing','jc_pei']; NPCS.tang.likes=[...(NPCS.tang.likes||[]),'jc_jing'];
+if(NPCS.xiao) NPCS.xiao.likes=[...(NPCS.xiao.likes||[]),'jc_pei']; if(NPCS.qinghe) NPCS.qinghe.likes=[...(NPCS.qinghe.likes||[]),'jc_jing'];
+const DANG={
+  GOODS:[['huichun',60],['rod',50],['jc_jing',40],['jc_pei',70]],
+  KEEP:['jc_lock','jc_fu','jc_wen','jc_shan','jc_deng','c3_bead'],               // story things he won't take
+  price(id){ const it=ITEMS[id]; if(!it||!it.sell||it.quest||it.keep||DANG.KEEP.includes(id)) return 0; return id.startsWith('fish_')?it.sell:Math.max(1,Math.floor(it.sell*.8)); },
+  open(){ const bead=S.flags.c3_xie_pawn&&!S.flags.c3_bead;
+    if(bead) return UI.say([['朝奉','（他头也不抬）当，还是赎？'],{choice:'当铺', options:[{text:'赎回大师姐的青玉珠', fn:()=>XIE.dang()},{text:'当东西、看看死当', fn:()=>DANG.panel('sell')},{text:'走了', fn:()=>{}}]}]);
+    DANG.panel('sell'); },
+  panel(tab){
+    let body=`<div class="tabs"><button data-t="sell" class="${tab==='sell'?'on':''}">当（卖）</button><button data-t="buy" class="${tab==='buy'?'on':''}">死当（买）</button></div><p class="muted">灵石：<b>${S.stones}</b></p>`;
+    if(tab==='buy') body+=DANG.GOODS.map(([id,p])=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" data-p="${p}" ${S.stones<p?'disabled':''}>${p} 灵石</button></div>`).join('');
+    else { const ids=Object.keys(S.inv).filter(k=>S.inv[k]>0&&DANG.price(k)>0);
+      body+=ids.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name} ×${S.inv[id]}</b><small>每个 ${DANG.price(id)} 灵石${id.startsWith('fish_')?'（鲜鱼，原价收）':''}</small></div><button class="btn mini" data-sell="${id}">当 1</button><button class="btn mini" data-sellall="${id}">全当</button></div>`).join('')
+        ||'<p class="muted">朝奉看了看你的行囊：「没什么值钱的。」（鱼、灵草、兽皮、丹药、礼物都能当。）</p>'; }
+    UI.panel('当铺', `<p class="greet">朝奉：「${tab==='buy'?'过了期没人赎的，都在这儿了。':'鱼也收——醉仙居的后厨天天来我这儿拿。别的，八成价。'}」</p>`+body, b=>{
+      b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); DANG.panel(t.dataset.t); });
+      b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy, p=+x.dataset.p; if(S.stones<p) return; S.stones-=p; addItem(id,1); Sound.coin(); UI.hud(); save(); DANG.panel('buy'); });
+      const sell=(id,n)=>{ const p=DANG.price(id); if(!p||!S.inv[id]) return; n=Math.min(n,S.inv[id]); addItem(id,-n); S.stones+=p*n; Sound.coin(); UI.hud(); save(); DANG.panel('sell'); };
+      b.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>sell(x.dataset.sell,1));
+      b.querySelectorAll('[data-sellall]').forEach(x=>x.onclick=()=>sell(x.dataset.sellall,S.inv[x.dataset.sellall]));
+    }); },
+};

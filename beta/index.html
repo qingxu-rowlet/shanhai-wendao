@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="21ef19c3a6"><script>(function(){var B="21ef19c3a6";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="37b8e733dc"><script>(function(){var B="37b8e733dc";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10988,7 +10988,7 @@ const JC_SHOPS={
   cha:[['旁白','听雨轩。门半掩着，里面醒木一拍：'],['旁白','「……上回说到，那一年宗门大比，有一位女弟子，生得是闭月羞花——」'],['谢霁月','……'],['旁白','（茶楼是之后的地图，到时候可以进去听书。）']],
   kezhan:[['旁白','悦来客栈。掌柜在门口打着算盘：「打尖还是住店？」'],['旁白','（大比的弟子都住四方馆。）']],
 };
-On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); if(o.id==='cha'&&S.flags.c3_jc_in) return CL.go(); if(SHOP3.stall(o)) return; if(o.id==='dang'&&S.flags.c3_xie_pawn&&!S.flags.c3_bead) return XIE.dang(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
+On.act('jcshop',o=>{ if(o.id==='yao'&&S.flags.c3_sf_morning) return HC.go(); if(o.id==='cha'&&S.flags.c3_jc_in) return CL.go(); if(SHOP3.stall(o)) return; if(o.id==='dang') return DANG.open(); const L=JC_SHOPS[o.id]; UI.say(typeof L==='function'?L():L||[['旁白',o.label]]); });
 On.act('jcsedan',o=>UI.say([['旁白','一顶红呢大轿。轿帘放着，里面没有人。'],['旁白','轿杠上，刻着一个小小的「萧」字。'],{flag:'c3_jc_sedan'}]));
 On.act('jcbao',o=>Story.talk('jc_baoniang'));
 On.act('jchulu',o=>Story.talk('jc_hulu'));
@@ -13295,6 +13295,35 @@ On.act('dspet',o=>{ DAY3.st().fav.amao='found'; save(); C3.sync&&C3.sync(); UI.s
 { const t=HC.TALK.hc_sun; HC.TALK.hc_sun=()=>S.flags.c3_hc_ru?[['孙大夫','（他忙得头都不抬）……来得正好。'],{choice:'帮孙大夫抓药？（每天一次，有工钱）', options:[{text:'帮忙', fn:()=>JOB.zhua()},{text:'改天', fn:()=>{}}]}]:t(); }
 // 琅琊阁: the keeper will pay for fair copies
 { const l=XS.lang; XS.lang=()=>{ const L=l(), last=L[L.length-1]; if(last&&last.choice) last.options.splice(last.options.length-1,0,{text:DAY3.st().job.copy===S.day?'（今天已经帮阁主抄过书了）':'帮阁主抄书（每天一次，有工钱）', fn:()=>JOB.copy()}); return L; }; }
+// 当铺: the 朝奉 takes what you bring (fish at full price — 醉仙居's kitchen buys them off him every morning; anything else
+// at eight-tenths), and sells what nobody came back for. While 大师姐's 青玉珠 is still on his shelf, that comes first.
+Object.assign(ITEMS,{
+  jc_jing:{name:'铜镜', icon:'i_lingmo', sell:30, desc:'当铺的死当。背面铸着一对衔草的鸾鸟，镜面磨得还很亮。'},
+  jc_pei:{name:'旧玉佩', icon:'i_slip', sell:50, desc:'当铺的死当。一块青白玉佩，刻着半句诗，另外半句不知道在谁手里。'},
+});
+NPCS.xie.likes=[...(NPCS.xie.likes||[]),'jc_jing','jc_pei']; NPCS.tang.likes=[...(NPCS.tang.likes||[]),'jc_jing'];
+if(NPCS.xiao) NPCS.xiao.likes=[...(NPCS.xiao.likes||[]),'jc_pei']; if(NPCS.qinghe) NPCS.qinghe.likes=[...(NPCS.qinghe.likes||[]),'jc_jing'];
+const DANG={
+  GOODS:[['huichun',60],['rod',50],['jc_jing',40],['jc_pei',70]],
+  KEEP:['jc_lock','jc_fu','jc_wen','jc_shan','jc_deng','c3_bead'],               // story things he won't take
+  price(id){ const it=ITEMS[id]; if(!it||!it.sell||it.quest||it.keep||DANG.KEEP.includes(id)) return 0; return id.startsWith('fish_')?it.sell:Math.max(1,Math.floor(it.sell*.8)); },
+  open(){ const bead=S.flags.c3_xie_pawn&&!S.flags.c3_bead;
+    if(bead) return UI.say([['朝奉','（他头也不抬）当，还是赎？'],{choice:'当铺', options:[{text:'赎回大师姐的青玉珠', fn:()=>XIE.dang()},{text:'当东西、看看死当', fn:()=>DANG.panel('sell')},{text:'走了', fn:()=>{}}]}]);
+    DANG.panel('sell'); },
+  panel(tab){
+    let body=`<div class="tabs"><button data-t="sell" class="${tab==='sell'?'on':''}">当（卖）</button><button data-t="buy" class="${tab==='buy'?'on':''}">死当（买）</button></div><p class="muted">灵石：<b>${S.stones}</b></p>`;
+    if(tab==='buy') body+=DANG.GOODS.map(([id,p])=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name}</b><small>${esc(ITEMS[id].desc)}</small></div><button class="btn mini" data-buy="${id}" data-p="${p}" ${S.stones<p?'disabled':''}>${p} 灵石</button></div>`).join('');
+    else { const ids=Object.keys(S.inv).filter(k=>S.inv[k]>0&&DANG.price(k)>0);
+      body+=ids.map(id=>`<div class="row">${itemIcon(id)}<div><b>${ITEMS[id].name} ×${S.inv[id]}</b><small>每个 ${DANG.price(id)} 灵石${id.startsWith('fish_')?'（鲜鱼，原价收）':''}</small></div><button class="btn mini" data-sell="${id}">当 1</button><button class="btn mini" data-sellall="${id}">全当</button></div>`).join('')
+        ||'<p class="muted">朝奉看了看你的行囊：「没什么值钱的。」（鱼、灵草、兽皮、丹药、礼物都能当。）</p>'; }
+    UI.panel('当铺', `<p class="greet">朝奉：「${tab==='buy'?'过了期没人赎的，都在这儿了。':'鱼也收——醉仙居的后厨天天来我这儿拿。别的，八成价。'}」</p>`+body, b=>{
+      b.querySelectorAll('[data-t]').forEach(t=>t.onclick=()=>{ Sound.tick(); DANG.panel(t.dataset.t); });
+      b.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>{ const id=x.dataset.buy, p=+x.dataset.p; if(S.stones<p) return; S.stones-=p; addItem(id,1); Sound.coin(); UI.hud(); save(); DANG.panel('buy'); });
+      const sell=(id,n)=>{ const p=DANG.price(id); if(!p||!S.inv[id]) return; n=Math.min(n,S.inv[id]); addItem(id,-n); S.stones+=p*n; Sound.coin(); UI.hud(); save(); DANG.panel('sell'); };
+      b.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>sell(x.dataset.sell,1));
+      b.querySelectorAll('[data-sellall]').forEach(x=>x.onclick=()=>sell(x.dataset.sellall,S.inv[x.dataset.sellall]));
+    }); },
+};
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 听雨轩（茶楼） — inside the teahouse on 朱雀大街: the storyteller's table under a hanging
@@ -15546,6 +15575,18 @@ const SelfTest3={
           for(const id of ids){ DS.favour(id); await adv(); r['完'+id]=!item(id)&&d.fav[id]==='done'; }
           S.track='main'; const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).filter(([k,v])=>!v||!/^(未接|寻路|完)/.test(k)).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`（${ids.length} 人在京城）`}; });
+        await step('当铺：当鱼换钱、八成价收别的、买死当；青玉珠没赎时先问「当还是赎」', async()=>{ const r={}; cur='当铺';
+          node('c3-side').run(); await W(300); enterMap('jc_zhuque',5,13); await W(80); const shop=RT.ents.find(e=>e.act==='jcshop'&&e.id==='dang');
+          const keep={pawn:S.flags.c3_xie_pawn, bead:S.flags.c3_bead}; S.flags.c3_xie_pawn=false; S.flags.c3_bead=false;
+          for(const k of Object.keys(S.inv)) if(k.startsWith('fish_')) delete S.inv[k]; addItem('fish_li',3); addItem('huichun',1); addItem('jc_lock',1); S.stones=100;
+          Dungeon.act(shop); await W(120); r.open=!$('#panel').hidden&&/当铺/.test($('#panel').innerText); r.lockKept=!$('#panel [data-sell="jc_lock"]');
+          const fishP=ITEMS.fish_li.sell, s0=S.stones; $('#panel [data-sellall="fish_li"]').click(); await W(60); r.fish=!count(S,'fish_li')&&S.stones===s0+fishP*3;
+          const s1=S.stones; $('#panel [data-sell="huichun"]').click(); await W(60); r.pill=S.stones===s1+Math.floor(ITEMS.huichun.sell*.8);
+          $('#panel [data-t="buy"]').click(); await W(60); const s2=S.stones; $('#panel [data-buy="jc_jing"]').click(); await W(60); r.buy=count(S,'jc_jing')===1&&S.stones===s2-40; UI.closePanel();
+          r.gift=Social.taste?Social.taste('xie','jc_jing')!=='hate':true;
+          S.flags.c3_xie_pawn=true; Dungeon.act(shop); await W(120); r.ask=!$('#dlg').hidden&&/朝奉/.test($('#dlg').innerText+SelfTest3.lines.slice(-4).map(l=>l.text).join('')); await adv('赎回'); r.redeem=SelfTest3.lines.slice(-6).some(l=>/青玉珠/.test(l.text));
+          await adv('算了'); delete S.inv.jc_lock; S.flags.c3_xie_pawn=keep.pawn; S.flags.c3_bead=keep.bead;
+          const ok=Object.values(r).every(Boolean); return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')}; });
         await step('战斗难度：每场战斗要打几回合、每回合能挨几下弹幕（不吃药、不护体）', async()=>{ const keep=JSON.stringify(S), hadPet=!!S.pet;
           // works it out on paper, the same formulas as the battle: you use 绝学 while there's 灵力, then 御剑术, then attack; each enemy turn is a dodge
           const probe=(kind,L,sect,opt={})=>{ S.L=L; S.sect=sect; S.exp=0; if(sect==='shou'&&!S.pet) S.pet={kind:'hu',lv:3};
