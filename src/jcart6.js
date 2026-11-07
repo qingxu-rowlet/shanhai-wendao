@@ -25,38 +25,40 @@ On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_xiang') return; const Z=T/16;
 // far wall; the moon in the strip of sky; a red lantern hung out on a bracket from the left wall, its light pooled on
 // the flagstones; washing on a line overhead; the red-headed wolf sitting up on the far wall's tiled cap, under the moon.
 // The walls stop at the ground line, so you (left), 萧烬 (crouched, right) and the dog all stand on the flagstones.
-C3A.xiangPaint=(g,W,H,R)=>{ const GY=H*.84, M=Math.min(W,H);
+C3A.xiangPaint=(g,W,H,R)=>{ const M=Math.min(W,H), FY=H*.64, NY=H*.79;     // FY: where the lane meets the far wall; NY: the side walls' feet at the near edge
   C3INK.night(g,W,H,R,'#cfcac0');
   Land.orb(g,W*.5,H*.09,M*.05,'#f4efda',5);
   g.save(); g.beginPath(); g.rect(W*.3,0,W*.4,H*.3); g.clip(); C3INK.roofs(g,W*.4,H*.255,W*.05,2,R,.5,true); g.translate(W*.66,0); C3INK.roofs(g,W*.34,H*.255,W*.05,2,R,.5,true); g.restore();   // roofs beyond the far wall, either side, the middle left open to the sky
   // the far wall across the end of the lane, a door in it, a little light under the door
-  g.fillStyle='#3a3842'; g.fillRect(W*.34,H*.3,W*.32,GY-H*.3); g.fillStyle=SUMI.ink(.5); g.fillRect(W*.34,H*.3,W*.32,GY-H*.3);
+  g.fillStyle='#3a3842'; g.fillRect(W*.34,H*.3,W*.32,FY-H*.3); g.fillStyle=SUMI.ink(.5); g.fillRect(W*.34,H*.3,W*.32,FY-H*.3);
   // its coping: a tiled cap you can see the top of, moonlit
   g.fillStyle=SUMI.ink(.95); g.fillRect(W*.33,H*.285,W*.34,H*.022); g.fillStyle='rgba(205,210,232,.45)'; g.fillRect(W*.33,H*.283,W*.34,H*.006);
   for(let i=0;i<=24;i++){ const x=W*.33+W*.34*i/24; g.fillStyle=SUMI.ink(1); g.fillRect(x,H*.29,Math.max(1,W*.002),H*.017); }
-  g.fillStyle=SUMI.ink(.85); g.fillRect(W*.47,H*.5,W*.06,GY-H*.5); g.fillStyle='rgba(255,190,110,.6)'; g.fillRect(W*.47,GY-H*.008,W*.06,H*.006);
-  // the two side walls: tops run up and out toward us, their feet sit on the ground line
-  for(const [x0,x1,t0,t1,c] of [[-W*.02,W*.34,H*.04,H*.3,'#34323a'],[W*1.02,W*.66,H*.03,H*.3,'#2c2a32']]){ g.fillStyle=c; g.beginPath(); g.moveTo(x0,t0); g.lineTo(x1,t1); g.lineTo(x1,GY); g.lineTo(x0,GY+H*.02); g.closePath(); g.fill(); }   // solid under the wash
-  C3INK.wall(g,-W*.02,W*.34,H*.04,H*.3,GY+H*.02,GY,.82,R);
-  C3INK.wall(g,W*1.02,W*.66,H*.03,H*.3,GY+H*.02,GY,.88,R);
-  // moonlight down the middle of the lane, the flagstones
-  Land.ground(g,W,H,GY,.6);
-  g.fillStyle=SUMI.ink(.72); g.fillRect(0,GY,W,H-GY);
-  { const mg=g.createLinearGradient(0,GY,0,H); mg.addColorStop(0,'rgba(215,220,240,.18)'); mg.addColorStop(1,'rgba(215,220,240,.06)'); g.fillStyle=mg; g.beginPath(); g.moveTo(W*.44,GY); g.lineTo(W*.56,GY); g.lineTo(W*.7,H); g.lineTo(W*.3,H); g.closePath(); g.fill(); }
-  for(let r=0;r<5;r++){ const y=GY+(H-GY)*(r+1)/6; brush(g,[[0,y],[W,y]],1,.22); for(let k=0;k<14;k++){ const x=W*(k+(r%2)*.5)/14; brush(g,[[x,y-(H-GY)/6],[x+W*.004,y]],1,.18); } }
-  // the lantern: an iron bracket out from the left wall, the lantern hanging from it, its glow on the wall and the ground
-  { const wx=W*.2, wy=H*.36, lx=W*.27, ly=H*.47, r=M*.035;
+  g.fillStyle=SUMI.ink(.85); g.fillRect(W*.475,H*.46,W*.05,FY-H*.46); g.fillStyle='rgba(255,190,110,.65)'; g.fillRect(W*.475,FY-H*.007,W*.05,H*.005);
+  // the two side walls in perspective: tops come down toward the far end, feet rise toward it, so the lane floor opens out in front
+  for(const [x0,x1,t0,t1,c] of [[-W*.02,W*.34,H*.04,H*.3,'#34323a'],[W*1.02,W*.66,H*.03,H*.3,'#2c2a32']]){ g.fillStyle=c; g.beginPath(); g.moveTo(x0,t0); g.lineTo(x1,t1); g.lineTo(x1,FY); g.lineTo(x0,NY); g.closePath(); g.fill(); }
+  C3INK.wall(g,-W*.02,W*.34,H*.04,H*.3,NY,FY,.82,R);
+  C3INK.wall(g,W*1.02,W*.66,H*.03,H*.3,NY,FY,.88,R);
+  for(const [x0,x1] of [[-W*.02,W*.34],[W*1.02,W*.66]]) brush(g,[[x0,NY],[x1,FY]],Math.max(2,H*.006),.95);       // where wall meets ground
+  // the lane floor: flagstones in perspective, everything below the walls' feet
+  g.fillStyle='#24222a'; g.beginPath(); g.moveTo(W*.34,FY); g.lineTo(W*.66,FY); g.lineTo(W*1.02,NY); g.lineTo(W*1.02,H); g.lineTo(-W*.02,H); g.lineTo(-W*.02,NY); g.closePath(); g.fill();
+  { const mg=g.createLinearGradient(0,FY,0,H); mg.addColorStop(0,'rgba(215,220,240,.2)'); mg.addColorStop(1,'rgba(215,220,240,.07)'); g.fillStyle=mg; g.beginPath(); g.moveTo(W*.46,FY); g.lineTo(W*.54,FY); g.lineTo(W*.72,H); g.lineTo(W*.28,H); g.closePath(); g.fill(); }
+  for(let r=1;r<8;r++){ const u=(r/8)**1.6, y=FY+(H-FY)*u, half=W*(.16+.36*u); brush(g,[[W*.5-half,y],[W*.5+half,y]],1,.2); }        // the joints, closer together far off
+  for(let k=-6;k<=6;k++){ brush(g,[[W*.5+k*W*.025,FY],[W*.5+k*W*.11,H]],1,.16); }
+  // the lantern: an iron bracket out from the left wall, the cord down from its end, the lantern; its glow on the wall and the floor
+  { const wx=W*.18, wy=H*.36, lx=W*.26, ly=H*.47, r=M*.035;
     const gl=g.createRadialGradient(lx,ly,0,lx,ly,W*.22); gl.addColorStop(0,'rgba(255,170,90,.42)'); gl.addColorStop(1,'rgba(255,170,90,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H);
-    const pool=g.createRadialGradient(lx,GY+H*.06,0,lx,GY+H*.06,W*.2); pool.addColorStop(0,'rgba(255,170,90,.32)'); pool.addColorStop(1,'rgba(255,170,90,0)'); g.save(); g.translate(lx,GY+H*.06); g.scale(1,.35); g.translate(-lx,-(GY+H*.06)); g.fillStyle=pool; g.fillRect(lx-W*.2,GY+H*.06-W*.2,W*.4,W*.4); g.restore();
-    g.strokeStyle=SUMI.ink(.95); g.lineWidth=Math.max(2,W*.004); g.beginPath(); g.moveTo(wx,wy); g.lineTo(lx+W*.01,wy-H*.005); g.moveTo(wx,wy+H*.04); g.lineTo(wx+W*.04,wy); g.stroke();
-    C3INK.hangLantern(g,lx,ly,r); }
+    const py=H*.8, pool=g.createRadialGradient(lx,py,0,lx,py,W*.2); pool.addColorStop(0,'rgba(255,170,90,.34)'); pool.addColorStop(1,'rgba(255,170,90,0)'); g.save(); g.translate(lx,py); g.scale(1,.35); g.translate(-lx,-py); g.fillStyle=pool; g.fillRect(lx-W*.2,py-W*.2,W*.4,W*.4); g.restore();
+    g.strokeStyle=SUMI.ink(.95); g.lineWidth=Math.max(2,W*.004); g.beginPath(); g.moveTo(wx,wy); g.lineTo(lx,wy); g.moveTo(wx,wy+H*.045); g.lineTo(wx+(lx-wx)*.6,wy); g.stroke();   // the arm and its brace
+    g.lineWidth=Math.max(1,W*.0018); g.beginPath(); g.moveTo(lx,wy); g.lineTo(lx,ly-r*1.05); g.stroke();                                                          // the cord, all the way down
+    Land.lantern(g,lx,ly,r,7); }
   // washing on a line across the lane, high up
   C3INK.washing(g,W*.1,H*.2,W*.88,H*.17,R);
   // the wolf sitting up on the far wall's cap, under the moon, head turned down toward the lane
   { const x=W*.56, y=H*.284; g.save(); g.shadowColor='rgba(225,230,250,.95)'; g.shadowBlur=H*.014; JD.wolf(g,x,y,H*.085,R); g.restore(); JD.wolf(g,x,y,H*.085,R); }
-  // a broken basket and a stone by the walls' feet
-  g.fillStyle=SUMI.ink(.8); g.beginPath(); g.ellipse(W*.06,GY+H*.03,W*.04,H*.025,0,0,Math.PI*2); g.fill(); brush(g,[[W*.025,GY+H*.02],[W*.095,GY+H*.02]],2,.9);
-  Land.rock(g,W*.93,GY+H*.04,W*.07,H*.045,R,.75);
+  // a broken basket against the left wall's foot, a stone by the right
+  g.fillStyle=SUMI.ink(.8); g.beginPath(); g.ellipse(W*.05,NY+H*.01,W*.035,H*.022,0,0,Math.PI*2); g.fill(); brush(g,[[W*.02,NY],[W*.08,NY]],2,.9);
+  Land.rock(g,W*.95,NY+H*.03,W*.06,H*.04,R,.75);
   Land.edge&&Land.edge(g,W,H); };
 C3A.xiangCG=function(){
   const dog=JA6.dog();

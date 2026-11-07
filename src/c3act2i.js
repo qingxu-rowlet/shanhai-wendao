@@ -105,40 +105,77 @@ KM.mirror=()=>[
   ['旁白','签筒摇了三下。你抽出一支竹签。'],
   {run:()=>KM.show()},
   ['礼部尚书','明日辰时开擂。每日一轮，胜者进，败者……送回宗门。'],
-  ['苏小棠','（她看着对阵表，愣住了）……第二轮，是我和你。'],
+  ['苏小棠','（她看着对阵表，愣住了）……要是我们第一轮都赢了，第二轮就是我和你。'],
   ['苏小棠','（她笑了一下，笑得有点勉强）那、那我要好好准备了！'],
   ['旁白','高台上，萧烬拍了两下手。没有人知道他在为谁鼓掌。'],
   {flag:'c3_km_done'},
   ['旁白','（大比明日开擂。对阵表可以找礼部尚书再看。）']];
 
 /* ---------- 插画「开幕式的高台」 ---------- */
+// painted in ink, looking up from the kneeling crowd: palace roofs in the morning haze; the 高台 — a stone terrace with a
+// stair up its middle, red columns, a yellow-glazed roof with sweeping eaves, a gold-and-red screen behind the throne.
+// The three stand ON the deck (the cast's feet at KM.DY); the vermilion balustrade along the deck's front edge is drawn
+// in front of them, so it hides their feet the way a real railing would. Below, the crowd kneels in rows.
+KM.DY=.5;
+KM.paint=(g,W,H,R)=>{ const DY=H*KM.DY, DB=DY-H*.04, DF=DY+H*.035, M=Math.min(W,H);
+  Land.paper(g,W,H,R,'#ece4d2');
+  Land.sky(g,W,H*.7,['rgba(150,186,214,.55)','rgba(186,208,224,.4)','rgba(226,226,214,.15)']);
+  // the palace far off: hall roofs one behind another, pale in the haze
+  for(const [y,s,a,n] of [[.3,.07,.22,7],[.34,.09,.3,5]]) for(let k=0;k<n;k++){ const x=W*(k+.5)/n+(R()-.5)*W*.04; Land.roof(g,x,H*y,W*s,H*s*.45,a); g.fillStyle=SUMI.ink(a*.8); g.fillRect(x-W*s*.4,H*y+H*s*.1,W*s*.8,H*.05); }
+  Land.mist(g,W,H,H*.38,H*.1,.5);
+  // the 贡院 wall behind the square
+  g.fillStyle='rgba(150,70,56,.55)'; g.fillRect(0,H*.4,W,H*.07); brush(g,[[0,H*.4],[W,H*.4]],Math.max(3,H*.01),.75);
+  for(let x=0;x<W;x+=W*.03) brush(g,[[x,H*.395],[x+W*.02,H*.395]],2,.5);
+  // the terrace: stone, coursed, a little narrower at the top; the stair up the middle, with a carved slab between the flights
+  const tx0=W*.12, tx1=W*.88, by=H*.8;
+  g.fillStyle='#b8b2a4'; g.beginPath(); g.moveTo(tx0,DF); g.lineTo(tx1,DF); g.lineTo(tx1+W*.03,by); g.lineTo(tx0-W*.03,by); g.closePath(); g.fill();
+  for(let r=0;r<7;r++){ const y=DF+(by-DF)*(r+1)/8; brush(g,[[tx0-W*.03*(r+1)/8,y],[tx1+W*.03*(r+1)/8,y]],1,.35); for(let k=0;k<16;k++){ const x=tx0+(tx1-tx0)*(k+(r%2)*.5)/16; brush(g,[[x,y-(by-DF)/8],[x,y]],1,.25); } }
+  g.fillStyle='rgba(60,50,40,.18)'; g.fillRect(tx0-W*.03,by-H*.03,tx1-tx0+W*.06,H*.03);
+  { const sx0=W*.42, sx1=W*.58; g.fillStyle='#d4cec0'; g.beginPath(); g.moveTo(sx0,DF); g.lineTo(sx1,DF); g.lineTo(sx1+W*.04,by); g.lineTo(sx0-W*.04,by); g.closePath(); g.fill();
+    for(let i=1;i<14;i++){ const u=i/14, y=DF+(by-DF)*u; brush(g,[[sx0-W*.04*u,y],[sx1+W*.04*u,y]],Math.max(1,H*.003),.45); }
+    g.fillStyle='rgba(200,170,110,.6)'; g.beginPath(); g.moveTo(W*.48,DF); g.lineTo(W*.52,DF); g.lineTo(W*.53,by); g.lineTo(W*.47,by); g.closePath(); g.fill();      // the carved 御路 slab
+    for(let i=0;i<6;i++){ const y=DF+(by-DF)*(i+.5)/6; brush(g,[[W*.485,y],[W*.5,y-H*.012],[W*.515,y]],1,.5); }                                                    // clouds and a dragon, worn
+    for(const sd of [-1,1]){ const x=W*.5+sd*W*.08; brush(g,[[x,DF],[x+sd*W*.04,by]],Math.max(2,W*.004),.7); } }
+  // the deck: its floor, seen a little from below, running back from the front edge
+  g.fillStyle='#8a6a4a'; g.fillRect(W*.1,DB,W*.8,DF-DB); g.fillStyle='rgba(255,240,210,.18)'; g.fillRect(W*.1,DB,W*.8,(DF-DB)*.4);
+  // behind the throne: a screen, gold on red; and the throne's seat
+  g.fillStyle='#8a2418'; g.fillRect(W*.42,H*.27,W*.16,DB-H*.27+H*.01); g.fillStyle='rgba(225,180,80,.85)'; g.fillRect(W*.43,H*.285,W*.14,DB-H*.3);
+  for(let i=0;i<4;i++){ const x=W*(.435+i*.035); brush(g,[[x,H*.29],[x,DB-H*.02]],1,.5); brush(g,[[x+W*.005,H*.33],[x+W*.015,H*.31],[x+W*.025,H*.34]],1,.5); }
+  g.fillStyle='#6a1c12'; g.fillRect(W*.455,DY-H*.075,W*.09,H*.075); g.fillStyle='#d8a848'; g.fillRect(W*.455,DY-H*.075,W*.09,H*.008);
+  // the columns and the roof: red posts, a deep yellow-glazed roof with the eaves sweeping up at the corners
+  for(const x of [.16,.3,.7,.84]){ g.fillStyle='#a82a1e'; g.fillRect(W*x-W*.009,H*.19,W*.018,DB-H*.19+H*.01); g.fillStyle='rgba(0,0,0,.2)'; g.fillRect(W*x+W*.003,H*.19,W*.006,DB-H*.19); }
+  g.fillStyle='#2a6a5a'; g.fillRect(W*.12,H*.175,W*.76,H*.025); for(let x=W*.12;x<W*.88;x+=W*.03){ g.fillStyle=['#2a6a5a','#3a5a8a','#c8a040'][(x/W*33|0)%3]; g.fillRect(x,H*.178,W*.028,H*.018); }   // the painted beam
+  g.fillStyle='#d8a838'; g.beginPath(); g.moveTo(W*.02,H*.12); g.quadraticCurveTo(W*.1,H*.17,W*.14,H*.18); g.lineTo(W*.86,H*.18); g.quadraticCurveTo(W*.9,H*.17,W*.98,H*.12);
+  g.quadraticCurveTo(W*.86,H*.13,W*.76,H*.06); g.lineTo(W*.24,H*.06); g.quadraticCurveTo(W*.14,H*.13,W*.02,H*.12); g.fill();
+  g.strokeStyle='rgba(150,100,30,.6)'; g.lineWidth=Math.max(1,W*.0018); for(let i=0;i<=40;i++){ const u=i/40, xt=W*(.24+.52*u), xb=W*(.14+.72*u); g.beginPath(); g.moveTo(xt,H*.065); g.lineTo(xb,H*.175); g.stroke(); }
+  brush(g,[[W*.02,H*.12],[W*.14,H*.18],[W*.86,H*.18],[W*.98,H*.12]],Math.max(3,H*.008),.85); brush(g,[[W*.24,H*.06],[W*.76,H*.06]],Math.max(4,H*.012),.9);
+  for(const x of [.24,.76]){ g.fillStyle=SUMI.ink(.9); g.beginPath(); g.moveTo(W*x,H*.06); g.quadraticCurveTo(W*x+(x<.5?-1:1)*W*.01,H*.035,W*x+(x<.5?1:-1)*W*.006,H*.025); g.lineTo(W*x+(x<.5?1:-1)*W*.02,H*.06); g.fill(); }   // the ridge-end beasts
+  // silk banners hanging from the beam
+  for(const x of [.22,.78]){ g.fillStyle='rgba(200,50,40,.85)'; g.beginPath(); g.moveTo(W*x-W*.015,H*.2); g.lineTo(W*x+W*.015,H*.2); g.lineTo(W*x+W*.012,H*.36); g.lineTo(W*x,H*.38); g.lineTo(W*x-W*.012,H*.36); g.closePath(); g.fill(); }
+  // the shade under the roof, where the masked one stands
+  const sg=g.createLinearGradient(0,H*.18,0,DB); sg.addColorStop(0,'rgba(40,24,18,.35)'); sg.addColorStop(1,'rgba(40,24,18,0)'); g.fillStyle=sg; g.fillRect(W*.12,H*.18,W*.76,DB-H*.18);
+  // the crowd below, kneeling, seen from behind
+  const robes=['#3a4a62','#5a4a3a','#6a6a72','#7a6040','#4a5a4a','#8a4a3a','#5a5a6a','#a08050'];
+  for(const [ry,sc,n] of [[.84,.72,22],[.92,.86,18],[1.0,1.0,15]]){ const s=W*.022*sc;
+    for(let k=0;k<n;k++){ const x=W*(k+.5)/n+(R()-.5)*s*1.2, y=H*ry+(R()-.5)*s*.3, col=robes[(k*5+Math.round(ry*10))%robes.length];
+      if(ry<.9&&Math.abs(x-W*.5)<W*.09) continue;                                                                                 // the stair's foot is kept clear
+      g.fillStyle='rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(x,y+s*.9,s*1.25,s*.3,0,0,7); g.fill();
+      g.fillStyle=col; g.beginPath(); g.moveTo(x-s*1.15,y+s*.95); g.quadraticCurveTo(x-s*1.1,y-s*.35,x,y-s*.45); g.quadraticCurveTo(x+s*1.1,y-s*.35,x+s*1.15,y+s*.95); g.closePath(); g.fill();
+      g.fillStyle='rgba(255,255,255,.12)'; g.fillRect(x-s*.9,y-s*.05,s*.5,s*.8); g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(x+s*.2,y,s*.8,s*.9);
+      g.fillStyle='#e8d8b8'; g.fillRect(x-s*.12,y-s*.5,s*.24,s*.1);
+      g.fillStyle='#1e1a18'; g.beginPath(); g.ellipse(x,y-s*.62,s*.42,s*.36,0,0,7); g.fill(); g.beginPath(); g.ellipse(x,y-s*.98,s*.16,s*.14,0,0,7); g.fill();
+      if(R()<.22){ g.fillStyle='#141210'; g.fillRect(x-s*.38,y-s*1.08,s*.76,s*.3); g.fillRect(x-s*1.1,y-s*.92,s*2.2,s*.07); } } } };
+// drawn over the cast: the deck's front beam and the vermilion balustrade, so the three stand behind it
+KM.front=(g,W,H)=>{ const DF=H*(KM.DY+.035), top=DF-H*.07;
+  g.fillStyle='#5a2a1a'; g.fillRect(W*.1,DF-H*.008,W*.8,H*.02);
+  g.fillStyle='#b8321e'; g.fillRect(W*.1,top,W*.8,H*.012); g.fillRect(W*.1,DF-H*.024,W*.8,H*.01);
+  for(let i=0;i<=32;i++){ const x=W*.1+W*.8*i/32; if(x>W*.415&&x<W*.585) continue; g.fillStyle=i%4?'#a82a1a':'#8a2014'; g.fillRect(x-W*.003,top,W*.006,DF-top); if(i%4===0){ g.fillStyle='#d8a848'; g.fillRect(x-W*.005,top-H*.008,W*.01,H*.01); } }
+  g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(W*.1,top+H*.012,W*.8,H*.004); };
 KM.cg=function(){ const gs=JA7_mask(cgChibi(LOOK_GUOSHI,'stand',null,null,null,false),.43);
-  PixCG.open({ink:(g,W,H,R)=>{ Land.sky(g,W,H,['#8ab4d8','#a8c8e0','#c8dce8','#e0e8e8','#ece8d8']);
-      // the palace roofs far off, and the 贡院's wall
-      for(let k=0;k<6;k++){ const x=W*(.05+k*.18), y=H*.34; g.fillStyle='rgba(90,70,70,.45)'; g.beginPath(); g.moveTo(x-W*.09,y); g.quadraticCurveTo(x-W*.04,y-H*.02,x,y-H*.06); g.quadraticCurveTo(x+W*.04,y-H*.02,x+W*.09,y); g.closePath(); g.fill(); g.fillRect(x-W*.06,y,W*.12,H*.04); }
-      g.fillStyle='#8a5a4a'; g.fillRect(0,H*.38,W,H*.06); g.fillStyle='#6a3a30'; g.fillRect(0,H*.38,W,H*.008);
-      // the 高台: stone base, red balustrade, yellow canopy on red posts, the throne
-      g.fillStyle='#7a746a'; g.fillRect(W*.16,H*.58,W*.68,H*.42); for(let r=0;r<6;r++) for(let k=0;k<17;k++){ g.fillStyle=(r+k)%2?'#8a847a':'#827c72'; g.fillRect(W*(.16+k*.04)+(r%2?W*.02:0),H*(.6+r*.065),W*.038,H*.06); }
-      g.fillStyle='#5a3a24'; g.fillRect(W*.14,H*.56,W*.72,H*.03); g.fillStyle='#9a2a22'; g.fillRect(W*.14,H*.5,W*.72,H*.012); for(let x=W*.15;x<W*.86;x+=W*.02) g.fillRect(x,H*.5,W*.005,H*.06);
-      g.fillStyle='#9a2a22'; g.fillRect(W*.2,H*.12,W*.012,H*.44); g.fillRect(W*.788,H*.12,W*.012,H*.44);
-      g.fillStyle='#e0aa3e'; g.beginPath(); g.moveTo(W*.1,H*.16); g.quadraticCurveTo(W*.5,H*.02,W*.9,H*.16); g.lineTo(W*.82,H*.18); g.lineTo(W*.18,H*.18); g.closePath(); g.fill();
-      g.fillStyle='#b8862d'; g.fillRect(W*.18,H*.18,W*.64,H*.012); for(let x=W*.19;x<W*.81;x+=W*.03){ g.beginPath(); g.moveTo(x,H*.19); g.lineTo(x+W*.03,H*.19); g.lineTo(x+W*.015,H*.23); g.closePath(); g.fill(); }
-      g.fillStyle='#5e2018'; g.fillRect(W*.45,H*.28,W*.1,H*.22); g.fillStyle='#d8b048'; g.fillRect(W*.455,H*.29,W*.09,H*.04);
-      // the shade at the back of the stand, where the masked one stands
-      const sg=g.createLinearGradient(0,H*.18,0,H*.5); sg.addColorStop(0,'rgba(30,20,20,.35)'); sg.addColorStop(1,'rgba(30,20,20,0)'); g.fillStyle=sg; g.fillRect(W*.2,H*.18,W*.6,H*.32);
-      // the crowd below, kneeling, seen from behind: three rows of backs and bowed heads, nearer rows bigger;
-      // robes in plain blues, browns and greys, a few officials in black hats with the long side-wings
-      const robes=['#3a4a62','#5a4a3a','#6a6a72','#7a6040','#4a5a4a','#8a4a3a','#5a5a6a','#a08050'];
-      for(const [ry,sc,n] of [[.86,.7,22],[.93,.86,18],[1.0,1.0,15]]){ const s=W*.022*sc;
-        for(let k=0;k<n;k++){ const x=W*(k+.5)/n+(R()-.5)*s*1.2, y=H*ry+(R()-.5)*s*.3, col=robes[(k*5+Math.round(ry*10))%robes.length];
-          g.fillStyle='rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(x,y+s*.9,s*1.25,s*.3,0,0,7); g.fill();
-          g.fillStyle=col; g.beginPath(); g.moveTo(x-s*1.15,y+s*.95); g.quadraticCurveTo(x-s*1.1,y-s*.35,x,y-s*.45); g.quadraticCurveTo(x+s*1.1,y-s*.35,x+s*1.15,y+s*.95); g.closePath(); g.fill();   // the bowed back
-          g.fillStyle='rgba(255,255,255,.12)'; g.fillRect(x-s*.9,y-s*.05,s*.5,s*.8); g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(x+s*.2,y,s*.8,s*.9);
-          g.fillStyle='#e8d8b8'; g.fillRect(x-s*.12,y-s*.5,s*.24,s*.1);                                                             // a collar
-          g.fillStyle='#1e1a18'; g.beginPath(); g.ellipse(x,y-s*.62,s*.42,s*.36,0,0,7); g.fill(); g.beginPath(); g.ellipse(x,y-s*.98,s*.16,s*.14,0,0,7); g.fill();   // the head, the topknot
-          if(R()<.22){ g.fillStyle='#141210'; g.fillRect(x-s*.38,y-s*1.08,s*.76,s*.3); g.fillRect(x-s*1.1,y-s*.92,s*2.2,s*.07); } } } },   // an official's hat
-    cast:[{cv:gs, x:.36, y:.49, s:.34, face:1},{look:LOOK_TIANZI, x:.5, y:.52, pose:'sit', face:1, s:.9},{look:LOOK_XIAO, x:.64, y:.52, pose:'stand', face:-1, s:.9}],
-    title:'开幕式的高台', small:'第三章 · 京城', seed:7501}); };
+  PixCG.open({ink:(g,W,H,R)=>KM.paint(g,W,H,R),
+    cast:[{cv:gs, x:.35, y:KM.DY, s:.24, face:1},{look:LOOK_TIANZI, x:.5, y:KM.DY-.005, pose:'sit', face:1, s:.85},{look:LOOK_XIAO, x:.65, y:KM.DY, pose:'stand', face:-1, s:.85}],
+    title:'开幕式的高台', small:'第三章 · 京城', seed:7501});
+  PixCG.cur.front=KM.front; };
 
 /* ---------- talking on the square ---------- */
 KM.TALK={
