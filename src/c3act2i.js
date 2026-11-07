@@ -126,8 +126,17 @@ KM.cg=function(){ const gs=JA7_mask(cgChibi(LOOK_GUOSHI,'stand',null,null,null,f
       g.fillStyle='#5e2018'; g.fillRect(W*.45,H*.28,W*.1,H*.22); g.fillStyle='#d8b048'; g.fillRect(W*.455,H*.29,W*.09,H*.04);
       // the shade at the back of the stand, where the masked one stands
       const sg=g.createLinearGradient(0,H*.18,0,H*.5); sg.addColorStop(0,'rgba(30,20,20,.35)'); sg.addColorStop(1,'rgba(30,20,20,0)'); g.fillStyle=sg; g.fillRect(W*.2,H*.18,W*.6,H*.32);
-      // the crowd's heads below, kneeling
-      for(let k=0;k<60;k++){ const x=R()*W, y=H*(.9+R()*.1); g.fillStyle=['#2a2420','#3a3028','#22201e'][k%3]; g.beginPath(); g.ellipse(x,y,W*.014,H*.022,0,0,7); g.fill(); } },
+      // the crowd below, kneeling, seen from behind: three rows of backs and bowed heads, nearer rows bigger;
+      // robes in plain blues, browns and greys, a few officials in black hats with the long side-wings
+      const robes=['#3a4a62','#5a4a3a','#6a6a72','#7a6040','#4a5a4a','#8a4a3a','#5a5a6a','#a08050'];
+      for(const [ry,sc,n] of [[.86,.7,22],[.93,.86,18],[1.0,1.0,15]]){ const s=W*.022*sc;
+        for(let k=0;k<n;k++){ const x=W*(k+.5)/n+(R()-.5)*s*1.2, y=H*ry+(R()-.5)*s*.3, col=robes[(k*5+Math.round(ry*10))%robes.length];
+          g.fillStyle='rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(x,y+s*.9,s*1.25,s*.3,0,0,7); g.fill();
+          g.fillStyle=col; g.beginPath(); g.moveTo(x-s*1.15,y+s*.95); g.quadraticCurveTo(x-s*1.1,y-s*.35,x,y-s*.45); g.quadraticCurveTo(x+s*1.1,y-s*.35,x+s*1.15,y+s*.95); g.closePath(); g.fill();   // the bowed back
+          g.fillStyle='rgba(255,255,255,.12)'; g.fillRect(x-s*.9,y-s*.05,s*.5,s*.8); g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(x+s*.2,y,s*.8,s*.9);
+          g.fillStyle='#e8d8b8'; g.fillRect(x-s*.12,y-s*.5,s*.24,s*.1);                                                             // a collar
+          g.fillStyle='#1e1a18'; g.beginPath(); g.ellipse(x,y-s*.62,s*.42,s*.36,0,0,7); g.fill(); g.beginPath(); g.ellipse(x,y-s*.98,s*.16,s*.14,0,0,7); g.fill();   // the head, the topknot
+          if(R()<.22){ g.fillStyle='#141210'; g.fillRect(x-s*.38,y-s*1.08,s*.76,s*.3); g.fillRect(x-s*1.1,y-s*.92,s*2.2,s*.07); } } } },   // an official's hat
     cast:[{cv:gs, x:.36, y:.49, s:.34, face:1},{look:LOOK_TIANZI, x:.5, y:.52, pose:'sit', face:1, s:.9},{look:LOOK_XIAO, x:.64, y:.52, pose:'stand', face:-1, s:.9}],
     title:'开幕式的高台', small:'第三章 · 京城', seed:7501}); };
 

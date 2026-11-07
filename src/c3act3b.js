@@ -88,7 +88,7 @@ XF.dregs=()=>[
 
 /* ---------- hooks in 四方馆 ---------- */
 // the guard at the gate while 大师姐 is confined
-MAPS.jc_sifang.objects.push({type:'npc', id:'xf_guard', x:13, y:19, look:{g:'m',skin:2,hair:0,hairColor:0,style:'jin',cloth:2,face:'mid'}, name:'禁军', act:'talk', cond:s=>!!s.flags.c3_xf_in});
+MAPS.jc_sifang.objects.push({type:'npc', id:'xf_guard', x:13, y:17, look:{g:'m',skin:2,hair:0,hairColor:0,style:'jin',cloth:2,face:'mid'}, name:'禁军', act:'talk', cond:s=>!!s.flags.c3_xf_in});
 Object.assign(JC.CHAT,{xf_guard:['……']});
 XF.talk=id=>{ const F=S.flags;
   if(id==='xf_guard'){ UI.say([['禁军','谢姑娘不许出馆。'],['禁军','……别的人，随意。']]); return true; }

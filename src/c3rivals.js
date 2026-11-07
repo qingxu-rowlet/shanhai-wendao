@@ -42,4 +42,4 @@ for(const id in RIVAL){ const R=RIVAL[id], kind='c3r_'+id;
   DODGE[kind]=Object.fromEntries(R.moves.concat(R.phase2?R.phase2.moves:[]).map(k=>[k,RIVAL_PAT[k]]));
   SCENES[kind]={...SCENES.qiongqi, sky:['#9ab8d4','#c4d6e2','#e6e2d0'], moon:'#fff4d8', hills:['#a09080','#8a7a6a','#746656','#5e5246'], fx:null, title:R.name, sub:R.sub+'　——　四宗大比', ink:'#2a221c'}; }
 // their battle pictures are their own map sprites, made on first use
-{ const _s=Battle.start; Battle.start=function(kind,cb){ if(String(kind).startsWith('c3r_')&&!SPRC[kind]){ const id=kind.slice(4); SPR[kind]=['x']; const c=cgChibi(RIVAL[id].look,'stand',null,null,null,false); c.fine=true; SPRC[kind]=c; } return _s.call(Battle,kind,cb); }; }
+{ const _s=Battle.start; Battle.start=function(kind,cb){ if(String(kind).startsWith('c3r_')&&!SPRC[kind]){ const id=kind.slice(4); SPR[kind]=['x']; const L=RIVAL[id].look, c=cgChibi(L.face==='small'?{...L,face:'mid'}:L,'stand',null,null,null,false); /* big on screen, dot eyes look unfinished: the fuller eyes */ c.fine=true; SPRC[kind]=c; } return _s.call(Battle,kind,cb); }; }

@@ -350,6 +350,15 @@ const SelfTest3={
             for(const o of RT.ents){ if(o.locked) continue; if(o.type==='building'){ if(o.act&&o.door&&!seen.has(o.door.join())) bad.push(`${m.name}：${o.label}的门`); continue; }
               if((o.act||o.type==='npc')&&!near(o.x,o.y)) bad.push(`${m.name}：${o.name||o.label||o.spr||o.type}`); } }
           return {fail:bad.length>0, info:bad.length?bad.slice(0,4).join('；'):'19 张地图'}; });
+        await step('遮挡检查：每张第三章地图上的人和能点的东西，没有被画在它前面的东西挡住一半以上', async()=>{ const bad=[], TL=16, A=c=>{ if(c._a===undefined){ try{ c._a=c.getContext('2d').getImageData(0,0,c.width,c.height).data; }catch(e){ c._a=null; } } return c._a; };
+          for(const id of Object.keys(MAPS).filter(k=>/^(jc_|c3_)/.test(k))){ const m=MAPS[id], e0=m.exits[0]||{x:1,y:1}; enterMap(id,e0.x,e0.y); await W(30);
+            const D=[]; for(const o of RT.ents){ let c,x,y,sy; if(o.type==='building'){ c=building(o); x=o.x*TL; y=(o.y+o.h)*TL-c.height; sy=o.y+o.h; } else if(o.look){ c=lookSprite(o.look,'down',0); x=o.x*TL+(TL-c.width)/2; y=o.y*TL+TL-c.bottom; sy=o.y+.99; } else { const k=objSprite(o); if(!SPR[k]) continue; c=sprite(k); x=o.x*TL+(TL-c.width)/2; y=o.y*TL+TL-c.bottom; sy=o.y+.99; } D.push({o,c,x:Math.round(x),y:Math.round(y),sy,i:D.length}); }
+            const ord=[...D].sort((a,b)=>a.sy-b.sy||a.i-b.i);
+            for(let k=0;k<ord.length;k++){ const t=ord[k], o=t.o; if(!(o.type==='npc'||o.act)||o.type==='building'||o.act==='jcway') continue; const a=A(t.c); if(!a) continue; let own=0, cov=0;
+              for(let py=0;py<t.c.height;py++) for(let px=0;px<t.c.width;px++){ if(a[(py*t.c.width+px)*4+3]<100) continue; own++; const X=t.x+px, Y=t.y+py;
+                for(let j=k+1;j<ord.length;j++){ const q=ord[j]; if(q.o.type==='lantern') continue; const qx=X-q.x, qy=Y-q.y; if(qx<0||qy<0||qx>=q.c.width||qy>=q.c.height) continue; const b=A(q.c); if(b&&b[(qy*q.c.width+qx)*4+3]>150){ cov++; break; } } }
+              if(own&&cov/own>.5) bad.push(`${m.name}「${o.name||o.label||o.spr||o.type}」${Math.round(cov/own*100)}%`); } }
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,5).join('；'):'19 张地图，没有被挡住的'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
       }

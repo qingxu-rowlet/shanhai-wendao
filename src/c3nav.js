@@ -8,7 +8,7 @@ const C3S={
     const add=(key,kind,title,progress,target)=>out.push({key:'c3s_'+key, kind, tag:kind==='avail'?'可接取':'支线', title, progress, target});
     // 寻亲
     if(!F.c3_sq_qin_ask) add('qin','avail','寻亲','去找朱雀大街城门口那个赶路的人',['jc_zhuque',15,32,'赶路的人']);
-    else if(!F.c3_sq_qin_found) add('qin','side','寻亲',F.c3_sq_qin_hint?'赵木匠在西市，给博古斋修架子':'打听赵木匠：东市卖馄饨的也许知道',F.c3_sq_qin_hint?['jc_xishi',20,18,'赵木匠']:['jc_dongshi',21,9,'卖馄饨的']);
+    else if(!F.c3_sq_qin_found) add('qin','side','寻亲',F.c3_sq_qin_hint?'赵木匠在西市，给博古斋修架子':'打听赵木匠：东市卖馄饨的也许知道',F.c3_sq_qin_hint?['jc_xishi',20,18,'赵木匠']:['jc_dongshi',23,10,'卖馄饨的']);
     else if(!F.c3_sq_qin_done) add('qin','side','寻亲','回朱雀大街告诉她',['jc_zhuque',15,32,'赶路的人']);
     // 书生的文章
     if(!F.c3_sq_shu_ask) add('shu','avail','书生的文章','去找朱雀大街上的书生',['jc_zhuque',21,13,'书生']);

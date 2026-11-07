@@ -23,7 +23,7 @@
     P('ds_girl',7,11,'卖糖人的小姑娘',{g:'f',skin:1,hair:3,hairColor:0,style:'qun',cloth:2,face:'small'}),
     P('ds_old',5,11,'糖人师傅',{g:'m',skin:2,hair:0,hairColor:3,style:'robe',cloth:5,face:'small',beard:'#d8d4cc'}),
     P('ds_juggler',14,10,'耍杂技的',{g:'m',skin:3,hair:1,hairColor:0,style:'jin',cloth:2,face:'mid'}),
-    P('ds_wonton',21,9,'卖馄饨的',{g:'f',skin:2,hair:3,hairColor:1,style:'qun',cloth:5,face:'mid'}),
+    P('ds_wonton',23,10,'卖馄饨的',{g:'f',skin:2,hair:3,hairColor:1,style:'qun',cloth:5,face:'mid'}),
     P('ds_thug',17,7,'千金坊的打手',{g:'m',skin:3,hair:0,hairColor:0,style:'jin',cloth:5,face:'mid'}),
     P('ds_gambler',12,7,'输光了的赌客',{g:'m',skin:1,hair:1,hairColor:0,style:'robe',cloth:6,face:'mid'}),
   ];
@@ -40,7 +40,7 @@ MAPS.jc_dongkou.exits.push({x:25,y:5,to:'jc_dongshi',tx:1,ty:5},{x:25,y:6,to:'jc
     {type:'qj_door', x:15, y:2, spr:'qj_door', act:'qjdoor'},
     {type:'qj_table', x:4, y:8, spr:'qj_table', act:'qjdice', fw:1}, {type:'qj_table', x:12, y:8, spr:'qj_table', act:'qjdice', fw:1},
     {type:'lantern', x:2, y:5}, {type:'lantern', x:15, y:6}, {type:'lantern', x:8, y:10},
-    P('qj_boss',6,3,'千金坊老板',{g:'m',skin:1,hair:0,hairColor:1,style:'robe',cloth:7,face:'mid',beard:'#3a2a20'}),
+    P('qj_boss',10,4,'千金坊老板',{g:'m',skin:1,hair:0,hairColor:1,style:'robe',cloth:7,face:'mid',beard:'#3a2a20'}),
     P('qj_dealer',4,7,'摇骰子的伙计',{g:'m',skin:2,hair:1,hairColor:0,style:'jin',cloth:5,face:'mid'}),
     P('qj_g1',11,9,'赌红了眼的人',{g:'m',skin:3,hair:0,hairColor:0,style:'jin',cloth:6,face:'mid'}),
     P('qj_g2',13,9,'摇扇子的公子',{g:'m',skin:0,hair:2,hairColor:0,style:'robe',cloth:4,face:'small'}),

@@ -40,7 +40,7 @@ JC.gate=()=>[
   ['旁白','（进城看看。十字街口有告示，四方馆在西边。）']];
 // 大师姐 (and 苏小棠) walk with you in the city too
 MAPS.jc_zhuque.objects.push(
-  {type:'npc', id:'xie', x:14, y:24, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in&&!s.flags.c3_sf_in},
+  {type:'npc', id:'xie', x:14, y:20, look:LOOK_XIE, name:'谢霁月', act:'talk', cond:s=>!!s.flags.c3_jc_in&&!s.flags.c3_sf_in},
   {type:'npc', id:'tang', x:12, y:20, look:LOOK_TANG, name:'苏小棠', act:'talk', cond:s=>!!s.flags.c3_jc_in&&(s.sect==='dan'||!!s.flags.c3_sf_morning)});
 On.talk(id=>{ if(RT.mapId!=='jc_zhuque') return false; const F=S.flags;
   if(id==='xie'){ C3.menu('xie',F.c3_jc_board?[['谢霁月','宵禁……'],['谢霁月','（她看了一眼天色）先去四方馆。']]:[['谢霁月','京城……比上一回来的时候，人多了。'],['谢霁月','十字街口有告示，去看看。']]); return true; }

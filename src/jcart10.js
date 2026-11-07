@@ -14,15 +14,35 @@ On.tile('O',(g,R,v,f)=>{ // black water under the 宗庙, a faint ripple of torc
 const JA10={
   bars(){ return FineArt.paint(16,26,P=>{ P.rect(0,2,16,2,'#3a3a40'); P.rect(0,22,16,2,'#3a3a40'); for(let x=1;x<16;x+=3) P.rect(x,2,1.5,22,'#5a5a64'); P.rect(6,12,4,4,'#8a6a2a'); }); },
   torch(){ return FineArt.paint(10,18,P=>{ P.rect(4,8,2,9,'#4a3a2a'); P.rect(2,8,6,2,'#3a2a20'); P.ell(5,6,3,4,'#e8702a'); P.ell(5,6,2,2.6,'#ffd060'); }); },
-  ding(){ return FineArt.paint(100,76,P=>{ const b='#5a6a4a', bl='#7a8a5a', bk='#3a4a32', gr='#4a7a6a';
-    P.ell(50,72,44,4,'#00000060');
-    for(const x of [22,50,78]) P.rect(x-5,52,10,20,bk);                                                            // the legs
-    P.poly([[10,18],[90,18],[86,56],[14,56]],b); P.rect(10,16,80,4,bl); P.rect(8,14,84,3,bk);                         // the belly and its lip
-    for(const x of [18,82]){ P.rect(x-4,2,8,14,b); P.rect(x-2,4,4,10,'#1a1a14'); }                                     // the handles
-    // the 饕餮 face cast into it: two huge eyes, horns curling, a mouth and no body
-    P.poly([[30,26],[44,24],[44,32],[32,34]],bk); P.poly([[70,26],[56,24],[56,32],[68,34]],bk); P.ell(38,29,3,3,'#c8a040'); P.ell(62,29,3,3,'#c8a040');
-    P.line(30,24,22,20,bk); P.line(70,24,78,20,bk); P.rect(36,40,28,6,bk); for(let x=38;x<62;x+=4) P.rect(x,40,2,4,'#c8c0a0');
-    for(let k=0;k<30;k++){ const x=14+Math.random()*72, y=20+Math.random()*34; P.set(x,y,Math.random()<.5?gr:bl); } }); },     // verdigris
+  // the great bronze 鼎: a deep round belly on three beast-legs, two upright loop ears, a key-fret band under the lip,
+  // and cast into the belly the 饕餮 — horns, huge ringed eyes, the ridge of its nose, a mouth and no body; verdigris everywhere
+  ding(){ return FineArt.paint(100,76,P=>{ const d0='#1e2618', d1='#2e3a24', b0='#465636', b1='#5e7046', b2='#7a8c58', hi='#a8b878', au='#c8a040', al='#e8c860', vg='#5a9a84', vl='#7ec0a4';
+    P.ell(50,73,46,3,'#00000070');
+    // three legs: thick, bowed, a little beast-face mask where each meets the belly, a paw at the foot
+    for(const x of [24,50,76]){ P.poly([[x-6,52],[x+6,52],[x+5,62],[x+7,70],[x-7,70],[x-5,62]],d1); P.rect(x-4,53,3,16,b0); P.rect(x+2,53,2,15,d0);
+      P.rect(x-8,68,16,3,d0); P.rect(x-7,68,14,1,b1); P.rect(x-4,52,8,5,b1); P.set(x-2,54,au); P.set(x+1,54,au); P.rect(x-2,56,4,1,d0); }
+    // the belly: banded shading from the lit left to the shadowed right
+    const belly=[[9,20],[91,20],[89,34],[84,46],[74,55],[26,55],[16,46],[11,34]]; P.poly(belly,b0);
+    for(let y=21;y<55;y++){ const t=(y-20)/35, half=41-Math.max(0,(t-.35))*36; P.rect(50-half,y,half*.38,1,b1); P.rect(50-half,y,2,1,hi); P.rect(50+half*.55,y,half*.45,1,d1); }
+    // the lip, thick and flared, with its key-fret band beneath
+    P.rect(6,14,88,4,b1); P.rect(6,14,88,1,hi); P.rect(6,17,88,1,d0); P.rect(9,18,82,5,d1);
+    for(let x=10;x<89;x+=6){ P.rect(x,19,4,1,au); P.rect(x+3,19,1,3,au); P.rect(x+1,21,3,1,au); P.rect(x+1,20,1,1,au); }
+    // the two loop ears standing on the lip
+    for(const x of [20,80]){ P.rect(x-6,1,12,14,b1); P.rect(x-6,1,12,1,hi); P.rect(x-3,4,6,9,'#0c0e0a'); P.rect(x+4,2,2,12,d1); P.rect(x-6,1,1,13,hi); }
+    // the 饕餮 face on the belly
+    const cx=50, ey=33;
+    for(const s of [-1,1]){ const ex=cx+s*14;
+      P.poly([[cx+s*4,26],[cx+s*24,24],[cx+s*30,28],[cx+s*26,30],[cx+s*8,30]],d0);                                   // the horn band
+      P.line(cx+s*24,24,cx+s*30,20,au); P.line(cx+s*30,20,cx+s*27,17,au);                                            // the horns curling up
+      P.ell(ex,ey,6,4.5,d0); P.ell(ex,ey,4.5,3.2,au); P.ell(ex,ey,2.6,2.4,d0); P.rect(ex-.5,ey-2,1.5,4,'#000'); P.set(ex+s,ey-1,'#ff6a3a');   // the ringed eye
+      P.poly([[cx+s*20,ey+4],[cx+s*30,ey+6],[cx+s*28,ey+12],[cx+s*18,ey+10]],d1); P.line(cx+s*20,ey+6,cx+s*27,ey+9,au);      // the cheek curl
+      P.line(cx+s*8,ey+12,cx+s*16,ey+8,d0); }
+    P.rect(cx-2,24,4,16,d0); P.rect(cx-1,24,2,16,au); P.rect(cx-1,26,2,1,al); P.rect(cx-1,30,2,1,al);                 // the nose ridge
+    P.poly([[cx-14,44],[cx+14,44],[cx+10,49],[cx-10,49]],'#0c0e0a'); for(let x=cx-12;x<cx+12;x+=3) P.rect(x,44,2,3,'#d8d0b0'); P.rect(cx-13,44,2,5,'#e8e0c0'); P.rect(cx+11,44,2,5,'#e8e0c0');   // the mouth, the fangs
+    // verdigris blooming in the hollows, a few rust stains, the last light catching the lip
+    for(let k=0;k<70;k++){ const t=(k*37)%100/100, u=(k*61)%100/100, x=14+t*72, y=22+u*32; if(x>cx-16&&x<cx+16&&y>24&&y<50) continue; P.set(x,y,k%3?vg:vl); if(k%4===0) P.set(x+1,y,vg); }
+    for(let k=0;k<8;k++){ const x=16+k*9, y=46+(k%3)*3; P.set(x,y,'#7a4a2a'); P.set(x,y+1,'#5a3a20'); }
+    for(let x=12;x<40;x+=5) P.set(x,15,al); }); },     // verdigris
 };
 Object.assign(SPR,{dg_bars:['x'], dg_torch:['x'], dg_ding:['x']}); Object.assign(SPRC,{dg_bars:JA10.bars(), dg_torch:JA10.torch(), dg_ding:JA10.ding()});
 // the fire under the 鼎, and the torches' light

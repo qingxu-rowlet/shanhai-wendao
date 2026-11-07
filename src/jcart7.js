@@ -7,11 +7,32 @@
 const LOOK_TIANZI={g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:7};    // 天子: the yellow robe
 const LOOK_GUOSHI={g:'m',skin:1,hair:0,hairColor:0,style:'robe',cloth:5};    // 国师: black, and the mask over his face
 // paint the bronze mask over a figure's face, on a copy of its canvas (fy: the face's height as a share of the figure)
+// the 国师's mask: a bronze 饕餮 face in pixel art, fitted over wherever the face is (found by its skin tone), symmetric —
+// curled horns, gold brows, ringed eyes with slit pupils, the nose ridge, a mouth full of teeth, patina in the hollows
 const JA7_mask=(src,fy,rw=.15,rh=.105)=>{ const c=document.createElement('canvas'); c.width=src.width; c.height=src.height; const g=c.getContext('2d'); g.drawImage(src,0,0); c.bottom=src.bottom;
-  const W=c.width, cx=W/2, cy=c.height*fy, rx=W*rw, ry=c.height*rh;
-  g.fillStyle='#8a6a2a'; g.beginPath(); g.ellipse(cx,cy,rx,ry,0,0,7); g.fill(); g.fillStyle='#b08a3a'; g.beginPath(); g.ellipse(cx,cy-ry*.25,rx*.8,ry*.5,0,0,7); g.fill();
-  g.fillStyle='#1a1208'; g.fillRect(cx-rx*.6,cy-ry*.2,rx*.42,Math.max(1,ry*.28)); g.fillRect(cx+rx*.18,cy-ry*.2,rx*.42,Math.max(1,ry*.28));   // the eye slits
-  g.fillStyle='#5a4418'; g.fillRect(cx-rx*.5,cy+ry*.45,rx,Math.max(1,ry*.18)); for(let k=-2;k<=2;k++) g.fillRect(cx+k*rx*.22,cy+ry*.3,Math.max(1,rx*.08),ry*.4);   // the 饕餮's teeth
+  const W=c.width, H=c.height, D=g.getImageData(0,0,W,H).data; let x0=W, x1=-1, y0=H, y1=-1;
+  const skin=(x,y)=>{ const i=(y*W+x)*4, r=D[i], gg=D[i+1], b=D[i+2]; return D[i+3]>200&&r>190&&gg>140&&b>100&&r-b>35&&r>=gg; };
+  // the face is the first block of rows with skin in it, from the top; the hands further down are left alone
+  let top=-1; for(let y=0;y<H&&top<0;y++) for(let x=0;x<W;x++) if(skin(x,y)){ top=y; break; }
+  if(top>=0) for(let y=top;y<H;y++){ let any=false; for(let x=0;x<W;x++) if(skin(x,y)){ any=true; if(x<x0) x0=x; if(x>x1) x1=x; } if(!any) break; if(y<y0) y0=y; y1=y; }
+  if(x1<0){ x0=Math.round(W/2-W*rw); x1=Math.round(W/2+W*rw); y0=Math.round(H*fy-H*rh); y1=Math.round(H*fy+H*rh); }
+  // work in cells: one cell is u×u pixels, so a big CG face gets bold features and a small map face still reads
+  const u=Math.max(1,Math.round((x1-x0+3)/9)), cols=Math.max(7,Math.round((x1-x0+3)/u)), rows=Math.max(6,Math.round((y1-y0+2)/u)), L=Math.round((x0+x1)/2-cols*u/2), T=y0;
+  const P=(cx,cy,col)=>{ g.fillStyle=col; g.fillRect(L+cx*u,T+cy*u,u,u); }, M=(cx,cy,col)=>{ P(cx,cy,col); P(cols-1-cx,cy,col); };
+  const dk='#1a1408', br='#4a5232', bm='#66703e', pt='#7fa07a', au='#c8a040', al='#ecd070', tooth='#e8e0c8';
+  for(let y=0;y<rows;y++) for(let x=0;x<cols;x++){ const edge=x===0||x===cols-1||y===rows-1; P(x,y,edge?dk:((x*3+y*5)%7===0?pt:(y<rows*.5?bm:br))); }
+  // the horns, curling up and out above the brow
+  M(0,-1,au); M(-1,-2,au); M(-1,-3,al); M(0,-3,dk); M(1,-1,al);
+  // brows: a gold band from the edge to the middle, with a curl
+  const ey=Math.max(2,Math.round(rows*.4)), mid=Math.floor((cols-1)/2); for(let x=1;x<=mid;x++) M(x,ey-2,au); M(1,ey-1,au); M(mid,ey-3,al);
+  // the eyes: gold rings, a red glint, black slit pupils
+  const ex=Math.max(2,Math.round(cols*.27)); for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,1],[1,-1],[-1,1]]) M(ex+dx,ey+dy,(dx&&dy)?bm:au); M(ex,ey,dk); M(ex,ey-1,'#e83a20');
+  // the nose ridge down the middle, the nostril curls
+  for(let y=0;y<=ey+1;y++){ P(mid,y,y%2?al:au); if(cols%2===0) P(mid+1,y,y%2?al:au); } M(mid-1,ey+2,au);
+  // the mouth: a dark band, a row of teeth, fangs at the corners
+  const my=Math.min(rows-2,ey+3); for(let x=1;x<cols-1;x++){ P(x,my,dk); if(x%2) P(x,my-1,tooth); } M(1,my+1,tooth); M(2,my+1,dk);
+  // spiral 云雷纹 on the cheeks
+  if(rows>=8){ M(1,my-2,pt); M(2,my-2,au); M(2,my-3,pt); }
   return c; };
 const JA7={
   leitai(){ return FineArt.paint(120,64,P=>{ const st='#9a948a', stl='#b8b2a6', stk='#6a655c', red='#9a2a22';

@@ -22,7 +22,7 @@ Object.assign(SPR, {
     {type:'mj_fire', x:7, y:8, spr:'mj_fire', act:'c3fire'},
     {type:'mj_pot', x:8, y:10, spr:'mj_pot', act:'c3pot'},
     {type:'c3_spring', x:18, y:8, spr:'c3_spring', act:'c3water'},
-    ...[[2,3],[15,2],[16,12]].map(([x,y],ti)=>({type:'c3_twig', x, y, spr:'c3_twig', act:'c3twig', ti, cond:s=>!(s.c3&&s.c3.wood||[]).includes(ti)})),
+    ...[[2,3],[15,2],[12,12]].map(([x,y],ti)=>({type:'c3_twig', x, y, spr:'c3_twig', act:'c3twig', ti, cond:s=>!(s.c3&&s.c3.wood||[]).includes(ti)})),
     {type:'mj_log', x:10, y:1, spr:'mj_log', act:'c3log', cond:s=>!s.flags.c3_morning},
     {type:'mj_log', x:11, y:1, spr:'mj_log', act:'c3log', cond:s=>!s.flags.c3_morning},
     {type:'c2_portal', x:2, y:14, spr:'c2_portal', act:'portal'},
