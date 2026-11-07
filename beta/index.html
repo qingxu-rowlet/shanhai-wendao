@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b8626c8083"><script>(function(){var B="b8626c8083";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="4910f81351"><script>(function(){var B="4910f81351";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10465,26 +10465,42 @@ On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_xiang') return; const Z=T/16;
     for(let k=1;k<5;k++){ const u=k/5, x=a+(b-a)*u, sy=yy+T*.35*4*u*(1-u)*.5, sw=Math.sin(RT.t*1.2+k)*Z; g.fillStyle=['#c8c0b0','#5a6a8a','#a85a4a','#d8d0b8'][k%4]; g.fillRect(x-T*.22+sw,sy,T*.44,T*.5); g.fillStyle='rgba(0,0,0,.2)'; g.fillRect(x-T*.22+sw,sy+T*.42,T*.44,T*.08); } } });
 
 /* ---------- 插画「小巷」 ---------- */
+// painted in ink like the other chapter-3 pictures: the lane at night between two high plastered walls that run back to a
+// far wall; the moon in the strip of sky; a red lantern hung out on a bracket from the left wall, its light pooled on
+// the flagstones; washing on a line overhead; the red-headed wolf sitting up on the right wall's coping, looking down.
+// The walls stop at the ground line, so you (left), 萧烬 (crouched, right) and the dog all stand on the flagstones.
+C3A.xiangPaint=(g,W,H,R)=>{ const GY=H*.84, M=Math.min(W,H);
+  C3INK.night(g,W,H,R,'#cfcac0');
+  Land.orb(g,W*.5,H*.09,M*.05,'#f4efda',5);
+  C3INK.roofs(g,W,H*.25,W*.07,3,R,.62,true);                                                         // roofs beyond the far wall
+  // the far wall across the end of the lane, a door in it, a little light under the door
+  g.fillStyle=SUMI.ink(.66); g.fillRect(W*.34,H*.3,W*.32,GY-H*.3); brush(g,[[W*.34,H*.3],[W*.66,H*.3]],Math.max(3,H*.01),.9);
+  g.fillStyle=SUMI.ink(.85); g.fillRect(W*.47,H*.5,W*.06,GY-H*.5); g.fillStyle='rgba(255,190,110,.6)'; g.fillRect(W*.47,GY-H*.008,W*.06,H*.006);
+  // the two side walls: tops run up and out toward us, their feet sit on the ground line
+  C3INK.wall(g,-W*.02,W*.34,H*.04,H*.3,GY+H*.02,GY,.82,R);
+  C3INK.wall(g,W*1.02,W*.66,H*.03,H*.3,GY+H*.02,GY,.88,R);
+  // moonlight down the middle of the lane, the flagstones
+  Land.ground(g,W,H,GY,.6);
+  g.fillStyle=SUMI.ink(.72); g.fillRect(0,GY,W,H-GY);
+  { const mg=g.createLinearGradient(0,GY,0,H); mg.addColorStop(0,'rgba(215,220,240,.18)'); mg.addColorStop(1,'rgba(215,220,240,.06)'); g.fillStyle=mg; g.beginPath(); g.moveTo(W*.44,GY); g.lineTo(W*.56,GY); g.lineTo(W*.7,H); g.lineTo(W*.3,H); g.closePath(); g.fill(); }
+  for(let r=0;r<5;r++){ const y=GY+(H-GY)*(r+1)/6; brush(g,[[0,y],[W,y]],1,.22); for(let k=0;k<14;k++){ const x=W*(k+(r%2)*.5)/14; brush(g,[[x,y-(H-GY)/6],[x+W*.004,y]],1,.18); } }
+  // the lantern: an iron bracket out from the left wall, the lantern hanging from it, its glow on the wall and the ground
+  { const wx=W*.2, wy=H*.36, lx=W*.27, ly=H*.47, r=M*.035;
+    const gl=g.createRadialGradient(lx,ly,0,lx,ly,W*.22); gl.addColorStop(0,'rgba(255,170,90,.42)'); gl.addColorStop(1,'rgba(255,170,90,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H);
+    const pool=g.createRadialGradient(lx,GY+H*.06,0,lx,GY+H*.06,W*.2); pool.addColorStop(0,'rgba(255,170,90,.32)'); pool.addColorStop(1,'rgba(255,170,90,0)'); g.save(); g.translate(lx,GY+H*.06); g.scale(1,.35); g.translate(-lx,-(GY+H*.06)); g.fillStyle=pool; g.fillRect(lx-W*.2,GY+H*.06-W*.2,W*.4,W*.4); g.restore();
+    g.strokeStyle=SUMI.ink(.95); g.lineWidth=Math.max(2,W*.004); g.beginPath(); g.moveTo(wx,wy); g.lineTo(lx+W*.01,wy-H*.005); g.moveTo(wx,wy+H*.04); g.lineTo(wx+W*.04,wy); g.stroke();
+    C3INK.hangLantern(g,lx,ly,r); }
+  // washing on a line across the lane, high up
+  C3INK.washing(g,W*.1,H*.2,W*.88,H*.17,R);
+  // the wolf on the right wall's coping, sitting up, head down toward the lane
+  { const u=.8, x=W*(1.02-(1.02-.66)*u), y=H*(.03+(.3-.03)*u); g.save(); g.shadowColor='rgba(225,230,250,.95)'; g.shadowBlur=H*.014; JD.wolf(g,x,y+H*.008,H*.09,R); g.restore(); JD.wolf(g,x,y+H*.008,H*.09,R); }
+  // a broken basket and a stone by the walls' feet
+  g.fillStyle=SUMI.ink(.8); g.beginPath(); g.ellipse(W*.06,GY+H*.03,W*.04,H*.025,0,0,Math.PI*2); g.fill(); brush(g,[[W*.025,GY+H*.02],[W*.095,GY+H*.02]],2,.9);
+  Land.rock(g,W*.93,GY+H*.04,W*.07,H*.045,R,.75);
+  Land.edge&&Land.edge(g,W,H); };
 C3A.xiangCG=function(){
   const dog=JA6.dog();
-  PixCG.open({ink:(g,W,H,R)=>{ g.fillStyle='#07080e'; g.fillRect(0,0,W,H);
-      // the sky: a strip between the walls, the moon at its top
-      const sg=g.createLinearGradient(0,0,0,H*.4); sg.addColorStop(0,'#141a30'); sg.addColorStop(1,'#232a48'); g.fillStyle=sg; g.beginPath(); g.moveTo(W*.36,0); g.lineTo(W*.64,0); g.lineTo(W*.56,H*.38); g.lineTo(W*.44,H*.38); g.closePath(); g.fill();
-      g.fillStyle='#ece6cc'; g.beginPath(); g.arc(W*.53,H*.08,H*.05,0,7); g.fill(); const mg=g.createRadialGradient(W*.53,H*.08,0,W*.53,H*.08,H*.25); mg.addColorStop(0,'rgba(236,230,204,.25)'); mg.addColorStop(1,'rgba(236,230,204,0)'); g.fillStyle=mg; g.fillRect(0,0,W,H*.4);
-      // the two walls, plastered, the coping dark, running away from us
-      for(const side of [-1,1]){ g.fillStyle=side<0?'#2a2a32':'#33333c'; g.beginPath(); const xn=W*(.5+side*.06), xf=W*(.5+side*.5);
-        g.moveTo(xn,H*.38); g.lineTo(xn,H*.66); g.lineTo(xf,H*1.02); g.lineTo(xf,0); g.lineTo(W*(.5+side*.14),0); g.closePath(); g.fill();
-        g.strokeStyle='rgba(20,20,28,.9)'; g.lineWidth=Math.max(2,H*.012); g.beginPath(); g.moveTo(W*(.5+side*.14),0); g.lineTo(xn,H*.38); g.stroke();
-        for(let k=0;k<30;k++){ const u=R(), x=xn+(xf-xn)*u, y=H*(.4+u*.5)*R(); g.fillStyle=`rgba(${120+R()*40|0},${120+R()*30|0},${130+R()*30|0},${.06+R()*.06})`; g.fillRect(x,y+H*.2,W*.01,H*.004); } }
-      // the far end of the lane: another wall, a little lit
-      { const fg=g.createLinearGradient(0,H*.38,0,H*.66); fg.addColorStop(0,'#2a2a36'); fg.addColorStop(1,'#1a1a22'); g.fillStyle=fg; g.fillRect(W*.44,H*.38,W*.12,H*.28); g.fillStyle='#14141a'; g.fillRect(W*.44,H*.38,W*.12,H*.02); }
-      // the moonlight on the ground, down the middle
-      g.fillStyle='#16161e'; g.beginPath(); g.moveTo(W*.44,H*.66); g.lineTo(W*.56,H*.66); g.lineTo(W*1.02,H*1.02); g.lineTo(-W*.02,H*1.02); g.closePath(); g.fill();
-      g.fillStyle='rgba(200,206,236,.12)'; g.beginPath(); g.moveTo(W*.47,H*.66); g.lineTo(W*.53,H*.66); g.lineTo(W*.66,H); g.lineTo(W*.34,H); g.closePath(); g.fill();
-      // a lantern on the left wall, its glow on the ground
-      const lx=W*.3, ly=H*.42; g.strokeStyle='#14141a'; g.lineWidth=Math.max(1,W*.002); g.beginPath(); g.moveTo(lx-W*.04,ly-H*.05); g.lineTo(lx,ly-H*.02); g.lineTo(lx,ly); g.stroke(); g.fillStyle='#a8302a'; g.fillRect(lx-W*.012,ly,W*.024,H*.05); g.fillStyle='#e8b84a'; g.fillRect(lx-W*.012,ly,W*.024,H*.006); const lg=g.createRadialGradient(lx,ly+H*.2,0,lx,ly+H*.2,W*.25); lg.addColorStop(0,'rgba(255,170,90,.22)'); lg.addColorStop(1,'rgba(255,170,90,0)'); g.fillStyle=lg; g.fillRect(0,0,W,H);
-      // the wolf on the right wall's top, sitting, looking down at us
-      C3A.wolf(g,W*.605,H*.12,H*.11,-1,R); },
+  PixCG.open({ink:(g,W,H,R)=>C3A.xiangPaint(g,W,H,R),
     cast:[{who:'me', x:.16, pose:'stand', face:1},{look:LOOK_XIAO, x:.64, pose:'crouch', face:-1},{cv:dog, x:.53, y:.86, s:1.5, face:1}],
     title:'小巷', small:'第三章 · 京城', seed:7401}); };
 
@@ -11687,24 +11703,118 @@ JD.done=()=>{ addItem('c3_jiedan',-1); S.L=Math.max(S.L,13); S.exp=0; const st=s
 
 /* ---------- 插画「雷云」: the capital at night under the thunder, and someone on a roof in the east ---------- */
 JD.cg=function(){
-  PixCG.open({ink:(g,W,H,R)=>{ Land.sky(g,W,H,['#06060c','#10101e','#1c1a30','#2a2640','#3a3450']);
-      // the clouds over the west of the city, lit from inside
-      for(let k=0;k<26;k++){ const cx=W*(.05+R()*.45), cy=H*(.12+R()*.18), rx=W*(.06+R()*.08); const cg=g.createRadialGradient(cx,cy,0,cx,cy,rx); cg.addColorStop(0,`rgba(${150+R()*40|0},${150+R()*40|0},${200+R()*40|0},.32)`); cg.addColorStop(1,'rgba(40,40,70,0)'); g.fillStyle=cg; g.fillRect(cx-rx,cy-rx,rx*2,rx*2); }
-      // the bolts, forking down onto the roofs of the west
-      for(const [x0,len] of [[.22,.5],[.3,.44],[.14,.4]]){ let x=W*x0, y=H*.22; g.strokeStyle='rgba(230,236,255,.9)'; g.lineWidth=Math.max(2,W*.003); g.beginPath(); g.moveTo(x,y);
-        while(y<H*(.22+len)){ x+=(R()-.5)*W*.03; y+=H*(.03+R()*.03); g.lineTo(x,y); if(R()<.25){ g.stroke(); g.beginPath(); g.moveTo(x,y); } } g.stroke();
-        const gl=g.createRadialGradient(x,y,0,x,y,W*.12); gl.addColorStop(0,'rgba(200,210,255,.45)'); gl.addColorStop(1,'rgba(200,210,255,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H); }
-      // the capital's roofs, row on row, black; a few windows lit
-      for(const [base,col,n] of [[.72,'#141420',34],[.8,'#0e0e18',26],[.9,'#09090f',18]]){ g.fillStyle=col; g.beginPath(); g.moveTo(0,H);
-        for(let k=0;k<=n;k++){ const x=W*k/n, w=W/n, y=H*(base-R()*.03); g.lineTo(x,y+H*.01); g.lineTo(x+w*.15,y); g.lineTo(x+w*.85,y); g.lineTo(x+w,y+H*.01); } g.lineTo(W,H); g.closePath(); g.fill();
-        for(let k=0;k<n*.6;k++){ g.fillStyle=`rgba(255,${180+R()*40|0},110,${.3+R()*.4})`; g.fillRect(R()*W,H*(base+.02+R()*.05),Math.max(1,W*.003),Math.max(1,H*.004)); } }
-      // the corner tower in the east: tiered roofs, eaves turned up, black against the sky
-      const tx=W*.8, tb=H*.74; g.fillStyle='#08080e'; g.fillRect(tx-W*.035,tb-H*.22,W*.07,H*.22);
-      for(const [y,w] of [[.2,.11],[.3,.085],[.38,.06]]){ const yy=tb-H*y; g.beginPath(); g.moveTo(tx-W*w,yy+H*.012); g.quadraticCurveTo(tx-W*w*.6,yy,tx,yy-H*.035); g.quadraticCurveTo(tx+W*w*.6,yy,tx+W*w,yy+H*.012); g.lineTo(tx+W*w*.7,yy+H*.02); g.lineTo(tx-W*w*.7,yy+H*.02); g.closePath(); g.fill(); }
-      g.strokeStyle='rgba(170,176,230,.4)'; g.lineWidth=Math.max(1,W*.0015); g.beginPath(); g.moveTo(tx-W*.11,tb-H*.188); g.quadraticCurveTo(tx-W*.066,tb-H*.2,tx,tb-H*.235); g.stroke();
-      C3A.wolf(g,tx-W*.07,tb-H*.2,H*.05,-1,R); },
-    cast:[{get cv(){ return C3A.sil(LOOK_XIAO,'stand'); }, x:.755, y:.43, s:.6, face:-1}],
-    title:'雷云', small:'第三章 · 结丹', seed:7302}); };
+  PixCG.open({ink:(g,W,H,R)=>JD.paint(g,W,H,R), cast:[], title:'雷云', small:'第三章 · 结丹', seed:7302}); };
+// painted in ink like the other chapter-3 pictures: the storm piled over the west of the city, bolts forking down onto the
+// roofs there; the rest of the capital lit up — 朱雀大街 a river of lanterns running to the gate; and in the east, on the
+// city wall, the corner tower, three tiers of upturned eaves. On the topmost eave stands 萧烬 (silver hair loose in the
+// wind, black robe), his red-headed wolf sitting beside him, both edged with the lightning's light.
+JD.paint=(g,W,H,R)=>{ const M=Math.min(W,H), HZ=H*.6;
+  Land.paper(g,W,H,R,'#c9c6cf');
+  Land.sky(g,W,H,['rgba(8,8,20,.96)','rgba(18,18,40,.92)','rgba(40,32,60,.86)','rgba(22,18,30,.94)','rgba(12,10,18,.97)']);
+  // the warm haze the city throws up into the low sky, strongest over the middle and the east
+  for(const [x,r,a] of [[.5,.5,.32],[.78,.34,.26],[.3,.3,.14]]){ const gr=g.createRadialGradient(W*x,HZ,0,W*x,HZ,W*r); gr.addColorStop(0,`rgba(255,170,90,${a})`); gr.addColorStop(1,'rgba(255,170,90,0)'); g.fillStyle=gr; g.fillRect(0,0,W,H); }
+  // the storm: a heap of cloud over the west, ink washes, the undersides lit violet-white from inside
+  const cl=(x,y,rx,ry,c,a)=>{ const gr=g.createRadialGradient(x,y,0,x,y,rx); gr.addColorStop(0,`rgba(${c},${a})`); gr.addColorStop(1,`rgba(${c},0)`); g.save(); g.translate(x,y); g.scale(1,ry/rx); g.translate(-x,-y); g.fillStyle=gr; g.fillRect(x-rx,y-rx,rx*2,rx*2); g.restore(); };
+  for(let k=0;k<40;k++){ const u=R(); cl(W*(-.05+u*.75),H*(.04+R()*.2+u*.06),W*(.08+R()*.12),H*(.05+R()*.06),`${6+R()*10|0},${6+R()*10|0},${16+R()*12|0}`,.5+R()*.35); }
+  for(let k=0;k<26;k++){ const u=R(); cl(W*(.04+u*.5),H*(.2+R()*.1),W*(.05+R()*.08),H*(.025+R()*.03),`${150+R()*50|0},${150+R()*40|0},${210+R()*40|0}`,.16+R()*.2); }
+  // far off: the western hills, just a darker line under the storm
+  Land.peaks(g,W,H,R,{y:HZ-H*.02,amp:H*.05,n:6,a:.4,tint:'#14142a'});
+  // the bolts: jagged, forking, each with a glow; where they land the roofs flare
+  const bolt=(x0,y0,x1,y1,w,depth)=>{ const pts=[[x0,y0]], n=9+depth*2; for(let i=1;i<n;i++){ const u=i/n; pts.push([x0+(x1-x0)*u+(R()-.5)*W*.05*(1-u*.4), y0+(y1-y0)*u+(R()-.5)*H*.012]); } pts.push([x1,y1]);
+    const line=(lw,col,blur)=>{ g.save(); g.shadowColor='rgba(170,180,255,.95)'; g.shadowBlur=blur; g.strokeStyle=col; g.lineWidth=lw; g.lineJoin='miter'; g.beginPath(); pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y)); g.stroke(); g.restore(); };
+    line(w*4,'rgba(150,160,255,.18)',M*.06); line(w*1.8,'rgba(200,205,255,.55)',M*.025); line(w,'rgba(250,250,255,.98)',M*.01);
+    if(depth>0) for(let i=2;i<pts.length-2;i++) if(R()<.18){ const [bx,by]=pts[i], dir=R()<.5?-1:1; bolt(bx,by,bx+dir*W*(.04+R()*.08),by+H*(.06+R()*.12),w*.55,depth-1); } };
+  const hits=[[.2,.62],[.33,.64],[.1,.6]];
+  hits.forEach(([hx,hy],i)=>{ const x0=W*(hx+(R()-.5)*.08); bolt(x0,H*(.1+R()*.05),W*hx,H*hy,Math.max(2.5,W*(.0045-i*.001)),2);
+    const gl=g.createRadialGradient(W*hx,H*hy,0,W*hx,H*hy,W*.16); gl.addColorStop(0,'rgba(215,220,255,.55)'); gl.addColorStop(.3,'rgba(170,180,255,.22)'); gl.addColorStop(1,'rgba(170,180,255,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H); });
+  const flash=g.createRadialGradient(W*.22,H*.24,0,W*.22,H*.24,W*.45); flash.addColorStop(0,'rgba(220,225,255,.22)'); flash.addColorStop(1,'rgba(220,225,255,0)'); g.fillStyle=flash; g.fillRect(0,0,W,H);
+  // the city wall far off, with the gate tower over 朱雀门 where the avenue ends
+  g.fillStyle=SUMI.ink(.78); g.fillRect(0,HZ-H*.012,W,H*.03); for(let x=0;x<W;x+=W*.012) g.fillRect(x,HZ-H*.02,W*.007,H*.01);
+  { const gx=W*.5, gy=HZ-H*.012; g.fillStyle=SUMI.ink(.85); g.fillRect(gx-W*.03,gy-H*.03,W*.06,H*.03); Land.roof(g,gx,gy-H*.034,W*.085,H*.022,.9); Land.roof(g,gx,gy-H*.056,W*.06,H*.018,.9);
+    for(const dx of [-.022,0,.022]){ const lg=g.createRadialGradient(gx+W*dx,gy-H*.015,0,gx+W*dx,gy-H*.015,W*.012); lg.addColorStop(0,'rgba(255,190,110,.9)'); lg.addColorStop(1,'rgba(255,190,110,0)'); g.fillStyle=lg; g.fillRect(gx+W*dx-W*.012,gy-H*.027,W*.024,H*.024); } }
+  // the roofs of the capital, row on row toward you, windows lit — more of them to the east and in the middle
+  const row=(y,s,n,a,litP)=>{ for(let k=0;k<n;k++){ const x=W*(k+.5)/n+(R()-.5)*W*.03, w=s*(1+R()*.5), h=s*.34, yy=y+(R()-.5)*s*.12, warm=x/W>.4;
+      if(Math.abs(x-W*.5)<s*.6+W*.12*((y-HZ)/(H-HZ))) continue;                       // leave the avenue open
+      g.fillStyle=SUMI.ink(a*.95); g.fillRect(x-w*.42,yy+h*.2,w*.84,s*.9); Land.roof(g,x,yy,w,h,a);
+      const nw=1+(R()*2|0); for(let j=0;j<nw;j++) if(R()<litP*(warm?1.3:.7)){ const wx=x+(R()-.5)*w*.55, wy=yy+h*.55+R()*s*.25, ww=Math.max(2,s*.09), wh=Math.max(2,s*.12);
+        const lg=g.createRadialGradient(wx,wy,0,wx,wy,s*.35); lg.addColorStop(0,'rgba(255,180,90,.5)'); lg.addColorStop(1,'rgba(255,180,90,0)'); g.fillStyle=lg; g.fillRect(wx-s*.35,wy-s*.35,s*.7,s*.7);
+        g.fillStyle=`rgba(255,${200+R()*30|0},${120+R()*30|0},.95)`; g.fillRect(wx-ww/2,wy-wh/2,ww,wh); } } };
+  row(HZ+H*.025,W*.028,40,.62,.55); row(HZ+H*.06,W*.036,32,.68,.6);
+  // 朱雀大街: a straight avenue from the gate down toward you, lanterns strung along both sides, the paving glowing
+  { const pg=g.createLinearGradient(0,HZ,0,H); pg.addColorStop(0,'rgba(255,170,90,.55)'); pg.addColorStop(1,'rgba(200,120,60,.28)'); g.fillStyle=pg;
+    g.beginPath(); g.moveTo(W*.5-W*.006,HZ+H*.005); g.lineTo(W*.5+W*.006,HZ+H*.005); g.lineTo(W*.63,H); g.lineTo(W*.37,H); g.closePath(); g.fill();
+    for(let i=0;i<40;i++){ const t=(i/40)**1.7, y=HZ+H*.008+(H-HZ)*t*.95; for(const sd of [-1,1]){ const x=W*.5+sd*(W*.008+W*.12*t), r=Math.max(1.5,W*.0022+W*.006*t);
+        const lg=g.createRadialGradient(x,y,0,x,y,r*4.5); lg.addColorStop(0,'rgba(255,150,80,.55)'); lg.addColorStop(1,'rgba(255,150,80,0)'); g.fillStyle=lg; g.fillRect(x-r*4.5,y-r*4.5,r*9,r*9);
+        g.fillStyle='#e8503a'; g.beginPath(); g.ellipse(x,y,r*.8,r,0,0,Math.PI*2); g.fill(); g.fillStyle='rgba(255,220,150,.9)'; g.fillRect(x-r*.25,y-r*.4,r*.5,r*.5); } }
+    for(let i=0;i<70;i++){ const t=R()**1.5, y=HZ+H*.01+(H-HZ)*t*.95, x=W*.5+(R()-.5)*W*.22*t; g.fillStyle=SUMI.ink(.55); g.fillRect(x,y-H*.012*t,Math.max(1,W*.003*t),Math.max(1,H*.012*t)); } }   // people in the street
+  row(HZ+H*.1,W*.05,24,.76,.5); row(HZ+H*.16,W*.068,17,.84,.45); row(HZ+H*.25,W*.095,12,.92,.4);
+  // the east wall in front, and on it the corner tower
+  const wy=H*.8; g.fillStyle=SUMI.ink(.95); g.beginPath(); g.moveTo(W*.56,wy+H*.03); g.lineTo(W*1.02,wy-H*.02); g.lineTo(W*1.02,H); g.lineTo(W*.52,H); g.closePath(); g.fill();
+  for(let i=0;i<=22;i++){ const u=i/22, x=W*.56+(W*.46)*u, y=wy+H*.03-H*.05*u; g.fillRect(x,y-H*.018,W*.011,H*.02); }
+  g.strokeStyle='rgba(190,196,240,.22)'; g.lineWidth=Math.max(1,W*.0012); for(let i=1;i<7;i++){ g.beginPath(); g.moveTo(W*.56,wy+H*.03+i*H*.025); g.lineTo(W*1.02,wy-H*.02+i*H*.025); g.stroke(); }
+  JD.tower(g,W,H,R,W*.8,wy-H*.006); };
+// the corner tower: a stone base, two storeys of posts and railings with lit windows, three tiers of roofs whose eave
+// corners sweep up into points, lanterns hung at the corners, a rim of cold light along the side facing the storm
+JD.tower=(g,W,H,R,cx,base)=>{ const ink=a=>SUMI.ink(a), U=W*.01;
+  const eave=(y,w,h,a)=>{ g.fillStyle=ink(a); g.beginPath(); g.moveTo(cx-w,y-h*1.1); g.quadraticCurveTo(cx-w*.82,y+h*.2,cx-w*.55,y+h*.25); g.lineTo(cx+w*.55,y+h*.25); g.quadraticCurveTo(cx+w*.82,y+h*.2,cx+w,y-h*1.1);
+      g.quadraticCurveTo(cx+w*.8,y-h*.15,cx+w*.5,y-h*.55); g.lineTo(cx+w*.28,y-h*1.6); g.lineTo(cx-w*.28,y-h*1.6); g.lineTo(cx-w*.5,y-h*.55); g.quadraticCurveTo(cx-w*.8,y-h*.15,cx-w,y-h*1.1); g.fill();
+    g.strokeStyle='rgba(225,228,255,.45)'; g.lineWidth=Math.max(1.5,U*.25); g.beginPath(); g.moveTo(cx-w,y-h*1.1); g.quadraticCurveTo(cx-w*.8,y-h*.15,cx-w*.5,y-h*.55); g.lineTo(cx-w*.28,y-h*1.6); g.stroke();   // lightning catches the west slope
+    g.strokeStyle='rgba(200,190,170,.18)'; g.lineWidth=1; for(let i=-8;i<=8;i++){ g.beginPath(); g.moveTo(cx+i*w*.03,y-h*1.5); g.lineTo(cx+i*w*.065,y+h*.15); g.stroke(); }
+    brush(g,[[cx-w*.55,y+h*.25],[cx+w*.55,y+h*.25]],Math.max(2,h*.18),.95);
+    for(const sd of [-1,1]){ const lx=cx+sd*w*.62, ly=y+h*.75, r=U*.55; g.strokeStyle=ink(.8); g.lineWidth=1; g.beginPath(); g.moveTo(lx,y+h*.2); g.lineTo(lx,ly-r); g.stroke();
+      const lg=g.createRadialGradient(lx,ly,0,lx,ly,r*5); lg.addColorStop(0,'rgba(255,160,80,.6)'); lg.addColorStop(1,'rgba(255,160,80,0)'); g.fillStyle=lg; g.fillRect(lx-r*5,ly-r*5,r*10,r*10);
+      g.fillStyle='#d8442e'; g.beginPath(); g.ellipse(lx,ly,r*.85,r,0,0,Math.PI*2); g.fill(); g.fillStyle='rgba(255,220,150,.9)'; g.fillRect(lx-r*.3,ly-r*.45,r*.6,r*.5); } };
+  const storey=(y0,y1,w)=>{ g.fillStyle=ink(.9); g.fillRect(cx-w,y1,w*2,y0-y1);
+    for(let i=0;i<=6;i++){ const x=cx-w+i*w/3; g.fillStyle=ink(1); g.fillRect(x-U*.12,y1,U*.24,y0-y1); }
+    for(let i=0;i<6;i++){ const x=cx-w+(i+.5)*w/3, wy=y1+(y0-y1)*.28, ww=w/3*.62, wh=(y0-y1)*.42;
+      g.fillStyle=i===1||i===4?'rgba(255,186,100,.9)':'rgba(255,186,100,.35)'; g.fillRect(x-ww/2,wy,ww,wh); g.strokeStyle=ink(.9); g.lineWidth=Math.max(1,U*.08); for(let k=1;k<4;k++){ g.beginPath(); g.moveTo(x-ww/2+ww*k/4,wy); g.lineTo(x-ww/2+ww*k/4,wy+wh); g.stroke(); } }
+    g.fillStyle=ink(1); g.fillRect(cx-w*1.06,y0-(y0-y1)*.16,w*2.12,U*.25); for(let i=0;i<=14;i++) g.fillRect(cx-w*1.06+i*w*2.12/14,y0-(y0-y1)*.16,U*.1,(y0-y1)*.16); };
+  g.fillStyle=ink(.97); g.beginPath(); g.moveTo(cx-U*9,base); g.lineTo(cx-U*8,base-U*4); g.lineTo(cx+U*8,base-U*4); g.lineTo(cx+U*9,base); g.closePath(); g.fill();
+  const b=base-U*4; storey(b,b-U*5.2,U*6); eave(b-U*5.2,U*11,U*1.4,.97); storey(b-U*6.6,b-U*10.6,U*4.6); eave(b-U*10.6,U*8.6,U*1.2,.97);
+  g.fillStyle=ink(.95); g.fillRect(cx-U*3,b-U*14,U*6,U*2.6); eave(b-U*14,U*6.4,U*1.1,.98);
+  g.fillStyle=ink(1); g.fillRect(cx-U*.25,b-U*16.4,U*.5,U*1.2); g.beginPath(); g.arc(cx,b-U*16.6,U*.45,0,Math.PI*2); g.fill();     // the finial
+  // 萧烬 on the west tip of the top eave, the wolf crouched on the slope beside him
+  const fx=cx-U*6.1, fy=b-U*15.3; JD.wolf(g,fx+U*2.3,fy+U*.9,U*1.7,R); JD.figure(g,fx,fy,U*4.4,R); };
+// a standing figure in ink, ~h tall, feet at (x,y): a slim man in a long black robe, sash at the waist, the hem and one
+// sleeve streaming east in the storm wind, long loose silver hair blown out behind him; lit along the west edge
+JD.figure=(g,x,y,h,R)=>{ const P=(u,v)=>[x+u*h,y+v*h], path=(pts)=>{ g.beginPath(); pts.forEach(([u,v],i)=>{ const [px,py]=P(u,v); i?g.lineTo(px,py):g.moveTo(px,py); }); g.closePath(); };
+  const curve=(pts)=>{ g.beginPath(); const [x0,y0]=P(...pts[0]); g.moveTo(x0,y0); for(let i=1;i<pts.length-1;i++){ const [ax,ay]=P(...pts[i]), [bx,by]=P(...pts[i+1]); g.quadraticCurveTo(ax,ay,(ax+bx)/2,(ay+by)/2); } const [lx,ly]=P(...pts[pts.length-1]); g.lineTo(lx,ly); g.closePath(); };
+  g.fillStyle=SUMI.ink(1);
+  // the robe: shoulders, a narrow waist, the skirt flaring and torn out east by the wind
+  curve([[-.035,-.83],[-.11,-.8],[-.1,-.66],[-.07,-.5],[-.09,-.25],[-.12,0],[-.04,.01],[.06,-.01],[.16,.0],[.27,-.04],[.4,-.1],[.3,-.12],[.36,-.18],[.2,-.2],[.12,-.32],[.07,-.5],[.1,-.66],[.11,-.8],[.035,-.83]]); g.fill();
+  // the sleeves: the west one hangs, the east one streams out
+  curve([[-.1,-.79],[-.15,-.62],[-.16,-.46],[-.12,-.42],[-.1,-.5],[-.08,-.66]]); g.fill();
+  curve([[.1,-.79],[.2,-.72],[.33,-.66],[.44,-.64],[.34,-.6],[.38,-.56],[.22,-.57],[.1,-.62]]); g.fill();
+  // neck and head
+  path([[-.025,-.86],[.025,-.86],[.03,-.8],[-.03,-.8]]); g.fill();
+  g.beginPath(); g.ellipse(x,y-h*.9,h*.05,h*.062,0,0,Math.PI*2); g.fill();
+  // the sash, a little lighter, its ends flying
+  g.strokeStyle='rgba(120,116,130,.9)'; g.lineWidth=Math.max(1,h*.018); g.beginPath(); g.moveTo(...P(-.075,-.52)); g.lineTo(...P(.075,-.52)); g.stroke();
+  g.lineWidth=Math.max(1,h*.012); g.beginPath(); g.moveTo(...P(.07,-.52)); g.quadraticCurveTo(...P(.18,-.5),...P(.28,-.44)); g.stroke(); g.beginPath(); g.moveTo(...P(.07,-.51)); g.quadraticCurveTo(...P(.16,-.46),...P(.24,-.38)); g.stroke();
+  // silver hair: a cap over the crown, then long strands streaming east, each a tapering brush line
+  g.fillStyle='rgba(212,216,226,.96)'; g.beginPath(); g.ellipse(x+h*.006,y-h*.925,h*.052,h*.045,0,Math.PI,Math.PI*2); g.fill();
+  for(let i=0;i<11;i++){ const v0=-.94+i*.012, sx=.02+R()*.02, ex=.26+i*.022+R()*.06, ev=-.98+i*.035+(R()-.5)*.03, mv=(v0+ev)/2-.04-R()*.03;
+    const w0=h*(.016-i*.0009);
+    g.strokeStyle=`rgba(${205+R()*25|0},${210+R()*20|0},${222+R()*20|0},${.75+R()*.2})`; g.lineCap='round';
+    for(const [t0,t1,lw] of [[0,.45,w0],[.4,.8,w0*.65],[.75,1,w0*.35]]){ g.lineWidth=Math.max(1,lw); g.beginPath();
+      const q=(t)=>{ const a=(1-t)*(1-t), b=2*(1-t)*t, c=t*t; return [x+h*(a*sx+b*(sx+ex)*.5+c*ex), y+h*(a*v0+b*mv+c*ev)]; };
+      g.moveTo(...q(t0)); for(let k=1;k<=6;k++) g.lineTo(...q(t0+(t1-t0)*k/6)); g.stroke(); } }
+  // the storm's light along his west edge
+  g.strokeStyle='rgba(200,208,255,.8)'; g.lineWidth=Math.max(1,h*.012); g.beginPath(); g.moveTo(...P(-.12,0)); g.quadraticCurveTo(...P(-.09,-.25),...P(-.07,-.5)); g.quadraticCurveTo(...P(-.1,-.66),...P(-.11,-.8)); g.stroke();
+  g.beginPath(); g.moveTo(...P(-.15,-.62)); g.lineTo(...P(-.16,-.46)); g.stroke();
+  g.beginPath(); g.arc(x,y-h*.9,h*.055,Math.PI*.65,Math.PI*1.3); g.stroke(); };
+// a sitting wolf in ink, s tall at the shoulder, feet at (x,y), facing west at the storm: deep chest, straight forelegs,
+// the haunch folded under, a heavy tail laid along the roof; its head red, one eye catching the light
+JD.wolf=(g,x,y,s,R)=>{ const P=(u,v)=>[x+u*s,y+v*s];
+  const curve=(pts)=>{ g.beginPath(); g.moveTo(...P(...pts[0])); for(let i=1;i<pts.length-1;i++){ const [ax,ay]=P(...pts[i]), [bx,by]=P(...pts[i+1]); g.quadraticCurveTo(ax,ay,(ax+bx)/2,(ay+by)/2); } g.lineTo(...P(...pts[pts.length-1])); g.closePath(); };
+  g.fillStyle=SUMI.ink(1);
+  curve([[.5,0],[.62,-.2],[.55,-.48],[.32,-.72],[.12,-.95],[-.05,-1.0],[-.2,-.9],[-.22,-.6],[-.2,-.3],[-.24,0],[-.14,0],[-.12,-.3],[-.06,-.25],[-.04,0],[.1,0]]); g.fill();   // body, chest, forelegs
+  curve([[.45,-.02],[.75,.02],[1.0,-.05],[1.15,-.16],[1.05,-.1],[.8,-.1],[.55,-.12]]); g.fill();                                               // the tail
+  // the head: skull, ears, the long muzzle — red
+  const head=()=>curve([[.04,-.92],[.06,-1.12],[.02,-1.3],[-.04,-1.48],[-.1,-1.28],[-.16,-1.4],[-.2,-1.22],[-.34,-1.18],[-.56,-1.1],[-.55,-1.05],[-.36,-1.0],[-.2,-.9]]);
+  head(); g.fillStyle='#a8231a'; g.fill(); g.save(); head(); g.clip(); const sh=g.createLinearGradient(...P(-.5,-1.3),...P(.1,-.9)); sh.addColorStop(0,'rgba(255,90,60,.5)'); sh.addColorStop(1,'rgba(40,0,0,.6)'); g.fillStyle=sh; g.fillRect(...P(-.6,-1.6),s*.8,s*.8); g.restore();
+  g.fillStyle='rgba(255,226,140,.98)'; g.beginPath(); g.ellipse(...P(-.22,-1.17),Math.max(1.5,s*.035),Math.max(1,s*.022),-.2,0,Math.PI*2); g.fill();     // the eye
+  g.strokeStyle='rgba(200,208,255,.7)'; g.lineWidth=Math.max(1,s*.025); g.beginPath(); g.moveTo(...P(-.24,0)); g.quadraticCurveTo(...P(-.22,-.5),...P(-.2,-.9)); g.stroke(); };
 
 /* ---------- the quests ---------- */
 { const q=QUESTS.find(q=>q.id==='c3i'); Object.assign(q,{check:s=>!!s.flags.c3_jd_done,

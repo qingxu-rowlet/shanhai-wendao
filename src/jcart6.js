@@ -21,25 +21,41 @@ On.draw(({g,T,ox,oy})=>{ if(RT.mapId!=='jc_xiang') return; const Z=T/16;
     for(let k=1;k<5;k++){ const u=k/5, x=a+(b-a)*u, sy=yy+T*.35*4*u*(1-u)*.5, sw=Math.sin(RT.t*1.2+k)*Z; g.fillStyle=['#c8c0b0','#5a6a8a','#a85a4a','#d8d0b8'][k%4]; g.fillRect(x-T*.22+sw,sy,T*.44,T*.5); g.fillStyle='rgba(0,0,0,.2)'; g.fillRect(x-T*.22+sw,sy+T*.42,T*.44,T*.08); } } });
 
 /* ---------- 插画「小巷」 ---------- */
+// painted in ink like the other chapter-3 pictures: the lane at night between two high plastered walls that run back to a
+// far wall; the moon in the strip of sky; a red lantern hung out on a bracket from the left wall, its light pooled on
+// the flagstones; washing on a line overhead; the red-headed wolf sitting up on the right wall's coping, looking down.
+// The walls stop at the ground line, so you (left), 萧烬 (crouched, right) and the dog all stand on the flagstones.
+C3A.xiangPaint=(g,W,H,R)=>{ const GY=H*.84, M=Math.min(W,H);
+  C3INK.night(g,W,H,R,'#cfcac0');
+  Land.orb(g,W*.5,H*.09,M*.05,'#f4efda',5);
+  C3INK.roofs(g,W,H*.25,W*.07,3,R,.62,true);                                                         // roofs beyond the far wall
+  // the far wall across the end of the lane, a door in it, a little light under the door
+  g.fillStyle=SUMI.ink(.66); g.fillRect(W*.34,H*.3,W*.32,GY-H*.3); brush(g,[[W*.34,H*.3],[W*.66,H*.3]],Math.max(3,H*.01),.9);
+  g.fillStyle=SUMI.ink(.85); g.fillRect(W*.47,H*.5,W*.06,GY-H*.5); g.fillStyle='rgba(255,190,110,.6)'; g.fillRect(W*.47,GY-H*.008,W*.06,H*.006);
+  // the two side walls: tops run up and out toward us, their feet sit on the ground line
+  C3INK.wall(g,-W*.02,W*.34,H*.04,H*.3,GY+H*.02,GY,.82,R);
+  C3INK.wall(g,W*1.02,W*.66,H*.03,H*.3,GY+H*.02,GY,.88,R);
+  // moonlight down the middle of the lane, the flagstones
+  Land.ground(g,W,H,GY,.6);
+  g.fillStyle=SUMI.ink(.72); g.fillRect(0,GY,W,H-GY);
+  { const mg=g.createLinearGradient(0,GY,0,H); mg.addColorStop(0,'rgba(215,220,240,.18)'); mg.addColorStop(1,'rgba(215,220,240,.06)'); g.fillStyle=mg; g.beginPath(); g.moveTo(W*.44,GY); g.lineTo(W*.56,GY); g.lineTo(W*.7,H); g.lineTo(W*.3,H); g.closePath(); g.fill(); }
+  for(let r=0;r<5;r++){ const y=GY+(H-GY)*(r+1)/6; brush(g,[[0,y],[W,y]],1,.22); for(let k=0;k<14;k++){ const x=W*(k+(r%2)*.5)/14; brush(g,[[x,y-(H-GY)/6],[x+W*.004,y]],1,.18); } }
+  // the lantern: an iron bracket out from the left wall, the lantern hanging from it, its glow on the wall and the ground
+  { const wx=W*.2, wy=H*.36, lx=W*.27, ly=H*.47, r=M*.035;
+    const gl=g.createRadialGradient(lx,ly,0,lx,ly,W*.22); gl.addColorStop(0,'rgba(255,170,90,.42)'); gl.addColorStop(1,'rgba(255,170,90,0)'); g.fillStyle=gl; g.fillRect(0,0,W,H);
+    const pool=g.createRadialGradient(lx,GY+H*.06,0,lx,GY+H*.06,W*.2); pool.addColorStop(0,'rgba(255,170,90,.32)'); pool.addColorStop(1,'rgba(255,170,90,0)'); g.save(); g.translate(lx,GY+H*.06); g.scale(1,.35); g.translate(-lx,-(GY+H*.06)); g.fillStyle=pool; g.fillRect(lx-W*.2,GY+H*.06-W*.2,W*.4,W*.4); g.restore();
+    g.strokeStyle=SUMI.ink(.95); g.lineWidth=Math.max(2,W*.004); g.beginPath(); g.moveTo(wx,wy); g.lineTo(lx+W*.01,wy-H*.005); g.moveTo(wx,wy+H*.04); g.lineTo(wx+W*.04,wy); g.stroke();
+    C3INK.hangLantern(g,lx,ly,r); }
+  // washing on a line across the lane, high up
+  C3INK.washing(g,W*.1,H*.2,W*.88,H*.17,R);
+  // the wolf on the right wall's coping, sitting up, head down toward the lane
+  { const u=.8, x=W*(1.02-(1.02-.66)*u), y=H*(.03+(.3-.03)*u); g.save(); g.shadowColor='rgba(225,230,250,.95)'; g.shadowBlur=H*.014; JD.wolf(g,x,y+H*.008,H*.09,R); g.restore(); JD.wolf(g,x,y+H*.008,H*.09,R); }
+  // a broken basket and a stone by the walls' feet
+  g.fillStyle=SUMI.ink(.8); g.beginPath(); g.ellipse(W*.06,GY+H*.03,W*.04,H*.025,0,0,Math.PI*2); g.fill(); brush(g,[[W*.025,GY+H*.02],[W*.095,GY+H*.02]],2,.9);
+  Land.rock(g,W*.93,GY+H*.04,W*.07,H*.045,R,.75);
+  Land.edge&&Land.edge(g,W,H); };
 C3A.xiangCG=function(){
   const dog=JA6.dog();
-  PixCG.open({ink:(g,W,H,R)=>{ g.fillStyle='#07080e'; g.fillRect(0,0,W,H);
-      // the sky: a strip between the walls, the moon at its top
-      const sg=g.createLinearGradient(0,0,0,H*.4); sg.addColorStop(0,'#141a30'); sg.addColorStop(1,'#232a48'); g.fillStyle=sg; g.beginPath(); g.moveTo(W*.36,0); g.lineTo(W*.64,0); g.lineTo(W*.56,H*.38); g.lineTo(W*.44,H*.38); g.closePath(); g.fill();
-      g.fillStyle='#ece6cc'; g.beginPath(); g.arc(W*.53,H*.08,H*.05,0,7); g.fill(); const mg=g.createRadialGradient(W*.53,H*.08,0,W*.53,H*.08,H*.25); mg.addColorStop(0,'rgba(236,230,204,.25)'); mg.addColorStop(1,'rgba(236,230,204,0)'); g.fillStyle=mg; g.fillRect(0,0,W,H*.4);
-      // the two walls, plastered, the coping dark, running away from us
-      for(const side of [-1,1]){ g.fillStyle=side<0?'#2a2a32':'#33333c'; g.beginPath(); const xn=W*(.5+side*.06), xf=W*(.5+side*.5);
-        g.moveTo(xn,H*.38); g.lineTo(xn,H*.66); g.lineTo(xf,H*1.02); g.lineTo(xf,0); g.lineTo(W*(.5+side*.14),0); g.closePath(); g.fill();
-        g.strokeStyle='rgba(20,20,28,.9)'; g.lineWidth=Math.max(2,H*.012); g.beginPath(); g.moveTo(W*(.5+side*.14),0); g.lineTo(xn,H*.38); g.stroke();
-        for(let k=0;k<30;k++){ const u=R(), x=xn+(xf-xn)*u, y=H*(.4+u*.5)*R(); g.fillStyle=`rgba(${120+R()*40|0},${120+R()*30|0},${130+R()*30|0},${.06+R()*.06})`; g.fillRect(x,y+H*.2,W*.01,H*.004); } }
-      // the far end of the lane: another wall, a little lit
-      { const fg=g.createLinearGradient(0,H*.38,0,H*.66); fg.addColorStop(0,'#2a2a36'); fg.addColorStop(1,'#1a1a22'); g.fillStyle=fg; g.fillRect(W*.44,H*.38,W*.12,H*.28); g.fillStyle='#14141a'; g.fillRect(W*.44,H*.38,W*.12,H*.02); }
-      // the moonlight on the ground, down the middle
-      g.fillStyle='#16161e'; g.beginPath(); g.moveTo(W*.44,H*.66); g.lineTo(W*.56,H*.66); g.lineTo(W*1.02,H*1.02); g.lineTo(-W*.02,H*1.02); g.closePath(); g.fill();
-      g.fillStyle='rgba(200,206,236,.12)'; g.beginPath(); g.moveTo(W*.47,H*.66); g.lineTo(W*.53,H*.66); g.lineTo(W*.66,H); g.lineTo(W*.34,H); g.closePath(); g.fill();
-      // a lantern on the left wall, its glow on the ground
-      const lx=W*.3, ly=H*.42; g.strokeStyle='#14141a'; g.lineWidth=Math.max(1,W*.002); g.beginPath(); g.moveTo(lx-W*.04,ly-H*.05); g.lineTo(lx,ly-H*.02); g.lineTo(lx,ly); g.stroke(); g.fillStyle='#a8302a'; g.fillRect(lx-W*.012,ly,W*.024,H*.05); g.fillStyle='#e8b84a'; g.fillRect(lx-W*.012,ly,W*.024,H*.006); const lg=g.createRadialGradient(lx,ly+H*.2,0,lx,ly+H*.2,W*.25); lg.addColorStop(0,'rgba(255,170,90,.22)'); lg.addColorStop(1,'rgba(255,170,90,0)'); g.fillStyle=lg; g.fillRect(0,0,W,H);
-      // the wolf on the right wall's top, sitting, looking down at us
-      C3A.wolf(g,W*.605,H*.12,H*.11,-1,R); },
+  PixCG.open({ink:(g,W,H,R)=>C3A.xiangPaint(g,W,H,R),
     cast:[{who:'me', x:.16, pose:'stand', face:1},{look:LOOK_XIAO, x:.64, pose:'crouch', face:-1},{cv:dog, x:.53, y:.86, s:1.5, face:1}],
     title:'小巷', small:'第三章 · 京城', seed:7401}); };
