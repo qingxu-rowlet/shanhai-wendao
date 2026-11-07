@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="8e6e602473"><script>(function(){var B="8e6e602473";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="21ef19c3a6"><script>(function(){var B="21ef19c3a6";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14194,6 +14194,15 @@ const C3S={
     else if(F.c3_xfu_ask&&!F.c3_xfu_gao) add('gao','side','老仆的桂花糕',has('jc_gao')?'把桂花糕送给萧烬（宵禁以后，萧府墙角或小巷里）':'去东市小吃铺买一块桂花糕',has('jc_gao')?['jc_xiaofu',19,7,'萧烬（宵禁以后）']:['jc_dongshi',4,6,'小吃铺']);
     // 长命锁
     if(has('jc_lock')&&!F.c3_hd_lock) add('lock','side','长命锁','拿给醉月楼的青禾看看',RT.mapId==='jc_zuiyue'?['jc_zuiyue',9,5,'青禾']:['jc_dongkou',13,7,'醉月楼']);
+    // the other sects' entrants: a favour each, once you've asked (while they're still in the capital)
+    const fav=typeof DAY3!=='undefined'?DAY3.st().fav:{}, at=(id)=>{ const o=MAPS.jc_sifang.objects.find(e=>e.id===id); return ['jc_sifang',o.x,o.y,NPCS[id].name]; };
+    const FV={
+      sf_wulan:['乌兰：找阿毛', ()=>fav.amao==='found'?'带阿毛回四方馆找乌兰':'阿毛跑去东市偷糖人了，去糖人摊底下找找', ()=>fav.amao==='found'?at('sf_wulan'):['jc_dongshi',8,12,'阿毛（糖人摊底下）']],
+      sf_wenxuan:['温玄：三枚旧铜钱', ()=>has('c3_coins')?'把前朝铜钱交给温玄（四方馆）':'去西市古董贩子那儿买三枚前朝铜钱（30 灵石）', ()=>has('c3_coins')?at('sf_wenxuan'):['jc_xishi',24,9,'古董贩子']],
+      sf_cheng:['程小剑：剑穗', ()=>has('c3_suizi')?'把剑穗还给程小剑（四方馆）':'剑穗被西市的八哥叼走了，去问问鸟贩', ()=>has('c3_suizi')?at('sf_cheng'):['jc_xishi',22,9,'鸟贩']],
+      sf_bu:['卜小鱼：小老虎糖人', ()=>has('jc_tangren')?'把糖人给卜小鱼（四方馆）':'去东市糖人师傅那儿买一只小老虎糖人', ()=>has('jc_tangren')?at('sf_bu'):['jc_dongshi',5,11,'糖人师傅']],
+    };
+    for(const [id,[title,prog,tgt]] of Object.entries(FV)) if(fav[id]==='asked'&&!(typeof LT!=='undefined'&&LT.gone(id))) add('fav_'+id,'side',title,prog(),tgt());
     return out; },
 };
 { const _x=Nav.extraTasks; Nav.extraTasks=()=>[...(_x?_x():[]), ...C3S.items()]; }
@@ -15525,6 +15534,18 @@ const SelfTest3={
           Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text)); r.cleared=!C3S.items().some(x=>/qin|shu|hua|du/.test(x.key))&&Nav.tracked()?.kind==='main';
           const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('四方馆的忙：乌兰的阿毛、温玄的铜钱、程小剑的剑穗、卜小鱼的糖人，都在任务列表里', async()=>{ const r={}; cur='四方馆的忙';
+          node('c3-side').run(); await W(300); const d=DAY3.st(); d.fav={}; S.stones=Math.max(S.stones,200); const ids=['sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>!LT.gone(id));
+          const item=id=>C3S.items().find(x=>x.key==='c3s_fav_'+id);
+          for(const id of ids){ r['未接'+id]=!item(id); DS.favour(id); await adv(); const it=item(id); r['接'+id]=!!it; if(!it) continue;
+            S.track=it.key; r['寻路'+id]=Nav.tracked()?.target?.[0]===it.target[0]; }
+          UI.tasks(); await W(80); r.panel=/找阿毛|旧铜钱|剑穗|糖人/.test($('#panel').innerText); UI.closePanel();
+          if(ids.includes('sf_wulan')){ enterMap('jc_dongshi',8,11); await W(80); Dungeon.act(RT.ents.find(e=>e.act==='dspet')); await adv(); r.amao=item('sf_wulan')?.target?.[0]==='jc_sifang'; }
+          if(ids.includes('sf_wenxuan')){ addItem('c3_coins',1); r.coins=item('sf_wenxuan')?.target?.[0]==='jc_sifang'; }
+          if(ids.includes('sf_cheng')) addItem('c3_suizi',1); if(ids.includes('sf_bu')) addItem('jc_tangren',1);
+          for(const id of ids){ DS.favour(id); await adv(); r['完'+id]=!item(id)&&d.fav[id]==='done'; }
+          S.track='main'; const ok=Object.values(r).every(Boolean);
+          return {fail:!ok, info:Object.entries(r).filter(([k,v])=>!v||!/^(未接|寻路|完)/.test(k)).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`（${ids.length} 人在京城）`}; });
         await step('战斗难度：每场战斗要打几回合、每回合能挨几下弹幕（不吃药、不护体）', async()=>{ const keep=JSON.stringify(S), hadPet=!!S.pet;
           // works it out on paper, the same formulas as the battle: you use 绝学 while there's 灵力, then 御剑术, then attack; each enemy turn is a dodge
           const probe=(kind,L,sect,opt={})=>{ S.L=L; S.sect=sect; S.exp=0; if(sect==='shou'&&!S.pet) S.pet={kind:'hu',lv:3};

@@ -325,6 +325,18 @@ const SelfTest3={
           Story.talk('ds_wonton'); await adv(); r.wonton=SelfTest3.lines.slice(-3).some(l=>/擀面杖/.test(l.text)); r.cleared=!C3S.items().some(x=>/qin|shu|hua|du/.test(x.key))&&Nav.tracked()?.kind==='main';
           const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('四方馆的忙：乌兰的阿毛、温玄的铜钱、程小剑的剑穗、卜小鱼的糖人，都在任务列表里', async()=>{ const r={}; cur='四方馆的忙';
+          node('c3-side').run(); await W(300); const d=DAY3.st(); d.fav={}; S.stones=Math.max(S.stones,200); const ids=['sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>!LT.gone(id));
+          const item=id=>C3S.items().find(x=>x.key==='c3s_fav_'+id);
+          for(const id of ids){ r['未接'+id]=!item(id); DS.favour(id); await adv(); const it=item(id); r['接'+id]=!!it; if(!it) continue;
+            S.track=it.key; r['寻路'+id]=Nav.tracked()?.target?.[0]===it.target[0]; }
+          UI.tasks(); await W(80); r.panel=/找阿毛|旧铜钱|剑穗|糖人/.test($('#panel').innerText); UI.closePanel();
+          if(ids.includes('sf_wulan')){ enterMap('jc_dongshi',8,11); await W(80); Dungeon.act(RT.ents.find(e=>e.act==='dspet')); await adv(); r.amao=item('sf_wulan')?.target?.[0]==='jc_sifang'; }
+          if(ids.includes('sf_wenxuan')){ addItem('c3_coins',1); r.coins=item('sf_wenxuan')?.target?.[0]==='jc_sifang'; }
+          if(ids.includes('sf_cheng')) addItem('c3_suizi',1); if(ids.includes('sf_bu')) addItem('jc_tangren',1);
+          for(const id of ids){ DS.favour(id); await adv(); r['完'+id]=!item(id)&&d.fav[id]==='done'; }
+          S.track='main'; const ok=Object.values(r).every(Boolean);
+          return {fail:!ok, info:Object.entries(r).filter(([k,v])=>!v||!/^(未接|寻路|完)/.test(k)).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`（${ids.length} 人在京城）`}; });
         await step('战斗难度：每场战斗要打几回合、每回合能挨几下弹幕（不吃药、不护体）', async()=>{ const keep=JSON.stringify(S), hadPet=!!S.pet;
           // works it out on paper, the same formulas as the battle: you use 绝学 while there's 灵力, then 御剑术, then attack; each enemy turn is a dodge
           const probe=(kind,L,sect,opt={})=>{ S.L=L; S.sect=sect; S.exp=0; if(sect==='shou'&&!S.pet) S.pet={kind:'hu',lv:3};

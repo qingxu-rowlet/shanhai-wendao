@@ -24,6 +24,15 @@ const C3S={
     else if(F.c3_xfu_ask&&!F.c3_xfu_gao) add('gao','side','老仆的桂花糕',has('jc_gao')?'把桂花糕送给萧烬（宵禁以后，萧府墙角或小巷里）':'去东市小吃铺买一块桂花糕',has('jc_gao')?['jc_xiaofu',19,7,'萧烬（宵禁以后）']:['jc_dongshi',4,6,'小吃铺']);
     // 长命锁
     if(has('jc_lock')&&!F.c3_hd_lock) add('lock','side','长命锁','拿给醉月楼的青禾看看',RT.mapId==='jc_zuiyue'?['jc_zuiyue',9,5,'青禾']:['jc_dongkou',13,7,'醉月楼']);
+    // the other sects' entrants: a favour each, once you've asked (while they're still in the capital)
+    const fav=typeof DAY3!=='undefined'?DAY3.st().fav:{}, at=(id)=>{ const o=MAPS.jc_sifang.objects.find(e=>e.id===id); return ['jc_sifang',o.x,o.y,NPCS[id].name]; };
+    const FV={
+      sf_wulan:['乌兰：找阿毛', ()=>fav.amao==='found'?'带阿毛回四方馆找乌兰':'阿毛跑去东市偷糖人了，去糖人摊底下找找', ()=>fav.amao==='found'?at('sf_wulan'):['jc_dongshi',8,12,'阿毛（糖人摊底下）']],
+      sf_wenxuan:['温玄：三枚旧铜钱', ()=>has('c3_coins')?'把前朝铜钱交给温玄（四方馆）':'去西市古董贩子那儿买三枚前朝铜钱（30 灵石）', ()=>has('c3_coins')?at('sf_wenxuan'):['jc_xishi',24,9,'古董贩子']],
+      sf_cheng:['程小剑：剑穗', ()=>has('c3_suizi')?'把剑穗还给程小剑（四方馆）':'剑穗被西市的八哥叼走了，去问问鸟贩', ()=>has('c3_suizi')?at('sf_cheng'):['jc_xishi',22,9,'鸟贩']],
+      sf_bu:['卜小鱼：小老虎糖人', ()=>has('jc_tangren')?'把糖人给卜小鱼（四方馆）':'去东市糖人师傅那儿买一只小老虎糖人', ()=>has('jc_tangren')?at('sf_bu'):['jc_dongshi',5,11,'糖人师傅']],
+    };
+    for(const [id,[title,prog,tgt]] of Object.entries(FV)) if(fav[id]==='asked'&&!(typeof LT!=='undefined'&&LT.gone(id))) add('fav_'+id,'side',title,prog(),tgt());
     return out; },
 };
 { const _x=Nav.extraTasks; Nav.extraTasks=()=>[...(_x?_x():[]), ...C3S.items()]; }
