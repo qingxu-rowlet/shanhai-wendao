@@ -20,7 +20,7 @@ const JD={
   void:(g,W,H,R)=>{ g.fillStyle='#07060c'; g.fillRect(0,0,W,H); const rg=g.createRadialGradient(W*.42,H*.72,0,W*.42,H*.72,W*.6); rg.addColorStop(0,'rgba(80,60,110,.35)'); rg.addColorStop(1,'rgba(10,8,16,0)'); g.fillStyle=rg; g.fillRect(0,0,W,H);
     g.fillStyle='rgba(120,100,150,.18)'; g.fillRect(0,H*.86,W,H*.004); for(let k=0;k<40;k++){ g.fillStyle=`rgba(160,140,200,${R()*.25})`; g.fillRect(R()*W,H*(.2+R()*.6),1,R()*H*.05); } },
 };
-BEASTS.c3_xinmo={name:'心魔 · 独影', self:true, selfMul:{hp:5, atk:1.05, def:1}, boss:true, hp:1500, atk:38, def:10, exp:0, stones:[0,0], moves:['atk','charm','atk','charge','big'],
+BEASTS.c3_xinmo={name:'心魔 · 独影', self:true, selfMul:{hp:2.6, atk:.95, def:1}, boss:true, hp:1500, atk:38, def:10, exp:0, stones:[0,0], moves:['atk','charm','atk','charge','big'],
   lore:'结丹时的心魔。它变成你最怕的样子：一个人站在空地上，所有人都走了。'};
 
 /* ---------- the cushion ---------- */
@@ -53,7 +53,17 @@ JD.begin=()=>{ S.flags.c3_jd_tried=true; const P=JD.people(), lines=[
     return QQLU.talk(L,()=>{ s.talking=false; if(Battle.s!==s||s.dead) return; s.busy=false; _et.call(Battle); }); }; }
 
 /* ---------- after the fight: the 雷劫 ---------- */
-JD.after=r=>{ if(r!=='win'){ S.hp=Math.max(1,S.hp); return UI.say([['旁白','心魔的笑声在耳边回荡。你从入定里惊醒，一身冷汗。'],['旁白','结丹丹的药力还在丹田里，没有散。'],['谢霁月','（她还坐在门槛上）……歇一歇，再来。']]); }
+// after a lost 心魔 fight, 大师姐 says what to do next: guard on its warnings, where pills are sold, and — if you're short — where to earn
+JD.loseTips=()=>{ const L=[], pills=count(S,'huichun'), F=S.flags, cheap=50;
+  L.push(['谢霁月','它要「心神一荡」、要蓄力重击的时候，你看得出来的。那一下，护体。']);
+  if(pills<2){ L.push(['谢霁月',`身上${pills?'只剩一颗':'一颗'}回春丹${pills?'':'都没有'}？朱雀大街的回春堂，柜台后面的掌柜卖，五十灵石一颗。当铺也有，贵一点。`]);
+    if(S.stones<cheap*2){ const w=[];
+      if(F.c3_hc_ru) w.push('回春堂的孙大夫每天缺人抓药'); w.push('西市琅琊阁的阁主要人抄书，一天一回');
+      w.push('四方馆里别的宗门的人，每天都能找他们切磋，赢了有彩头');
+      w.push('护城河边的船家借钓竿，钓上来的鱼当铺按原价收');
+      L.push(['谢霁月',`钱不够的话——${w.join('；')}。`]); L.push(['旁白',`（你有 ${S.stones} 灵石。回春丹在回春堂 50 一颗。）`]); } }
+  L.push(['谢霁月','结丹丹的药力散不了。准备好了，再来。']); return L; };
+JD.after=r=>{ if(r!=='win'){ S.hp=Math.max(1,S.hp); return UI.say([['旁白','心魔的笑声在耳边回荡。你从入定里惊醒，一身冷汗。'],['旁白','结丹丹的药力还在丹田里，没有散。'],['谢霁月','（她还坐在门槛上）……歇一歇，再来。'],...JD.loseTips()]); }
   UI.say([['心魔','（它的脸裂开了，像一面碎掉的镜子）……'],['旁白','心魔散了。黑暗里亮起一点光。'],['旁白','可是头顶上，四方馆的上空，雷云已经压下来了。'],['谢霁月','（她站起来，拔出了剑）……来了。']],
     ()=>Mini.tribulation(ok=>{ if(!ok){ S.hp=Math.max(1,Math.round(stats().hp*.3)); UI.hud(); return UI.say([['旁白','最后一道雷劈下来，你眼前一黑。'],['苏小棠','{名}！{名}！'],['旁白','你被拖出了后院。结丹丹的药力还在，下回再来。']]); }
       JD.done(); }, {waves:5, warn:.75, gap:1.85, title:'雷劫', failText:'雷劫未过……结丹丹的药力还在，养好伤再来。'})); };

@@ -151,3 +151,7 @@ const DANG={
       b.querySelectorAll('[data-sellall]').forEach(x=>x.onclick=()=>sell(x.dataset.sellall,S.inv[x.dataset.sellall]));
     }); },
 };
+// 回春堂 is a 药铺: the 掌柜 at the counter sells 回春丹 (cheaper than the 当铺), any time after you've first come in
+HC.SELL=[['huichun',50]];
+{ const z=HC.TALK.hc_zhang; HC.TALK.hc_zhang=()=>{ const L=z(); if(!S.flags.c3_hc_ask) return L;
+    return [...L,{choice:'回春堂掌柜：「抓药，还是买现成的丹？」', options:[{text:'买回春丹（50 灵石一颗）', fn:()=>SHOP3.sell('回春堂',HC.SELL)},{text:'不用了', fn:()=>{}}]}]; }; }
