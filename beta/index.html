@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="fc35ee85f5"><script>(function(){var B="fc35ee85f5";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="06576d4558"><script>(function(){var B="06576d4558";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13396,7 +13396,7 @@ CL.chai=()=>{ CL.st().huxian='chai'; save(); UI.say([
   ['书生','（角落里那个书生，慢慢地放下茶碗，鼓了两下掌）'],
   ['穿绸衫的胖子','嘁，较什么真……'],
   ['说书先生','（他看了你很久，然后把醒木轻轻放下了）……这位客官说得是。今儿这段，不说了。'],
-  {love:{xie:60}},{flag:'c3_cl_chai'},
+  {love:{xie:100}},{flag:'c3_cl_chai'},
   ['旁白','（你走出茶楼的时候，听见身后有人在小声议论：「……那是她师弟师妹吧？」）']],()=>{ UI.hud(); Story.check(); }); };
 CL.ren=()=>{ CL.st().huxian='ren'; save(); UI.say([
   ['旁白','你攥紧了茶碗，没有站起来。'],
@@ -13404,7 +13404,7 @@ CL.ren=()=>{ CL.st().huxian='ren'; save(); UI.say([
   ['旁白','茶碗上，被你攥出了一道裂纹。'],
   {love:{xie:20}},{flag:'c3_cl_ren'}],()=>{ UI.hud(); Story.check(); }); };
 // 大师姐 hears of it: the next time you talk to her, wherever she is
-CL.xieLine=()=>S.flags.c3_cl_chai&&!S.flags.c3_cl_xie?(S.flags.c3_cl_xie=true,[['谢霁月','（她看着你，过了很久）……听雨轩的事，我听说了。'],['谢霁月','以后别做这种事。'],['谢霁月','……'],['谢霁月','谢谢。']])
+CL.xieLine=()=>S.flags.c3_cl_chai&&!S.flags.c3_cl_xie?(S.flags.c3_cl_xie=true,[['谢霁月','（她看着你，过了很久）……听雨轩的事，我听说了。'],['谢霁月','以后别做这种事。'],['谢霁月','……'],['谢霁月','谢谢。'],{love:{xie:30}}])
   :S.flags.c3_cl_ren&&!S.flags.c3_cl_xie?(S.flags.c3_cl_xie=true,[['谢霁月','你去听雨轩了？'],['谢霁月','（她看见你手上被茶碗硌出的红印）……我听了三年了。不疼的。']]):null;
 
 /* ---------- talking ---------- */
@@ -14969,6 +14969,7 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
 { const A=['c3_go','c3_cooked','c3_dinner','c3_morning','c3_anping_in','c3_notice','c3_shrine','c3_old','c3_grave','c3_night'];
   const upto=f=>Object.fromEntries(A.slice(0,A.indexOf(f)+1).map(k=>[k,true]));
   const go=(flags,map,x,y,dir,quest,hour)=>{ Review.base({quest, L:12, sect:'jian'}); Chapters.C2.ensure(S); Object.assign(S.flags,flags);
+    for(const [id,h] of [['xie',4],['tang',4],['ge',2]]){ const r=Social.rel(id); if(r.pts<h*100){ r.pts=h*100; r.ev=r.ev||{}; for(let e=2;e<=h;e+=2) r.ev[e]=true; } }   // where an ordinary player stands after chapter 2
     S.c3={wood:flags.c3_cooked?[0,1,2]:[], water:flags.c3_cooked?1:0}; if(flags.c3_go){ S.inv.c2_bagua=1; S.flags.c3_wu_hulu=true; } S.min=(hour||10)*60; Review.at(map,x,y,dir); Story.check(); };
   const N=(id,title,check,run)=>({id:'c3-'+id, group:'第三章', title, check, run});
   Review.NODES.push(

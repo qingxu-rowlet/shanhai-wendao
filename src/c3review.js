@@ -6,6 +6,7 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
 { const A=['c3_go','c3_cooked','c3_dinner','c3_morning','c3_anping_in','c3_notice','c3_shrine','c3_old','c3_grave','c3_night'];
   const upto=f=>Object.fromEntries(A.slice(0,A.indexOf(f)+1).map(k=>[k,true]));
   const go=(flags,map,x,y,dir,quest,hour)=>{ Review.base({quest, L:12, sect:'jian'}); Chapters.C2.ensure(S); Object.assign(S.flags,flags);
+    for(const [id,h] of [['xie',4],['tang',4],['ge',2]]){ const r=Social.rel(id); if(r.pts<h*100){ r.pts=h*100; r.ev=r.ev||{}; for(let e=2;e<=h;e+=2) r.ev[e]=true; } }   // where an ordinary player stands after chapter 2
     S.c3={wood:flags.c3_cooked?[0,1,2]:[], water:flags.c3_cooked?1:0}; if(flags.c3_go){ S.inv.c2_bagua=1; S.flags.c3_wu_hulu=true; } S.min=(hour||10)*60; Review.at(map,x,y,dir); Story.check(); };
   const N=(id,title,check,run)=>({id:'c3-'+id, group:'第三章', title, check, run});
   Review.NODES.push(

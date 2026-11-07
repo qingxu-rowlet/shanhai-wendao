@@ -98,7 +98,7 @@ CL.chai=()=>{ CL.st().huxian='chai'; save(); UI.say([
   ['书生','（角落里那个书生，慢慢地放下茶碗，鼓了两下掌）'],
   ['穿绸衫的胖子','嘁，较什么真……'],
   ['说书先生','（他看了你很久，然后把醒木轻轻放下了）……这位客官说得是。今儿这段，不说了。'],
-  {love:{xie:60}},{flag:'c3_cl_chai'},
+  {love:{xie:100}},{flag:'c3_cl_chai'},
   ['旁白','（你走出茶楼的时候，听见身后有人在小声议论：「……那是她师弟师妹吧？」）']],()=>{ UI.hud(); Story.check(); }); };
 CL.ren=()=>{ CL.st().huxian='ren'; save(); UI.say([
   ['旁白','你攥紧了茶碗，没有站起来。'],
@@ -106,7 +106,7 @@ CL.ren=()=>{ CL.st().huxian='ren'; save(); UI.say([
   ['旁白','茶碗上，被你攥出了一道裂纹。'],
   {love:{xie:20}},{flag:'c3_cl_ren'}],()=>{ UI.hud(); Story.check(); }); };
 // 大师姐 hears of it: the next time you talk to her, wherever she is
-CL.xieLine=()=>S.flags.c3_cl_chai&&!S.flags.c3_cl_xie?(S.flags.c3_cl_xie=true,[['谢霁月','（她看着你，过了很久）……听雨轩的事，我听说了。'],['谢霁月','以后别做这种事。'],['谢霁月','……'],['谢霁月','谢谢。']])
+CL.xieLine=()=>S.flags.c3_cl_chai&&!S.flags.c3_cl_xie?(S.flags.c3_cl_xie=true,[['谢霁月','（她看着你，过了很久）……听雨轩的事，我听说了。'],['谢霁月','以后别做这种事。'],['谢霁月','……'],['谢霁月','谢谢。'],{love:{xie:30}}])
   :S.flags.c3_cl_ren&&!S.flags.c3_cl_xie?(S.flags.c3_cl_xie=true,[['谢霁月','你去听雨轩了？'],['谢霁月','（她看见你手上被茶碗硌出的红印）……我听了三年了。不疼的。']]):null;
 
 /* ---------- talking ---------- */
