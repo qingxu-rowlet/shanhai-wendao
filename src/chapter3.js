@@ -289,3 +289,13 @@ Object.defineProperty(SCRIPTS,'c3_lu_b',{configurable:true, get(){ return [
     target:s=>T('c3_road',7,8,'篝火')},
   {id:'c3z', title:'第三章 · 第一幕 完', desc:'第一幕「北上」完。睡一觉，天亮就进京。', check:s=>!!s.flags.c3_jc_go,
     progress:s=>'回帐篷睡一觉，天亮进京', target:s=>T('c3_road',4,10,'你的帐篷')}); }
+/* ---------- 奇遇 in chapter 3: the capital has no wild places, and 青丘 and the sect are far behind you — so from the day you
+   set out north, a day's encounter turns up in the woods along the 官道 by the camp (reachable from the capital by 传送). ---------- */
+const QIYU_SPOTS_C3=[[3,4],[7,9],[15,4],[13,11],[4,12],[16,7]];
+MAPS.c3_road.objects.push({type:'qiyu', x:0, y:0, act:'qiyu', spr:'sparkle', dyn:true, cond:qyCond('c3_road')});
+{ const _nd=Hooks.newDay; Hooks.newDay=function(){ _nd.apply(Hooks,arguments);
+    if(S.qiyu&&S.flags.c3_go){ S.qiyu.map='c3_road'; S.qiyu.spot=Math.floor(Math.random()*QIYU_SPOTS_C3.length); } Hooks.placeQiyu(); }; }
+{ const _pq=Hooks.placeQiyu; Hooks.placeQiyu=function(){ _pq.apply(Hooks,arguments); if(!S||!S.qiyu||S.qiyu.map!=='c3_road') return;
+    const o=MAPS.c3_road.objects.find(o=>o.type==='qiyu'); if(o) [o.x,o.y]=QIYU_SPOTS_C3[S.qiyu.spot%QIYU_SPOTS_C3.length]; }; }
+{ const _h=Qiyu.hint; Qiyu.hint=function(){ const t=_h.apply(Qiyu,arguments); return S&&S.qiyu&&S.qiyu.map==='c3_road'?t.split(MAPS.c3_road.name).join('城外官道边的林子'):t; }; }
+{ const k=BOUNTY_KINDS.find(k=>k.kind==='qiyu'); if(k){ const _m=k.make; k.make=()=>{ const b=_m(); if(b&&S.qiyu&&S.qiyu.map==='c3_road') b.text=b.text.split(MAPS.c3_road.name).join('城外官道边的林子'); return b; }; } }

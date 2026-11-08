@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="ffc8b17ecf"><script>(function(){var B="ffc8b17ecf";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b99f756bc3"><script>(function(){var B="b99f756bc3";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10109,6 +10109,16 @@ Object.defineProperty(SCRIPTS,'c3_lu_b',{configurable:true, get(){ return [
     target:s=>T('c3_road',7,8,'篝火')},
   {id:'c3z', title:'第三章 · 第一幕 完', desc:'第一幕「北上」完。睡一觉，天亮就进京。', check:s=>!!s.flags.c3_jc_go,
     progress:s=>'回帐篷睡一觉，天亮进京', target:s=>T('c3_road',4,10,'你的帐篷')}); }
+/* ---------- 奇遇 in chapter 3: the capital has no wild places, and 青丘 and the sect are far behind you — so from the day you
+   set out north, a day's encounter turns up in the woods along the 官道 by the camp (reachable from the capital by 传送). ---------- */
+const QIYU_SPOTS_C3=[[3,4],[7,9],[15,4],[13,11],[4,12],[16,7]];
+MAPS.c3_road.objects.push({type:'qiyu', x:0, y:0, act:'qiyu', spr:'sparkle', dyn:true, cond:qyCond('c3_road')});
+{ const _nd=Hooks.newDay; Hooks.newDay=function(){ _nd.apply(Hooks,arguments);
+    if(S.qiyu&&S.flags.c3_go){ S.qiyu.map='c3_road'; S.qiyu.spot=Math.floor(Math.random()*QIYU_SPOTS_C3.length); } Hooks.placeQiyu(); }; }
+{ const _pq=Hooks.placeQiyu; Hooks.placeQiyu=function(){ _pq.apply(Hooks,arguments); if(!S||!S.qiyu||S.qiyu.map!=='c3_road') return;
+    const o=MAPS.c3_road.objects.find(o=>o.type==='qiyu'); if(o) [o.x,o.y]=QIYU_SPOTS_C3[S.qiyu.spot%QIYU_SPOTS_C3.length]; }; }
+{ const _h=Qiyu.hint; Qiyu.hint=function(){ const t=_h.apply(Qiyu,arguments); return S&&S.qiyu&&S.qiyu.map==='c3_road'?t.split(MAPS.c3_road.name).join('城外官道边的林子'):t; }; }
+{ const k=BOUNTY_KINDS.find(k=>k.kind==='qiyu'); if(k){ const _m=k.make; k.make=()=>{ const b=_m(); if(b&&S.qiyu&&S.qiyu.map==='c3_road') b.text=b.text.split(MAPS.c3_road.name).join('城外官道边的林子'); return b; }; } }
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 城里的东西 — what the capital is built of, for every 京城 map: 青石板 paving, the city wall
