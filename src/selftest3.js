@@ -59,7 +59,7 @@ const SelfTest3={
         await step('第一幕从头走到尾：出发 → 营地 → 安平村 → 夜袭 → 山脊', async()=>{ const n0=SelfTest3.lines.length, r=await play([0,0]); const F=S.flags;
           const ok=r.xieMenu&&r.logsGone&&r.oldThere&&r.cg1&&r.cg2&&r.f.won&&F.c3_go&&F.c3_dinner&&F.c3_morning&&F.c3_notice&&F.c3_shrine&&F.c3_old&&F.c3_grave&&F.c3_raid_won&&F.c3_a1_done&&QUESTS[S.quest].id==='c3z'&&count(S,'c2_bagua')===1;
           const miss=['c3_go','c3_dinner','c3_morning','c3_notice','c3_shrine','c3_old','c3_grave','c3_raid_won','c3_a1_done'].filter(f=>!F[f]);
-          return {fail:!ok, info:`${miss.length?'没走到：'+miss.join(' ')+'，':''}${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
+          return {fail:!ok, info:`${miss.length?'没走到：'+miss.join(' ')+'，':''}${r.xieMenu?'':'大师姐没有聊天/送礼 ✗，'}${r.logsGone?'':'早上路没通 ✗，'}${r.oldThere?'':'老人没出现 ✗，'}${r.cg1?'牌位':'牌位 ✗'}，猲狙 ${r.f.won?r.f.turns+' 回合':'✗'}，${r.cg2?'山脊':'山脊 ✗'}，${QUESTS[S.quest].id}，round ${KM.st().round}${F.c3_lt_done?'':'，lt_done ✗'}，${SelfTest3.lines.length-n0} 句`}; });
         await step('另一种选择：递粥 / 问「陆仙长真的是好人吗」', async()=>{ const n0=SelfTest3.lines.length; await play([1,1]); return {fail:!(S.flags.c3_doubt&&S.flags.c3_a1_done), info:`${SelfTest3.lines.length-n0} 句`}; });
         await step('第二幕：天亮进京 → 朱雀门 → 告示，街上每个人都能说话', async()=>{ const n0=SelfTest3.lines.length; cur='进京';
           node('c3-tocity').run(); await W(400); Dungeon.act(obj('c3tent')); await adv(0); await W(1500); await adv(); for(let i=0;i<40&&RT.mapId!=='jc_zhuque';i++){ if(RT.fadeTo) update(.1); await W(60); }
@@ -163,7 +163,7 @@ const SelfTest3={
             for(let i=0;i<300;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg'); if(d.hidden){ await W(60); if($('#dlg').hidden&&!RT.fadeTo&&i>30&&RT.mapId==='jc_sifang') break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
             log.push(`${KM.NAME[B[r]].slice(0,3)} ${f.won?f.turns+'回合':'✗'}`); }
           const gone=B.filter(id=>id!=='tang').every(id=>!RT.ents.some(e=>e.id===id)), tangStays=RT.ents.some(e=>e.id==='tang');
-          for(let i=0;i<20&&QUESTS[S.quest].id!=='c3m';i++){ UI.sync(); Story.check(); await W(100); }
+          for(let i=0;i<60&&QUESTS[S.quest].id!=='c3m';i++){ UI.sync(); Story.check(); await W(100); }   // a full four-sect run is slow; give the last night scene time
           const F=S.flags, ok=lostOk&&KM.st().round===4&&F.c3_lt_tang&&F.c3_lt_n2&&F.c3_kuishou&&F.c3_lt_done&&gone&&tangStays&&QUESTS[S.quest].id==='c3m';
           return {fail:!ok, info:`${lostOk?'输了再来':'输 ✗'}，${log.join('，')}，${F.c3_lt_tang?'苏小棠收手':'收手 ✗'}，${F.c3_lt_n2?'苏小棠留下':'留下 ✗'}，${F.c3_kuishou?'魁首':'魁首 ✗'}，${gone?'输的人都走了':'还在 ✗'}${tangStays?'':'，苏小棠不见了 ✗'}，${QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('第三幕：宗门来信 → 大师姐禁足 → 八卦镜照空屋 → 苏小棠验药渣（线索 2/4）', async()=>{ const n0=SelfTest3.lines.length; cur='宗门来信';
@@ -245,14 +245,14 @@ const SelfTest3={
           const ok=bought&&got.every(g=>g.cg&&g.seen&&g.up)&&got[3].back;
           return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
         await step('京城日常：买礼物、送礼（萧烬、青禾、别的弟子）、回春堂抓药和琅琊阁抄书挣钱、别的宗门弟子的小忙和切磋', async()=>{ const n0=SelfTest3.lines.length; cur='京城日常';
-          node('c3-jiedan').run(); await W(400); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan','sf_cheng','sf_bu']; S.flags.c3_hc_ru=true; S.stones=2000;
+          node('c3-jiedan').run(); await W(400); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>KB.present(id)); S.flags.c3_hc_ru=true; S.stones=2000;
           // shops
           const buy=async(map,x,y,find)=>{ enterMap(map,x,y); await W(80); Dungeon.act(RT.map.objects.find(find)); await adv(0); };
           await buy('jc_zhuque',13,15,o=>o.act==='jcstall'&&o.si===0); await buy('jc_zhuque',13,15,o=>o.act==='jcstall'&&o.si===1); await buy('jc_zhuque',13,15,o=>o.id==='jiulou');
           await buy('jc_dongkou',3,6,o=>o.act==='zyflower'); await buy('jc_dongkou',3,6,o=>o.act==='zytea'); await buy('jc_dongshi',4,6,o=>o.act==='dsshop'&&o.id==='eat'); await buy('jc_xishi',5,10,o=>o.act==='xsstall'&&o.si===0);
           const bought=['jc_pa','jc_zan','wine','flower','jc_tea','jc_gao','jc_oldbook'].filter(k=>count(S,k)>0);
           // gifts: nobody answers 「undefined」
-          const gl=[]; for(const [id,item] of [['xiao','jc_gao'],['qinghe','jc_pa'],['sf_wulan','wine'],['sf_wenxuan','jc_oldbook'],['sf_lin','jc_tea']]){ if(!count(S,item)) addItem(item,1); Social.rel(id).gifted=-1; Social.give(id,item); await W(80); gl.push($('#dText')?.textContent||''); await adv(); }
+          const gl=[]; for(const [id,item] of [['xiao','jc_gao'],['qinghe','jc_pa'],['sf_wulan','wine'],['sf_wenxuan','jc_oldbook'],['sf_lin','jc_tea']].filter(([id])=>!id.startsWith('sf_')||KB.present(id))){ if(!count(S,item)) addItem(item,1); Social.rel(id).gifted=-1; Social.give(id,item); await W(80); gl.push($('#dText')?.textContent||''); await adv(); }
           const giftsOk=gl.every(t=>t&&!/undefined/.test(t));
           // work
           enterMap('jc_huichun',13,6); await W(80); const s0=S.stones, rx=JOB.RX[(S.day*7+3)%JOB.RX.length]; Story.talk('hc_sun');
@@ -263,9 +263,9 @@ const SelfTest3={
           // the disciples
           enterMap('jc_sifang',15,14); await W(150); const favs=[];
           for(const [id,go] of [['sf_cheng',async()=>{ enterMap('jc_xishi',22,10); await W(80); Story.talk('xs_bird'); await adv(); }],['sf_wulan',async()=>{ enterMap('jc_dongshi',8,13); await W(80); Dungeon.act(RT.ents.find(e=>e.act==='dspet')); await adv(); }],
-              ['sf_wenxuan',async()=>{ enterMap('jc_xishi',26,9); await W(80); Story.talk('xs_gu'); await adv('买'); }],['sf_bu',async()=>{ addItem('jc_tangren',1); }]]){
+              ['sf_wenxuan',async()=>{ enterMap('jc_xishi',26,9); await W(80); Story.talk('xs_gu'); await adv('买'); }],['sf_bu',async()=>{ addItem('jc_tangren',1); }]].filter(([id])=>KB.present(id))){
             enterMap('jc_sifang',15,14); await W(80); Story.talk(id); await adv('帮忙'); await go(); enterMap('jc_sifang',15,14); await W(80); Story.talk(id); await adv('交给'); favs.push(DAY3.st().fav[id]==='done'); }
-          Story.talk('sf_lin'); await adv('切磋'); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); } const f=await fight(); await adv();
+          const sparWith=['sf_lin','sf_wulan','sf_wenxuan'].find(id=>KB.present(id)); Story.talk(sparWith); await adv('切磋'); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); } const f=await fight(); await adv();
           const ok=bought.length===7&&giftsOk&&s1>s0&&once&&s2>s1&&favs.every(Boolean)&&f.won;
           return {fail:!ok, info:`买到 ${bought.length}/7，送礼${giftsOk?'':' ✗ '+gl.find(t=>!t||/undefined/.test(t))}，抓药 +${s1-s0}${once?'（一天一次）':' 次数 ✗'}，抄书 +${s2-s1}，小忙 ${favs.map(x=>x?'✓':'✗').join('')}，切磋 ${f.won?f.turns+' 回合':'✗'}，${SelfTest3.lines.length-n0} 句`}; });
         await step('听雨轩（茶楼）：进门、说书「狐仙夺魁」拆台 / 忍、大师姐的反应、之后几天轮着讲、一天一段', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='茶楼';
@@ -326,7 +326,7 @@ const SelfTest3={
           const ok=Object.values(r).every(Boolean);
           return {fail:!ok, info:Object.entries(r).map(([k,v])=>k+(v?'✓':'✗')).join(' ')+`，${SelfTest3.lines.length-n0} 句`}; });
         await step('四方馆的忙：乌兰的阿毛、温玄的铜钱、程小剑的剑穗、卜小鱼的糖人，都在任务列表里', async()=>{ const r={}; cur='四方馆的忙';
-          node('c3-side').run(); await W(300); const d=DAY3.st(); d.fav={}; S.stones=Math.max(S.stones,200); const ids=['sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>!LT.gone(id));
+          node('c3-side').run(); await W(300); const d=DAY3.st(); d.fav={}; S.stones=Math.max(S.stones,200); const ids=['sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>KB.present(id)&&!LT.gone(id));
           const item=id=>C3S.items().find(x=>x.key==='c3s_fav_'+id);
           for(const id of ids){ r['未接'+id]=!item(id); DS.favour(id); await adv(); const it=item(id); r['接'+id]=!!it; if(!it) continue;
             S.track=it.key; r['寻路'+id]=Nav.tracked()?.target?.[0]===it.target[0]; }
@@ -396,6 +396,11 @@ const SelfTest3={
           return {fail:bad.length>0, info:bad.length?bad.slice(0,5).join('；'):'19 张地图，没有被挡住的'}; });
         await step('台词检查：没有没替换的 {…}、undefined、「制作中」', async()=>{ const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>/\{[^{}]{0,6}\}|undefined|NaN|\[object|制作中/.test(l.text)&&!/第二幕「京城」正在制作中/.test(l.text));
           bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」`)); return {fail:bad.length>0, info:bad.length?bad.slice(0,2).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${mine.length} 句都没问题`}; });
+        // whoever of your own sect's named disciples didn't come this year (your places are you and 大师姐) must not speak or be named
+        await step('宗门合理：本届没来的人不说话、不被提起', async()=>{ const away={jian:['林沧','程小剑'], shou:['乌兰'], tianji:['温玄','卜小鱼'], dan:[]}[k];
+          const mine=SelfTest3.lines.filter(l=>l.sect===k), bad=mine.filter(l=>away.some(n=>l.text.includes(n)));
+          bad.forEach(l=>TestLog.issue(`${SECTS[k].name} ${l.node}「${l.text.slice(0,40)}」 提到了没来的人`));
+          return {fail:bad.length>0, info:bad.length?bad.slice(0,3).map(l=>`${l.node}「${l.text.slice(0,30)}」`).join('；'):`${away.length?away.join('、')+'没来，':''}${mine.length} 句里都没出现`}; });
       }
       await step('第三章的插画都能打开', async()=>{ const bad=[]; for(const [n,f] of [['裂开的牌位',()=>C3A.shrineCG()],['山脊',()=>C3A.ridgeCG()],['雷云',()=>JD.cg()],['小巷',()=>C3A.xiangCG()],['开幕式的高台',()=>KM.cg()],['鼎',()=>JA10.cg()]]){ try{ f(); await W(150); if(!PixCG.on) bad.push(n); }catch(e){ bad.push(n+'：'+e.message); } PixCG.close(); }
         return {fail:bad.length>0, info:bad.length?bad.join('；'):'6 张'}; });
