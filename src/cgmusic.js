@@ -30,3 +30,12 @@ CG.musicFor=o=>{ if(!o) return null; const small=o.small||'';
 // when the picture closes, back to the area's music (heart events already do this in CG.close)
 { const _c=PixCG.close; PixCG.close=function(){ const had=PixCG._music; PixCG._music=null; const r=_c.apply(PixCG,arguments);
     if(had&&!Battle.s&&typeof RT!=='undefined'&&RT.mapId&&!(typeof Gallery!=='undefined'&&Gallery._sb)) Music.play(areaTheme(),true); return r; }; }
+
+/* ---------- the investigation: from the night the losers' carriage turns east (宗门来信) until the thing in the 鼎 is
+   dead, the capital no longer sounds like an everyday town. Every 京城 map plays 暗查 (a low drone, tremolo strings,
+   a soft drum, slower than 紧); the night carriage and the 地宫 under the 宗庙 play 紧. Afterwards, the town's own music
+   again. (Put first, so it wins over the town's everyday tune.) ---------- */
+Music.THEMES.suspense={mode:'shang',root:48, bpm:80, feel:'tremolo', drum:.3, drone:.15, flute:.18, density:.42, motif:[0,1,0,-2,0,3,1,0, -1,0,1,3,4,3,1,-2]};
+CG.caseTheme=id=>{ const F=S&&S.flags; if(!F||!id||!id.startsWith('jc_')||!F.c3_lt_done||F.c3_a5_win) return null;
+  return id==='jc_yejie'||id==='jc_digong'?'tense':'suspense'; };
+On._theme.unshift(CG.caseTheme);
