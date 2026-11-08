@@ -30,6 +30,7 @@ LT.go=()=>{ const c=LT.st(), id=LT.opp();
   if(!S.flags.c3_km_done) return false;
   if(c.round>=4) return UI.say([['旁白','擂台上空空荡荡的。红毡上，还留着几道剑痕。']]);
   if(c.day===S.day) return UI.say([['礼部尚书','今日的比完了。明日辰时再来。']]);
+  if(c.openDay===S.day) return UI.say([['礼部尚书','明日辰时开擂。今日，先回去歇着。']]);
   UI.say([['旁白',`四宗大比 · ${LT.ROUND[c.round]}。`],['旁白','上台之前，你又在观天鉴前站了一下。镜面晃了晃，记下了什么。'],
     ...(typeof LT.PRE[id]==='function'?LT.PRE[id]():LT.PRE[id]),
     {choice:`${LT.ROUND[c.round]}：对 ${KM.NAME[id]}`, options:[{text:'上台', fn:()=>LT.fight()},{text:'再准备一下', fn:()=>{}}]}]); return true; };

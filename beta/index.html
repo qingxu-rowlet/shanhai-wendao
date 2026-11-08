@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="143f70e59f"><script>(function(){var B="143f70e59f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="ba1b63f08a"><script>(function(){var B="ba1b63f08a";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11162,6 +11162,7 @@ SF.TALK={
 JC.CHAT=Object.assign(JC.CHAT,{sf_clerk:['名册……名册……'], sf_lin:['……'], sf_cheng:['这步……这步怎么走……'], sf_wulan:['阿毛，别乱跑！'], sf_wenxuan:['……又是这一卦。'], sf_bu:['你输啦～']});
 On.talk(id=>{ if(RT.mapId!=='jc_sifang') return false; const F=S.flags;
   if(F.c3_xf_in&&XF.talk(id)) return true;
+  if((id==='xie'||id==='tang')&&F.c3_km_done&&!F.c3_lt_done){ C3.menu(id,KM.day(id)); return true; }
   if(id==='tang'&&F.c3_ju_won&&!F.c3_dan_done){ DAN.talk(); return true; }
   if(id==='tang'){ if(!F.c3_sf_tang){ UI.say(SF.tangMeet(),()=>{ UI.hud(); Story.check(); }); return true; }
     if(F.c3_sf_jiedan&&!F.c3_sf_recipe){ UI.say(SF.recipe(),()=>{ UI.hud(); Story.check(); }); return true; }
@@ -12050,7 +12051,7 @@ KM.mirror=()=>[
   ['苏小棠','（她看着对阵表，愣住了）……要是我们第一轮都赢了，第二轮就是我和你。'],
   ['苏小棠','（她笑了一下，笑得有点勉强）那、那我要好好准备了！'],
   ['旁白','高台上，萧烬拍了两下手。没有人知道他在为谁鼓掌。'],
-  {flag:'c3_km_done'},
+  {run:()=>{ KM.st().openDay=S.day; }},{flag:'c3_km_done'},
   ['旁白','（大比明日开擂。对阵表可以找礼部尚书再看。）']];
 
 /* ---------- 插画「开幕式的高台」 ---------- */
@@ -12119,23 +12120,41 @@ KM.cg=function(){ const gs=JA7_mask(cgChibi(LOOK_GUOSHI,'stand',null,null,null,f
     title:'开幕式的高台', small:'第三章 · 京城', seed:7501});
   PixCG.cur.front=KM.front; };
 
+/* ---------- where the 大比 stands today ----------
+   'open' before the draw; 'eve' the rest of the opening day (first round tomorrow); 'fight' a day you still have a round
+   to fight; 'rest' after today's round (the next one tomorrow); 'over' once the final is won. (Saves from before the
+   opening day was recorded count as already past it.) */
+KM.phase=()=>{ if(!S.flags.c3_km_done) return 'open'; const c=KM.st(); if((c.round||0)>=4) return 'over';
+  if(c.openDay===S.day) return 'eve'; if(c.day===S.day) return 'rest'; return 'fight'; };
+// 大师姐 and 苏小棠 on the fighting days (the square and 四方馆 alike)
+KM.day=id=>{ const ph=KM.phase(), c=LT.st(), r=LT.ROUND[c.round], nm=ph==='over'?'':KM.NAME[LT.opp()].replace(/（.*/,'');
+  if(id==='xie') return ph==='eve'?[['谢霁月','明天，第一轮。'],['谢霁月','别想高台上的事。先赢。']]
+    :ph==='fight'?[['谢霁月',`今天，${r}。对面是${nm}。`],S.flags.c3_lt_lost?['谢霁月','输过一回不要紧。这一回，看清楚了再出手。']:['谢霁月',c.round?'上台之前，先把气息调匀。':'别想高台上的事。先赢。']]
+    :ph==='rest'?[['谢霁月','今天这一场，赢得不难看。'],['谢霁月',`明天，${r}。回去睡觉。`]]
+    :[['谢霁月','（她看着你，过了一会儿）……魁首。'],['谢霁月','别得意。京城的事，还没完。']];
+  if(ph==='over') return [['苏小棠','{名}是魁首了！我要写信告诉谷里所有人！']];
+  if(c.round>=2) return [['苏小棠','我说了不难过的……真的。'],['苏小棠',`{名}，你一定要站到最上面。`]];
+  if(c.round===1&&ph==='fight') return [['苏小棠','（她攥着衣角）……今天，是我们俩了。'],['苏小棠','{名}，你不许让我。']];
+  return [['苏小棠',ph==='rest'?'明天……就是我们俩了。':'第二轮……'],['苏小棠','{名}，你不许让我。']]; };
+
 /* ---------- talking on the square ---------- */
 KM.TALK={
-  km_libu:()=>S.flags.c3_km_done?[['礼部尚书','明日辰时开擂。'],{run:()=>KM.show()}]:[['礼部尚书','肃静。']],
+  km_libu:()=>{ const ph=KM.phase(), r=LT.ROUND[LT.st().round]; return ph==='open'?[['礼部尚书','肃静。']]:[['礼部尚书',ph==='eve'?'明日辰时开擂。':ph==='fight'?`今日，${r}。上擂台去吧。`:ph==='rest'?`今日的比完了。明日辰时，${r}。`:'大比已经结束了。'],{run:()=>KM.show()}]; },
   km_g1:[['禁军','（他目不斜视）……']], km_g2:[['禁军','退后。高台三丈之内，不得靠近。']],
-  sf_lin:[['林沧','（他抱着剑，看着高台）……天子跟前站着的那个，修为看不透。'],['林沧','比我高。']],
-  sf_wulan:[['乌兰','阿毛今天一直在发抖。'],['乌兰','它怕那个戴面具的。']],
-  sf_wenxuan:[['温玄','那面镜子……不是用来照人的。'],['温玄','（他把铜钱收了起来，没有再算）']],
+  // the opening day's lines (the 天子 and the mask on the 高台) only that day; on the fighting days the 高台 is empty
+  sf_lin:()=>KM.phase()==='eve'?[['林沧','（他抱着剑，看着高台）……天子跟前站着的那个，修为看不透。'],['林沧','比我高。']]:[['林沧','（他抱着剑，看着擂台）……'],['林沧','我在等。等你，或者等下一个。']],
+  sf_wulan:()=>KM.phase()==='eve'?[['乌兰','阿毛今天一直在发抖。'],['乌兰','它怕那个戴面具的。']]:[['乌兰','阿毛今天好多了。'],['乌兰','那个戴面具的，没再来。']],
+  sf_wenxuan:()=>KM.phase()==='eve'?[['温玄','那面镜子……不是用来照人的。'],['温玄','（他把铜钱收了起来，没有再算）']]:[['温玄','（他在数台下的人）……每天，都少几个。'],['温玄','我算不出，他们去了哪儿。']],
   // 程小剑 and 卜小鱼 are in the draw too (one of them is often your first opponent); the crowd bets on whoever is the
   // strongest name in this year's draw (林沧 when he's in it — he isn't when you are 青云剑宗 yourself)
   sf_cheng:()=>KM.first()==='sf_cheng'?[['程小剑','（他攥着竹签，脸都白了）第一轮……是你。'],['程小剑','我、我会尽力的！']]:[['程小剑','我第一回上这么大的擂台……'],['程小剑','腿有点软。']],
   sf_bu:()=>KM.first()==='sf_bu'?[['卜小鱼','我算过了。第一轮，是你和我。'],['卜小鱼','……卦上说我会输。不过我还是要打的。']]:[['卜小鱼','我给自己算了一卦。'],['卜小鱼','……不告诉你。']],
   km_c1:()=>[['看热闹的人',`我押了${KM.fav()}！一两银子呢！`]], km_c2:[['看热闹的人','哪个是谢霁月？……哦，果然长得好看。'],['看热闹的人','怪不得。']],
-  km_c3:[['看热闹的人','老汉看了三届大比了。头一回见天子亲自来。']], km_c4:[['看热闹的人','我家小子说，长大了也要当仙人。'],['看热闹的人','……我才不让。']],
+  km_c3:()=>KM.phase()==='eve'?[['看热闹的人','老汉看了三届大比了。头一回见天子亲自来。']]:[['看热闹的人','老汉看了三届大比了。'],['看热闹的人','今年这届，打得最狠。']], km_c4:[['看热闹的人','我家小子说，长大了也要当仙人。'],['看热闹的人','……我才不让。']],
 };
 On.talk(id=>{ if(RT.mapId!=='jc_gongyuan') return false; const F=S.flags;
-  if(id==='xie'){ C3.menu('xie',F.c3_km_done?[['谢霁月','明天，第一轮。'],['谢霁月','别想高台上的事。先赢。']]:[['谢霁月','跪下。']]); return true; }
-  if(id==='tang'){ C3.menu('tang',F.c3_km_done?[['苏小棠','第二轮……'],['苏小棠','{名}，你不许让我。']]:[['苏小棠','好多人……']]); return true; }
+  if(id==='xie'){ C3.menu('xie',F.c3_km_done?KM.day('xie'):[['谢霁月','跪下。']]); return true; }
+  if(id==='tang'){ C3.menu('tang',F.c3_km_done?KM.day('tang'):[['苏小棠','好多人……']]); return true; }
   const L=KM.TALK[id]; if(!L) return false; UI.say(typeof L==='function'?L():L); return true; });
 On.act('kmgaotai',o=>UI.say(S.flags.c3_km_done?[['旁白','高台上已经空了。华盖底下，只剩一把明黄的椅子。']]:[['旁白','高台。']]));
 On.act('kmleitai',o=>S.flags.c3_km_done?LT.go():UI.say([['旁白','擂台是新砌的。青石面上铺着红毡，四角立着红柱子，拴着一圈金绳。'],['旁白','明天，你要站上去。']]));
@@ -12229,6 +12248,7 @@ LT.go=()=>{ const c=LT.st(), id=LT.opp();
   if(!S.flags.c3_km_done) return false;
   if(c.round>=4) return UI.say([['旁白','擂台上空空荡荡的。红毡上，还留着几道剑痕。']]);
   if(c.day===S.day) return UI.say([['礼部尚书','今日的比完了。明日辰时再来。']]);
+  if(c.openDay===S.day) return UI.say([['礼部尚书','明日辰时开擂。今日，先回去歇着。']]);
   UI.say([['旁白',`四宗大比 · ${LT.ROUND[c.round]}。`],['旁白','上台之前，你又在观天鉴前站了一下。镜面晃了晃，记下了什么。'],
     ...(typeof LT.PRE[id]==='function'?LT.PRE[id]():LT.PRE[id]),
     {choice:`${LT.ROUND[c.round]}：对 ${KM.NAME[id]}`, options:[{text:'上台', fn:()=>LT.fight()},{text:'再准备一下', fn:()=>{}}]}]); return true; };
