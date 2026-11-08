@@ -24,8 +24,6 @@ const Gallery={
     const Q=Gallery.qdone, F=Gallery.flag, any=(...ps)=>s=>ps.some(p=>p(s));
     const heart=(ids,group)=>{ for(const id of ids){ const ev=typeof HEART_CG!=='undefined'&&HEART_CG[id]; if(!ev) continue; for(const lv of [2,4,6,8]){ const e=ev[lv]; if(!e||!e.scene) continue;
         add(group,e.title,'心动事件 · '+(NPCS[id]&&NPCS[id].name||id),()=>CG.open(e.scene,id,e.title),s=>!!(s.rel&&s.rel[id]&&s.rel[id].ev&&s.rel[id].ev[lv])); } } };
-    // 第一章: the heart events of 苏小棠 and 顾长歌
-    heart(['tang','ge'],'第一章 · 心动事件');
     // 第二章
     add('第二章','雾中背影','第二章 · 秘境',()=>MJH.peekCG(),any(F('mj_peeked'),Q('c2e')));
     ['安平村','后山','那一夜'].forEach((t,n)=>add('第二章',t,'镜中往事',()=>{ C2C.cg(0); if(n) C2C.cg(n); },Q('c2f'),'镜中往事|安平村'+(n?'|'+n:'')));
@@ -51,7 +49,8 @@ const Gallery={
     add('第三章','小巷','第三章 · 京城',()=>C3A.xiangCG(),F('c3_xj_met'));
     add('第三章','开幕式的高台','第三章 · 京城',()=>KM.cg(),F('c3_km_done'));
     add('第三章','鼎','第三章 · 人吃人',()=>JA10.cg(),any(F('c3_dg_key'),Q('c3p')));
-    heart(['xiao','xie'],'第三章 · 心动事件');
+    // 心动事件: a column of their own, one person after another (chapter 1 has no story pictures of its own)
+    heart(['tang','ge','xiao','xie'],'心动事件');
     // 奇遇
     if(typeof QIYU!=='undefined') for(const q of QIYU) if(QY_PX[q.id]) add('奇遇',q.title,'奇遇 · '+Qiyu.TIER[q.tier],()=>QyCG.open(q),s=>!!(s.qiyuSeen&&s.qiyuSeen[q.id]));
     return Gallery._L=L; },

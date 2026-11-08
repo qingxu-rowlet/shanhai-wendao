@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="377d6ad1b6"><script>(function(){var B="377d6ad1b6";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="ffc8b17ecf"><script>(function(){var B="ffc8b17ecf";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14895,8 +14895,6 @@ const Gallery={
     const Q=Gallery.qdone, F=Gallery.flag, any=(...ps)=>s=>ps.some(p=>p(s));
     const heart=(ids,group)=>{ for(const id of ids){ const ev=typeof HEART_CG!=='undefined'&&HEART_CG[id]; if(!ev) continue; for(const lv of [2,4,6,8]){ const e=ev[lv]; if(!e||!e.scene) continue;
         add(group,e.title,'心动事件 · '+(NPCS[id]&&NPCS[id].name||id),()=>CG.open(e.scene,id,e.title),s=>!!(s.rel&&s.rel[id]&&s.rel[id].ev&&s.rel[id].ev[lv])); } } };
-    // 第一章: the heart events of 苏小棠 and 顾长歌
-    heart(['tang','ge'],'第一章 · 心动事件');
     // 第二章
     add('第二章','雾中背影','第二章 · 秘境',()=>MJH.peekCG(),any(F('mj_peeked'),Q('c2e')));
     ['安平村','后山','那一夜'].forEach((t,n)=>add('第二章',t,'镜中往事',()=>{ C2C.cg(0); if(n) C2C.cg(n); },Q('c2f'),'镜中往事|安平村'+(n?'|'+n:'')));
@@ -14922,7 +14920,8 @@ const Gallery={
     add('第三章','小巷','第三章 · 京城',()=>C3A.xiangCG(),F('c3_xj_met'));
     add('第三章','开幕式的高台','第三章 · 京城',()=>KM.cg(),F('c3_km_done'));
     add('第三章','鼎','第三章 · 人吃人',()=>JA10.cg(),any(F('c3_dg_key'),Q('c3p')));
-    heart(['xiao','xie'],'第三章 · 心动事件');
+    // 心动事件: a column of their own, one person after another (chapter 1 has no story pictures of its own)
+    heart(['tang','ge','xiao','xie'],'心动事件');
     // 奇遇
     if(typeof QIYU!=='undefined') for(const q of QIYU) if(QY_PX[q.id]) add('奇遇',q.title,'奇遇 · '+Qiyu.TIER[q.tier],()=>QyCG.open(q),s=>!!(s.qiyuSeen&&s.qiyuSeen[q.id]));
     return Gallery._L=L; },
