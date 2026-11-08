@@ -56,8 +56,12 @@ const JA7={
 };
 Object.assign(SPR,{jc_leitai:['x'], jc_gaotai:['x'], jc_jian:['x'], jc_drum:['x']});
 Object.assign(SPRC,{jc_leitai:JA7.leitai(), jc_jian:JA7.jian(), jc_drum:JA7.drum()});
-// the 高台 with the three of them on it: drawn once their sprites are ready
-{ const base=JA7.gaotai(), c=document.createElement('canvas'); c.width=base.width; c.height=base.height; const g=c.getContext('2d'); g.drawImage(base,0,0);
+// the 高台: on the opening day the three of them stand on its floor (the 国师 at the throne's left, the 天子 before it,
+// 萧大人 at its right — the 国师 used to hang in the air over the throne's back); once the 大比 has opened it is empty,
+// as looking at it says: 「高台上已经空了」.
+JA7.gaotaiWith=people=>{ const base=JA7.gaotai(), c=document.createElement('canvas'); c.width=base.width; c.height=base.height; const g=c.getContext('2d'); g.drawImage(base,0,0);
   const put=(sp,x,y)=>g.drawImage(sp,Math.round(x-sp.width/2),Math.round(y-sp.height));
-  put(JA7_mask(lookSprite(LOOK_GUOSHI,'down',0),.36,.3,.12),70,30); put(lookSprite(LOOK_TIANZI,'down',0),88,44); put(lookSprite(LOOK_XIAO,'down',0),112,46);
-  c.bottom=c.height; SPRC.jc_gaotai=c; }
+  if(people){ put(JA7_mask(lookSprite(LOOK_GUOSHI,'down',0),.36,.3,.12),62,46); put(lookSprite(LOOK_TIANZI,'down',0),88,46); put(lookSprite(LOOK_XIAO,'down',0),114,46); }
+  c.bottom=c.height; return c; };
+SPRC.jc_gaotai=JA7.gaotaiWith(true);
+On.enter(id=>{ if(id==='jc_gongyuan') SPRC.jc_gaotai=JA7.gaotaiWith(!S.flags.c3_km_done); });

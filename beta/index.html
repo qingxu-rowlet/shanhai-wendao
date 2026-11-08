@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="4ba1b8e15f"><script>(function(){var B="4ba1b8e15f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="143f70e59f"><script>(function(){var B="143f70e59f";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10578,11 +10578,15 @@ const JA7={
 };
 Object.assign(SPR,{jc_leitai:['x'], jc_gaotai:['x'], jc_jian:['x'], jc_drum:['x']});
 Object.assign(SPRC,{jc_leitai:JA7.leitai(), jc_jian:JA7.jian(), jc_drum:JA7.drum()});
-// the 高台 with the three of them on it: drawn once their sprites are ready
-{ const base=JA7.gaotai(), c=document.createElement('canvas'); c.width=base.width; c.height=base.height; const g=c.getContext('2d'); g.drawImage(base,0,0);
+// the 高台: on the opening day the three of them stand on its floor (the 国师 at the throne's left, the 天子 before it,
+// 萧大人 at its right — the 国师 used to hang in the air over the throne's back); once the 大比 has opened it is empty,
+// as looking at it says: 「高台上已经空了」.
+JA7.gaotaiWith=people=>{ const base=JA7.gaotai(), c=document.createElement('canvas'); c.width=base.width; c.height=base.height; const g=c.getContext('2d'); g.drawImage(base,0,0);
   const put=(sp,x,y)=>g.drawImage(sp,Math.round(x-sp.width/2),Math.round(y-sp.height));
-  put(JA7_mask(lookSprite(LOOK_GUOSHI,'down',0),.36,.3,.12),70,30); put(lookSprite(LOOK_TIANZI,'down',0),88,44); put(lookSprite(LOOK_XIAO,'down',0),112,46);
-  c.bottom=c.height; SPRC.jc_gaotai=c; }
+  if(people){ put(JA7_mask(lookSprite(LOOK_GUOSHI,'down',0),.36,.3,.12),62,46); put(lookSprite(LOOK_TIANZI,'down',0),88,46); put(lookSprite(LOOK_XIAO,'down',0),114,46); }
+  c.bottom=c.height; return c; };
+SPRC.jc_gaotai=JA7.gaotaiWith(true);
+On.enter(id=>{ if(id==='jc_gongyuan') SPRC.jc_gaotai=JA7.gaotaiWith(!S.flags.c3_km_done); });
 
 /* ============================================================
    山海问道 · 第三章「京城」 · 城里的东西（八）：护城河边、醉月楼 — a round table lacquered red with wine cups on it, a
