@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="b99f756bc3"><script>(function(){var B="b99f756bc3";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="8096676b87"><script>(function(){var B="8096676b87";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11719,7 +11719,7 @@ JD.done=()=>{ addItem('c3_jiedan',-1); S.L=Math.max(S.L,13); S.exp=0; const st=s
 
 /* ---------- 插画「雷云」: the capital at night under the thunder, and someone on a roof in the east ---------- */
 JD.cg=function(){
-  PixCG.open({ink:(g,W,H,R)=>JD.paint(g,W,H,R), cast:[], title:'雷云', small:'第三章 · 结丹', seed:7302}); };
+  JD.feet=JD.feet||[.74,.4]; PixCG.open({ink:(g,W,H,R)=>JD.paint(g,W,H,R), cast:[{get cv(){ return C3A.sil(LOOK_XIAO,'stand'); }, get x(){ return JD.feet[0]; }, get y(){ return JD.feet[1]; }, s:.26, face:-1}], title:'雷云', small:'第三章 · 结丹', seed:7302}); };
 // painted in ink like the other chapter-3 pictures: the storm piled over the west of the city, bolts forking down onto the
 // roofs there; the rest of the capital lit up — 朱雀大街 a river of lanterns running to the gate; and in the east, on the
 // city wall, the corner tower, three tiers of upturned eaves. On the topmost eave stands 萧烬 (silver hair loose in the
@@ -11750,7 +11750,7 @@ JD.paint=(g,W,H,R)=>{ const M=Math.min(W,H), HZ=H*.6;
     for(const dx of [-.022,0,.022]){ const lg=g.createRadialGradient(gx+W*dx,gy-H*.015,0,gx+W*dx,gy-H*.015,W*.012); lg.addColorStop(0,'rgba(255,190,110,.9)'); lg.addColorStop(1,'rgba(255,190,110,0)'); g.fillStyle=lg; g.fillRect(gx+W*dx-W*.012,gy-H*.027,W*.024,H*.024); } }
   // the roofs of the capital, row on row toward you, windows lit — more of them to the east and in the middle
   const row=(y,s,n,a,litP)=>{ for(let k=0;k<n;k++){ const x=W*(k+.5)/n+(R()-.5)*W*.03, w=s*(1+R()*.5), h=s*.34, yy=y+(R()-.5)*s*.12, warm=x/W>.4;
-      if(Math.abs(x-W*.5)<s*.6+W*.12*((y-HZ)/(H-HZ))) continue;                       // leave the avenue open
+      if(Math.abs(x-W*.5)<w*.55+W*(.012+.13*Math.max(0,(yy-HZ)/(H-HZ)))) continue;      // leave the avenue open: no roof may reach over it
       g.fillStyle=SUMI.ink(a*.95); g.fillRect(x-w*.42,yy+h*.2,w*.84,s*.9); Land.roof(g,x,yy,w,h,a);
       const nw=1+(R()*2|0); for(let j=0;j<nw;j++) if(R()<litP*(warm?1.3:.7)){ const wx=x+(R()-.5)*w*.55, wy=yy+h*.55+R()*s*.25, ww=Math.max(2,s*.09), wh=Math.max(2,s*.12);
         const lg=g.createRadialGradient(wx,wy,0,wx,wy,s*.35); lg.addColorStop(0,'rgba(255,180,90,.5)'); lg.addColorStop(1,'rgba(255,180,90,0)'); g.fillStyle=lg; g.fillRect(wx-s*.35,wy-s*.35,s*.7,s*.7);
@@ -11790,7 +11790,7 @@ JD.tower=(g,W,H,R,cx,base)=>{ const ink=a=>SUMI.ink(a), U=W*.01;
   g.fillStyle=ink(.95); g.fillRect(cx-U*3,b-U*14,U*6,U*2.6); eave(b-U*14,U*6.4,U*1.1,.98);
   g.fillStyle=ink(1); g.fillRect(cx-U*.25,b-U*16.4,U*.5,U*1.2); g.beginPath(); g.arc(cx,b-U*16.6,U*.45,0,Math.PI*2); g.fill();     // the finial
   // 萧烬 on the west tip of the top eave, the wolf crouched on the slope beside him
-  const fx=cx-U*6.1, fy=b-U*15.3; JD.wolf(g,fx+U*2.3,fy+U*.9,U*1.7,R); JD.figure(g,fx,fy,U*4.4,R); };
+  const fx=cx-U*5.6, fy=b-U*15.1; JD.feet=[fx/W, fy/H]; C3A.wolf(g,fx+U*2.4,fy+U*.4,U*2.2,-1,R); };
 // a standing figure in ink, ~h tall, feet at (x,y): a slim man in a long black robe, sash at the waist, the hem and one
 // sleeve streaming east in the storm wind, long loose silver hair blown out behind him; lit along the west edge
 JD.figure=(g,x,y,h,R)=>{ const P=(u,v)=>[x+u*h,y+v*h], path=(pts)=>{ g.beginPath(); pts.forEach(([u,v],i)=>{ const [px,py]=P(u,v); i?g.lineTo(px,py):g.moveTo(px,py); }); g.closePath(); };
@@ -14904,7 +14904,7 @@ const Gallery={
   list(){ if(Gallery._L) return Gallery._L; const L=[], add=(group,title,small,open,unl,snap)=>L.push({group,title,small,open,unl,snap:snap||(small+'|'+title)});
     const Q=Gallery.qdone, F=Gallery.flag, any=(...ps)=>s=>ps.some(p=>p(s));
     const heart=(ids,group)=>{ for(const id of ids){ const ev=typeof HEART_CG!=='undefined'&&HEART_CG[id]; if(!ev) continue; for(const lv of [2,4,6,8]){ const e=ev[lv]; if(!e||!e.scene) continue;
-        add(group,e.title,'心动事件 · '+(NPCS[id]&&NPCS[id].name||id),()=>CG.open(e.scene,id,e.title),s=>!!(s.rel&&s.rel[id]&&s.rel[id].ev&&s.rel[id].ev[lv])); } } };
+        add(group,e.title,'心动事件 · '+(NPCS[id]&&NPCS[id].name||id),()=>CG.open(e.scene,id,e.title),s=>!!(s.rel&&s.rel[id]&&s.rel[id].ev&&s.rel[id].ev[lv])); L[L.length-1].heart={scene:e.scene,id,lv}; } } };
     // 第二章
     add('第二章','雾中背影','第二章 · 秘境',()=>MJH.peekCG(),any(F('mj_peeked'),Q('c2e')));
     ['安平村','后山','那一夜'].forEach((t,n)=>add('第二章',t,'镜中往事',()=>{ C2C.cg(0); if(n) C2C.cg(n); },Q('c2f'),'镜中往事|安平村'+(n?'|'+n:'')));
@@ -14926,14 +14926,14 @@ const Gallery={
     add('第三章','裂开的牌位','第三章 · 北上',()=>C3A.shrineCG(),any(F('c3_old'),Q('c3b')));
     add('第三章','山脊','第三章 · 北上',()=>C3A.ridgeCG(),any(F('c3_raid_won'),Q('c3c')));
     add('第三章','心魔','第三章 · 结丹',()=>PixCG.open({ink:JD.void, cast:[{who:'me', x:.24, pose:'stand', face:1}], title:'心魔', small:'第三章 · 结丹', seed:7301}),F('c3_jd_done'));
-    add('第三章','雷云','第三章 · 结丹',()=>JD.cg(),F('c3_jd_done'));
+    add('第三章','雷云','第三章 · 结丹',()=>JD.cg(),F('c3_jd_done'),'第三章 · 结丹|雷云|v2');   // v2: redrawn, the old thumbnail is stale
     add('第三章','小巷','第三章 · 京城',()=>C3A.xiangCG(),F('c3_xj_met'));
     add('第三章','开幕式的高台','第三章 · 京城',()=>KM.cg(),F('c3_km_done'));
     add('第三章','鼎','第三章 · 人吃人',()=>JA10.cg(),any(F('c3_dg_key'),Q('c3p')));
     // 心动事件: a column of their own, one person after another (chapter 1 has no story pictures of its own)
     heart(['tang','ge','xiao','xie'],'心动事件');
     // 奇遇
-    if(typeof QIYU!=='undefined') for(const q of QIYU) if(QY_PX[q.id]) add('奇遇',q.title,'奇遇 · '+Qiyu.TIER[q.tier],()=>QyCG.open(q),s=>!!(s.qiyuSeen&&s.qiyuSeen[q.id]));
+    if(typeof QIYU!=='undefined') for(const q of QIYU) if(QY_PX[q.id]) { add('奇遇',q.title,'奇遇 · '+Qiyu.TIER[q.tier],()=>QyCG.open(q),s=>!!(s.qiyuSeen&&s.qiyuSeen[q.id])); L[L.length-1].qy=q; }
     return Gallery._L=L; },
   saves(){ const out=[]; for(let i=0;i<SLOTS;i++){ try{ const s=readSlot(i); if(s) out.push(s); }catch(e){} } return out; },
   css(){ if($('#galcss')) return; const s=document.createElement('style'); s.id='galcss'; s.textContent=`
@@ -14945,8 +14945,10 @@ const Gallery={
     #gal .gi span{display:block;padding:4px 6px;font-size:12px;background:rgba(0,0,0,.6)}#gal .gi small{opacity:.6;margin-left:4px}
     #gal .gi.lock{cursor:default;opacity:.45}#gal .gi.lock span{color:rgba(242,232,212,.6)}
     body.gal-live #cg{z-index:62 !important}
+    body.gal-live #dlg{z-index:64 !important}
+    body.gal-live #skipTag{z-index:66 !important}
     body.gal-gen #cg{opacity:0 !important;pointer-events:none}
-    #galc{position:fixed;left:0;right:0;bottom:0;z-index:63;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;background:linear-gradient(transparent,rgba(0,0,0,.9));color:#f2e8d4}
+    #galc{position:fixed;left:0;right:0;top:0;z-index:65;display:flex;align-items:center;justify-content:center;gap:10px;padding:8px;background:linear-gradient(rgba(0,0,0,.85),transparent);color:#f2e8d4;pointer-events:none}#galc>*{pointer-events:auto}
     #galc .gcap{min-width:160px;text-align:center}#galc b{font-size:17px;letter-spacing:3px}#galc small{display:block;opacity:.7}
     #galc .gnav{font-size:28px;color:#f2e8d4;background:rgba(255,255,255,.08);border:0;width:46px;height:46px;border-radius:8px;cursor:pointer}
     #galback{position:fixed;inset:0;z-index:61;background:#000}`; document.head.appendChild(s); },
@@ -14966,31 +14968,70 @@ const Gallery={
     el.querySelectorAll('.gi[data-i]').forEach(d=>d.onclick=()=>Gallery.view(+d.dataset.i,false)); Gallery.fill(); },
   // draw the missing thumbnails: open each picture out of sight, keep its first frame, put it in the grid
   async fill(){ if(Gallery._filling) return; Gallery._filling=true; const todo=Gallery.items.filter(e=>!e.img);
-    for(const e of todo){ if(!Gallery.viewing||$('#galc')) break; const keepS=S; let img=null;
-      try{ if(!S){ const sv=Gallery.saves().sort((a,b)=>(b.L||0)-(a.L||0))[0]; S=sv?JSON.parse(JSON.stringify(sv)):newState(); }
+    for(const e of todo){ if(!Gallery.viewing||$('#galc')) break; let img=null; Gallery.sandbox(true);
+      try{
         document.body.classList.add('gal-gen'); e.open(); await new Promise(r=>setTimeout(r,120)); const cv=$('#cgBg'); if(cv&&PixCG.cur) PixCG.frame(cv.getContext('2d'),1.5); img=Gallery.snap(); }catch(x){}
       try{ if(CG.on) CG.on=false; if(QyCG.on) QyCG.on=false; PixCG.close(); for(const [o,k] of [['C2L','nightOn'],['C2C','sealOn'],['C2X','cgOn'],['MJH','peekOn']]) if(eval('typeof '+o)!=='undefined') eval(o)[k]=false; }catch(x){}
-      S=keepS; document.body.classList.remove('gal-gen');
+      Gallery.sandbox(false); document.body.classList.remove('gal-gen');
       if(img){ e.img=img; Gallery.put({id:e.snap, title:e.title, small:e.small, img, at:Date.now()}); const d=$(`#gal .gi[data-i="${Gallery.items.indexOf(e)}"] .th`); if(d) d.outerHTML=`<img class="th" src="${img}" alt="">`; }
       await new Promise(r=>setTimeout(r,30)); }
     Gallery._filling=false; },
   close(){ Gallery.endLive(); const el=$('#gal'); if(el) el.hidden=true; Gallery.viewing=false; },
   stop(){ clearTimeout(Gallery.timer); Gallery.timer=null; },
   // the picture itself, live (your own look in it): borrow your furthest save while it plays, then put things back
-  endLive(){ Gallery.stop(); try{ if(CG.on) CG.on=false; if(QyCG.on) QyCG.on=false; PixCG.close(); for(const [o,k] of [['C2L','nightOn'],['C2C','sealOn'],['C2X','cgOn'],['MJH','peekOn']]) if(window[o]||eval('typeof '+o+"!=='undefined'")) eval(o)[k]=false; }catch(e){} document.body.classList.remove('gal-live');
-    for(const id of ['galc','galback']){ const x=$('#'+id); if(x) x.remove(); } if(Gallery._S!==undefined){ S=Gallery._S; Gallery._S=undefined; } },
-  view(i,play){ const L=Gallery.items; if(!L||!L.length) return; Gallery.endLive();
-    if(Gallery._S===undefined){ Gallery._S=S; if(!S){ const sv=Gallery.saves().sort((a,b)=>(b.L||0)-(a.L||0))[0]; S=sv?JSON.parse(JSON.stringify(sv)):newState(); } }
+  endLive(){ Gallery.stop(); Gallery.tok=(Gallery.tok||0)+1; try{ UI.dlgQ=null; $('#dlg').hidden=true; $('#dlg').onclick=null; if(Battle.s) Battle.close&&Battle.close(); }catch(e){} try{ if(CG.on) CG.on=false; if(QyCG.on) QyCG.on=false; PixCG.close(); for(const [o,k] of [['C2L','nightOn'],['C2C','sealOn'],['C2X','cgOn'],['MJH','peekOn']]) if(window[o]||eval('typeof '+o+"!=='undefined'")) eval(o)[k]=false; }catch(e){} document.body.classList.remove('gal-live');
+    for(const id of ['galc','galback']){ const x=$('#'+id); if(x) x.remove(); } Gallery.sandbox(false); },
+  view(i,play){ const L=Gallery.items; if(!L||!L.length) return; Gallery.endLive(); Gallery.sandbox(true);
     document.body.classList.add('gal-live'); const back=document.createElement('div'); back.id='galback'; document.body.appendChild(back);
     const c=document.createElement('div'); c.id='galc'; c.innerHTML=`<button class="gnav gl">‹</button><div class="gcap"></div><button class="gnav gr">›</button><button class="btn gx">${play?'停止':'关闭'}</button>`; document.body.appendChild(c);
-    const show=j=>{ Gallery.at=(j+L.length)%L.length; const e=L[Gallery.at]; try{ if(CG.on) CG.on=false; PixCG.close(); e.open(); }catch(x){ console.warn('画卷',e.title,x); }
+    const show=async j=>{ const tok=Gallery.tok=(Gallery.tok||0)+1; Gallery.at=(j+L.length)%L.length; const e=L[Gallery.at];
+      try{ UI.dlgQ=null; $('#dlg').hidden=true; if(CG.on) CG.on=false; if(QyCG.on) QyCG.on=false; PixCG.close(); }catch(x){}
       c.querySelector('.gcap').innerHTML=`<b>${esc(e.title)}</b><small>${esc(e.small)}　·　${Gallery.at+1} / ${L.length}</small>`;
-      if(play){ Gallery.stop(); Gallery.timer=setTimeout(()=>{ if(Gallery.at>=L.length-1){ c.querySelector('.gx').textContent='关闭'; return; } show(Gallery.at+1); },5000); } };
-    c.querySelector('.gl').onclick=()=>{ play=false; Gallery.stop(); show(Gallery.at-1); };
-    c.querySelector('.gr').onclick=()=>{ play=false; Gallery.stop(); show(Gallery.at+1); };
+      const steps=await Gallery.steps(e); if(tok!==Gallery.tok) return;
+      let done=false; const after=()=>{ if(tok!==Gallery.tok||done) return; done=true; if(play&&Gallery.at<L.length-1) return show(Gallery.at+1); setTimeout(()=>{ if(tok===Gallery.tok){ Gallery.endLive(); Gallery.open(); } },400); };
+      // a branch picked at a choice starts its own dialogue, so the first one's callback may never come: when the dialogue has
+      // been up and then stays closed for a moment, the picture is over
+      let seen=false, quiet=0; const watch=setInterval(()=>{ if(tok!==Gallery.tok){ clearInterval(watch); return; } const open=!document.getElementById('dlg').hidden||!!Battle.s||!!UI.typing;
+        if(open){ seen=true; quiet=0; return; } if(seen&&++quiet>=4){ clearInterval(watch); after(); } },150);
+      try{ if(steps&&steps.length) UI.say(steps.map(s=>s&&s.choice?{...s, options:s.options.map(o=>({...o}))}:s), after); else { e.open(); if(play) Gallery.timer=setTimeout(after,5000); } }catch(x){ console.warn('画卷',e.title,x); } };
+    c.querySelector('.gl').onclick=()=>{ play=false; show(Gallery.at-1); };
+    c.querySelector('.gr').onclick=()=>{ play=false; show(Gallery.at+1); };
     c.querySelector('.gx').onclick=()=>{ Gallery.endLive(); Gallery.open(); };
     show(i); },
 };
+// ---------- replaying a picture the way it was: its animation and its lines, from the step that opens it to the one that closes it ----------
+// Each story picture names where its lines are (an array, a function returning one, or a function that hands them to UI.say) and
+// what its opening step calls. It all runs in a sandbox: a copy of your save, saving / moving / fighting switched off.
+Gallery.SRC={
+  '雾中背影':[()=>SCRIPTS.mj_peek,'peekCG'], '安平村':[()=>C2C.flash,'C2C.cg(0)','C2C.cg(1)'], '后山':[()=>C2C.flash,'C2C.cg(1)','C2C.cg(2)'], '那一夜':[()=>C2C.flash,'C2C.cg(2)'],
+  '封':[()=>C2C.win,'sealCG'], '心镜湖':[()=>C2X.island(),'lakeCG'], '九尾':[()=>C2X.fox(),'foxCG'], '镜中人':[()=>C2X.night,'nightCG'],
+  '入门那年':[()=>[{run:()=>C2L.echoCG(0)},...C2X.echoes[0]],'echoCG'], '那位师兄':[()=>[{run:()=>C2L.echoCG(1)},...C2X.echoes[1]],'echoCG'], '宗门大比':[()=>[{run:()=>C2L.echoCG(2)},...C2X.echoes[2]],'echoCG'],
+  '洞口':[()=>C2Y.meet(),'meetCG'], '饿':[()=>C2Y.found(),'caveCG'],
+  '丰年村':[()=>[{run:()=>C2Y.memCG(0)},...C2Y.memLines(0)],'memCG'], '别出声':[()=>[{run:()=>C2Y.memCG(1)},...C2Y.memLines(1)],'memCG'], '大火':[()=>[{run:()=>C2Y.memCG(2)},...C2Y.memLines(2)],'memCG'],
+  '镜中的你':[()=>SCRIPTS.c2y_shard_look,'shardCG'], '扣下':[()=>SCRIPTS.c2y_shard_no,'shardCG'],
+  '饕餮':[()=>C2Y.found2(),'wakeCG'], '镜收':[()=>C2Y.win(),'C2Y.sealCG'], '长歌':[()=>C2Y.win(),'dawnCG'], '早课':[{say:()=>C2Y.morning()},'morningCG'],
+  '裂开的牌位':[()=>C3.shrine(),'shrineCG'], '山脊':[()=>SCRIPTS.c3_raid_win,'ridgeCG'], '心魔':[{say:()=>JD.begin()},"'心魔'"], '雷云':[{say:()=>JD.done()},'JD.cg'],
+  '小巷':[{say:()=>XX.meet()},'xiangCG'], '开幕式的高台':[()=>KM.open(),'KM.cg'], '鼎':[()=>A4.reveal(),'JA10.cg'],
+};
+Gallery.sandbox=function(on){ const G=window, B=Gallery._sb;
+  if(on&&!B){ const keep={}; Gallery._sb=keep;
+    const off=(o,k,v)=>{ if(o&&k in o){ keep[k+'@'+(o===G?'G':o===UI?'UI':o===Battle?'B':o===Story?'St':'X')]=[o,k,o[k]]; o[k]=v; } };
+    keep.S=S; const sv=Gallery.saves().sort((a,b)=>(b.L||0)-(a.L||0))[0]; S=JSON.parse(JSON.stringify(S||sv||newState()));
+    off(G,'save',()=>{}); off(G,'enterMap',()=>{}); off(Battle,'start',()=>{}); off(Story,'check',()=>{}); off(UI,'banner',()=>{});
+    if(typeof C3!=='undefined') off(C3,'move',()=>{}); }
+  else if(!on&&B){ for(const k in B){ if(k==='S') continue; const [o,kk,v]=B[k]; o[kk]=v; } S=B.S; Gallery._sb=null; } };
+// the lines of a picture: the steps from its opening step to its closing one
+Gallery.steps=async function(e){
+  if(e.heart){ const h=HEART_CG[e.heart.id][e.heart.lv]; return [{cg:h.scene, who:e.heart.id, title:h.title}, ...h.steps]; }
+  if(e.qy){ let got=null; const _s=UI.say; UI.say=(st)=>{ if(!got) got=st; }; let r; try{ r=e.qy.run(); } finally{ UI.say=_s; } return [{run:()=>QyCG.open(e.qy)}, ...((Array.isArray(r)?r:got)||[])]; }
+  const src=Gallery.SRC[e.title]; if(!src) return null; let all=null;
+  try{ if(typeof src[0]==='function') all=src[0]();
+    else { let got=null; const _s=UI.say; UI.say=(st)=>{ if(!got) got=st; }; try{ src[0].say(); for(let i=0;i<40&&!got;i++) await new Promise(r=>setTimeout(r,50)); } finally{ UI.say=_s; } all=got; } }catch(x){ console.warn('画卷',e.title,x); }
+  if(!Array.isArray(all)) return null;
+  const txt=s=>s&&s.run?String(s.run):'', i0=all.findIndex(s=>txt(s).includes(src[1])); if(i0<0) return null;
+  let i1=all.length; for(let i=i0+1;i<all.length;i++){ const t=txt(all[i]); if(src[2]&&t.includes(src[2])){ i1=i; break; } if(/PixCG\.close|CG\.close/.test(t)||all[i].cgend){ i1=i+1; break; } }
+  const out=all.slice(i0,i1); if(/^C2C\.cg\([12]\)/.test(src[1])) out.unshift({run:()=>C2C.cg(0)});   // a later scene of 镜中往事 needs the picture open to swap into
+  return out; };
 // keep each picture when it is shown (after it has faded in), and the second scene of a two-part picture too
 { const _o=PixCG.open; PixCG.open=function(o){ const r=_o.apply(PixCG,arguments); const tok=PixCG.token; PixCG._gal={title:o&&o.title, small:o&&o.small, part:0};
     setTimeout(()=>{ if(PixCG.on&&PixCG.token===tok) Gallery.keep(o.title,o.small,0); },1600); return r; }; }
@@ -15000,7 +15041,7 @@ Gallery.button=function(){ if($('#tGal')) return; let box=$('#title .title-carry
     const b=document.createElement('button'); b.className='btn mini'; b.style.marginLeft='8px'; b.id='tGal'; b.textContent='画卷 · CG 收集'; b.onclick=()=>{ Sound.unlock&&Sound.unlock(); Sound.tick&&Sound.tick(); Gallery.open(); }; box.appendChild(b); };
 { const _t=UI.title; UI.title=function(){ const r=_t.apply(UI,arguments); Gallery.button(); return r; }; }
 setTimeout(()=>{ if(!$('#title').hidden) Gallery.button(); },0);   // the title screen was already drawn before this file loaded
-document.addEventListener('keydown',e=>{ const c=$('#galc'); if(c){ if(e.code==='Escape') c.querySelector('.gx').click(); else if(e.code==='ArrowRight') c.querySelector('.gr').click(); else if(e.code==='ArrowLeft') c.querySelector('.gl').click(); e.stopPropagation(); e.preventDefault(); return; }
+document.addEventListener('keydown',e=>{ const c=$('#galc'); if(c){ if(e.code==='Escape') c.querySelector('.gx').click(); else if(e.code==='ArrowRight') c.querySelector('.gr').click(); else if(e.code==='ArrowLeft') c.querySelector('.gl').click(); else return; e.stopPropagation(); e.preventDefault(); return; }   // only Esc and the arrows: Ctrl (快进), Space, Enter go on to the dialogue as usual
   const g=$('#gal'); if(g&&!g.hidden&&e.code==='Escape'){ Gallery.close(); e.stopPropagation(); } }, true);
 
 /* ============================================================

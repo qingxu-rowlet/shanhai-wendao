@@ -89,7 +89,7 @@ JD.done=()=>{ addItem('c3_jiedan',-1); S.L=Math.max(S.L,13); S.exp=0; const st=s
 
 /* ---------- 插画「雷云」: the capital at night under the thunder, and someone on a roof in the east ---------- */
 JD.cg=function(){
-  PixCG.open({ink:(g,W,H,R)=>JD.paint(g,W,H,R), cast:[], title:'雷云', small:'第三章 · 结丹', seed:7302}); };
+  JD.feet=JD.feet||[.74,.4]; PixCG.open({ink:(g,W,H,R)=>JD.paint(g,W,H,R), cast:[{get cv(){ return C3A.sil(LOOK_XIAO,'stand'); }, get x(){ return JD.feet[0]; }, get y(){ return JD.feet[1]; }, s:.26, face:-1}], title:'雷云', small:'第三章 · 结丹', seed:7302}); };
 // painted in ink like the other chapter-3 pictures: the storm piled over the west of the city, bolts forking down onto the
 // roofs there; the rest of the capital lit up — 朱雀大街 a river of lanterns running to the gate; and in the east, on the
 // city wall, the corner tower, three tiers of upturned eaves. On the topmost eave stands 萧烬 (silver hair loose in the
@@ -120,7 +120,7 @@ JD.paint=(g,W,H,R)=>{ const M=Math.min(W,H), HZ=H*.6;
     for(const dx of [-.022,0,.022]){ const lg=g.createRadialGradient(gx+W*dx,gy-H*.015,0,gx+W*dx,gy-H*.015,W*.012); lg.addColorStop(0,'rgba(255,190,110,.9)'); lg.addColorStop(1,'rgba(255,190,110,0)'); g.fillStyle=lg; g.fillRect(gx+W*dx-W*.012,gy-H*.027,W*.024,H*.024); } }
   // the roofs of the capital, row on row toward you, windows lit — more of them to the east and in the middle
   const row=(y,s,n,a,litP)=>{ for(let k=0;k<n;k++){ const x=W*(k+.5)/n+(R()-.5)*W*.03, w=s*(1+R()*.5), h=s*.34, yy=y+(R()-.5)*s*.12, warm=x/W>.4;
-      if(Math.abs(x-W*.5)<s*.6+W*.12*((y-HZ)/(H-HZ))) continue;                       // leave the avenue open
+      if(Math.abs(x-W*.5)<w*.55+W*(.012+.13*Math.max(0,(yy-HZ)/(H-HZ)))) continue;      // leave the avenue open: no roof may reach over it
       g.fillStyle=SUMI.ink(a*.95); g.fillRect(x-w*.42,yy+h*.2,w*.84,s*.9); Land.roof(g,x,yy,w,h,a);
       const nw=1+(R()*2|0); for(let j=0;j<nw;j++) if(R()<litP*(warm?1.3:.7)){ const wx=x+(R()-.5)*w*.55, wy=yy+h*.55+R()*s*.25, ww=Math.max(2,s*.09), wh=Math.max(2,s*.12);
         const lg=g.createRadialGradient(wx,wy,0,wx,wy,s*.35); lg.addColorStop(0,'rgba(255,180,90,.5)'); lg.addColorStop(1,'rgba(255,180,90,0)'); g.fillStyle=lg; g.fillRect(wx-s*.35,wy-s*.35,s*.7,s*.7);
@@ -160,7 +160,7 @@ JD.tower=(g,W,H,R,cx,base)=>{ const ink=a=>SUMI.ink(a), U=W*.01;
   g.fillStyle=ink(.95); g.fillRect(cx-U*3,b-U*14,U*6,U*2.6); eave(b-U*14,U*6.4,U*1.1,.98);
   g.fillStyle=ink(1); g.fillRect(cx-U*.25,b-U*16.4,U*.5,U*1.2); g.beginPath(); g.arc(cx,b-U*16.6,U*.45,0,Math.PI*2); g.fill();     // the finial
   // 萧烬 on the west tip of the top eave, the wolf crouched on the slope beside him
-  const fx=cx-U*6.1, fy=b-U*15.3; JD.wolf(g,fx+U*2.3,fy+U*.9,U*1.7,R); JD.figure(g,fx,fy,U*4.4,R); };
+  const fx=cx-U*5.6, fy=b-U*15.1; JD.feet=[fx/W, fy/H]; C3A.wolf(g,fx+U*2.4,fy+U*.4,U*2.2,-1,R); };
 // a standing figure in ink, ~h tall, feet at (x,y): a slim man in a long black robe, sash at the waist, the hem and one
 // sleeve streaming east in the storm wind, long loose silver hair blown out behind him; lit along the west edge
 JD.figure=(g,x,y,h,R)=>{ const P=(u,v)=>[x+u*h,y+v*h], path=(pts)=>{ g.beginPath(); pts.forEach(([u,v],i)=>{ const [px,py]=P(u,v); i?g.lineTo(px,py):g.moveTo(px,py); }); g.closePath(); };
