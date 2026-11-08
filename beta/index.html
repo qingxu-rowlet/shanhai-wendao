@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="8096676b87"><script>(function(){var B="8096676b87";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="028d10ae81"><script>(function(){var B="028d10ae81";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12122,8 +12122,11 @@ KM.TALK={
   sf_lin:[['林沧','（他抱着剑，看着高台）……天子跟前站着的那个，修为看不透。'],['林沧','比我高。']],
   sf_wulan:[['乌兰','阿毛今天一直在发抖。'],['乌兰','它怕那个戴面具的。']],
   sf_wenxuan:[['温玄','那面镜子……不是用来照人的。'],['温玄','（他把铜钱收了起来，没有再算）']],
-  sf_cheng:[['程小剑','我没抽上签……我是来给师兄喊加油的！']], sf_bu:[['卜小鱼','我也是来看热闹的。'],['卜小鱼','你第一轮的对手，好像很弱哦。']],
-  km_c1:[['看热闹的人','我押了林沧！一两银子呢！']], km_c2:[['看热闹的人','哪个是谢霁月？……哦，果然长得好看。'],['看热闹的人','怪不得。']],
+  // 程小剑 and 卜小鱼 are in the draw too (one of them is often your first opponent); the crowd bets on whoever is the
+  // strongest name in this year's draw (林沧 when he's in it — he isn't when you are 青云剑宗 yourself)
+  sf_cheng:()=>KM.first()==='sf_cheng'?[['程小剑','（他攥着竹签，脸都白了）第一轮……是你。'],['程小剑','我、我会尽力的！']]:[['程小剑','我第一回上这么大的擂台……'],['程小剑','腿有点软。']],
+  sf_bu:()=>KM.first()==='sf_bu'?[['卜小鱼','我算过了。第一轮，是你和我。'],['卜小鱼','……卦上说我会输。不过我还是要打的。']]:[['卜小鱼','我给自己算了一卦。'],['卜小鱼','……不告诉你。']],
+  km_c1:()=>[['看热闹的人',`我押了${KM.fav()}！一两银子呢！`]], km_c2:[['看热闹的人','哪个是谢霁月？……哦，果然长得好看。'],['看热闹的人','怪不得。']],
   km_c3:[['看热闹的人','老汉看了三届大比了。头一回见天子亲自来。']], km_c4:[['看热闹的人','我家小子说，长大了也要当仙人。'],['看热闹的人','……我才不让。']],
 };
 On.talk(id=>{ if(RT.mapId!=='jc_gongyuan') return false; const F=S.flags;
@@ -12291,7 +12294,7 @@ LT.crown=()=>[
   ['旁白','（你是这一届四宗大比的魁首。）']];
 
 /* ---------- hooks: the 擂台 on the square, 苏小棠 talking, the quests ---------- */
-KM.TALK.sf_cheng=[['程小剑','明天就要上台了……我腿都软了。']]; KM.TALK.sf_bu=[['卜小鱼','我算过了。'],['卜小鱼','……不告诉你。']];
+// (程小剑 and 卜小鱼's lines at the square now know whether they drew you first — see KM.TALK in c3act2i.js)
 { const q=QUESTS.find(q=>q.id==='c3l'); Object.assign(q,{check:s=>!!s.flags.c3_kuishou,
     progress:s=>{ const c=LT.st(); if(c.round>=4) return '魁首'; const nm=KM.NAME[LT.opp()].replace(/（.*/,'');
       return c.day===S.day?`今天的比完了：回厢房睡觉（明日${LT.ROUND[c.round]}，对${nm}）`:`${LT.ROUND[c.round]}：对${nm}${s.flags.c3_lt_lost?'（输了不要紧，练好了再上）':''}`; },
@@ -14105,6 +14108,9 @@ KM.show=()=>KB.show();
 { const _b=KM.bracket; KM.bracket=function(){ const r=_b.apply(KM,arguments); const st=KM.st(); if(st&&!st.bracket) st.draw=null; return r; }; }
 // whoever has lost is gone from 四方馆 and the square, not only the ones you beat
 { const _g=LT.gone; LT.gone=id=>{ if(_g(id)) return true; if(KB._busy) return false; try{ return !!(S&&S.c3&&S.c3.km&&S.c3.km.bracket&&id!=='tang'&&KB.out(id)); }catch(e){ return false; } }; }
+// who you meet first, and the name the crowd bets on (the strongest in this year's draw — your finalist-to-be, 林沧 if he's in it)
+KM.first=()=>(KM.st().bracket||KM.bracket())[0];
+KM.fav=()=>KB.name((KM.st().bracket||KM.bracket())[3]);
 
 /* ============================================================
    山海问道 · 第三章 — ink-painted backgrounds for the chapter-3 heart events, in the same 水墨 style as chapters 1–2

@@ -73,3 +73,6 @@ KM.show=()=>KB.show();
 { const _b=KM.bracket; KM.bracket=function(){ const r=_b.apply(KM,arguments); const st=KM.st(); if(st&&!st.bracket) st.draw=null; return r; }; }
 // whoever has lost is gone from 四方馆 and the square, not only the ones you beat
 { const _g=LT.gone; LT.gone=id=>{ if(_g(id)) return true; if(KB._busy) return false; try{ return !!(S&&S.c3&&S.c3.km&&S.c3.km.bracket&&id!=='tang'&&KB.out(id)); }catch(e){ return false; } }; }
+// who you meet first, and the name the crowd bets on (the strongest in this year's draw — your finalist-to-be, 林沧 if he's in it)
+KM.first=()=>(KM.st().bracket||KM.bracket())[0];
+KM.fav=()=>KB.name((KM.st().bracket||KM.bracket())[3]);

@@ -99,7 +99,7 @@ LT.crown=()=>[
   ['旁白','（你是这一届四宗大比的魁首。）']];
 
 /* ---------- hooks: the 擂台 on the square, 苏小棠 talking, the quests ---------- */
-KM.TALK.sf_cheng=[['程小剑','明天就要上台了……我腿都软了。']]; KM.TALK.sf_bu=[['卜小鱼','我算过了。'],['卜小鱼','……不告诉你。']];
+// (程小剑 and 卜小鱼's lines at the square now know whether they drew you first — see KM.TALK in c3act2i.js)
 { const q=QUESTS.find(q=>q.id==='c3l'); Object.assign(q,{check:s=>!!s.flags.c3_kuishou,
     progress:s=>{ const c=LT.st(); if(c.round>=4) return '魁首'; const nm=KM.NAME[LT.opp()].replace(/（.*/,'');
       return c.day===S.day?`今天的比完了：回厢房睡觉（明日${LT.ROUND[c.round]}，对${nm}）`:`${LT.ROUND[c.round]}：对${nm}${s.flags.c3_lt_lost?'（输了不要紧，练好了再上）':''}`; },
