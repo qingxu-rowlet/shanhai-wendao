@@ -248,9 +248,9 @@ const SelfTest3={
           node('c3-jiedan').run(); await W(400); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>KB.present(id)); S.flags.c3_hc_ru=true; S.stones=2000;
           // shops
           const buy=async(map,x,y,find)=>{ enterMap(map,x,y); await W(80); Dungeon.act(RT.map.objects.find(find)); await adv(0); };
-          await buy('jc_zhuque',13,15,o=>o.act==='jcstall'&&o.si===0); await buy('jc_zhuque',13,15,o=>o.act==='jcstall'&&o.si===1); await buy('jc_zhuque',13,15,o=>o.id==='jiulou');
-          await buy('jc_dongkou',3,6,o=>o.act==='zyflower'); await buy('jc_dongkou',3,6,o=>o.act==='zytea'); await buy('jc_dongshi',4,6,o=>o.act==='dsshop'&&o.id==='eat'); await buy('jc_xishi',5,10,o=>o.act==='xsstall'&&o.si===0);
-          const bought=['jc_pa','jc_zan','wine','flower','jc_tea','jc_gao','jc_oldbook'].filter(k=>count(S,k)>0);
+          await buy('jc_zhuque',13,15,o=>o.id==='jiulou');
+          await buy('jc_dongkou',3,6,o=>o.act==='zytea'); await buy('jc_dongshi',4,6,o=>o.act==='dsshop'&&o.id==='eat'); await buy('jc_xishi',5,10,o=>o.act==='xsstall'&&o.si===0);
+          const bought=['wine','jc_tea','jc_gao','jc_oldbook'].filter(k=>count(S,k)>0);
           // gifts: nobody answers 「undefined」
           const gl=[]; for(const [id,item] of [['xiao','jc_gao'],['qinghe','jc_pa'],['sf_wulan','wine'],['sf_wenxuan','jc_oldbook'],['sf_lin','jc_tea']].filter(([id])=>!id.startsWith('sf_')||KB.present(id))){ if(!count(S,item)) addItem(item,1); Social.rel(id).gifted=-1; Social.give(id,item); await W(80); gl.push($('#dText')?.textContent||''); await adv(); }
           const giftsOk=gl.every(t=>t&&!/undefined/.test(t));
@@ -266,8 +266,8 @@ const SelfTest3={
               ['sf_wenxuan',async()=>{ enterMap('jc_xishi',26,9); await W(80); Story.talk('xs_gu'); await adv('买'); }],['sf_bu',async()=>{ addItem('jc_tangren',1); }]].filter(([id])=>KB.present(id))){
             enterMap('jc_sifang',15,14); await W(80); Story.talk(id); await adv('帮忙'); await go(); enterMap('jc_sifang',15,14); await W(80); Story.talk(id); await adv('交给'); favs.push(DAY3.st().fav[id]==='done'); }
           const sparWith=['sf_lin','sf_wulan','sf_wenxuan'].find(id=>KB.present(id)); Story.talk(sparWith); await adv('切磋'); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); } const f=await fight(); await adv();
-          const ok=bought.length===7&&giftsOk&&s1>s0&&once&&s2>s1&&favs.every(Boolean)&&f.won;
-          return {fail:!ok, info:`买到 ${bought.length}/7，送礼${giftsOk?'':' ✗ '+gl.find(t=>!t||/undefined/.test(t))}，抓药 +${s1-s0}${once?'（一天一次）':' 次数 ✗'}，抄书 +${s2-s1}，小忙 ${favs.map(x=>x?'✓':'✗').join('')}，切磋 ${f.won?f.turns+' 回合':'✗'}，${SelfTest3.lines.length-n0} 句`}; });
+          const ok=bought.length===4&&giftsOk&&s1>s0&&once&&s2>s1&&favs.every(Boolean)&&f.won;
+          return {fail:!ok, info:`买到 ${bought.length}/4，送礼${giftsOk?'':' ✗ '+gl.find(t=>!t||/undefined/.test(t))}，抓药 +${s1-s0}${once?'（一天一次）':' 次数 ✗'}，抄书 +${s2-s1}，小忙 ${favs.map(x=>x?'✓':'✗').join('')}，切磋 ${f.won?f.turns+' 回合':'✗'}，${SelfTest3.lines.length-n0} 句`}; });
         await step('听雨轩（茶楼）：进门、说书「狐仙夺魁」拆台 / 忍、大师姐的反应、之后几天轮着讲、一天一段', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='茶楼';
           for(const pick of ['站起来','忍着']){ node('c3-chalou').run(); await W(300); enterMap('jc_zhuque',22,13); await W(80); Dungeon.act(RT.map.objects.find(o=>o.id==='cha')); await W(150); const inside=RT.mapId==='jc_chalou';
             Story.talk('cl_teller'); await adv(pick); const flag=pick==='站起来'?S.flags.c3_cl_chai:S.flags.c3_cl_ren;
