@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a07d4f7be0"><script>(function(){var B="a07d4f7be0";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="521e3a00f9"><script>(function(){var B="521e3a00f9";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2720,7 +2720,7 @@ const UI = {
       if(st.face){ CG.setFace(st.face); continue; }
       if(st.cgscene){ CG.setScene(st.cgscene); continue; }
       if(st.cgend){ CG.close(); CG.replaying=false; continue; }
-      if(st.love){ for(const k in st.love){ const v=st.love[k], h0=Social.hearts(k); Social.add(k, v, v>0); const h1=Social.hearts(k); if(v>0&&NPCS[k]) UI.toast(`${NPCS[k].name} 好感 +${v}${h1>h0?'　'+'♥'.repeat(h1):''}`); } Sound.pick(); continue; }   // every gain shows, with the hearts when one fills
+      if(st.love){ for(const k in st.love) Social.add(k, st.love[k], true); continue; }   // kept quietly (no numbers on screen: closeness follows the story, bonds.js)
       if(st.give||st.stones||st.exp){
         const got=[]; let s2=st;
         while(true){
@@ -3062,7 +3062,7 @@ const Social = {
   },
   chat(id){
     const r=Social.rel(id), n=NPCS[id], h=Social.hearts(id);
-    const ev=HEART_EVENTS[id]; if(ev) for(const lv of [2,4]) if(h>=lv && !r.ev[lv]){ r.ev[lv]=true; Sound.levelup(); UI.say(ev[lv]); return; }
+    // (heart events come from the story now: bonds.js)
     let pool=TALK[id][Social.tier(id)];
     if(id==='tang'&&S.flags.tang_sect) pool=pool.concat(S.sect==='dan'?['{名}，我们是同门呢！药尘长老说，你的火候比我稳。','今天长老教我认了三十种灵药，你要不要听我背一遍？']:['药王谷的功课好多……不过我很开心！','你在宗门里过得好吗？要是受了伤，记得来找我。']);
     const line=pool[Math.floor(Math.random()*pool.length)];
@@ -4562,17 +4562,7 @@ Object.assign(SCRIPTS, {
   ge8b:[['顾长歌','……好。'],['旁白','他转过身，背影在晚霞里拉得很长很长。走出很远，他忽然停下，没有回头，只是抬手挥了一下。'],['旁白','【长歌的故事，将在第二章继续……】'],{love:{ge:50}},{flag:'ge_promise'},{cgend:true}],
 });
 
-/* chat triggers the next heart event once the hearts are there */
-{ const _chat=Social.chat;
-  Social.chat=function(id){
-    const ev=HEART_CG[id];
-    if(ev){ const r=Social.rel(id), h=Social.hearts(id);
-      // someone may have only some of the four as pictures (大师姐: 6 and 8)
-      for(const lv of [2,4,6,8]) if(h>=lv && !r.ev[lv] && ev[lv]){ r.ev[lv]=true; if(r.talked!==S.day){ r.talked=S.day; } Sound.levelup();
-        const e=ev[lv]; return UI.say([{cg:e.scene, who:id, title:e.title}, ...e.steps]); } }
-    return _chat.call(Social,id);
-  };
-}
+/* (the heart events used to start from chat once the hearts were there; now the story starts them: bonds.js) */
 // replay any event from the 人物 tab once it has been seen
 CG.replay=(id,lv)=>{ const e=HEART_CG[id][lv]; UI.closePanel(); UI.say([{cg:e.scene, who:id, title:e.title}, ...e.steps.map(s=>s.choice?{...s, options:s.options.map(o=>({...o}))}:s)]); };
 
@@ -9529,9 +9519,9 @@ for(const k in SECTS) MAPS['zong_'+k].objects.push(
 // mid-chore, talking to them is not only being asked whether you have finished
 { const _ct=C2.talk; C2.talk=function(id){
     if(C2.on()&&WHO[id]&&S.c2&&S.c2.got&&S.c2.got[id]===1&&!C2.def(id).need(S)){ const d=C2.def(id), n=NPCS[id], h=Social.hearts(id);
-      UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,(n.romance?10:8)-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:[
+      UI.say([{choice:n.name, options:[
         {text:'问问功课', fn:()=>UI.say([[WHO[id], {lu:'还没做完？',xie:'……还没好。',man:'不急不急，慢慢来～'}[id]], ['旁白','（'+d.goal+'：'+d.prog(S)+'）']])},
-        {text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}}]}]); return true; }
+        {text:'聊天', fn:()=>Social.chat(id)},...Social.giveOpts(id),{text:'离开', fn:()=>{}}]}]); return true; }
     return _ct.call(C2,id); }; }
 
 /* ---------- the 秘境 ---------- */
@@ -9842,8 +9832,8 @@ const C3={
       if(want&&!has){ RT.ents.push(o); RT.solid[o.y][o.x]=true; } else if(!want&&has){ RT.ents=RT.ents.filter(e=>e!==o); RT.solid[o.y][o.x]=false; } } },
   // 大师姐 (and 苏小棠) on the road: what they have to say just now, and talk / gifts / hearts as anywhere else
   menu(id,lines){ const n=NPCS[id], h=Social.hearts(id);
-    UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,(n.romance?10:8)-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:[
-      {text:'说说话', fn:()=>UI.say(lines)},{text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}}]}]); },
+    UI.say([{choice:n.name, options:[
+      {text:'说说话', fn:()=>UI.say(lines)},{text:'聊天', fn:()=>Social.chat(id)},...Social.giveOpts(id),{text:'离开', fn:()=>{}}]}]); },
   // a scene, then a fade, then somewhere else at some hour, then maybe another scene
   move(map,x,y,dir,hour,after){ RT.paused=true; RT.fadeTo=()=>{ if(hour!=null) S.min=hour*60; enterMap(map,x,y); RT.dir=dir||'down'; RT.paused=false; UI.sync(); UI.hud(); save(); after&&after(); }; },
 };
@@ -13460,11 +13450,11 @@ const DS={
       done:[['卜小鱼','（她举着糖人，左看右看，舍不得吃）……我算得准吧！']]},
   },
   menu(id){ const n=NPCS[id], h=Social.hearts(id), d=DAY3.st(), f=DS.FAV[id], fs=d.fav[id];
-    const opts=[{text:'说说话', fn:()=>UI.say(SF.TALK[id]())},{text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)}];
+    const opts=[{text:'说说话', fn:()=>UI.say(SF.TALK[id]())},{text:'聊天', fn:()=>Social.chat(id)},...Social.giveOpts(id)];
     if(f&&fs!=='done') opts.push({text:fs==='asked'?(f.have()?'交给他／她':'（还在找）'):'有什么要帮忙的？', fn:()=>DS.favour(id)});
     if(!LT.gone(id)&&d.spar[id]!==S.day) opts.push({text:'切磋一下', fn:()=>DS.spar(id)});
     opts.push({text:'离开', fn:()=>{}});
-    UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,8-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:opts}]); },
+    UI.say([{choice:n.name, options:opts}]); },
   favour(id){ const d=DAY3.st(), f=DS.FAV[id], fs=d.fav[id];
     if(!fs){ d.fav[id]='asked'; if(id==='sf_wulan') d.fav.amao='lost'; save(); return UI.say(f.ask,()=>{ UI.hud(); }); }
     if(!f.have()) return UI.say([[NPCS[id].name,'……还没找到吗？']]);
@@ -14754,6 +14744,105 @@ const Skip1={
     return r; }; }
 
 /* ============================================================
+   山海问道 · 羁绊 — the heart events come from the story, not from gifts. This is a story game (弹幕 fights and a
+   cultivator's tale): nobody has time to hand out presents every day to push a number up, and in chapter 1 苏小棠 or
+   顾长歌 could end at two hearts or at eight depending on how many flowers you bought — which made no sense.
+   So: no 好感 numbers on screen, no 送礼. Every heart event (all sixteen with pictures, and the seniors' ones in words)
+   plays once, by itself, at its own point in the main story — the first quiet moment after that point (or, for a
+   morning scene, the first morning after it), and only during its stretch of the story: an old save already past that
+   stretch doesn't get a pile of them at once. What you choose inside a scene still changes what is said.
+   Story items someone is waiting for (萧烬's 桂花糕, 青禾's 长命锁, 阿禾's hen) are handed over with 「交给他／她」.
+   How close you are (for chat lines and letters) now follows the scenes you've lived through together.
+   ============================================================ */
+const BOND={
+  qi:id=>QUESTS.findIndex(q=>q.id===id),
+  past:id=>{ const i=BOND.qi(id); return i>=0&&S.quest>i; },                  // that quest is done
+  at:id=>{ const i=BOND.qi(id); return i>=0&&S.quest>=i; },                   // that quest has been reached
+  seen:(id,lv)=>!!(S.rel&&S.rel[id]&&S.rel[id].ev&&S.rel[id].ev[lv]),
+  seenBefore:(id,lv)=>{ const r=S.rel&&S.rel[id]; return BOND.seen(id,lv)&&!!(r.evDay&&r.evDay[lv]<S.day); },   // on an earlier day
+  F:()=>S.flags,
+  // in story order; wake: a morning scene (plays on the first morning in its stretch); pre: lines before the picture
+  LIST:[
+    // 第一章 · 桃源镇
+    {id:'tang', lv:2, wake:true, from:()=>BOND.F().met_ahe, until:()=>BOND.F().chapter1_done},               // 药香（清晨）
+    {id:'ge',   lv:2, from:()=>BOND.past('q4'), until:()=>BOND.F().qiongqi_done},                              // 木剑
+    {id:'tang', lv:4, from:()=>BOND.past('q5'), until:()=>BOND.F().qiongqi_done},                              // 池畔晚霞
+    {id:'ge',   lv:4, from:()=>BOND.F().qiongqi_done, until:()=>S.L>=10},                                     // 月下拭剑：他救了你那天夜里
+    {id:'tang', lv:6, from:()=>BOND.F().qiongqi_done&&BOND.seenBefore('ge',4), until:()=>BOND.F().chapter1_done},   // 雨中药庐：穷奇的伤还没好
+    {id:'ge',   lv:6, from:()=>S.L>=10&&BOND.F().qiongqi_done, until:()=>BOND.F().chapter1_done},             // 北方来信：筑基以后
+    {id:'ge',   lv:8, from:()=>BOND.F().chapter1_done, until:()=>BOND.F().c2_arrive||BOND.at('c2b')},                          // 并肩：饕餮醒了，他往北走
+    {id:'tang', lv:8, from:()=>BOND.F().chapter1_done, until:()=>BOND.F().c2_arrive||BOND.at('c2b')},                          // 灯会花笺
+    // 第二章 · 宗门、秘境
+    {id:'xie',  lv:2, from:()=>(S.c2&&S.c2.days||0)>=1, until:()=>BOND.F().c2_depart},                       // 药圃夜谈：头一天的功课做完
+    {id:'xie',  lv:4, wake:true, from:()=>BOND.seenBefore('xie',2), until:()=>BOND.F().c2_depart},           // 木剑：第二天卯时
+    {id:'man',  lv:2, from:()=>(S.c2&&S.c2.days||0)>=2, until:()=>BOND.F().c2_depart},                       // 观音土：两天的功课做完
+    {id:'lu',   lv:2, from:()=>BOND.seen('man',2), until:()=>BOND.F().c2_depart},                             // 三更的练功场
+    {id:'man',  lv:4, from:()=>BOND.at('c2d'), until:()=>BOND.F().c2_depart},                                // 半个馒头：收拾行装去秘境
+    {id:'lu',   lv:4, from:()=>BOND.at('c2e'), until:()=>BOND.F().lu_gone},                                   // 界碑、母狼：秘境营地
+    // 第三章 · 京城
+    {id:'xiao', lv:2, from:()=>BOND.F().c3_lt_n1, until:()=>BOND.F().c3_lt_done},                             // 瘸腿的狗：第一轮那天夜里
+    {id:'xie',  lv:6, from:()=>BOND.F().c3_lt_done, until:()=>BOND.F().c3_qj_girl},                           // 槐树：你拿了魁首的那天夜里
+    {id:'xiao', lv:4, from:()=>BOND.F().c3_qj_girl, until:()=>BOND.F().c3_yj_go},                             // 赌一局：查千金坊的时候
+    {id:'xiao', lv:6, from:()=>BOND.F().c3_a3_done, until:()=>BOND.F().c3_a4_go},                             // 屋顶：宗庙后门那一夜以后
+    {id:'xie',  lv:8, from:()=>BOND.F().c3_a5_notice, until:()=>BOND.F().c3_done},                            // 河灯：告示之后，离开之前
+    {id:'xiao', lv:8, from:()=>BOND.F().c3_done, until:()=>false,                                              // 草窝：回宗门的路上
+      pre:[['旁白','回宗门的路上，你们又经过了安平村。'],['旁白','黄昏。大师姐她们在村口歇脚，你一个人上了后山。']]},
+  ],
+  has:id=>BOND.LIST.some(e=>e.id===id),
+  steps(e){ const cg=typeof HEART_CG!=='undefined'&&HEART_CG[e.id]&&HEART_CG[e.id][e.lv];
+    const body=cg?[{cg:cg.scene, who:e.id, title:cg.title}, ...cg.steps]:(HEART_EVENTS[e.id]&&HEART_EVENTS[e.id][e.lv]);
+    return body?[...(e.pre||[]), ...body]:null; },
+  due(){ if(!S||!S.flags) return null;
+    for(const e of BOND.LIST){ if(BOND.seen(e.id,e.lv)) continue; let ok=false; try{ ok=!!e.from()&&!e.until(); }catch(_){ ok=false; }
+      if(!ok) continue; if(e.wake&&!(BOND.wokeDay===S.day&&S.min<11*60)) continue; return e; }
+    return null; },
+  play(e,cb){ const steps=BOND.steps(e); if(!steps) return false; const r=Social.rel(e.id); r.ev=r.ev||{}; r.evDay=r.evDay||{};
+    r.ev[e.lv]=true; r.evDay[e.lv]=S.day; save(); Sound.levelup(); UI.say(steps,()=>{ UI.hud(); save(); cb&&cb(); Story.check(); }); return true; },
+  // quiet: nothing on screen, nobody moving the player, no fight, no picture, no self-test
+  idle(){ const dlg=$('#dlg'), cine=$('#cine');
+    return !!(RT.mapId&&!RT.paused&&!RT.fadeTo&&!Battle.s&&(!dlg||dlg.hidden)&&(!cine||cine.hidden)&&!(typeof PixCG!=='undefined'&&PixCG.on)&&!(typeof CG!=='undefined'&&CG.on)
+      &&!(typeof Gallery!=='undefined'&&Gallery._sb)&&!/selftest/.test(location.hash)&&!BOND.off); },
+  // look again in a moment, and only go when it has stayed quiet (a story often chains one scene into the next)
+  tick(){ clearTimeout(BOND._t); BOND._t=setTimeout(()=>{ if(!BOND.idle()||!BOND.due()) return;
+      BOND._t=setTimeout(()=>{ const e=BOND.due(); if(e&&BOND.idle()) BOND.play(e); },700); },700); },
+};
+// when to look: after any story step, on coming into a place, and on waking
+{ const _c=Story.check; Story.check=function(){ const r=_c.apply(Story,arguments); BOND.tick(); return r; }; }
+On.enter(()=>BOND.tick());
+On.wake(()=>{ BOND.wokeDay=S.day; BOND.tick(); });
+
+/* ---------- how close you are: the scenes lived through, not the presents ---------- */
+// someone with heart events: two hearts for every scene seen (letters, chat lines and the 河灯 still ask for "hearts");
+// anyone else keeps what talking, favours and the story gave them
+{ const _h=Social.hearts; Social.hearts=function(id){ if(BOND.has(id)){ const ev=(S.rel&&S.rel[id]&&S.rel[id].ev)||{}; return Math.min(10,[2,4,6,8].filter(l=>ev[l]).length*2); } return _h.call(Social,id); }; }
+// no numbers popping up
+{ const _a=Social.add; Social.add=function(id,n){ return _a.call(Social,id,n,true); }; }
+
+/* ---------- handing over what someone is waiting for (instead of 送礼) ---------- */
+Social.DELIVER=[
+  {id:'xiao', item:'jc_gao', when:s=>s.flags.c3_xfu_ask&&!s.flags.c3_xfu_gao},
+  {id:'qinghe', item:'jc_lock', when:s=>!s.flags.c3_hd_lock},
+  {id:'ahe', item:'chicken', when:s=>s.side&&s.side.chick==='active'},
+];
+Social.giveOpts=id=>Social.DELIVER.filter(d=>d.id===id&&count(S,d.item)>0&&d.when(S)).map(d=>({text:`把${ITEMS[d.item].name}交给${(NPCS[id]&&NPCS[id].name)||'他'}`, fn:()=>Social.give(id,d.item)}));
+Social.giftPick=id=>{ const o=Social.giveOpts(id); if(o.length) return o[0].fn(); UI.say([[(NPCS[id]&&NPCS[id].name)||'','……']]); };
+// the menu: just their name, and no 送礼
+Social.menu=function(id){ const n=NPCS[id]; if(!n) return; const opts=[];
+  if(id==='qian'||n.shop) opts.push({text:'买卖', fn:()=>UI.shop(id)});
+  if(id==='yunyou') opts.push({text:'请教', fn:()=>{ const q=Story.quest(); UI.say(q&&q.id!=='end'?[['云游子','眼下要做的事——'+q.title+'：'+q.desc]]:SCRIPTS.talk_yunyou); }});
+  opts.push({text:'聊天', fn:()=>Social.chat(id)},...Social.giveOpts(id),{text:'离开', fn:()=>{}});
+  UI.say([{choice:n.name, options:opts}]); };
+// 苏小棠 and 顾长歌's little side errands open once you've met them in town, not once you've chatted
+for(const q of SIDES) if(q.giver==='tang') q.unlock=s=>!!s.flags.met_ahe; else if(q.giver==='ge') q.unlock=s=>s.L>=4&&!!s.flags.met_ahe;
+
+/* ---------- 人物 tab: who they are, and the scenes you've had together ---------- */
+UI.people=()=>Object.keys(NPCS).map(id=>{ const n=NPCS[id], r=Social.rel(id), evs=BOND.LIST.filter(e=>e.id===id);
+  const cg=typeof HEART_CG!=='undefined'&&HEART_CG[id];
+  const list=evs.map(e=>{ const c=cg&&cg[e.lv], seen=r.ev&&r.ev[e.lv];
+    return seen?(c?`<button class="btn mini cgb" data-cg="${id}:${e.lv}">${c.title}</button>`:'<span class="pref like">已经历</span>'):'<span class="lock">剧情里会遇到</span>'; }).join(' ');
+  return `<div class="person"><canvas class="px" data-npc="${id}" width="18" height="22"></canvas><div class="pinfo"><b>${n.name}</b>${evs.length?`<span class="kn">心动事件：${list}</span>`:''}</div></div>`; }).join('');
+
+/* ============================================================
    山海问道 · 往事回廊 — replay key story moments in a sandbox.
    The current game is copied before the replay and put back afterwards; nothing is saved meanwhile.
    ============================================================ */
@@ -14869,7 +14958,7 @@ const Dev = {
   },
   run(x){
     Dev.ensure();
-    if(x.startsWith('cg:')){ const [,id,lv]=x.split(':'); const r=Social.rel(id); r.pts=Math.max(r.pts,+lv*100); for(const l of [2,4,6,8]) r.ev[l]=l<+lv; return Social.chat(id); }
+    if(x.startsWith('cg:')){ const [,id,lv]=x.split(':'); return BOND.play({id, lv:+lv}); }   // play that heart event now (bonds.js)
     if(x==='bosslow') return Dev.bossLow();
     if(x==='glow'){ S.glow=undefined; return UI.toast('金光水面已刷新（桃源镇池塘、青丘湖各一处）'); }
     if(x==='puppet'){ addItem('puppet'); Life.newDay(); return UI.toast('傀儡已就位，下一天清晨开始工作'); }
@@ -15957,19 +16046,19 @@ const SelfTest3={
             for(let i=0;i<20&&QUESTS[S.quest].id!=='c3zz';i++){ UI.sync(); Story.check(); await W(100); } ends.push({want, got:S.flags.c3_xj_end, done:!!S.flags.c3_done}); }
           const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights.every(f=>f.allies===2)&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
           return {fail:!ok, info:fights.map(f=>`${f.side?'萧烬在':'萧烬不在'}：${f.won?f.turns+' 回合':'✗'}，${f.allies} 个帮手${f.notice?'':'，告示 ✗'}`).join('；')+'，结局 '+ends.map(e=>e.got===e.want?e.got:e.want+'✗').join('/')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('萧烬心动事件：2♥ 4♥（赢 / 输）6♥ 8♥，每段都有插画、好感会涨', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
+        await step('萧烬心动事件（剧情里自动播）：瘸腿的狗、赌一局（赢 / 输）、屋顶、草窝，每段都有插画', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
           for(const [lv,pick] of [[2,0],[4,'大'],[4,'小'],[6,0],[8,0]]){ node('c3-xiao2').run(); await W(300); const r=Social.rel('xiao'); r.ev={}; for(const l of [2,4,6,8]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; const p0=r.pts;
-            Social.chat('xiao'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
-          const ok=got.every(g=>g.cg&&g.seen&&g.up&&g.closed);
-          return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
-        await step('大师姐心动事件：2♥ 药圃夜谈、4♥ 木剑（第二章，补了插画）→ 当铺赎青玉珠 → 6♥ 槐树 → 8♥ 河灯（还珠 / 不还）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='大师姐心动';
+            BOND.play({id:'xiao',lv}); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
+          const ok=got.every(g=>g.cg&&g.seen&&g.closed);
+          return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('大师姐心动事件（剧情里自动播）：药圃夜谈、木剑（第二章）→ 当铺赎青玉珠 → 槐树 → 河灯（还珠 / 不还）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='大师姐心动';
           node('c3-xie68').run(); await W(300); delete S.inv.c3_bead; S.flags.c3_bead=false; C3.st().ju={pool:1100,pawn:300}; S.stones=1000; enterMap('jc_zhuque',5,13); await W(100);
           Dungeon.act(RT.map.objects.find(o=>o.id==='dang')); await adv('赎'); const bought=count(S,'c3_bead')===1&&S.stones===1000-360;
           for(const [lv,pick] of [[2,0],[4,0],[6,0],[8,'青玉珠'],[8,'也放']]){ const r=Social.rel('xie'); r.ev={}; for(const l of [2,4,6]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; if(pick==='也放'){ delete S.inv.c3_bead; } else if(lv===8&&!count(S,'c3_bead')) addItem('c3_bead',1); const p0=r.pts;
-            Social.chat('xie'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, back:!!S.flags.c3_bead_back}); }
-          const ok=bought&&got.every(g=>g.cg&&g.seen&&g.up)&&got[3].back;
-          return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('京城日常：买礼物、送礼（萧烬、青禾、别的弟子）、回春堂抓药和琅琊阁抄书挣钱、别的宗门弟子的小忙和切磋', async()=>{ const n0=SelfTest3.lines.length; cur='京城日常';
+            BOND.play({id:'xie',lv}); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, back:!!S.flags.c3_bead_back}); }
+          const ok=bought&&got.every(g=>g.cg&&g.seen)&&got[3].back;
+          return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('京城日常：买东西、交给萧烬 / 青禾的东西、别的弟子收东西的回话、回春堂抓药和琅琊阁抄书挣钱、别的宗门弟子的小忙和切磋', async()=>{ const n0=SelfTest3.lines.length; cur='京城日常';
           node('c3-jiedan').run(); await W(400); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>KB.present(id)); S.flags.c3_hc_ru=true; S.stones=2000;
           // shops
           const buy=async(map,x,y,find)=>{ enterMap(map,x,y); await W(80); Dungeon.act(RT.map.objects.find(find)); await adv(0); };

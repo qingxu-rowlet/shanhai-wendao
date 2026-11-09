@@ -255,7 +255,7 @@ const UI = {
       if(st.face){ CG.setFace(st.face); continue; }
       if(st.cgscene){ CG.setScene(st.cgscene); continue; }
       if(st.cgend){ CG.close(); CG.replaying=false; continue; }
-      if(st.love){ for(const k in st.love){ const v=st.love[k], h0=Social.hearts(k); Social.add(k, v, v>0); const h1=Social.hearts(k); if(v>0&&NPCS[k]) UI.toast(`${NPCS[k].name} 好感 +${v}${h1>h0?'　'+'♥'.repeat(h1):''}`); } Sound.pick(); continue; }   // every gain shows, with the hearts when one fills
+      if(st.love){ for(const k in st.love) Social.add(k, st.love[k], true); continue; }   // kept quietly (no numbers on screen: closeness follows the story, bonds.js)
       if(st.give||st.stones||st.exp){
         const got=[]; let s2=st;
         while(true){

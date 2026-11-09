@@ -22,8 +22,8 @@ const C3={
       if(want&&!has){ RT.ents.push(o); RT.solid[o.y][o.x]=true; } else if(!want&&has){ RT.ents=RT.ents.filter(e=>e!==o); RT.solid[o.y][o.x]=false; } } },
   // 大师姐 (and 苏小棠) on the road: what they have to say just now, and talk / gifts / hearts as anywhere else
   menu(id,lines){ const n=NPCS[id], h=Social.hearts(id);
-    UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,(n.romance?10:8)-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:[
-      {text:'说说话', fn:()=>UI.say(lines)},{text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}}]}]); },
+    UI.say([{choice:n.name, options:[
+      {text:'说说话', fn:()=>UI.say(lines)},{text:'聊天', fn:()=>Social.chat(id)},...Social.giveOpts(id),{text:'离开', fn:()=>{}}]}]); },
   // a scene, then a fade, then somewhere else at some hour, then maybe another scene
   move(map,x,y,dir,hour,after){ RT.paused=true; RT.fadeTo=()=>{ if(hour!=null) S.min=hour*60; enterMap(map,x,y); RT.dir=dir||'down'; RT.paused=false; UI.sync(); UI.hud(); save(); after&&after(); }; },
 };

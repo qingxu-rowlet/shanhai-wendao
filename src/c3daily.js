@@ -93,11 +93,11 @@ const DS={
       done:[['卜小鱼','（她举着糖人，左看右看，舍不得吃）……我算得准吧！']]},
   },
   menu(id){ const n=NPCS[id], h=Social.hearts(id), d=DAY3.st(), f=DS.FAV[id], fs=d.fav[id];
-    const opts=[{text:'说说话', fn:()=>UI.say(SF.TALK[id]())},{text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)}];
+    const opts=[{text:'说说话', fn:()=>UI.say(SF.TALK[id]())},{text:'聊天', fn:()=>Social.chat(id)},...Social.giveOpts(id)];
     if(f&&fs!=='done') opts.push({text:fs==='asked'?(f.have()?'交给他／她':'（还在找）'):'有什么要帮忙的？', fn:()=>DS.favour(id)});
     if(!LT.gone(id)&&d.spar[id]!==S.day) opts.push({text:'切磋一下', fn:()=>DS.spar(id)});
     opts.push({text:'离开', fn:()=>{}});
-    UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,8-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:opts}]); },
+    UI.say([{choice:n.name, options:opts}]); },
   favour(id){ const d=DAY3.st(), f=DS.FAV[id], fs=d.fav[id];
     if(!fs){ d.fav[id]='asked'; if(id==='sf_wulan') d.fav.amao='lost'; save(); return UI.say(f.ask,()=>{ UI.hud(); }); }
     if(!f.have()) return UI.say([[NPCS[id].name,'……还没找到吗？']]);

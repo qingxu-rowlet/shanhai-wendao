@@ -74,7 +74,7 @@ const Dev = {
   },
   run(x){
     Dev.ensure();
-    if(x.startsWith('cg:')){ const [,id,lv]=x.split(':'); const r=Social.rel(id); r.pts=Math.max(r.pts,+lv*100); for(const l of [2,4,6,8]) r.ev[l]=l<+lv; return Social.chat(id); }
+    if(x.startsWith('cg:')){ const [,id,lv]=x.split(':'); return BOND.play({id, lv:+lv}); }   // play that heart event now (bonds.js)
     if(x==='bosslow') return Dev.bossLow();
     if(x==='glow'){ S.glow=undefined; return UI.toast('金光水面已刷新（桃源镇池塘、青丘湖各一处）'); }
     if(x==='puppet'){ addItem('puppet'); Life.newDay(); return UI.toast('傀儡已就位，下一天清晨开始工作'); }

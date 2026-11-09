@@ -232,19 +232,19 @@ const SelfTest3={
             for(let i=0;i<20&&QUESTS[S.quest].id!=='c3zz';i++){ UI.sync(); Story.check(); await W(100); } ends.push({want, got:S.flags.c3_xj_end, done:!!S.flags.c3_done}); }
           const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights.every(f=>f.allies===2)&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
           return {fail:!ok, info:fights.map(f=>`${f.side?'萧烬在':'萧烬不在'}：${f.won?f.turns+' 回合':'✗'}，${f.allies} 个帮手${f.notice?'':'，告示 ✗'}`).join('；')+'，结局 '+ends.map(e=>e.got===e.want?e.got:e.want+'✗').join('/')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('萧烬心动事件：2♥ 4♥（赢 / 输）6♥ 8♥，每段都有插画、好感会涨', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
+        await step('萧烬心动事件（剧情里自动播）：瘸腿的狗、赌一局（赢 / 输）、屋顶、草窝，每段都有插画', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
           for(const [lv,pick] of [[2,0],[4,'大'],[4,'小'],[6,0],[8,0]]){ node('c3-xiao2').run(); await W(300); const r=Social.rel('xiao'); r.ev={}; for(const l of [2,4,6,8]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; const p0=r.pts;
-            Social.chat('xiao'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
-          const ok=got.every(g=>g.cg&&g.seen&&g.up&&g.closed);
-          return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
-        await step('大师姐心动事件：2♥ 药圃夜谈、4♥ 木剑（第二章，补了插画）→ 当铺赎青玉珠 → 6♥ 槐树 → 8♥ 河灯（还珠 / 不还）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='大师姐心动';
+            BOND.play({id:'xiao',lv}); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, closed:!PixCG.on}); }
+          const ok=got.every(g=>g.cg&&g.seen&&g.closed);
+          return {fail:!ok, info:got.map(g=>`${g.lv}♥${g.pick?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.closed?'':' 没关✗'}`).join('，')+`，${SelfTest3.lines.length-n0} 句`}; });
+        await step('大师姐心动事件（剧情里自动播）：药圃夜谈、木剑（第二章）→ 当铺赎青玉珠 → 槐树 → 河灯（还珠 / 不还）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='大师姐心动';
           node('c3-xie68').run(); await W(300); delete S.inv.c3_bead; S.flags.c3_bead=false; C3.st().ju={pool:1100,pawn:300}; S.stones=1000; enterMap('jc_zhuque',5,13); await W(100);
           Dungeon.act(RT.map.objects.find(o=>o.id==='dang')); await adv('赎'); const bought=count(S,'c3_bead')===1&&S.stones===1000-360;
           for(const [lv,pick] of [[2,0],[4,0],[6,0],[8,'青玉珠'],[8,'也放']]){ const r=Social.rel('xie'); r.ev={}; for(const l of [2,4,6]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; if(pick==='也放'){ delete S.inv.c3_bead; } else if(lv===8&&!count(S,'c3_bead')) addItem('c3_bead',1); const p0=r.pts;
-            Social.chat('xie'); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, back:!!S.flags.c3_bead_back}); }
-          const ok=bought&&got.every(g=>g.cg&&g.seen&&g.up)&&got[3].back;
-          return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}${g.up?'':' 好感✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('京城日常：买礼物、送礼（萧烬、青禾、别的弟子）、回春堂抓药和琅琊阁抄书挣钱、别的宗门弟子的小忙和切磋', async()=>{ const n0=SelfTest3.lines.length; cur='京城日常';
+            BOND.play({id:'xie',lv}); await W(200); const cg=PixCG.on||CG.on; await adv(pick); got.push({lv, pick, cg, seen:!!r.ev[lv], up:r.pts>p0, back:!!S.flags.c3_bead_back}); }
+          const ok=bought&&got.every(g=>g.cg&&g.seen)&&got[3].back;
+          return {fail:!ok, info:`${bought?'赎回青玉珠':'赎回 ✗'}，`+got.map(g=>`${g.lv}♥${typeof g.pick==='string'?'('+g.pick+')':''}${g.cg?'':' 插画✗'}`).join('，')+`${got[3].back?'，珠子还了':'，还珠 ✗'}，${SelfTest3.lines.length-n0} 句`}; });
+        await step('京城日常：买东西、交给萧烬 / 青禾的东西、别的弟子收东西的回话、回春堂抓药和琅琊阁抄书挣钱、别的宗门弟子的小忙和切磋', async()=>{ const n0=SelfTest3.lines.length; cur='京城日常';
           node('c3-jiedan').run(); await W(400); S.c3.met=['sf_lin','sf_wulan','sf_wenxuan','sf_cheng','sf_bu'].filter(id=>KB.present(id)); S.flags.c3_hc_ru=true; S.stones=2000;
           // shops
           const buy=async(map,x,y,find)=>{ enterMap(map,x,y); await W(80); Dungeon.act(RT.map.objects.find(find)); await adv(0); };

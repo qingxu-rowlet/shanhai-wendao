@@ -258,16 +258,6 @@ Object.assign(SCRIPTS, {
   ge8b:[['顾长歌','……好。'],['旁白','他转过身，背影在晚霞里拉得很长很长。走出很远，他忽然停下，没有回头，只是抬手挥了一下。'],['旁白','【长歌的故事，将在第二章继续……】'],{love:{ge:50}},{flag:'ge_promise'},{cgend:true}],
 });
 
-/* chat triggers the next heart event once the hearts are there */
-{ const _chat=Social.chat;
-  Social.chat=function(id){
-    const ev=HEART_CG[id];
-    if(ev){ const r=Social.rel(id), h=Social.hearts(id);
-      // someone may have only some of the four as pictures (大师姐: 6 and 8)
-      for(const lv of [2,4,6,8]) if(h>=lv && !r.ev[lv] && ev[lv]){ r.ev[lv]=true; if(r.talked!==S.day){ r.talked=S.day; } Sound.levelup();
-        const e=ev[lv]; return UI.say([{cg:e.scene, who:id, title:e.title}, ...e.steps]); } }
-    return _chat.call(Social,id);
-  };
-}
+/* (the heart events used to start from chat once the hearts were there; now the story starts them: bonds.js) */
 // replay any event from the 人物 tab once it has been seen
 CG.replay=(id,lv)=>{ const e=HEART_CG[id][lv]; UI.closePanel(); UI.say([{cg:e.scene, who:id, title:e.title}, ...e.steps.map(s=>s.choice?{...s, options:s.options.map(o=>({...o}))}:s)]); };

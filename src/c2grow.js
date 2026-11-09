@@ -7,9 +7,9 @@
 // mid-chore, talking to them is not only being asked whether you have finished
 { const _ct=C2.talk; C2.talk=function(id){
     if(C2.on()&&WHO[id]&&S.c2&&S.c2.got&&S.c2.got[id]===1&&!C2.def(id).need(S)){ const d=C2.def(id), n=NPCS[id], h=Social.hearts(id);
-      UI.say([{choice:`${n.name}　${'♥'.repeat(h)}${'♡'.repeat(Math.max(0,(n.romance?10:8)-h))}${Social.rel(id).gifted===S.day?'　（今天已送过礼）':''}`, options:[
+      UI.say([{choice:n.name, options:[
         {text:'问问功课', fn:()=>UI.say([[WHO[id], {lu:'还没做完？',xie:'……还没好。',man:'不急不急，慢慢来～'}[id]], ['旁白','（'+d.goal+'：'+d.prog(S)+'）']])},
-        {text:'聊天', fn:()=>Social.chat(id)},{text:'送礼', fn:()=>Social.giftPick(id)},{text:'离开', fn:()=>{}}]}]); return true; }
+        {text:'聊天', fn:()=>Social.chat(id)},...Social.giveOpts(id),{text:'离开', fn:()=>{}}]}]); return true; }
     return _ct.call(C2,id); }; }
 
 /* ---------- the 秘境 ---------- */

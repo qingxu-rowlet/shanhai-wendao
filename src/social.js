@@ -136,7 +136,7 @@ const Social = {
   },
   chat(id){
     const r=Social.rel(id), n=NPCS[id], h=Social.hearts(id);
-    const ev=HEART_EVENTS[id]; if(ev) for(const lv of [2,4]) if(h>=lv && !r.ev[lv]){ r.ev[lv]=true; Sound.levelup(); UI.say(ev[lv]); return; }
+    // (heart events come from the story now: bonds.js)
     let pool=TALK[id][Social.tier(id)];
     if(id==='tang'&&S.flags.tang_sect) pool=pool.concat(S.sect==='dan'?['{名}，我们是同门呢！药尘长老说，你的火候比我稳。','今天长老教我认了三十种灵药，你要不要听我背一遍？']:['药王谷的功课好多……不过我很开心！','你在宗门里过得好吗？要是受了伤，记得来找我。']);
     const line=pool[Math.floor(Math.random()*pool.length)];
