@@ -87,9 +87,10 @@ A4.PRIS=()=>{ const n=XF.whoName(), lk=RIVAL[XF.who()].look; return [
   {name:'安平村的人', look:{g:'f',skin:2,hair:3,hairColor:1,style:'qun',cloth:5,face:'mid'}, lines:[['安平村的人','（她醒过来，第一句话是）……孩子呢？我的孩子呢？'],['我','你是安平村的？'],['安平村的人','（她点头，又摇头）去年秋天……一车一车地拉来……一批一批地，带出去，就没回来……'],['安平村的人','……我们村，就剩我们几个了。']]},
   {name:'柳河村的李大娘', look:{g:'f',skin:2,hair:3,hairColor:3,style:'qun',cloth:5,face:'small'}, lines:[['柳河村的李大娘','（她醒了，抓住你的袖子）……小三子？你见过我家小三子吗？'],['我','他在京城。回春堂。他一直在找你。'],['柳河村的李大娘','（她捂着脸，哭不出声音）……']]}]; };
 for(const [i,id] of ['dg_p0','dg_p1','dg_p2','dg_p3'].entries()) Object.defineProperty(MAPS.jc_digong.objects.find(o=>o.id===id),'look',{get(){ return A4.PRIS()[i].look; }});
-// the guards: men in black, who fight like the 宗庙's own
-{ const R={name:'黑衣人', look:{g:'m',skin:1,hair:0,hairColor:0,style:'jin',cloth:5,face:'mid'}, hp:1500, atk:46, def:13, moves:['cut','fu','sweep','cut'], sub:'宗庙 · 守门的人'};
-  RIVAL.dg_guard=R; BEASTS.c3r_dg_guard={name:R.name, spr:'c3r_dg_guard', person:true, big:true, boss:true, hp:R.hp, atk:R.atk, def:R.def, exp:200, stones:[80,80], moves:R.moves, lore:R.sub};
+// the guards: men in black, hired muscle — small fry next to the 大比's 魁首 (weaker than 程小剑's round-one level;
+// no boss entrance, ordinary size), a couple of exchanges each
+{ const R={name:'黑衣人', look:{g:'m',skin:1,hair:0,hairColor:0,style:'jin',cloth:5,face:'mid'}, hp:260, atk:24, def:6, moves:['cut','sweep','cut'], sub:'宗庙 · 看门的打手'};
+  RIVAL.dg_guard=R; BEASTS.c3r_dg_guard={name:R.name, spr:'c3r_dg_guard', person:true, hp:R.hp, atk:R.atk, def:R.def, exp:60, stones:[20,40], bg:true, moves:R.moves, lore:R.sub};   // the 地宫's dark backdrop, no boss entrance
   DODGE.c3r_dg_guard=Object.fromEntries(R.moves.map(k=>[k,RIVAL_PAT[k]]));
   SCENES.c3r_dg_guard={...SCENES.qiongqi, sky:['#0a0a10','#14141c','#1e1e28'], moon:'#c86a3a', hills:['#1a1a20','#141418','#0e0e12','#08080a'], fx:null, title:'黑衣人', sub:'宗庙地宫', ink:'#05050a'}; }
 A4.guard=k=>{ UI.say([['黑衣人','……什么人！'],{choice:'拔剑？', options:[{text:'拔剑', fn:()=>Battle.start('c3r_dg_guard',r=>{ if(r!=='win') return UI.say([['旁白','你被打退了几步。顾长歌和大师姐扶住你。'],['顾长歌','歇一口气，再来。']]);

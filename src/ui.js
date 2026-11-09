@@ -91,7 +91,7 @@ const Battle = {
     const c=$('#bEnemy'), sp=B.self?lookSprite(S.look,'down',0):sprite(B.spr); c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0);
     c.style.width=(B.self?sp.width*9:B.big?Math.min(innerWidth*.8, sp.width*7):sp.width*9)+'px';
     el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>Battle.act(b.dataset.a));
-    if(B.boss && typeof SCENES!=='undefined' && SCENES[kind]) BossBg.start(kind); else Music.play(B.self?'qiongqi':'battle');
+    if(B.boss && typeof SCENES!=='undefined' && SCENES[kind]) BossBg.start(kind); else { if(B.bg && typeof SCENES!=='undefined' && SCENES[kind]) BossBg.start(kind); Music.play(B.self?'qiongqi':'battle'); }   // bg: an ordinary enemy fought somewhere with its own backdrop
     Battle.log(B.self?'另一个你冷冷地看着你。':`${B.name}出现了！`); Battle.ui(); UI.sync();
   },
   intent(){ const s=Battle.s; return s.moves[s.i%s.moves.length]; },
