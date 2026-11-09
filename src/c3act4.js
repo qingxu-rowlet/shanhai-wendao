@@ -6,14 +6,15 @@
    鲁三, a woman from 安平村, the 柳河村 man's mother. Wake them, and 二师兄 takes them out by the water. Then the 鼎, and
    the 八卦镜's last look into it: something with a man's face opens its eyes in the black water at the bottom. The
    国师: the 观天鉴 was for choosing the best roots to feed it — and 顾长歌 knows the mask. 萧烬 steps out of the dark: he
-   always knew. "People? People eat people. What's that to me." Then he looks at you. If he has come to care for you, he
-   comes to your side — not for them; for you. If not, he walks away. 顾长歌 and 萧烬 face to face. The 国师 laughs and
-   strikes the 鼎: it cracks, and something climbs out. Act 4 ends.
+   always knew. "People? People eat people. What's that to me." Then he looks at you: "……but you care." 顾长歌's sword
+   turns on him — "you're the 国师's man." "I was. It wasn't me who destroyed your sect." And: "this is your business."
+   He walks into the dark, his wolf after him. He never takes a side, whatever he feels — that is who he is (the story
+   doesn't branch on how much he likes you). The 国师 laughs and strikes the 鼎: it cracks, and something climbs out.
+   Act 4 ends.
    Also: after the first meeting, 萧烬 is in the 小巷 on any night, to talk to or give things to.
    ============================================================ */
 const A4={
   st(){ const c=C3.st(); c.a4=c.a4||{woke:[]}; return c.a4; },
-  loveOK:()=>Social.rel('xiao').pts>=100&&(C3.st().xj||{hate:0}).hate<30,
 };
 Object.assign(ITEMS,{c3_xingshen:{name:'醒神汤', icon:'i_pill', quest:true, keep:true, desc:'苏小棠熬的，专解醉仙散。闻一闻就醒，苦得人直皱眉。'}});
 
@@ -113,7 +114,7 @@ A4.reveal=()=>[
   ['旁白','水底下盘着一样东西。很大。比鼎还大，像是被硬塞进去的。'],
   ['旁白','它睁开了眼睛。是一张人的脸。'],
   ['旁白','「咔」的一声，八卦镜裂了一道缝。镜面暗了，再也没有亮起来。']];
-A4.face=()=>{ const side=A4.loveOK(); UI.say([
+A4.face=()=>{ UI.say([
   ['？？？','（鼎后面传来一声轻笑）……魁首。'],
   ['旁白','一个穿黑袍的人从鼎后面走出来。脸上戴着一张青铜面具，面具上是一张只有嘴的兽脸。'],
   ['国师','观天鉴说，你的灵根，是这一届里最好的。'],
@@ -131,19 +132,15 @@ A4.face=()=>{ const side=A4.loveOK(); UI.say([
   ['萧烬','杀我娘的，就是人。'],
   ['旁白','他说完，看着你。看了很久。'],
   ['萧烬','……可是你在乎。'],
-  ...(side?[
-    ['萧烬','（他慢慢走过来，站到了你身边。红头的狼跟着他，冲国师龇起了牙）'],
-    ['萧烬','我不在乎他们。'],
-    ['萧烬','我在乎你。'],
-    ['国师','（面具底下传来一声冷笑）……萧大人，你这是做什么？'],
-    ['萧烬','做我想做的。'],
-    {run:()=>{ S.flags.c3_xj_side=true; Social.add('xiao',60); }}]:[
-    ['萧烬','（他转过身）这是你们的事。'],
-    ['旁白','他走进了黑暗里。红头的狼回头看了你一眼，跟着他走了。'],
-    {run:()=>{ S.flags.c3_xj_left=true; }}]),
-  ['旁白','顾长歌和萧烬，第一次面对面。'],
-  ...(side?[['顾长歌','……你是国师的人。'],['萧烬','是过。'],['萧烬','灭你师门的，不是我。'],['顾长歌','我知道。'],['旁白','两个人都没有再说话。他们都看向你。']]
-    :[['顾长歌','（他看着萧烬走掉的方向）……他是国师的人。'],['顾长歌','可灭我师门的，不是他。'],['旁白','顾长歌看向你。']]),
+  ['旁白','顾长歌和萧烬，第一次面对面。顾长歌的剑尖，转向了他。'],
+  ['顾长歌','……你是国师的人。'],
+  ['萧烬','是过。'],
+  ['萧烬','灭你师门的，不是我。'],
+  ['顾长歌','……我知道。'],
+  ['萧烬','（他转过身）这是你们的事。'],
+  ['旁白','他走进了黑暗里，没有回头。红头的狼回头看了你一眼，跟着他走了。'],
+  {run:()=>{ S.flags.c3_xj_left=true; }},
+  ['旁白','顾长歌慢慢放下了剑。他看向你。'],
   ['国师','（他忽然笑了起来，笑声在地宫里撞来撞去）好，好，好。'],
   ['国师','既然都来了——'],
   ['旁白','他一掌拍在鼎上。'],

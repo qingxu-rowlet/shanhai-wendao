@@ -572,7 +572,7 @@ const ITEMS = {
   lingcao:  {name:'灵草',   icon:'i_lingcao', sell:15, desc:'带着微微灵气的药草。'},
   lingmo:   {name:'灵菇',   icon:'i_lingmo',  sell:12, desc:'山林阴处生长的菌子。'},
   zhuguo:   {name:'朱果',   icon:'i_zhuguo',  sell:40, price:55, desc:'赤红如火，蕴含精纯灵气。'},
-  juqi:     {name:'聚气丹', icon:'i_pill', color:'#e8b84a', sell:45, use:'exp', amount:45, desc:'服下增加 45 修为。'},
+  juqi:     {name:'聚气丹', icon:'i_pill', color:'#e8b84a', sell:45, use:'exp', amount:45, desc:'服下增加 45 修为；战斗中服下，灵力回满。'},
   huichun:  {name:'回春丹', icon:'i_pill', color:'#5fcf7a', sell:40, price:60, use:'heal', amount:60, desc:'恢复 60 生命；平时服用恢复 30 体力。'},
   zhuji:    {name:'筑基丹', icon:'i_pill', color:'#b07ae8', sell:300, desc:'炼气九层圆满时服下，方可冲击筑基。'},
   hide:     {name:'兽皮',   icon:'i_hide',    sell:18, desc:'山林野兽的皮毛。'},

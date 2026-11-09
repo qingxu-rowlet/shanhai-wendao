@@ -152,8 +152,8 @@ const DANG={
     }); },
 };
 // 回春堂 is a 药铺: the 掌柜 at the counter sells 回春丹 (cheaper than the 当铺), any time after you've first come in
-HC.SELL=[['huichun',50]];
+HC.SELL=[['huichun',50],['juqi',60]];   // 聚气丹: in a fight it fills your 灵力
 { const z=HC.TALK.hc_zhang; HC.TALK.hc_zhang=()=>{ const L=z(); if(!S.flags.c3_hc_ask) return L;
-    return [...L,{choice:'回春堂掌柜：「抓药，还是买现成的丹？」', options:[{text:'买回春丹（50 灵石一颗）', fn:()=>SHOP3.sell('回春堂',HC.SELL)},{text:'不用了', fn:()=>{}}]}]; }; }
+    return [...L,{choice:'回春堂掌柜：「抓药，还是买现成的丹？」', options:[{text:'买丹（回春丹 50 · 聚气丹 60）', fn:()=>SHOP3.sell('回春堂',HC.SELL)},{text:'不用了', fn:()=>{}}]}]; }; }
 // 四方馆 gets a mailbox just inside its gate, so letters from friends reach you in the capital too
 MAPS.jc_sifang.objects.push({type:'mailbox', x:17, y:19, act:'mail', spr:'mailbox'});

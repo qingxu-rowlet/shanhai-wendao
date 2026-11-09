@@ -210,27 +210,27 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3o';i++){ UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=near&&F.c3_yj_done&&F.c3_a3_done&&fails===0&&QUESTS[S.quest].id==='c3o';
           return {fail:!ok, info:`${near?'太近被发现':'太近 ✗'}，${fails?'跟的时候失败了 '+fails+' 次 ✗':'一路跟到'}，${F.c3_yj_done?'宗庙后门':'后门 ✗'}，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('第四幕：商量 → 坐船进地宫 → 两个守卫 → 四个牢门、醒神汤 → 鼎、八卦镜 → 国师、萧烬（站过来 / 走掉）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='第四幕';
+        await step('第四幕：商量 → 坐船进地宫 → 两个守卫 → 四个牢门、醒神汤 → 鼎、八卦镜 → 国师、萧烬（好感高低都走掉）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='第四幕';
           node('c3-a4plan').run(); await W(1300); await adv(); const plan=!!S.flags.c3_a4_plan&&count(S,'c3_xingshen')===4;
           Story.talk('ge'); await adv('去'); for(let i=0;i<60&&RT.mapId!=='jc_digong';i++){ if(RT.fadeTo) update(.1); await W(40); } await W(700); await adv();
           for(const g of ['dg_g1','dg_g2']){ Story.talk(g); await adv('拔剑'); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); } const f=await fight(); await adv(); got.push(f.won); }
           for(let i=0;i<4;i++){ Dungeon.act(RT.map.objects.find(o=>o.act==='dgbars'&&o.cell===i)); await adv(); Story.talk('dg_p'+i); await adv(); }
           const a=A4.st(), freed=a.woke.length===4&&!RT.ents.some(e=>e.act==='dginner');
-          const ends=[]; for(const love of [0,150]){ node('c3-ding').run(); await W(400); Social.rel('xiao').pts=love; const b0=C3.st().bagua; Dungeon.act(obj('dgding')); let cg=false;
+          const ends=[]; for(const love of [0,400]){ node('c3-ding').run(); await W(400); Social.rel('xiao').pts=love; const b0=C3.st().bagua; Dungeon.act(obj('dgding')); let cg=false;
             for(let i=0;i<300;i++){ if(PixCG.on) cg=true; const d=$('#dlg'); if(d.hidden){ await W(50); if($('#dlg').hidden&&i>20) break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
             const done=!!S.flags.c3_a4_done; for(let i=0;i<160&&!Battle.s;i++){ cine(); await W(80); } const yy=!!Battle.s&&Battle.s.kind==='c3_yayu'; if(Battle.s) Battle.close(); $('#cine').hidden=true;   // the 鼎 cracking goes straight into act 5's fight
             ends.push({love, side:!!S.flags.c3_xj_side, left:!!S.flags.c3_xj_left, cg, mirror:C3.st().bagua===b0-1, done, yy}); }
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3p';i++){ UI.sync(); Story.check(); await W(100); }
-          const ok=plan&&got.every(Boolean)&&freed&&ends[0].left&&!ends[0].side&&ends[1].side&&ends.every(e=>e.cg&&e.mirror&&e.done&&e.yy)&&QUESTS[S.quest].id==='c3p';
+          const ok=plan&&got.every(Boolean)&&freed&&ends.every(e=>e.left&&!e.side)&&ends.every(e=>e.cg&&e.mirror&&e.done&&e.yy)&&QUESTS[S.quest].id==='c3p';
           return {fail:!ok, info:`${plan?'商量、醒神汤':'商量 ✗'}，守卫 ${got.map(x=>x?'✓':'✗').join('')}，${freed?'四个都醒了':'救人 ✗ '+a.woke.length}，`+ends.map(e=>`好感 ${e.love}：${e.side?'站过来':e.left?'走掉':'?'}${e.cg?'':' 鼎✗'}${e.mirror?'':' 镜✗'}${e.yy?'，接着打窫窳':' 窫窳✗'}`).join('；')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('第五幕：窫窳（萧烬站过来 / 走掉，各打一遍）→ 救人、师叔 → 告示 → 朱雀门：萧烬三种结局 → 第三章完', async()=>{ const n0=SelfTest3.lines.length, fights=[], ends=[]; cur='第五幕';
-          for(const side of [true,false]){ node('c3-yayu').run(); await W(400); S.flags.c3_xj_side=side; S.flags.c3_xj_left=!side; Dungeon.act(obj('dgding')); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); }
+        await step('第五幕：窫窳（萧烬走掉了，三人一起打）→ 救人、师叔 → 告示 → 朱雀门：城楼上的萧烬 → 第三章完', async()=>{ const n0=SelfTest3.lines.length, fights=[], ends=[]; cur='第五幕';
+          for(const side of [false]){ node('c3-yayu').run(); await W(400); S.flags.c3_xj_side=side; S.flags.c3_xj_left=!side; Dungeon.act(obj('dgding')); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); }
             const allies=document.querySelectorAll('#battle [id^=allyStand]').length; const f=await fight(); await W(500);
             for(let i=0;i<300;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg'); if(d.hidden){ await W(50); if($('#dlg').hidden&&!RT.fadeTo&&i>30&&RT.mapId==='jc_zhuque') break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
             fights.push({side, won:f.won, turns:f.turns, allies, win:!!S.flags.c3_a5_win, notice:!!S.flags.c3_a5_notice}); }
-          for(const [side,pts,want] of [[true,300,'with'],[true,100,'wolf'],[false,0,'stay']]){ node('c3-leave').run(); await W(400); S.flags.c3_xj_side=side; Social.rel('xiao').pts=pts; Story.talk('c3_leave'); await adv('走吧');
+          for(const [side,pts,want] of [[false,0,'stay'],[false,400,'stay']]){ node('c3-leave').run(); await W(400); S.flags.c3_xj_side=side; Social.rel('xiao').pts=pts; Story.talk('c3_leave'); await adv('走吧');
             for(let i=0;i<20&&QUESTS[S.quest].id!=='c3zz';i++){ UI.sync(); Story.check(); await W(100); } ends.push({want, got:S.flags.c3_xj_end, done:!!S.flags.c3_done}); }
-          const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights[0].allies===3&&fights[1].allies===2&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
+          const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights.every(f=>f.allies===2)&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
           return {fail:!ok, info:fights.map(f=>`${f.side?'萧烬在':'萧烬不在'}：${f.won?f.turns+' 回合':'✗'}，${f.allies} 个帮手${f.notice?'':'，告示 ✗'}`).join('；')+'，结局 '+ends.map(e=>e.got===e.want?e.got:e.want+'✗').join('/')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('萧烬心动事件：2♥ 4♥（赢 / 输）6♥ 8♥，每段都有插画、好感会涨', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
           for(const [lv,pick] of [[2,0],[4,'大'],[4,'小'],[6,0],[8,0]]){ node('c3-xiao2').run(); await W(300); const r=Social.rel('xiao'); r.ev={}; for(const l of [2,4,6,8]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; const p0=r.pts;

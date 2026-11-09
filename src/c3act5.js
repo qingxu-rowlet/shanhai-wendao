@@ -1,12 +1,12 @@
 /* ============================================================
    山海问道 · 第三章「京城」 · 第五幕 · 鼎 — 窫窳 climbs out of the cracked 鼎: 《北山经》 "its form is an ox's, red-bodied,
    with a man's face and horse's feet". A god once, killed unjustly; brought back, it became a thing that eats people.
-   You fight it with 顾长歌 and 大师姐 striking after each of your turns — and 萧烬 too, if he came to your side; if he
-   walked away, halfway through his red-headed wolves come in on its side. Brought low, its man's face speaks: "the one who
+   You fight it with 顾长歌 and 大师姐 striking after each of your turns (萧烬 walked away; halfway through, his
+   red-headed wolves — still under the 国师's command without him — come in on its side). Brought low, its man's face speaks: "the one who
    killed me was not a man…" Then it turns and takes the 国师 into the black water. After: the freed people (an old 剑修 among
    them knows 顾长歌's sword: his 师叔, the "someone of the sect still living"); the court notice — "国师病故，妖物作乱，
-   已由萧大人平定"; at 朱雀门, leaving, 萧烬's ending (he goes with you; he goes back to 狼山 with his wolves; or he stays,
-   a minister on the city wall), and the chapter ends.
+   已由萧大人平定"; at 朱雀门, leaving: 萧烬 on the city wall in his court robe, watching you go (one ending — he
+   stays where he is), and the chapter ends.
    ============================================================ */
 // 窫窳: a red ox body, horse's legs, a pale man's face with long black hair, eyes that weep black water
 FineArt.yayu=function(){ if(FineArt.cache.yayu) return FineArt.cache.yayu; const R=rng(4207);
@@ -55,10 +55,10 @@ DODGE.c3_yayu={
 };
 const YY={
   is:s=>!!s&&s.kind==='c3_yayu',
-  side:()=>!!S.flags.c3_xj_side,
+  side:()=>false,   // 萧烬 never takes a side (see c3act4)
   LINES:[[['窫窳','（像婴儿一样地哭）……饿……']],[['顾长歌','它的腿！砍它的腿！']],[['谢霁月','别让黑水沾上——']],[['国师','（在鼎边大笑）吃！吃了他们！']],[['窫窳','……疼……好疼……']]],
   lines(s){ s.etn=(s.etn||0)+1; if(s.pendingTalk){ const t=s.pendingTalk; s.pendingTalk=null; return t; } return s.etn%2?null:YY.LINES[(s.etn/2|0)%YY.LINES.length]; },
-  allies:()=>[['allyStand',LOOK_GE,'3%','顾长歌'],['allyStand2',LOOK_XIE,'19%','谢霁月'],...(YY.side()?[['allyStand3',LOOK_XIAO,'35%','萧烬']]:[])],
+  allies:()=>[['allyStand',LOOK_GE,'3%','顾长歌'],['allyStand2',LOOK_XIE,'19%','谢霁月']],
   stands(){ const st=$('#battle .b-stage'); if(!st) return; for(const [id,look,left] of YY.allies()){ let c=$('#'+id); if(!c){ c=document.createElement('canvas'); c.id=id; st.appendChild(c); }
       const sp=cgChibi(look,'stand','normal',id==='allyStand3'?null:'sword',null,false); c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0);
       c.style.cssText=`position:absolute;left:${left};bottom:4%;width:min(24vw,140px);image-rendering:pixelated;animation:allyBob 1.9s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25))`; } },
@@ -67,10 +67,10 @@ const YY={
       BossBg.flash('rgba(255,200,180,.35)'); Battle.float(who+' -'+d,'pet'); Battle.hitFx(); Battle.ui(); if(s.hp<=s.max*.12) YY.end(s); },delay); },
 };
 { const _b=Battle._begin; Battle._begin=function(kind,cb){ const r=_b.call(Battle,kind,cb); const s=Battle.s; if(YY.is(s)){ YY.stands();
-      s.pendingTalk=YY.side()?[['窫窳','（它从鼎里爬出来，一张人脸，哭得像个婴儿）……'],['萧烬','（他站到你身边，没有拔刀，只吹了一声口哨。红头的狼伏低了身子）'],['顾长歌','一起上！']]:[['窫窳','（它从鼎里爬出来，一张人脸，哭得像个婴儿）……'],['顾长歌','{名}，大师姐——一起上！']]; } return r; }; }
+      s.pendingTalk=[['窫窳','（它从鼎里爬出来，一张人脸，哭得像个婴儿）……'],['顾长歌','{名}，大师姐——一起上！']]; } return r; }; }
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s, p2=s&&s.phase2; _pc.call(Battle);
-    if(YY.is(s)&&s.phase2&&!p2){ if(YY.side()) s.pendingTalk=[['萧烬','（他终于拔了刀）……够了。'],['旁白','红头的狼群从黑暗里扑出来，咬住了窫窳的马腿！']];
-      else { s.moves=s.moves.concat(['pack','pack']); s.pendingTalk=[['旁白','黑暗里亮起一片红色的眼睛。是萧烬的狼群。'],['旁白','它们扑上来——扑向的是你们。'],['谢霁月','……他不在，狼还认国师的令！']]; } } }; }
+    if(YY.is(s)&&s.phase2&&!p2){
+      s.moves=s.moves.concat(['pack','pack']); s.pendingTalk=[['旁白','黑暗里亮起一片红色的眼睛。是萧烬的狼群。'],['旁白','它们扑上来——扑向的是你们。'],['谢霁月','……他不在，狼还认国师的令！']]; } }; }
 { const _et=Battle.enemyTurn; Battle.enemyTurn=function(){ const s=Battle.s; if(!YY.is(s)) return _et.call(Battle); if(s.ending) return;
     if(!s.stun&&!s.talked&&!Dodge.auto){ const lines=YY.lines(s); if(lines){ s.talked=true; s.busy=true; Battle.ui(); return QQLU.talk(lines,()=>{ if(Battle.s!==s||s.dead) return; s.busy=false; Battle.enemyTurn(); }); } }
     s.talked=false; return _et.call(Battle); }; }
@@ -88,7 +88,7 @@ YY.end=s=>{ if(s.ending) return; s.ending=true; s.busy=true; Battle.ui(); BossBg
 
 /* ---------- starting the fight: right after the 鼎 cracks ---------- */
 YY.go=()=>Battle.start('c3_yayu',r=>{ if(r!=='win') return UI.say([['旁白','黑水漫过了你的膝盖。顾长歌一把把你拽了回来。'],['顾长歌','再来！它也快撑不住了！']]); YY.after(); });
-YY.after=()=>{ const side=YY.side(); UI.say([
+YY.after=()=>{ UI.say([
   ['旁白','鼎底下的火灭了。地宫里只剩下火把的光。'],
   ['旁白','最深处的几间牢房里，还关着人。你们一间一间地打开。'],
   ['旁白','安平村的人。北边几个村子的人。前几届大比「送回宗门」的弟子。'],
@@ -99,7 +99,6 @@ YY.after=()=>{ const side=YY.side(); UI.say([
   ['顾长歌','（他的剑「当」地掉在地上）……师叔？'],
   ['顾长歌','（他跪下去，很久很久没有起来）'],
   ['我','（……「门中尚有人在」。原来是这里。）'],
-  ...(side?[['旁白','萧烬站在牢房门口，看着安平村的人一个一个走出来。'],['旁白','他什么也没说。'],['旁白','安平村的女人看见他身边那只红头的狼，往后缩了一步。狼也往后缩了一步。']]:[]),
   {flag:'c3_a5_win'},
   ['旁白','（天快亮了。离开地宫。）']],()=>{ C3.move('jc_zhuque',19,14,'up',8,()=>setTimeout(()=>UI.say(YY.notice(),()=>{ UI.hud(); Story.check(); }),500)); }); };
 // three days later: the notice on the board at the cross street
@@ -116,7 +115,7 @@ YY.notice=()=>[
   ['旁白','（该回宗门了。去朱雀门。）']];
 
 /* ---------- leaving: 萧烬's ending at 朱雀门 ---------- */
-YY.ending=()=>{ const pts=Social.rel('xiao').pts, side=YY.side(), k=side&&pts>=250?'with':side?'wolf':'stay'; S.flags.c3_xj_end=k; return [
+YY.ending=()=>{ S.flags.c3_xj_end='stay'; return [
   ['旁白','清早，朱雀门。来的时候城门口排着长队，走的时候，门口空荡荡的。'],
   ['苏小棠',S.sect==='dan'?'（她背着药篓，回头看了一眼京城）……走吧，回谷里！':'（她背着药篓）我先回药王谷啦。长老的信一封比一封凶……'],
   ...(S.sect==='dan'?[]:[['苏小棠','（她走出几步，又跑回来，往你手里塞了一包东西）路上吃！'],['旁白','是一包糖人。'],{give:{jc_tangren:2}}]),
@@ -124,11 +123,8 @@ YY.ending=()=>{ const pts=Social.rel('xiao').pts, side=YY.side(), k=side&&pts>=2
   ['何满仓','（他笑了一下）我……好像不饿了。'],
   ['顾长歌','（他扶着白发的师叔）我送师叔回北边。门中还有几个人，在等我们。'],
   ['顾长歌','{名}。……谢谢。'],
-  ...({
-    with:[['旁白','城门外的柳树底下，站着一个人。灰白的长发，一身玄衣，身边蹲着一只红头的狼。'],['旁白','他手里提着一个包袱。'],['萧烬','（他看着你，笑了一下，笑得很温和）……京城没意思。'],['萧烬','你去哪儿，我去哪儿。'],['谢霁月','（她看了萧烬一眼，又看了你一眼，什么也没说，往前走了）'],['旁白','萧烬跟在你身后。红头的狼，跟在萧烬身后。'],{love:{xiao:100}}],
-    wolf:[['旁白','出了城门，你回头看了一眼。'],['旁白','远处的山脊上，站着一个人，身边蹲着一群狼。'],['旁白','是萧烬。他没有穿朝服。'],['旁白','他冲你抬了抬手。然后转过身，往北走了。'],['谢霁月','……狼山在北边。'],['旁白','风里传来一声狼嚎。很长，很长。']],
-    stay:[['旁白','出了城门，你回头看了一眼。'],['旁白','城楼上站着一个穿玄色朝服的人。灰白的长发，被风吹起来。'],['旁白','萧烬。钦差萧大人。'],['旁白','他看着你，看了很久。然后转身，走下了城楼。'],['谢霁月','……他会是个好官吗？'],['我','……不知道。']],
-  }[k]),
+  ['旁白','出了城门，你回头看了一眼。'],['旁白','城楼上站着一个穿玄色朝服的人。灰白的长发，被风吹起来。'],['旁白','萧烬。钦差萧大人。'],
+  ['旁白','他看着你，看了很久。然后转身，走下了城楼。'],['谢霁月','……他会是个好官吗？'],['我','……不知道。'],
   ['旁白','怀里的八卦镜，裂缝里透出一点光。你拿出来看，镜面上浮出两个字，一闪就没了：'],
   ['旁白','「贰负」。'],
   ['我','（窫窳说，杀它的，是天上的……）'],

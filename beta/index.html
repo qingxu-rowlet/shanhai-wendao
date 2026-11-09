@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="d886ccce0a"><script>(function(){var B="d886ccce0a";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#1b2a1c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="山海问道"><link rel="apple-touch-icon" href="../icon.png"><link rel="icon" href="../icon.png"><meta name="build" data-build="a07d4f7be0"><script>(function(){var B="a07d4f7be0";try{fetch(location.pathname+"?fresh="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/data-build="([0-9a-f]+)"/);if(!m||m[1]===B)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.href)}).catch(function(){})}catch(e){}})();</script></head><body><title>山海问道 · 测试版</title>
 <!-- 山海问道 © 2026 qingxu-rowlet · CC BY-NC-SA 4.0 (no commercial use) · https://github.com/qingxu-rowlet/shanhai-wendao -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1124,7 +1124,7 @@ const ITEMS = {
   lingcao:  {name:'灵草',   icon:'i_lingcao', sell:15, desc:'带着微微灵气的药草。'},
   lingmo:   {name:'灵菇',   icon:'i_lingmo',  sell:12, desc:'山林阴处生长的菌子。'},
   zhuguo:   {name:'朱果',   icon:'i_zhuguo',  sell:40, price:55, desc:'赤红如火，蕴含精纯灵气。'},
-  juqi:     {name:'聚气丹', icon:'i_pill', color:'#e8b84a', sell:45, use:'exp', amount:45, desc:'服下增加 45 修为。'},
+  juqi:     {name:'聚气丹', icon:'i_pill', color:'#e8b84a', sell:45, use:'exp', amount:45, desc:'服下增加 45 修为；战斗中服下，灵力回满。'},
   huichun:  {name:'回春丹', icon:'i_pill', color:'#5fcf7a', sell:40, price:60, use:'heal', amount:60, desc:'恢复 60 生命；平时服用恢复 30 体力。'},
   zhuji:    {name:'筑基丹', icon:'i_pill', color:'#b07ae8', sell:300, desc:'炼气九层圆满时服下，方可冲击筑基。'},
   hide:     {name:'兽皮',   icon:'i_hide',    sell:18, desc:'山林野兽的皮毛。'},
@@ -12878,14 +12878,15 @@ QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3n')+1,0,
    鲁三, a woman from 安平村, the 柳河村 man's mother. Wake them, and 二师兄 takes them out by the water. Then the 鼎, and
    the 八卦镜's last look into it: something with a man's face opens its eyes in the black water at the bottom. The
    国师: the 观天鉴 was for choosing the best roots to feed it — and 顾长歌 knows the mask. 萧烬 steps out of the dark: he
-   always knew. "People? People eat people. What's that to me." Then he looks at you. If he has come to care for you, he
-   comes to your side — not for them; for you. If not, he walks away. 顾长歌 and 萧烬 face to face. The 国师 laughs and
-   strikes the 鼎: it cracks, and something climbs out. Act 4 ends.
+   always knew. "People? People eat people. What's that to me." Then he looks at you: "……but you care." 顾长歌's sword
+   turns on him — "you're the 国师's man." "I was. It wasn't me who destroyed your sect." And: "this is your business."
+   He walks into the dark, his wolf after him. He never takes a side, whatever he feels — that is who he is (the story
+   doesn't branch on how much he likes you). The 国师 laughs and strikes the 鼎: it cracks, and something climbs out.
+   Act 4 ends.
    Also: after the first meeting, 萧烬 is in the 小巷 on any night, to talk to or give things to.
    ============================================================ */
 const A4={
   st(){ const c=C3.st(); c.a4=c.a4||{woke:[]}; return c.a4; },
-  loveOK:()=>Social.rel('xiao').pts>=100&&(C3.st().xj||{hate:0}).hate<30,
 };
 Object.assign(ITEMS,{c3_xingshen:{name:'醒神汤', icon:'i_pill', quest:true, keep:true, desc:'苏小棠熬的，专解醉仙散。闻一闻就醒，苦得人直皱眉。'}});
 
@@ -12985,7 +12986,7 @@ A4.reveal=()=>[
   ['旁白','水底下盘着一样东西。很大。比鼎还大，像是被硬塞进去的。'],
   ['旁白','它睁开了眼睛。是一张人的脸。'],
   ['旁白','「咔」的一声，八卦镜裂了一道缝。镜面暗了，再也没有亮起来。']];
-A4.face=()=>{ const side=A4.loveOK(); UI.say([
+A4.face=()=>{ UI.say([
   ['？？？','（鼎后面传来一声轻笑）……魁首。'],
   ['旁白','一个穿黑袍的人从鼎后面走出来。脸上戴着一张青铜面具，面具上是一张只有嘴的兽脸。'],
   ['国师','观天鉴说，你的灵根，是这一届里最好的。'],
@@ -13003,19 +13004,15 @@ A4.face=()=>{ const side=A4.loveOK(); UI.say([
   ['萧烬','杀我娘的，就是人。'],
   ['旁白','他说完，看着你。看了很久。'],
   ['萧烬','……可是你在乎。'],
-  ...(side?[
-    ['萧烬','（他慢慢走过来，站到了你身边。红头的狼跟着他，冲国师龇起了牙）'],
-    ['萧烬','我不在乎他们。'],
-    ['萧烬','我在乎你。'],
-    ['国师','（面具底下传来一声冷笑）……萧大人，你这是做什么？'],
-    ['萧烬','做我想做的。'],
-    {run:()=>{ S.flags.c3_xj_side=true; Social.add('xiao',60); }}]:[
-    ['萧烬','（他转过身）这是你们的事。'],
-    ['旁白','他走进了黑暗里。红头的狼回头看了你一眼，跟着他走了。'],
-    {run:()=>{ S.flags.c3_xj_left=true; }}]),
-  ['旁白','顾长歌和萧烬，第一次面对面。'],
-  ...(side?[['顾长歌','……你是国师的人。'],['萧烬','是过。'],['萧烬','灭你师门的，不是我。'],['顾长歌','我知道。'],['旁白','两个人都没有再说话。他们都看向你。']]
-    :[['顾长歌','（他看着萧烬走掉的方向）……他是国师的人。'],['顾长歌','可灭我师门的，不是他。'],['旁白','顾长歌看向你。']]),
+  ['旁白','顾长歌和萧烬，第一次面对面。顾长歌的剑尖，转向了他。'],
+  ['顾长歌','……你是国师的人。'],
+  ['萧烬','是过。'],
+  ['萧烬','灭你师门的，不是我。'],
+  ['顾长歌','……我知道。'],
+  ['萧烬','（他转过身）这是你们的事。'],
+  ['旁白','他走进了黑暗里，没有回头。红头的狼回头看了你一眼，跟着他走了。'],
+  {run:()=>{ S.flags.c3_xj_left=true; }},
+  ['旁白','顾长歌慢慢放下了剑。他看向你。'],
   ['国师','（他忽然笑了起来，笑声在地宫里撞来撞去）好，好，好。'],
   ['国师','既然都来了——'],
   ['旁白','他一掌拍在鼎上。'],
@@ -13056,12 +13053,12 @@ QUESTS.splice(QUESTS.findIndex(q=>q.id==='c3o')+1,0,
 /* ============================================================
    山海问道 · 第三章「京城」 · 第五幕 · 鼎 — 窫窳 climbs out of the cracked 鼎: 《北山经》 "its form is an ox's, red-bodied,
    with a man's face and horse's feet". A god once, killed unjustly; brought back, it became a thing that eats people.
-   You fight it with 顾长歌 and 大师姐 striking after each of your turns — and 萧烬 too, if he came to your side; if he
-   walked away, halfway through his red-headed wolves come in on its side. Brought low, its man's face speaks: "the one who
+   You fight it with 顾长歌 and 大师姐 striking after each of your turns (萧烬 walked away; halfway through, his
+   red-headed wolves — still under the 国师's command without him — come in on its side). Brought low, its man's face speaks: "the one who
    killed me was not a man…" Then it turns and takes the 国师 into the black water. After: the freed people (an old 剑修 among
    them knows 顾长歌's sword: his 师叔, the "someone of the sect still living"); the court notice — "国师病故，妖物作乱，
-   已由萧大人平定"; at 朱雀门, leaving, 萧烬's ending (he goes with you; he goes back to 狼山 with his wolves; or he stays,
-   a minister on the city wall), and the chapter ends.
+   已由萧大人平定"; at 朱雀门, leaving: 萧烬 on the city wall in his court robe, watching you go (one ending — he
+   stays where he is), and the chapter ends.
    ============================================================ */
 // 窫窳: a red ox body, horse's legs, a pale man's face with long black hair, eyes that weep black water
 FineArt.yayu=function(){ if(FineArt.cache.yayu) return FineArt.cache.yayu; const R=rng(4207);
@@ -13110,10 +13107,10 @@ DODGE.c3_yayu={
 };
 const YY={
   is:s=>!!s&&s.kind==='c3_yayu',
-  side:()=>!!S.flags.c3_xj_side,
+  side:()=>false,   // 萧烬 never takes a side (see c3act4)
   LINES:[[['窫窳','（像婴儿一样地哭）……饿……']],[['顾长歌','它的腿！砍它的腿！']],[['谢霁月','别让黑水沾上——']],[['国师','（在鼎边大笑）吃！吃了他们！']],[['窫窳','……疼……好疼……']]],
   lines(s){ s.etn=(s.etn||0)+1; if(s.pendingTalk){ const t=s.pendingTalk; s.pendingTalk=null; return t; } return s.etn%2?null:YY.LINES[(s.etn/2|0)%YY.LINES.length]; },
-  allies:()=>[['allyStand',LOOK_GE,'3%','顾长歌'],['allyStand2',LOOK_XIE,'19%','谢霁月'],...(YY.side()?[['allyStand3',LOOK_XIAO,'35%','萧烬']]:[])],
+  allies:()=>[['allyStand',LOOK_GE,'3%','顾长歌'],['allyStand2',LOOK_XIE,'19%','谢霁月']],
   stands(){ const st=$('#battle .b-stage'); if(!st) return; for(const [id,look,left] of YY.allies()){ let c=$('#'+id); if(!c){ c=document.createElement('canvas'); c.id=id; st.appendChild(c); }
       const sp=cgChibi(look,'stand','normal',id==='allyStand3'?null:'sword',null,false); c.width=sp.width; c.height=sp.height; c.getContext('2d').drawImage(sp,0,0);
       c.style.cssText=`position:absolute;left:${left};bottom:4%;width:min(24vw,140px);image-rendering:pixelated;animation:allyBob 1.9s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25))`; } },
@@ -13122,10 +13119,10 @@ const YY={
       BossBg.flash('rgba(255,200,180,.35)'); Battle.float(who+' -'+d,'pet'); Battle.hitFx(); Battle.ui(); if(s.hp<=s.max*.12) YY.end(s); },delay); },
 };
 { const _b=Battle._begin; Battle._begin=function(kind,cb){ const r=_b.call(Battle,kind,cb); const s=Battle.s; if(YY.is(s)){ YY.stands();
-      s.pendingTalk=YY.side()?[['窫窳','（它从鼎里爬出来，一张人脸，哭得像个婴儿）……'],['萧烬','（他站到你身边，没有拔刀，只吹了一声口哨。红头的狼伏低了身子）'],['顾长歌','一起上！']]:[['窫窳','（它从鼎里爬出来，一张人脸，哭得像个婴儿）……'],['顾长歌','{名}，大师姐——一起上！']]; } return r; }; }
+      s.pendingTalk=[['窫窳','（它从鼎里爬出来，一张人脸，哭得像个婴儿）……'],['顾长歌','{名}，大师姐——一起上！']]; } return r; }; }
 { const _pc=Battle.phaseCheck; Battle.phaseCheck=function(){ const s=Battle.s, p2=s&&s.phase2; _pc.call(Battle);
-    if(YY.is(s)&&s.phase2&&!p2){ if(YY.side()) s.pendingTalk=[['萧烬','（他终于拔了刀）……够了。'],['旁白','红头的狼群从黑暗里扑出来，咬住了窫窳的马腿！']];
-      else { s.moves=s.moves.concat(['pack','pack']); s.pendingTalk=[['旁白','黑暗里亮起一片红色的眼睛。是萧烬的狼群。'],['旁白','它们扑上来——扑向的是你们。'],['谢霁月','……他不在，狼还认国师的令！']]; } } }; }
+    if(YY.is(s)&&s.phase2&&!p2){
+      s.moves=s.moves.concat(['pack','pack']); s.pendingTalk=[['旁白','黑暗里亮起一片红色的眼睛。是萧烬的狼群。'],['旁白','它们扑上来——扑向的是你们。'],['谢霁月','……他不在，狼还认国师的令！']]; } }; }
 { const _et=Battle.enemyTurn; Battle.enemyTurn=function(){ const s=Battle.s; if(!YY.is(s)) return _et.call(Battle); if(s.ending) return;
     if(!s.stun&&!s.talked&&!Dodge.auto){ const lines=YY.lines(s); if(lines){ s.talked=true; s.busy=true; Battle.ui(); return QQLU.talk(lines,()=>{ if(Battle.s!==s||s.dead) return; s.busy=false; Battle.enemyTurn(); }); } }
     s.talked=false; return _et.call(Battle); }; }
@@ -13143,7 +13140,7 @@ YY.end=s=>{ if(s.ending) return; s.ending=true; s.busy=true; Battle.ui(); BossBg
 
 /* ---------- starting the fight: right after the 鼎 cracks ---------- */
 YY.go=()=>Battle.start('c3_yayu',r=>{ if(r!=='win') return UI.say([['旁白','黑水漫过了你的膝盖。顾长歌一把把你拽了回来。'],['顾长歌','再来！它也快撑不住了！']]); YY.after(); });
-YY.after=()=>{ const side=YY.side(); UI.say([
+YY.after=()=>{ UI.say([
   ['旁白','鼎底下的火灭了。地宫里只剩下火把的光。'],
   ['旁白','最深处的几间牢房里，还关着人。你们一间一间地打开。'],
   ['旁白','安平村的人。北边几个村子的人。前几届大比「送回宗门」的弟子。'],
@@ -13154,7 +13151,6 @@ YY.after=()=>{ const side=YY.side(); UI.say([
   ['顾长歌','（他的剑「当」地掉在地上）……师叔？'],
   ['顾长歌','（他跪下去，很久很久没有起来）'],
   ['我','（……「门中尚有人在」。原来是这里。）'],
-  ...(side?[['旁白','萧烬站在牢房门口，看着安平村的人一个一个走出来。'],['旁白','他什么也没说。'],['旁白','安平村的女人看见他身边那只红头的狼，往后缩了一步。狼也往后缩了一步。']]:[]),
   {flag:'c3_a5_win'},
   ['旁白','（天快亮了。离开地宫。）']],()=>{ C3.move('jc_zhuque',19,14,'up',8,()=>setTimeout(()=>UI.say(YY.notice(),()=>{ UI.hud(); Story.check(); }),500)); }); };
 // three days later: the notice on the board at the cross street
@@ -13171,7 +13167,7 @@ YY.notice=()=>[
   ['旁白','（该回宗门了。去朱雀门。）']];
 
 /* ---------- leaving: 萧烬's ending at 朱雀门 ---------- */
-YY.ending=()=>{ const pts=Social.rel('xiao').pts, side=YY.side(), k=side&&pts>=250?'with':side?'wolf':'stay'; S.flags.c3_xj_end=k; return [
+YY.ending=()=>{ S.flags.c3_xj_end='stay'; return [
   ['旁白','清早，朱雀门。来的时候城门口排着长队，走的时候，门口空荡荡的。'],
   ['苏小棠',S.sect==='dan'?'（她背着药篓，回头看了一眼京城）……走吧，回谷里！':'（她背着药篓）我先回药王谷啦。长老的信一封比一封凶……'],
   ...(S.sect==='dan'?[]:[['苏小棠','（她走出几步，又跑回来，往你手里塞了一包东西）路上吃！'],['旁白','是一包糖人。'],{give:{jc_tangren:2}}]),
@@ -13179,11 +13175,8 @@ YY.ending=()=>{ const pts=Social.rel('xiao').pts, side=YY.side(), k=side&&pts>=2
   ['何满仓','（他笑了一下）我……好像不饿了。'],
   ['顾长歌','（他扶着白发的师叔）我送师叔回北边。门中还有几个人，在等我们。'],
   ['顾长歌','{名}。……谢谢。'],
-  ...({
-    with:[['旁白','城门外的柳树底下，站着一个人。灰白的长发，一身玄衣，身边蹲着一只红头的狼。'],['旁白','他手里提着一个包袱。'],['萧烬','（他看着你，笑了一下，笑得很温和）……京城没意思。'],['萧烬','你去哪儿，我去哪儿。'],['谢霁月','（她看了萧烬一眼，又看了你一眼，什么也没说，往前走了）'],['旁白','萧烬跟在你身后。红头的狼，跟在萧烬身后。'],{love:{xiao:100}}],
-    wolf:[['旁白','出了城门，你回头看了一眼。'],['旁白','远处的山脊上，站着一个人，身边蹲着一群狼。'],['旁白','是萧烬。他没有穿朝服。'],['旁白','他冲你抬了抬手。然后转过身，往北走了。'],['谢霁月','……狼山在北边。'],['旁白','风里传来一声狼嚎。很长，很长。']],
-    stay:[['旁白','出了城门，你回头看了一眼。'],['旁白','城楼上站着一个穿玄色朝服的人。灰白的长发，被风吹起来。'],['旁白','萧烬。钦差萧大人。'],['旁白','他看着你，看了很久。然后转身，走下了城楼。'],['谢霁月','……他会是个好官吗？'],['我','……不知道。']],
-  }[k]),
+  ['旁白','出了城门，你回头看了一眼。'],['旁白','城楼上站着一个穿玄色朝服的人。灰白的长发，被风吹起来。'],['旁白','萧烬。钦差萧大人。'],
+  ['旁白','他看着你，看了很久。然后转身，走下了城楼。'],['谢霁月','……他会是个好官吗？'],['我','……不知道。'],
   ['旁白','怀里的八卦镜，裂缝里透出一点光。你拿出来看，镜面上浮出两个字，一闪就没了：'],
   ['旁白','「贰负」。'],
   ['我','（窫窳说，杀它的，是天上的……）'],
@@ -13526,9 +13519,9 @@ const DANG={
     }); },
 };
 // 回春堂 is a 药铺: the 掌柜 at the counter sells 回春丹 (cheaper than the 当铺), any time after you've first come in
-HC.SELL=[['huichun',50]];
+HC.SELL=[['huichun',50],['juqi',60]];   // 聚气丹: in a fight it fills your 灵力
 { const z=HC.TALK.hc_zhang; HC.TALK.hc_zhang=()=>{ const L=z(); if(!S.flags.c3_hc_ask) return L;
-    return [...L,{choice:'回春堂掌柜：「抓药，还是买现成的丹？」', options:[{text:'买回春丹（50 灵石一颗）', fn:()=>SHOP3.sell('回春堂',HC.SELL)},{text:'不用了', fn:()=>{}}]}]; }; }
+    return [...L,{choice:'回春堂掌柜：「抓药，还是买现成的丹？」', options:[{text:'买丹（回春丹 50 · 聚气丹 60）', fn:()=>SHOP3.sell('回春堂',HC.SELL)},{text:'不用了', fn:()=>{}}]}]; }; }
 // 四方馆 gets a mailbox just inside its gate, so letters from friends reach you in the capital too
 MAPS.jc_sifang.objects.push({type:'mailbox', x:17, y:19, act:'mail', spr:'mailbox'});
 
@@ -15515,7 +15508,7 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
   const upto=f=>Object.fromEntries(A.slice(0,A.indexOf(f)+1).map(k=>[k,true]));
   const go=(flags,map,x,y,dir,quest,hour)=>{ Review.base({quest, L:12, sect:'jian'}); Chapters.C2.ensure(S); Object.assign(S.flags,flags);
     for(const [id,h] of [['xie',4],['tang',4],['ge',2]]){ const r=Social.rel(id); if(r.pts<h*100){ r.pts=h*100; r.ev=r.ev||{}; for(let e=2;e<=h;e+=2) r.ev[e]=true; } }
-    S.inv.huichun=Math.max(S.inv.huichun||0,4); S.stones=Math.max(S.stones||0,300);   // and the pills and money an ordinary player carries   // where an ordinary player stands after chapter 2
+    S.inv.huichun=Math.max(S.inv.huichun||0,4); S.inv.juqi=Math.max(S.inv.juqi||0,4); S.stones=Math.max(S.stones||0,300);   // and the pills and money an ordinary player carries   // where an ordinary player stands after chapter 2
     S.c3={wood:flags.c3_cooked?[0,1,2]:[], water:flags.c3_cooked?1:0}; if(flags.c3_go){ S.inv.c2_bagua=1; S.flags.c3_wu_hulu=true; } S.min=(hour||10)*60; Review.at(map,x,y,dir); Story.check(); };
   const N=(id,title,check,run)=>({id:'c3-'+id, group:'第三章', title, check, run});
   Review.NODES.push(
@@ -15591,12 +15584,12 @@ const XS_RV={c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_
       ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true},'jc_sifang',14,12,'up','c3o',7); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=1; addItem('jc_tangren',1); UI.hud(); Story.check(); }),
     N('digong','宗庙地宫：守卫、牢门、醒神汤','坐船进了水门，在地宫的石阶下。打倒石阶上的黑衣人，再打倒里面那个（拿钥匙）；打开四个牢门，用醒神汤叫醒：第三轮输给你的人、鲁三（给他糖人小老虎）、安平村的女人、柳河村的李大娘。四个都醒了，二师兄带他们从水门出去，里面的铁栏杆开了。',
       ()=>{ go({...{...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true},c3_a4_plan:true,c3_a4_go:true},'jc_digong',5,18,'up','c3o',23.5); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=1; addItem('jc_tangren',1); addItem('c3_xingshen',4); UI.hud(); Story.check(); }),
-    N('ding','鼎：八卦镜最后一照、国师、萧烬（插画「鼎」）','人都救出去了，站在鼎前。点鼎，用八卦镜照：鼎底黑水里一张人脸睁开眼睛，镜子裂了。国师出来（观天鉴是挑「食材」的；顾长歌认出了面具）；萧烬从鼎的影子里出来：「人吃人，跟我有什么关系」——好感够（≥100 且敌意不高）他站到你身边，不够就转身走掉。国师一掌拍在鼎上，鼎裂开了。第四幕完。',
+    N('ding','鼎：八卦镜最后一照、国师、萧烬（插画「鼎」）','人都救出去了，站在鼎前。点鼎，用八卦镜照：鼎底黑水里一张人脸睁开眼睛，镜子裂了。国师出来（观天鉴是挑「食材」的；顾长歌认出了面具）；萧烬从鼎的影子里出来：「人吃人，跟我有什么关系」——「可是你在乎。」顾长歌的剑指向他：「你是国师的人。」「是过。灭你师门的，不是我。」然后「这是你们的事」，他走进黑暗里（不管好感多少，他都不站队）。国师一掌拍在鼎上，鼎裂开了。第四幕完。',
       ()=>{ go({...{...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true},c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true},'jc_digong',13,6,'up','c3o',23.8); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=1; addItem('jc_tangren',1); Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); UI.hud(); Story.check(); }),
-    N('yayu','第五幕：窫窳（Boss，三人或四人一起打）','鼎已经裂开，站在鼎前，点鼎开打。顾长歌、大师姐每回合跟着你出手；萧烬站过来的话他也出手，半血时他的狼群咬住窫窳；他走掉的话，半血时狼群扑向你们（多一招「狼群」）。打到很低：人脸开口「杀我的……不是人……是天上的……」，然后吃掉了国师。之后：救出所有人，白发老剑修认出顾长歌（他的师叔）；三天后十字街口的告示。',
-      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true,c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true,c3_a4_done:true},'jc_digong',13,6,'up','c3p',0.5); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=0; Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); S.flags.c3_xj_side=true; UI.hud(); Story.check(); }),
-    N('leave','离开京城：萧烬的三种结局','告示之后，在朱雀门外找大师姐，选「走吧」。苏小棠回药王谷（塞给你糖人），二师兄跟你回宗门，顾长歌送师叔回北边。萧烬：好感 ≥250 且站过来 → 在城外柳树下等你，跟你走；站过来但不够 → 山脊上带着狼群往北走（回狼山）；走掉的 → 城楼上的萧大人。最后八卦镜的裂缝里浮出「贰负」。第三章完。',
-      ()=>{ go({...{...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true,c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true,c3_a4_done:true},c3_a5_win:true,c3_a5_notice:true,c3_xj_side:true},'jc_zhuque',13,29,'down','c3q',7); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=0; Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); Social.rel('xiao').pts=300; UI.hud(); Story.check(); }),
+    N('yayu','第五幕：窫窳（Boss，三人一起打）','鼎已经裂开，站在鼎前，点鼎开打。顾长歌、大师姐每回合跟着你出手；萧烬走掉了，半血时他的狼群还认国师的令，扑向你们（多一招「狼群」）。打到很低：人脸开口「杀我的……不是人……是天上的……」，然后吃掉了国师。之后：救出所有人，白发老剑修认出顾长歌（他的师叔）；三天后十字街口的告示。',
+      ()=>{ go({...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true,c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true,c3_a4_done:true},'jc_digong',13,6,'up','c3p',0.5); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=0; Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); S.flags.c3_xj_left=true; UI.hud(); Story.check(); }),
+    N('leave','离开京城：城楼上的萧烬','告示之后，在朱雀门外找大师姐，选「走吧」。苏小棠回药王谷（塞给你糖人），二师兄跟你回宗门，顾长歌送师叔回北边。出了城门回头：城楼上穿朝服的萧大人看着你，看了很久，转身走下城楼（只有这一个结局）。最后八卦镜的裂缝里浮出「贰负」。第三章完。',
+      ()=>{ go({...{...upto('c3_night'),...XS_RV,c3_xs_in:true,c3_xs_xue:true,c3_hc_in:true,c3_hc_ask:true,c3_hc_pulse:true,c3_hc_ru:true,c3_ju_pool:true,c3_ju_in:true,c3_ju_won:true,c3_dan_lu:true,c3_dan_done:true,c3_jd_done:true,c3_xj_met:true,c3_km_call:true,c3_km_done:true,c3_lt_tang:true,c3_lt_n2:true,c3_kuishou:true,c3_lt_done:true,c3_xf_in:true,c3_zy_met:true,c3_qj_girl:true,c3_yj_go:true,c3_yj_done:true,c3_a3_done:true,c3_a4_plan:true,c3_a4_go:true,c3_dg_key:true,c3_a4_done:true},c3_a5_win:true,c3_a5_notice:true,c3_xj_left:true},'jc_zhuque',13,29,'down','c3q',7); S.L=13; S.exp=0; S.inv.c2_bagua=1; KM.st().bracket=KM.bracket(); KM.st().round=4; XF.st().clue={room:true,dregs:true,qinghe:true,ledger:true}; C3.st().bagua=0; Object.assign(A4.st(),{g1:true,g2:true,open:[0,1,2,3],woke:[0,1,2,3]}); UI.hud(); Story.check(); }),
     N('xiao2','萧烬心动：2♥ 瘸腿的狗 → 4♥ 赌一局 → 6♥ 屋顶 → 8♥ 草窝','夜里的小巷，萧烬在巷子尽头。好感正好 2♥：点他 → 聊天，触发「瘸腿的狗」。之后每到 4♥、6♥、8♥，聊天时触发下一段：千金坊后堂赌一局（输的人说真话）、屋顶上看京城、安平村后山的草窝——那是他娘的坟，杀她的是你的大师兄。每一段的回答会改变好感和敌意。',
       ()=>{ go({...upto('c3_night'),c3_raid_won:true,c3_a1_done:true,c3_jc_go:true,c3_jc_in:true,c3_jc_board:true,c3_sf_in:true,c3_sf_tang:true,c3_sf_jiedan:true,c3_sf_recipe:true,c3_sf_morning:true,c3_jd_done:true,c3_xj_met:true},'jc_xiang',5,6,'up','c3k',23); S.L=13; Social.rel('xiao').pts=200; UI.hud(); Story.check(); }),
     N('xie68','大师姐心动：6♥ 槐树、8♥ 河灯（还青玉珠）','四方馆院子里，大师姐在槐树底下，好感正好 6♥，身上带着从当铺赎回的青玉珠。点她 → 聊天：「槐树」——上一回拿了头名的那夜，她一个人坐到天亮。再到 8♥ 聊天：「河灯」——她从没放过河灯；可以把青玉珠还给她（她剑穗上师父给的那颗，为了拍卖会当掉的）。当铺：朱雀大街的当铺可以赎回青玉珠。',
@@ -15942,27 +15935,27 @@ const SelfTest3={
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3o';i++){ UI.sync(); Story.check(); await W(100); }
           const F=S.flags, ok=near&&F.c3_yj_done&&F.c3_a3_done&&fails===0&&QUESTS[S.quest].id==='c3o';
           return {fail:!ok, info:`${near?'太近被发现':'太近 ✗'}，${fails?'跟的时候失败了 '+fails+' 次 ✗':'一路跟到'}，${F.c3_yj_done?'宗庙后门':'后门 ✗'}，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('第四幕：商量 → 坐船进地宫 → 两个守卫 → 四个牢门、醒神汤 → 鼎、八卦镜 → 国师、萧烬（站过来 / 走掉）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='第四幕';
+        await step('第四幕：商量 → 坐船进地宫 → 两个守卫 → 四个牢门、醒神汤 → 鼎、八卦镜 → 国师、萧烬（好感高低都走掉）', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='第四幕';
           node('c3-a4plan').run(); await W(1300); await adv(); const plan=!!S.flags.c3_a4_plan&&count(S,'c3_xingshen')===4;
           Story.talk('ge'); await adv('去'); for(let i=0;i<60&&RT.mapId!=='jc_digong';i++){ if(RT.fadeTo) update(.1); await W(40); } await W(700); await adv();
           for(const g of ['dg_g1','dg_g2']){ Story.talk(g); await adv('拔剑'); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); } const f=await fight(); await adv(); got.push(f.won); }
           for(let i=0;i<4;i++){ Dungeon.act(RT.map.objects.find(o=>o.act==='dgbars'&&o.cell===i)); await adv(); Story.talk('dg_p'+i); await adv(); }
           const a=A4.st(), freed=a.woke.length===4&&!RT.ents.some(e=>e.act==='dginner');
-          const ends=[]; for(const love of [0,150]){ node('c3-ding').run(); await W(400); Social.rel('xiao').pts=love; const b0=C3.st().bagua; Dungeon.act(obj('dgding')); let cg=false;
+          const ends=[]; for(const love of [0,400]){ node('c3-ding').run(); await W(400); Social.rel('xiao').pts=love; const b0=C3.st().bagua; Dungeon.act(obj('dgding')); let cg=false;
             for(let i=0;i<300;i++){ if(PixCG.on) cg=true; const d=$('#dlg'); if(d.hidden){ await W(50); if($('#dlg').hidden&&i>20) break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
             const done=!!S.flags.c3_a4_done; for(let i=0;i<160&&!Battle.s;i++){ cine(); await W(80); } const yy=!!Battle.s&&Battle.s.kind==='c3_yayu'; if(Battle.s) Battle.close(); $('#cine').hidden=true;   // the 鼎 cracking goes straight into act 5's fight
             ends.push({love, side:!!S.flags.c3_xj_side, left:!!S.flags.c3_xj_left, cg, mirror:C3.st().bagua===b0-1, done, yy}); }
           for(let i=0;i<20&&QUESTS[S.quest].id!=='c3p';i++){ UI.sync(); Story.check(); await W(100); }
-          const ok=plan&&got.every(Boolean)&&freed&&ends[0].left&&!ends[0].side&&ends[1].side&&ends.every(e=>e.cg&&e.mirror&&e.done&&e.yy)&&QUESTS[S.quest].id==='c3p';
+          const ok=plan&&got.every(Boolean)&&freed&&ends.every(e=>e.left&&!e.side)&&ends.every(e=>e.cg&&e.mirror&&e.done&&e.yy)&&QUESTS[S.quest].id==='c3p';
           return {fail:!ok, info:`${plan?'商量、醒神汤':'商量 ✗'}，守卫 ${got.map(x=>x?'✓':'✗').join('')}，${freed?'四个都醒了':'救人 ✗ '+a.woke.length}，`+ends.map(e=>`好感 ${e.love}：${e.side?'站过来':e.left?'走掉':'?'}${e.cg?'':' 鼎✗'}${e.mirror?'':' 镜✗'}${e.yy?'，接着打窫窳':' 窫窳✗'}`).join('；')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
-        await step('第五幕：窫窳（萧烬站过来 / 走掉，各打一遍）→ 救人、师叔 → 告示 → 朱雀门：萧烬三种结局 → 第三章完', async()=>{ const n0=SelfTest3.lines.length, fights=[], ends=[]; cur='第五幕';
-          for(const side of [true,false]){ node('c3-yayu').run(); await W(400); S.flags.c3_xj_side=side; S.flags.c3_xj_left=!side; Dungeon.act(obj('dgding')); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); }
+        await step('第五幕：窫窳（萧烬走掉了，三人一起打）→ 救人、师叔 → 告示 → 朱雀门：城楼上的萧烬 → 第三章完', async()=>{ const n0=SelfTest3.lines.length, fights=[], ends=[]; cur='第五幕';
+          for(const side of [false]){ node('c3-yayu').run(); await W(400); S.flags.c3_xj_side=side; S.flags.c3_xj_left=!side; Dungeon.act(obj('dgding')); for(let i=0;i<60&&!Battle.s;i++){ cine(); await W(80); }
             const allies=document.querySelectorAll('#battle [id^=allyStand]').length; const f=await fight(); await W(500);
             for(let i=0;i<300;i++){ if(RT.fadeTo) update(.1); const d=$('#dlg'); if(d.hidden){ await W(50); if($('#dlg').hidden&&!RT.fadeTo&&i>30&&RT.mapId==='jc_zhuque') break; continue; } const ch=d.querySelector('[data-i]'); if(ch) ch.click(); else { if(UI.typing) d.onclick(); rec('对话',(d.querySelector('.port span,.who')?.textContent||'旁白')+'：'+(d.querySelector('#dText')?.textContent||'')); d.onclick&&d.onclick(); } await W(10); }
             fights.push({side, won:f.won, turns:f.turns, allies, win:!!S.flags.c3_a5_win, notice:!!S.flags.c3_a5_notice}); }
-          for(const [side,pts,want] of [[true,300,'with'],[true,100,'wolf'],[false,0,'stay']]){ node('c3-leave').run(); await W(400); S.flags.c3_xj_side=side; Social.rel('xiao').pts=pts; Story.talk('c3_leave'); await adv('走吧');
+          for(const [side,pts,want] of [[false,0,'stay'],[false,400,'stay']]){ node('c3-leave').run(); await W(400); S.flags.c3_xj_side=side; Social.rel('xiao').pts=pts; Story.talk('c3_leave'); await adv('走吧');
             for(let i=0;i<20&&QUESTS[S.quest].id!=='c3zz';i++){ UI.sync(); Story.check(); await W(100); } ends.push({want, got:S.flags.c3_xj_end, done:!!S.flags.c3_done}); }
-          const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights[0].allies===3&&fights[1].allies===2&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
+          const ok=fights.every(f=>f.won&&f.win&&f.notice)&&fights.every(f=>f.allies===2)&&ends.every(e=>e.got===e.want&&e.done)&&QUESTS[S.quest].id==='c3zz';
           return {fail:!ok, info:fights.map(f=>`${f.side?'萧烬在':'萧烬不在'}：${f.won?f.turns+' 回合':'✗'}，${f.allies} 个帮手${f.notice?'':'，告示 ✗'}`).join('；')+'，结局 '+ends.map(e=>e.got===e.want?e.got:e.want+'✗').join('/')+`，${QUESTS[S.quest]&&QUESTS[S.quest].id}，${SelfTest3.lines.length-n0} 句`}; });
         await step('萧烬心动事件：2♥ 4♥（赢 / 输）6♥ 8♥，每段都有插画、好感会涨', async()=>{ const n0=SelfTest3.lines.length, got=[]; cur='萧烬心动';
           for(const [lv,pick] of [[2,0],[4,'大'],[4,'小'],[6,0],[8,0]]){ node('c3-xiao2').run(); await W(300); const r=Social.rel('xiao'); r.ev={}; for(const l of [2,4,6,8]) if(l<lv) r.ev[l]=true; r.pts=lv*100; r.talked=-1; const p0=r.pts;
